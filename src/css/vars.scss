@@ -1,0 +1,27 @@
+/*
+* ant-design 设计语言-视觉-色彩：https://ant.design/docs/spec/colors-cn
+* ant-design 默认颜色变量 https://github.com/ant-design/ant-design/blob/master/components/style/themes/default.less
+*/
+
+$primary-color: #1890ff;
+$primary-hover-color: #e6f7ff;
+$primary-actived-color: #096dd9;
+$primary-color-8: #0050b3;
+
+$layout-sider-background: #fff;
+
+$text-color: #595959;
+$text-color-secondary: #8c8c8c;
+$text-color-custom-light: #bfbfbf;
+
+$icon-color-hover: $primary-color;
+
+$hot: #f5222d;
+$normal: $primary-color;
+$wait: rgba(250, 173, 20, 1);
+$block:rgba(0, 0, 0, 0.25);
+
+$primary: #325497;
+$up: #44d7b6;
+$down: #e94a39;
+$grey: #8c8c8c;

@@ -1,0 +1,28 @@
+html, body {
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  font-size: 100vw;
+
+  @media screen and (max-width: 320px) {
+    font-size: 320px;
+  }
+
+  @media screen and (min-width: 540px) {
+    font-size: 540px;
+  }
+}
+
+body {
+  margin: 0 auto;
+  max-width: 540px;
+  min-width: 320px;
+  font-family: -apple-system, BlinkMacSystemFont, PingFang SC, Helvetica, Tahoma, Arial, "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
+}
+
+.tab-page {
+  height: calc(100vh - 50px);
+  overflow: scroll;
+}
