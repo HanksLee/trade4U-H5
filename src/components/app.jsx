@@ -97,21 +97,21 @@ export default class extends React.Component {
         <Views tabs className="safe-areas">
           {/* Tabbar for switching views-tabs */}
           <Toolbar tabbar labels bottom>
-            <Link tabLink="#view-home" tabLinkActive iconIos="f7:house_fill" iconAurora="f7:house_fill" iconMd="material:home" text="Home" />
+            <Link tabLink="#view-home"  iconIos="f7:house_fill" iconAurora="f7:house_fill" iconMd="material:home" text="Home" />
             <Link tabLink="#view-chart" iconIos="f7:house_fill" iconAurora="f7:house_fill" iconMd="material:home" text="Chart" />
-            <Link tabLink="#view-trade" iconIos="f7:house_fill" iconAurora="f7:house_fill" iconMd="material:home" text="Trade" />
+            <Link tabLink="#view-trade" tabLinkActive iconIos="f7:house_fill" iconAurora="f7:house_fill" iconMd="material:home" text="交易" />
             <Link tabLink="#view-history" iconIos="f7:house_fill" iconAurora="f7:house_fill" iconMd="material:home" text="History" />
             {/* <Link tabLink="#view-catalog" iconIos="f7:square_list_fill" iconAurora="f7:square_list_fill" iconMd="material:view_list" text="Catalog" /> */}
             <Link tabLink="#view-settings" iconIos="f7:gear" iconAurora="f7:gear" iconMd="material:settings" text="Settings" />
           </Toolbar>
 
           {/* Your main view/tab, should have "view-main" class. It also has "tabActive" prop */}
-          <View id="view-home" main tab tabActive url="/" />
+          <View id="view-home" main tab  url="/" />
 
           {/* Catalog View */}
           {/* <View id="view-catalog" name="catalog" tab url="/catalog/" /> */}
           <View id="view-chart" name="chart" tab url="/chart/" />
-          <View id="view-trade" name="trade" tab url="/trade/" />
+          <View id="view-trade" name="交易" tabActive tab url="/trade/" />
           <View id="view-history" name="history" tab url="/history/" />
           {/* Settings View */}
           <View id="view-settings" name="settings" tab url="/settings/" />

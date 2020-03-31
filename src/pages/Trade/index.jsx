@@ -1,28 +1,23 @@
 import React from 'react';
-import { Page, Navbar, List, ListItem } from 'framework7-react';
+import { Page, Navbar, List, ListItem, NavRight, NavTitle, Link } from 'framework7-react';
 import './index.scss';
 
 export default class extends React.Component {
-  constructor() {
-    super();
+  state = {};
 
-    this.state = {
-      products: this.$f7.data.products,
-    }
-  }
+  // constructor() {
+  //   super();
+  //
+  // }
   render() {
     return (
       <Page name="trade">
-        <Navbar title="Trade" />
-        <List>
-          {this.state.products.map((product) => (
-            <ListItem
-              key={product.id}
-              title={product.title}
-              link={`/product/${product.id}/`}
-            />
-          ))}
-        </List>
+        <Navbar>
+          <NavTitle>My App</NavTitle>
+          <NavRight>
+            <Link>Right Link</Link>
+          </NavRight>
+        </Navbar>
       </Page>
     );
   }
