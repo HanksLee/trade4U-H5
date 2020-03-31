@@ -34,6 +34,11 @@ export default class extends React.Component {
       f7params: {
         name: 'moon-h5-f7', // App name
         theme: 'auto', // Automatic theme detection
+        touch: {
+          tapHold: true,
+          tapHoldDelay: 300,
+          //enable tap hold events
+        },
         // App root data
         data: function () {
           return {
@@ -65,6 +70,20 @@ export default class extends React.Component {
       username: '',
       password: '',
     }
+  }
+
+  componentDidMount() {
+    this.$f7ready((f7) => {
+        f7.on('connection', (isOnline) => {
+          if (!isOnline) {
+            f7.toast.show({
+              text: '请检查设备当前网络连接状况~',
+              position: 'center',
+              closeTimeout: 2000,
+            });
+          }
+        })
+    });
   }
   render() {
     return (
@@ -171,9 +190,5 @@ export default class extends React.Component {
       this.$f7.loginScreen.close();
     });
   }
-  componentDidMount() {
-    this.$f7ready((f7) => {
-      // Call F7 APIs here
-    });
-  }
+
 }
