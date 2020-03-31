@@ -1,9 +1,15 @@
 /* Custom color theme properties */
+$primary: #325497;
+
 :root {
-  --f7-theme-color: #325497;
+  --f7-theme-color: $primary;
   --f7-theme-color-rgb: 50, 84, 151;
   --f7-theme-color-shade: #284378;
   --f7-theme-color-tint: #3c65b6;
+
+  --f7-bars-text-color: #FFF;
+  --f7-bars-bg-color: #325497;
+  --f7-bars-bg-color-rgb: 50, 84, 151;
 }
 
 /* Your app custom styles here */

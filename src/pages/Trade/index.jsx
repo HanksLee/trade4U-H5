@@ -3,19 +3,25 @@ import { Page, Navbar, List, ListItem, NavRight, NavTitle, Link } from 'framewor
 import './index.scss';
 
 export default class extends React.Component {
-  state = {};
+  state = {
+    title: '交易'
+  };
 
   // constructor() {
   //   super();
   //
   // }
   render() {
+    const {title} = this.state;
+
     return (
       <Page name="trade">
-        <Navbar>
-          <NavTitle>My App</NavTitle>
+        <Navbar sliding={false}>
+          <NavTitle>{title}</NavTitle>
           <NavRight>
-            <Link>Right Link</Link>
+            <Link>
+
+            </Link>
           </NavRight>
         </Navbar>
       </Page>

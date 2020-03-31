@@ -37,7 +37,6 @@ export default class extends React.Component {
         // App root data
         data: function () {
           return {
-
             // Demo products for Catalog section
             products: [
               {
