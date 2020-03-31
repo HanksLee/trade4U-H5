@@ -17,7 +17,7 @@ import {
   Button,
   f7
 } from 'framework7-react';
-import './home.scss';
+import './index.scss';
 
 export default () => (
   <Page name="home">

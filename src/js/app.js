@@ -18,7 +18,7 @@ import '../css/app.scss';
 // Import App Component
 import App from '../components/app.jsx';
 
-// utils.setRootFontSizeFromClient();
+utils.setRootFontSizeFromClient();
 // Init F7 Vue Plugin
 Framework7.use(Framework7React)
 

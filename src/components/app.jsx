@@ -174,7 +174,6 @@ export default class extends React.Component {
   }
   componentDidMount() {
     this.$f7ready((f7) => {
-
       // Call F7 APIs here
     });
   }
