@@ -39,6 +39,24 @@ var routes = [
     },
   },
   {
+    path: '/market/manage-self-select',
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () => import(/* webpackChunkName: 'manage-self-select-page' */'../pages/Market/ManageSelfSelect.jsx');
+      reactComponent().then(rc => {
+        resolve({component: rc.default});
+      });
+    },
+  },
+  {
+    path: '/market/add-self-select',
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () => import(/* webpackChunkName: 'add-self-select-page' */'../pages/Market/AddSelfSelect.jsx');
+      reactComponent().then(rc => {
+        resolve({component: rc.default});
+      });
+    },
+  },
+  {
     path: '/chart/:id',
     options: {
       history: true,

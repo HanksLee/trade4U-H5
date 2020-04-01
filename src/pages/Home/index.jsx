@@ -24,9 +24,9 @@ export default class extends React.Component {
             <Link tabLink="#view-settings" icon="settings-icon" text="设置" />
           </Toolbar>
 
-          <View id="view-market" name="行情" main tab  url="/market/" />
+          <View id="view-market" name="行情" tabActive tab  url="/market/" />
           <View id="view-chart" name="图表" tab url="/chart/" />
-          <View id="view-trade" name="交易" tabActive tab url="/trade/" />
+          <View id="view-trade" name="交易" tab url="/trade/" />
           <View id="view-history" name="历史" tab url="/history/" />
           <View id="view-settings" name="设置" tab url="/settings/" />
         </Views>
