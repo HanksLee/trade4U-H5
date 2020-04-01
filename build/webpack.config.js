@@ -51,7 +51,7 @@ module.exports = {
     },
 
   },
-  devtool: env === 'production' ? 'source-map' : 'eval',
+  devtool: env === 'production' ? 'source-map' : 'source-map',
   devServer: {
     hot: true,
     open: true,
@@ -203,7 +203,7 @@ module.exports = {
       'process.env.TARGET': JSON.stringify(target),
       'process.env': {
         designWidth: 375,
-        assetsPath: config.assetsPath,
+        assetsPath: s(config.assetsPath),
         MODE: s(process.env.MODE),
       }
     }),

@@ -11,7 +11,12 @@ import App from '../components/app.jsx';
 utils.setRootFontSizeFromClient();
 Framework7.use(Framework7React)
 
+configure({ enforceActions: "observed", });
+
+// Mount React App
 ReactDOM.render(
-  React.createElement(App),
+  <Provider {...store}>
+    <App />
+  </Provider>,
   document.getElementById('app'),
 );
