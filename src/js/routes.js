@@ -30,6 +30,13 @@ var routes = [
     },
   },
   {
+    path: '/chart/:id',
+    options: {
+      history: true,
+    },
+    asyncComponent: () => import(/* webpackChunkName: 'chart-page' */ '../pages/Chart/index.jsx'),
+  },
+  {
     path: '/trade/',
     async(routeTo, routeFrom, resolve, reject) {
       const reactComponent = () => import(/* webpackChunkName: 'trade-page' */'../pages/Trade/index.jsx');
@@ -37,6 +44,10 @@ var routes = [
         resolve({component: rc.default});
       });
     },
+  },
+  {
+    path: '/trade/:id',
+    asyncComponent: () => import(/* webpackChunkName: 'trade-detail-page' */ '../pages/TradeDetail/index.jsx'),
   },
   {
     path: '/history/',

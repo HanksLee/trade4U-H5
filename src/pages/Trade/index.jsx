@@ -22,12 +22,15 @@ import {
   ActionsButton,
 } from 'framework7-react';
 import moment from 'moment';
+import { inject, observer } from "mobx-react";
 import './index.scss';
 
 import Dom7 from 'dom7';
 
 const $$ = Dom7;
 
+@inject("common")
+@observer
 export default class extends React.Component {
   state = {
     title: '交易',
@@ -62,8 +65,6 @@ export default class extends React.Component {
   // }
 
   componentDidMount() {
-    console.log('mounted')
-
     this.initData();
   }
 
@@ -114,6 +115,10 @@ export default class extends React.Component {
 
   }
 
+  goToPage = (url, opts = {}) => {
+    this.$f7router.navigate(url, opts);
+  }
+
   loadMore = (done) => {
     const self = this;
     setTimeout(() => {
@@ -141,7 +146,7 @@ export default class extends React.Component {
           <NavTitle>{title}</NavTitle>
           <NavRight>
             <Link>
-              <Icon color={'white'} f7={'plus'} size={r(16)}></Icon>
+              <Icon color={'white'} f7={'plus'} size={r(18)}></Icon>
             </Link>
           </NavRight>
         </Navbar>
@@ -270,12 +275,38 @@ export default class extends React.Component {
         </List>
         <Actions ref="actionsGroup">
           <ActionsGroup>
-            <ActionsLabel>Do something</ActionsLabel>
-            <ActionsButton bold>Button 1</ActionsButton>
-            <ActionsButton>Button 2</ActionsButton>
+            <ActionsLabel>
+              {
+                '交易：#555 USD'
+              }
+            </ActionsLabel>
+            <ActionsButton color={'red'}>
+              <span onClick={() => this.goToPage(`/trade/1`, {
+                props: {
+                  mode: 'close'
+                }
+              })}>
+                平仓
+              </span>
+            </ActionsButton>
+            <ActionsButton>
+              <span onClick={ () => this.goToPage(`/trade/1`, {props: {
+                mode: 'modify'
+                }})}>修改</span>
+            </ActionsButton>
+            <ActionsButton>
+              <span onClick={ () => this.goToPage(`/trade/1`, {
+                props: {
+                  mode: 'trade'
+                }
+              })}>交易</span>
+            </ActionsButton>
+            <ActionsButton>
+              <span onClick={() => this.goToPage(`/chart/1`)}>图表</span>
+            </ActionsButton>
           </ActionsGroup>
           <ActionsGroup>
-            <ActionsButton color="red">Cancel</ActionsButton>
+            <ActionsButton>取消</ActionsButton>
           </ActionsGroup>
         </Actions>
       </Page>
