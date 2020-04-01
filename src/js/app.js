@@ -7,6 +7,9 @@ import 'framework7/css/framework7.bundle.css';
 import '../css/icons.css';
 import '../css/app.scss';
 import App from '../components/app.jsx';
+import { configure } from "mobx";
+import {Provider} from 'mobx-react';
+import store from 'store';
 
 utils.setRootFontSizeFromClient();
 Framework7.use(Framework7React)

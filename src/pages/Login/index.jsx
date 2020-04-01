@@ -10,6 +10,7 @@ import {
   ListInput,
   Button,
   NavTitle,
+  Icon,
 } from 'framework7-react';
 import api from 'services'
 import './index.scss';
@@ -108,14 +109,17 @@ export default class extends React.Component {
         <Navbar>
           <NavTitle style={{ margin: 'auto' }}>证券商</NavTitle>
         </Navbar>
-        <Searchbar placeholder="输入券商名" onChange={this.searchBroker} />
+        <Searchbar placeholder="输入券商名" onChange={this.searchBroker} disableButton={false} />
         <img alt="logo" className="logo" src={logo} />
         <List>
           {
             this.state.searchResult.map(item => (
-              <ListItem onClick={() => this.chooseBroker(item.token)}>
-                <img src={item.broker.logo} solt="content-start" />
-                {item.broker.name}
+              <ListItem onClick={() => this.chooseBroker(item.token)} title={item.broker.name}>
+                <img
+                  className="broker-logo"
+                  src={item.broker.logo}
+                  slot="media"
+                />
               </ListItem>
             ))
           }
@@ -124,7 +128,8 @@ export default class extends React.Component {
     );
   }
 
-  searchBroker = (value) => {
+  searchBroker = (event) => {
+    const value = event.target.value;
     if (value !== '') {
       this.setState({
         searchResult: this.state.brokerList.filter(item => item.broker.name.indexOf(value) !== -1),
@@ -138,7 +143,7 @@ export default class extends React.Component {
 
   chooseBroker = (token) => {
     utils.setLStorage('MOON_H5_TOKEN', token);
-    this.props.history.push('/app');
+    this.$f7router.navigate('/');
   }
 
   login = async () => {
