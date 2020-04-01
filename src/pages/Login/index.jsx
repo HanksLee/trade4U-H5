@@ -1,7 +1,17 @@
 import logo from '../../assets/img/logo.svg';
 import React from 'react';
 import utils from 'utils';
-import { Page, Navbar, List, ListItem, Searchbar, ListInput, Button, ListItem } from 'framework7-react';
+import {
+  Page,
+  Navbar,
+  List,
+  ListItem,
+  Searchbar,
+  ListInput,
+  Button,
+  NavTitle,
+} from 'framework7-react';
+import api from 'services'
 import './index.scss';
 
 export default class extends React.Component {
@@ -9,7 +19,7 @@ export default class extends React.Component {
     super();
 
     this.state = {
-      isLogin: true,
+      isLogin: false,
       brokerList: [],
       searchResult: [],
       codeInfo: null,
@@ -29,7 +39,7 @@ export default class extends React.Component {
   }
 
   getCodeImg = async () => {
-    const res = await this.$api.common.getCodeImg();
+    const res = await api.common.getCodeImg();
 
     if (res.status == 200) {
       this.setState({
@@ -42,7 +52,9 @@ export default class extends React.Component {
     const { codeInfo, } = this.state;
     return (
       <>
-        <Navbar title="登录" />
+        <Navbar>
+          <NavTitle style={{ margin: 'auto' }}>登录</NavTitle>
+        </Navbar>
         <img alt="logo" className="logo" src={logo} />
         <List form>
           <ListInput
@@ -85,7 +97,7 @@ export default class extends React.Component {
             }
           </ListInput>
         </List>
-        <Button fill>登录</Button>
+        <Button fill style={{ margin: 'auto', width: '85px', }} onClick={this.login}>登录</Button>
       </>
     );
   }
@@ -93,13 +105,16 @@ export default class extends React.Component {
   renderBrokerChoosePanel = () => {
     return (
       <>
-        <Navbar title="券商" />
-        <Searchbar placeholder="输入券商名" onChange={this.searchBroker} clearButton={false} />
+        <Navbar>
+          <NavTitle style={{ margin: 'auto' }}>证券商</NavTitle>
+        </Navbar>
+        <Searchbar placeholder="输入券商名" onChange={this.searchBroker} />
         <img alt="logo" className="logo" src={logo} />
         <List>
           {
             this.state.searchResult.map(item => (
-              <ListItem thumb={item.broker.logo} onClick={() => this.chooseBroker(item.token)}>
+              <ListItem onClick={() => this.chooseBroker(item.token)}>
+                <img src={item.broker.logo} solt="content-start" />
                 {item.broker.name}
               </ListItem>
             ))
@@ -107,6 +122,62 @@ export default class extends React.Component {
         </List>
       </>
     );
+  }
+
+  searchBroker = (value) => {
+    if (value !== '') {
+      this.setState({
+        searchResult: this.state.brokerList.filter(item => item.broker.name.indexOf(value) !== -1),
+      });
+    } else {
+      this.setState({
+        searchResult: this.state.brokerList,
+      });
+    }
+  }
+
+  chooseBroker = (token) => {
+    utils.setLStorage('MOON_H5_TOKEN', token);
+    this.props.history.push('/app');
+  }
+
+  login = async () => {
+    const { username, password, code, } = this.state;
+    if (username === '') {
+      this.$f7.toast.show({
+        text: '请输入用户名',
+      });
+      return;
+    }
+
+    if (password === '') {
+      this.$f7.toast.show({
+        text: '请输入密码',
+      });
+      return;
+    }
+
+    if (code === '') {
+      this.$f7.toast.show({
+        text: '请输入验证码',
+      });
+      return;
+    }
+
+    const res = await api.common.login({
+      username,
+      password,
+      code,
+      key: this.state.codeInfo.key,
+    });
+
+    if (res.status === 201) {
+      this.setState({
+        isLogin: true,
+        brokerList: res.data.results,
+        searchResult: res.data.results,
+      });
+    }
   }
 
   render() {

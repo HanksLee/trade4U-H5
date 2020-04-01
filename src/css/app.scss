@@ -2,7 +2,7 @@
 $primary: #325497;
 
 :root {
-  --f7-theme-color: $primary;
+  --f7-theme-color: #325497;
   --f7-theme-color-rgb: 50, 84, 151;
   --f7-theme-color-shade: #284378;
   --f7-theme-color-tint: #3c65b6;
@@ -10,6 +10,18 @@ $primary: #325497;
   --f7-bars-text-color: #FFF;
   --f7-bars-bg-color: #325497;
   --f7-bars-bg-color-rgb: 50, 84, 151;
+}
+
+.block {
+  margin: 0;
+}
+
+.ios {
+  --f7-swipeout-button-padding: 0 10px;
+}
+
+.md {
+  --f7-swipeout-button-padding: 0 10px;
 }
 
 /* Your app custom styles here */

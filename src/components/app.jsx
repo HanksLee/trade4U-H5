@@ -1,7 +1,6 @@
 import React from 'react';
-import { App, Views, View, Toolbar, Link, LoginScreen } from 'framework7-react';
+import { App, View } from 'framework7-react';
 import routes from '../js/routes';
-import utils from 'utils';
 import './index.scss';
 
 export default class extends React.Component {
@@ -12,6 +11,11 @@ export default class extends React.Component {
       f7params: {
         name: 'moon-h5-f7',
         theme: 'auto',
+        touch: {
+          tapHold: true,
+          tapHoldDelay: 300,
+        },
+        // App root data
         data: function () {
           return {
             products: [
@@ -36,6 +40,20 @@ export default class extends React.Component {
         routes: routes,
       },
     }
+  }
+
+  componentDidMount() {
+    this.$f7ready((f7) => {
+        f7.on('connection', (isOnline) => {
+          if (!isOnline) {
+            f7.toast.show({
+              text: '请检查设备当前网络连接状况~',
+              position: 'center',
+              closeTimeout: 2000,
+            });
+          }
+        })
+    });
   }
 
   render() {

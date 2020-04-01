@@ -30,7 +30,9 @@ export default class API {
       (err) => {
         const { response: { data, status, }, } = err;
         f7.toast.show({
-          text: data.message
+          text: data.message,
+          position: 'center',
+          closeTimeout: 2000,
         });
 
         if (status == 401) {

@@ -1,0 +1,75 @@
+.trade-page {
+  .trade-stats {
+    padding-bottom: r(8);
+
+    .trade-stats-row {
+      margin-bottom: r(16);
+
+      .trade-stats-col {
+        p {
+          margin-bottom: r(4);
+          &:first-child {
+            font-size: r(13);
+            color: $grey;
+          }
+
+          &:last-child {
+            font-size: r(17);
+            color: $grey;
+          }
+        }
+      }
+    }
+  }
+
+  .trade-data {
+    .trade-data-top {
+      font-size: r(17);
+
+
+      strong {
+        color: black;
+        font-weight: normal;
+      }
+    }
+
+    .trade-data-middle {
+      font-size: r(11);
+      color: $grey;
+      .trade-data-middle-current {
+        font-size: r(36);
+        font-weight: bold;
+      }
+    }
+
+    .trade-data-bottom {
+      font-size: r(10);
+      color: $grey;
+      height: 0;
+      overflow: hidden;
+      transition: height .3s;
+
+      .row {
+        margin-bottom: r(4);
+      }
+
+      &.active {
+        height: r(66);
+      }
+    }
+  }
+
+  .media-list {
+    .item-content {
+      padding-left: 0;
+
+      .item-inner {
+        padding-left: calc(var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left));
+      }
+    }
+  }
+
+  p {
+    margin: 0;
+  }
+}
