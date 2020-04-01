@@ -21,9 +21,18 @@ var routes = [
     },
   },
   {
-    path: '/about/',
+    path: '/login',
     async(routeTo, routeFrom, resolve, reject) {
-      const reactComponent = () => import(/* webpackChunkName: 'about-page' */'../pages/about.jsx');
+      const reactComponent = () => import(/* webpackChunkName: 'login-page' */'../pages/Login/index.jsx');
+      reactComponent().then(rc => {
+        resolve({component: rc.default});
+      });
+    },
+  },
+  {
+    path: '/market',
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () => import(/* webpackChunkName: 'market-page' */'../pages/Market/index.jsx');
       reactComponent().then(rc => {
         resolve({component: rc.default});
       });

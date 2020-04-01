@@ -1,93 +1,36 @@
 import React from 'react';
-import {
-  Page,
-  Navbar,
-  NavLeft,
-  NavTitle,
-  NavTitleLarge,
-  NavRight,
-  Link,
-  Toolbar,
-  Block,
-  BlockTitle,
-  List,
-  ListItem,
-  Row,
-  Col,
-  Button,
-  f7
-} from 'framework7-react';
-import './index.scss';
+import { Page, Views, View, Toolbar, Link, LoginScreen } from 'framework7-react';
+import utils from 'utils';
 
-export default () => (
-  <Page name="home">
-    {/* Top Navbar */}
-    <Navbar sliding={false} large>
-      <NavLeft>
-        <Link iconIos="f7:menu" iconAurora="f7:menu" iconMd="material:menu" panelOpen="left" />
-      </NavLeft>
-      <NavTitle sliding>moon-h5-f7</NavTitle>
-      <NavRight>
-        <Link iconIos="f7:menu" iconAurora="f7:menu" iconMd="material:menu" panelOpen="right" />
-      </NavRight>
-      <NavTitleLarge>moon-h5-f7</NavTitleLarge>
-    </Navbar>
+export default class extends React.Component {
+  componentDidMount() {
+    this.$f7ready((f7) => {
+      const token = utils.getLStorage('MOON_H5_TOKEN');
+      if (!token) {
+        this.$f7router.navigate('/login');
+      }
+    });
+  }
 
-    {/* Page content */}
-    <Block strong>
-      <p onClick={() => {
-        f7.toast.show({
-          text: 'hell world'
-        });
-      }}>This is an example of tabs-layout application. The main point of such tabbed layout is that each tab contains independent view with its own routing and navigation.</p>
+  render() {
+    return (
+      <Page name="home">
+        <Views tabs className="safe-areas">
+          <Toolbar tabbar labels bottom className="app-tabbar">
+            <Link tabLink="#view-market" icon="market-icon" text="行情" />
+            <Link tabLink="#view-chart" icon="chart-icon" text="图表" />
+            <Link tabLink="#view-trade" icon="trade-icon" text="交易" />
+            <Link tabLink="#view-history" icon="history-icon" text="历史" />
+            <Link tabLink="#view-settings" icon="settings-icon" text="设置" />
+          </Toolbar>
 
-      <p>Each tab/view may have different layout, different navbar type (dynamic, fixed or static) or without navbar like this tab.</p>
-    </Block>
-
-    <BlockTitle>Navigation</BlockTitle>
-    <List>
-      <ListItem link="/about/" title="About"/>
-      <ListItem link="/form/" title="Form"/>
-    </List>
-
-    <BlockTitle>Modals</BlockTitle>
-    <Block strong>
-      <Row>
-        <Col width="50">
-          <Button fill raised popupOpen="#my-popup">Popup</Button>
-        </Col>
-        <Col width="50">
-          <Button fill raised loginScreenOpen="#my-login-screen">Login Screen</Button>
-        </Col>
-      </Row>
-    </Block>
-
-    <BlockTitle>Panels</BlockTitle>
-    <Block strong>
-      <Row>
-        <Col width="50">
-          <Button fill raised panelOpen="left">Left Panel</Button>
-        </Col>
-        <Col width="50">
-          <Button fill raised panelOpen="right">Right Panel</Button>
-        </Col>
-      </Row>
-    </Block>
-
-    <List>
-      <ListItem
-        title="Dynamic (Component) Route"
-        link="/dynamic-route/blog/45/post/125/?foo=bar#about"
-      />
-      <ListItem
-        title="Default Route (404)"
-        link="/load-something-that-doesnt-exist/"
-      />
-      <ListItem
-        title="Request Data & Load"
-        link="/request-and-load/user/123456/"
-      />
-    </List>
-
-  </Page>
-);
+          <View id="view-market" name="行情" main tab  url="/market/" />
+          <View id="view-chart" name="图表" tab url="/chart/" />
+          <View id="view-trade" name="交易" tabActive tab url="/trade/" />
+          <View id="view-history" name="历史" tab url="/history/" />
+          <View id="view-settings" name="设置" tab url="/settings/" />
+        </Views>
+      </Page>
+    )
+  }
+}
