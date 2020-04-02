@@ -34,7 +34,7 @@ node_modules/
 .DS_Store
 Thumbs.db
 
-
+*.idea
 
 # Production build
 www/
