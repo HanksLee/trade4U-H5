@@ -49,6 +49,7 @@
     .self-select-name {
       color: #325497;
       font-size: 15px;
+      padding: 5px 0 10px;
     }
   
     .self-select-spread {
@@ -64,9 +65,20 @@
     .self-select-buy-sell-block {
       width: 80px;
       height: 42px;
+      line-height: 42px;
       border-radius: 4px;
       font-size: 16px;
       color: #fff;
+      transition: background-color .5s;
+      margin: 5px 0;
+    }
+
+    .self-select-buy-sell-block.increase {
+      background-color: #e94a39;
+    }
+
+    .self-select-buy-sell-block.decrease {
+      background-color: #44d7b6;
     }
   
     .self-select-low {

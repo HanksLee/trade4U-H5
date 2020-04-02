@@ -1,3 +1,4 @@
+import api from 'services'
 import React from 'react';
 import {
   Page, Navbar, List, ListItem, Block,
@@ -23,14 +24,16 @@ export default class extends React.Component {
 
   handleDelete = async () => {
     await api.market.deleteSelfSelectSymbolList({
-      symbol: this.state.checkedItems,
+      data: {
+        symbol: this.state.checkedItems,
+      },
     })
-    await this.props.market.getSelfSelectSymbolList();
+    await this.props.market.updateSelfSelectSymbolList();
     this.$f7router.back();
   }
   
   handleConfirm = async () => {
-    await this.props.market.getSelfSelectSymbolList();
+    await this.props.market.updateSelfSelectSymbolList();
     this.$f7router.back();
   }
 
@@ -77,7 +80,7 @@ export default class extends React.Component {
                 <ListItem
                   key={item.symbol}
                   checkbox
-                  title={item.name}
+                  title={item.symbol_display.name}
                   className="self-select-list-item"
                   checked={checkedItems.indexOf(item.symbol) !== -1}
                   onChange={() => this.handleCheck(item)}

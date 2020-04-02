@@ -65,7 +65,7 @@ export default class extends React.Component {
     const res = await api.market.addSelfSelectSymbolList({
       symbol: this.state.selectedSymbols,
     })
-    await this.props.market.getSelfSelectSymbolList();
+    await this.props.market.updateSelfSelectSymbolList();
     this.$f7router.back();
   }
 

@@ -21,6 +21,7 @@ const getSymbolList = (config) =>
 export default {
   getSelfSelectSymbolList,
   addSelfSelectSymbolList,
+  deleteSelfSelectSymbolList,
   getSymbolTypeList,
   getSymbolList,
 };
