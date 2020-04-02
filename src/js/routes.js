@@ -21,9 +21,45 @@ var routes = [
     },
   },
   {
-    path: '/about/',
+    path: '/login',
     async(routeTo, routeFrom, resolve, reject) {
-      const reactComponent = () => import(/* webpackChunkName: 'about-page' */'../pages/about.jsx');
+      const reactComponent = () => import(/* webpackChunkName: 'login-page' */'../pages/Login/index.jsx');
+      reactComponent().then(rc => {
+        resolve({component: rc.default});
+      });
+    },
+  },
+  {
+    path: '/market',
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () => import(/* webpackChunkName: 'market-page' */'../pages/Market/index.jsx');
+      reactComponent().then(rc => {
+        resolve({component: rc.default});
+      });
+    },
+  },
+  {
+    path: '/market/manage-self-select',
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () => import(/* webpackChunkName: 'manage-self-select-page' */'../pages/Market/ManageSelfSelect.jsx');
+      reactComponent().then(rc => {
+        resolve({component: rc.default});
+      });
+    },
+  },
+  {
+    path: '/market/symbol_type',
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () => import(/* webpackChunkName: 'symbol-type-list-page' */'../pages/Market/SymbolTypeList.jsx');
+      reactComponent().then(rc => {
+        resolve({component: rc.default});
+      });
+    },
+  },
+  {
+    path: '/market/symbol_type/:symbol_type_name/symbol',
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () => import(/* webpackChunkName: 'symbol-list-page' */'../pages/Market/SymbolList.jsx');
       reactComponent().then(rc => {
         resolve({component: rc.default});
       });

@@ -3,7 +3,6 @@ import { PAGE_ROUTES } from "constant";
 import PromiseFileReader from "promise-file-reader";
 import commonAPI from "services/common";
 import NProgress from "nprogress";
-import { Toast } from "antd-mobile";
 
 function setRootFontSizeFromClient() {
   let dpr, rem;
@@ -95,7 +94,6 @@ async function uploadFile(payload) {
       return Promise.reject(res.data.msg);
     }
   } catch (err) {
-    Toast.fail(err);
     f7.toast.show({
       text: err,
     });
