@@ -37,12 +37,9 @@ export default class API {
 
         if (status == 401) {
           localStorage.removeItem('MOON_H5_TOKEN');
-
-          window.location.href =
-            process.env.NODE_ENV === "production"
-              ? "/login"
-              : window.location.origin + "/#/login";
+          f7.router.navigate('/login');
         }
+
         NProgress.done();
         return Promise.reject(err);
       }

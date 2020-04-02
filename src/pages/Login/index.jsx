@@ -98,7 +98,7 @@ export default class extends React.Component {
             }
           </ListInput>
         </List>
-        <Button fill style={{ margin: 'auto', width: '85px', }} onClick={this.login}>登录</Button>
+        <Button fill className="login-btn" onClick={this.login}>登录</Button>
       </>
     );
   }

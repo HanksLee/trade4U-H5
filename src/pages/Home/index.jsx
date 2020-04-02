@@ -17,7 +17,7 @@ export default class extends React.Component {
       <Page name="home">
         <Views tabs className="safe-areas">
           <Toolbar tabbar labels bottom className="app-tabbar">
-            <Link tabLink="#view-market" icon="market-icon" text="行情" />
+            <Link tabLink="#view-market" tabLinkActive icon="market-icon" text="行情" />
             <Link tabLink="#view-chart" icon="chart-icon" text="图表" />
             <Link tabLink="#view-trade" icon="trade-icon" text="交易" />
             <Link tabLink="#view-history" icon="history-icon" text="历史" />

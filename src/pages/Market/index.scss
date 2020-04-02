@@ -1,0 +1,82 @@
+.circle-add-icon {
+  width: 22px;
+  height: 22px;
+  background: url('../../assets/img/circle-add.svg');
+}
+
+.circle-add-selected-icon {
+  width: 22px;
+  height: 22px;
+  background: url('../../assets/img/circle-add-selected.svg');
+}
+
+.self-select-table {
+  .self-select-table-header,
+  .self-select-tr {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    & > div {
+      flex: 1;
+      text-align: center;
+      padding: 0 10px;
+      overflow: hidden;
+    }
+  }
+
+  .self-select-table-header {
+    height: 44px;
+    background-color: #f3f3f3;
+    font-size: 15px;
+    color: #000;
+  }
+
+  .self-select-tr {
+    height: 81px;
+    background-color: #fff;
+    border-bottom: 1px solid #c8c7cc;
+
+    & :first-child div {
+      text-align: left;
+    }
+
+    .self-select-time {
+      color: #8c8c8c;
+      font-size: 12px;
+    }
+  
+    .self-select-name {
+      color: #325497;
+      font-size: 15px;
+    }
+  
+    .self-select-spread {
+      color: #325497;
+      font-size: 12px;
+    }
+  
+    .self-select-code {
+      color: #8c8c8c;
+      font-size: 15px;
+    }
+  
+    .self-select-buy-sell-block {
+      width: 80px;
+      height: 42px;
+      border-radius: 4px;
+      font-size: 16px;
+      color: #fff;
+    }
+  
+    .self-select-low {
+      color: #8c8c8c;
+      font-size: 12px;
+    }
+  
+    .self-select-high {
+      color: #8c8c8c;
+      font-size: 12px;
+    }
+  }
+}

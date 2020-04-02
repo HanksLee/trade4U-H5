@@ -1,10 +1,11 @@
 import api from 'services';
 import React from 'react';
 import { Page, Navbar, List, ListItem, NavRight, NavLeft, NavTitle } from 'framework7-react';
-import './index.scss';
 import EditIcon from "assets/img/edit2.svg";
 import AddIcon from "assets/img/add.svg";
 import { inject, observer } from "mobx-react";
+import moment from 'moment';
+import './index.scss';
 
 @inject("market")
 @observer
@@ -17,8 +18,8 @@ export default class extends React.Component {
     this.$f7router.navigate('/market/manage-self-select');
   }
 
-  navigateToAddPage = () => {
-    this.$f7router.navigate('/market/add-self-select');
+  navigateToSymbolTypePage = () => {
+    this.$f7router.navigate('/market/symbol_type');
   }
   
   render() {
@@ -31,34 +32,42 @@ export default class extends React.Component {
           </NavLeft>
           <NavTitle>行情</NavTitle>
           <NavRight>
-            <img alt="add" src={AddIcon} onClick={this.navigateToAddPage} />
+            <img alt="add" src={AddIcon} onClick={this.navigateToSymbolTypePage} />
           </NavRight>
         </Navbar>
-        <div className="data-table">
-          <table>
-            <thead>
-              <tr>
-                <th className="label-cell">品种</th>
-                <th className="label-cell">时间</th>
-                <th className="label-cell">卖出价</th>
-                <th className="label-cell">买入价</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                selfSelectSymbolList.map(item => {
-                  return (
-                    <tr>
-                      <td className="label-cell">Frozen yogurt</td>
-                      <td className="label-cell">159</td>
-                      <td className="label-cell">6.0</td>
-                      <td className="label-cell">24</td>
-                    </tr>
-                  )
-                })
-              }
-            </tbody>
-          </table>
+        <div className="self-select-table">
+          <div className="self-select-table-header">
+            <div>品种</div>
+            <div>代码</div>
+            <div>卖出价</div>
+            <div>买入价</div>
+          </div>
+          <>
+            {
+              selfSelectSymbolList.map(item => {
+                return (
+                  <div className="self-select-tr">
+                    <div>
+                      <div className="self-select-time">
+                        {moment(item.timestamp).format('HH:mm:ss')}
+                      </div>
+                      <div className="self-select-name">{item.name}</div>
+                      <div className="self-select-spread">{item.spread}</div>
+                    </div>
+                    <div className="self-select-code">{item.symbol}</div>
+                    <div>
+                      <div className="self-select-buy-sell-block">{item.buy}</div>
+                      <div className="self-select-low">最低：{item.low}</div>
+                    </div>
+                    <div>
+                      <div className="self-select-buy-sell-block">{item.sell}</div>
+                      <div className="self-select-high">最高：{item.high}</div>
+                    </div>
+                  </div>
+                )
+              })
+            }
+          </>
         </div>
       </Page>
     );

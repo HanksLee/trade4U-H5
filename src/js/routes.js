@@ -48,9 +48,18 @@ var routes = [
     },
   },
   {
-    path: '/market/add-self-select',
+    path: '/market/symbol_type',
     async(routeTo, routeFrom, resolve, reject) {
-      const reactComponent = () => import(/* webpackChunkName: 'add-self-select-page' */'../pages/Market/AddSelfSelect.jsx');
+      const reactComponent = () => import(/* webpackChunkName: 'symbol-type-list-page' */'../pages/Market/SymbolTypeList.jsx');
+      reactComponent().then(rc => {
+        resolve({component: rc.default});
+      });
+    },
+  },
+  {
+    path: '/market/symbol_type/:symbol_type_name/symbol',
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () => import(/* webpackChunkName: 'symbol-list-page' */'../pages/Market/SymbolList.jsx');
       reactComponent().then(rc => {
         resolve({component: rc.default});
       });

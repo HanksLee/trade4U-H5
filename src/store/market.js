@@ -7,9 +7,10 @@ class MarketStore extends BaseStore {
   @action
   getSelfSelectSymbolList = async config => {
     const res = await this.$api.market.getSelfSelectSymbolList(config);
-    this.setSelfSelectSymbolList(res.data);
+    this.setSelfSelectSymbolList(res.data.results);
   };
 
+  @action
   setSelfSelectSymbolList = data => {
     this.selfSelectSymbolList = data;
   }
