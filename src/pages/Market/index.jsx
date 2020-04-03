@@ -1,26 +1,44 @@
 import api from 'services';
 import React from 'react';
-import { Page, Navbar, List, ListItem, NavRight, NavLeft, NavTitle } from 'framework7-react';
+import { Page, Navbar, List, NavRight, NavLeft, NavTitle,
+  Actions, ActionsLabel, ActionsGroup, ActionsButton } from 'framework7-react';
 import EditIcon from "assets/img/edit2.svg";
 import AddIcon from "assets/img/add.svg";
 import { inject, observer } from "mobx-react";
 import moment from 'moment';
 import ws from 'utils/ws'
+import Dom7 from 'dom7';
 import './index.scss';
+
+const $$ = Dom7;
 
 @inject("market")
 @observer
 export default class extends React.Component {
+  state = {
+    currentSymbol: null,
+  }
+
   async componentDidMount() {
-    this.props.market.getSelfSelectSymbolList();
+    await this.props.market.getSelfSelectSymbolList();
     this.connnetWebsocket()
+
+    $$('.self-select-tr').on('taphold', (evt) => {
+      const dom = $$(evt.target).parents('.self-select-tr')[0] || $$(evt.target)[0];
+      if (dom) {
+        this.setState({
+          currentSymbol: {
+            id: $$(dom).data('id'),
+            description: $$(dom).data('desc'),
+          },
+        })
+        this.refs.actionsGroup.open();
+      }
+    })
   }
 
   connnetWebsocket = () => {
     const wsConnect = ws('self-select-symbol')
-    wsConnect.onopen = () => {
-      console.log('open')
-    }
     wsConnect.onmessage = (event) => {
       const message = event.data;
       const data = JSON.parse(message).data
@@ -44,15 +62,50 @@ export default class extends React.Component {
   }
 
   navigateToManagePage = () => {
-    this.$f7router.navigate('/market/manage-self-select');
+    this.$f7router.navigate('/market/manage-self-select')
   }
 
   navigateToSymbolTypePage = () => {
-    this.$f7router.navigate('/market/symbol_type');
+    this.$f7router.navigate('/market/symbol_type')
+  }
+
+  navigateToSymbolDetail = () => {
+    const { currentSymbol } = this.state
+    this.$f7router.navigate(`/market/symbol/${currentSymbol.id}`)
+  }
+
+  addSpecialStyle = (num) => {
+    const strs = String(num).split('.')
+    if (strs.length > 1) {
+      if (strs[1].length > 2) {
+        if (strs[1].length < 4) {
+          return (
+            <>
+              <span>{strs[0]}.{strs[1][0]}{strs[1][1]}</span>
+              <span className="large-number">{strs[1][2]}</span>
+            </>
+          )
+        } else {
+          const last = strs[1].substr(4)
+          return (
+            <>
+              <span>{strs[0]}.{strs[1][0]}{strs[1][1]}</span>
+              <span className="large-number">{strs[1][2]}{strs[1][3]}</span>
+              {last}
+            </>
+          )
+        }
+
+      } else {
+        return <span>{num}</span>
+      }
+    }
+    return strs[0]
   }
   
   render() {
     const { selfSelectSymbolList, } = this.props.market;
+    const { currentSymbol, } = this.state;
     return (
       <Page name="market">
         <Navbar>
@@ -75,26 +128,42 @@ export default class extends React.Component {
             {
               selfSelectSymbolList.map(item => {
                 return (
-                  <div className="self-select-tr" key={item.symbol}>
+                  <div className="self-select-tr" key={item.symbol} data-id={item.id} data-desc={item.symbol_display.description}>
                     <div>
                       <div className="self-select-time">
-                        {moment(Number(item.symbol_display.timestamp)).format('HH:mm:ss')}
+                        {
+                          item.symbol_display.timestamp ?
+                            moment(Number(item.symbol_display.timestamp)).format('HH:mm:ss')
+                            : '--:--:--'
+                        }
                       </div>
-                      <div className="self-select-name">{item.symbol_display.name}</div>
+                      <div className="self-select-name">{item.symbol_display.product_display.name}</div>
                       <div className="self-select-spread">{item.symbol_display.spread}</div>
                     </div>
-                    <div className="self-select-code">{item.symbol}</div>
+                    <div className="self-select-code">{item.symbol_display.product_display.code}</div>
                     <div>
-                      <div className={`self-select-buy-sell-block ${item.symbol_display.buyTrend > 0 ? 'increase' : 'decrease'}`}>
-                        {item.symbol_display.buy}
+                      <div className={`self-select-buy-sell-block ${
+                        !item.symbol_display.buyTrend
+                          ? ''
+                          : (item.symbol_display.buyTrend > 0 ? 'increase' : 'decrease')
+                        }`}>
+                        {item.symbol_display.buy ? this.addSpecialStyle(item.symbol_display.buy) : '--'}
                       </div>
-                      <div className="self-select-low">最低：{item.symbol_display.low}</div>
+                      <div className="self-select-low">
+                        最低：{item.symbol_display.low ? item.symbol_display.low : '--'}
+                      </div>
                     </div>
                     <div>
-                      <div className={`self-select-buy-sell-block ${item.symbol_display.sellTrend > 0 ? 'increase' : 'decrease'}`}>
-                        {item.symbol_display.sell}
+                      <div className={`self-select-buy-sell-block ${
+                        !item.symbol_display.sellTrend
+                          ? ''
+                          : (item.symbol_display.sellTrend > 0 ? 'increase' : 'decrease')
+                      }`}>
+                        {item.symbol_display.sell ? this.addSpecialStyle(item.symbol_display.sell) : '--'}
                       </div>
-                      <div className="self-select-high">最高：{item.symbol_display.high}</div>
+                      <div className="self-select-high">
+                        最高：{item.symbol_display.high ? item.symbol_display.high : '--'}
+                      </div>
                     </div>
                   </div>
                 )
@@ -102,6 +171,21 @@ export default class extends React.Component {
             }
           </>
         </div>
+        <Actions ref="actionsGroup">
+          <ActionsGroup>
+            {
+              currentSymbol && currentSymbol.description && (
+                <ActionsLabel>{currentSymbol.description}</ActionsLabel>
+              )
+            }
+            <ActionsButton>交易</ActionsButton>
+            <ActionsButton>图表</ActionsButton>
+            <ActionsButton onClick={this.navigateToSymbolDetail}>详细情况</ActionsButton>
+          </ActionsGroup>
+          <ActionsGroup>
+            <ActionsButton>取消</ActionsButton>
+          </ActionsGroup>
+        </Actions>
       </Page>
     );
   }

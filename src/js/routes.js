@@ -66,6 +66,15 @@ var routes = [
     },
   },
   {
+    path: '/market/symbol/:id',
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () => import(/* webpackChunkName: 'symbol-page' */'../pages/Market/SymbolDetail.jsx');
+      reactComponent().then(rc => {
+        resolve({component: rc.default});
+      });
+    },
+  },
+  {
     path: '/chart/:id',
     options: {
       history: true,

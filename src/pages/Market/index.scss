@@ -11,6 +11,8 @@
 }
 
 .self-select-table {
+  background-color: #fff;
+
   .self-select-table-header,
   .self-select-tr {
     display: flex;
@@ -20,8 +22,13 @@
     & > div {
       flex: 1;
       text-align: center;
-      padding: 0 10px;
+      padding: 0 8px;
       overflow: hidden;
+    }
+
+    & > div:nth-child(2) {
+      width: 60px;
+      flex: none;
     }
   }
 
@@ -30,12 +37,13 @@
     background-color: #f3f3f3;
     font-size: 15px;
     color: #000;
+    padding: 0 16px;
   }
 
   .self-select-tr {
     height: 81px;
     background-color: #fff;
-    border-bottom: 1px solid #c8c7cc;
+    margin: 0 16px;
 
     & :first-child div {
       text-align: left;
@@ -50,6 +58,9 @@
       color: #325497;
       font-size: 15px;
       padding: 5px 0 10px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
   
     .self-select-spread {
@@ -68,17 +79,19 @@
       line-height: 42px;
       border-radius: 4px;
       font-size: 16px;
-      color: #fff;
+      color: #8c8c8c;
       transition: background-color .5s;
       margin: 5px 0;
     }
 
     .self-select-buy-sell-block.increase {
       background-color: #e94a39;
+      color: #fff;
     }
 
     .self-select-buy-sell-block.decrease {
       background-color: #44d7b6;
+      color: #fff;
     }
   
     .self-select-low {
@@ -91,4 +104,17 @@
       font-size: 12px;
     }
   }
+
+  & .self-select-tr:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+  }
+
+  .large-number {
+    font-size: 22px;
+  }
+}
+
+.symbol-display-block {
+  height: var(--f7-list-item-min-height);
+  line-height: var(--f7-list-item-min-height);
 }

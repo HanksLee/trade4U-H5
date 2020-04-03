@@ -28,6 +28,7 @@ class MarketStore extends BaseStore {
       }
       return item;
     })
+    console.log('newResults', newResults)
     this.setSelfSelectSymbolList(newResults);
   };
 }

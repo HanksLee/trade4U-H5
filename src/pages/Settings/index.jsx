@@ -13,7 +13,7 @@ export default class extends React.Component {
   render() {
     return (
       <Page name="settings">
-        <Navbar title="Settings" />
+        <Navbar title="设置" />
         <List>
           {this.state.products.map((product) => (
             <ListItem
