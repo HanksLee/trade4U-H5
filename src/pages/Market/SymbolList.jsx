@@ -4,7 +4,7 @@ import { Page, Navbar, List, ListItem, NavTitle, NavRight, NavLeft, Icon, Link }
 import './index.scss';
 import { inject, observer } from "mobx-react";
 
-const pageSize = 50
+const pageSize = 20
 
 @inject("market")
 @observer
@@ -13,6 +13,7 @@ export default class extends React.Component {
     super(props)
 
     this.symbolTypeName = this.$f7route.params.symbol_type_name
+    this.isLoading = false
     this.state = {
       symbolTypeName: '',
       symbolList: [],
@@ -31,18 +32,20 @@ export default class extends React.Component {
   }
 
   getSymbolList = async (query) => {
-    const res = await api.market.getSymbolList(query)
+    const res = await api.market.getSymbolList({ params: query, })
     const { selfSelectSymbolList, } = this.props.market
     const ids = selfSelectSymbolList.map(item => item.id)
     this.setState((preState) => ({
-      symbolList: res.data.results.filter(item => ids.indexOf(item.id) === -1),
+      symbolList: [...this.state.symbolList, ...res.data.results.filter(item => ids.indexOf(item.id) === -1)],
       next: res.data.next,
       page: preState.page + 1,
     }))
+    this.isLoading = false
   }
 
   loadMoreSymbol = async () => {
-    if (this.state.next) {
+    if (this.state.next && !this.isLoading) {
+      this.isLoading = true
       this.getSymbolList({
         symbolTypeName: this.symbolTypeName,
         page: this.state.page + 1,
@@ -60,7 +63,9 @@ export default class extends React.Component {
   }
 
   handleItemOpened = (item) => {
-    this.$f7router.navigate(`/market/symbol/${item.id}`)
+    this.$f7router.navigate(`/market/symbol/${item.id}`, {
+      context: item,
+    })
   }
 
   handleItemSelected = (id) => {
@@ -79,7 +84,7 @@ export default class extends React.Component {
     const { symbolList, symbolTypeName, selectedSymbols, } = this.state;
 
     return (
-      <Page noToolbar ptr onPtrRefresh={this.loadMore}>
+      <Page noToolbar infinite infiniteDistance={50} onInfinite={this.loadMoreSymbol} infinitePreloader={this.state.next}>
         <Navbar>
           <NavLeft>
             <Link onClick={() => this.$f7router.back()}>

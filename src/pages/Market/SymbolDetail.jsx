@@ -15,16 +15,8 @@ import './index.scss';
 export default class extends React.Component {
   constructor(props) {
     super(props)
-    const { selfSelectSymbolList, } = this.props.market;
-    this.id = this.$f7route.params.id
-    for (let i = 0; i < selfSelectSymbolList.length; i++) {
-      debugger
-      if (String(selfSelectSymbolList[i].id) === this.id) {
-        this.state = {
-          symbolDisplay: selfSelectSymbolList[i].symbol_display,
-        }
-        break
-      }
+    this.state = {
+      symbolDisplay: this.$f7route.context.symbol_display,
     }
   }
   

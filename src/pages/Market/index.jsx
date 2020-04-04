@@ -15,6 +15,7 @@ const $$ = Dom7;
 @inject("market")
 @observer
 export default class extends React.Component {
+  wsConnect = null
   state = {
     currentSymbol: null,
   }
@@ -26,20 +27,30 @@ export default class extends React.Component {
     $$('.self-select-tr').on('taphold', (evt) => {
       const dom = $$(evt.target).parents('.self-select-tr')[0] || $$(evt.target)[0];
       if (dom) {
-        this.setState({
-          currentSymbol: {
-            id: $$(dom).data('id'),
-            description: $$(dom).data('desc'),
-          },
-        })
+        const id = $$(dom).data('id')
+        const { selfSelectSymbolList, } = this.props.market
+        for (let i = 0; i < selfSelectSymbolList.length; i++) {
+          if (String(selfSelectSymbolList[i].id) === id) {
+            this.setState({
+              currentSymbol: selfSelectSymbolList[i],
+            })
+            break
+          }
+        }
         this.refs.actionsGroup.open();
       }
     })
   }
 
+  componentWillUnmount = () => {
+    if (this.wsConnect) {
+      this.wsConnect.close()
+    }
+  }
+
   connnetWebsocket = () => {
-    const wsConnect = ws('self-select-symbol')
-    wsConnect.onmessage = (event) => {
+    this.wsConnect = ws('self-select-symbol')
+    this.wsConnect.onmessage = (event) => {
       const message = event.data;
       const data = JSON.parse(message).data
       const { selfSelectSymbolList, } = this.props.market
@@ -71,7 +82,9 @@ export default class extends React.Component {
 
   navigateToSymbolDetail = () => {
     const { currentSymbol } = this.state
-    this.$f7router.navigate(`/market/symbol/${currentSymbol.id}`)
+    this.$f7router.navigate(`/market/symbol/${currentSymbol.id}`, {
+      context: currentSymbol,
+    })
   }
 
   addSpecialStyle = (num) => {
@@ -128,7 +141,7 @@ export default class extends React.Component {
             {
               selfSelectSymbolList.map(item => {
                 return (
-                  <div className="self-select-tr" key={item.symbol} data-id={item.id} data-desc={item.symbol_display.description}>
+                  <div className="self-select-tr" key={item.symbol} data-id={item.id}>
                     <div>
                       <div className="self-select-time">
                         {
@@ -174,8 +187,8 @@ export default class extends React.Component {
         <Actions ref="actionsGroup">
           <ActionsGroup>
             {
-              currentSymbol && currentSymbol.description && (
-                <ActionsLabel>{currentSymbol.description}</ActionsLabel>
+              currentSymbol && currentSymbol.symbol_display.description && (
+                <ActionsLabel>{currentSymbol.symbol_display.description}</ActionsLabel>
               )
             }
             <ActionsButton>交易</ActionsButton>
