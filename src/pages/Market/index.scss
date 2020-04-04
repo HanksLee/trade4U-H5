@@ -1,12 +1,12 @@
 .circle-add-icon {
-  width: 22px;
-  height: 22px;
+  width: r(22);
+  height: r(22);
   background: url('../../assets/img/circle-add.svg');
 }
 
 .circle-add-selected-icon {
-  width: 22px;
-  height: 22px;
+  width: r(22);
+  height: r(22);
   background: url('../../assets/img/circle-add-selected.svg');
 }
 
@@ -22,28 +22,28 @@
     & > div {
       flex: 1;
       text-align: center;
-      padding: 0 8px;
+      padding: 0 r(8);
       overflow: hidden;
     }
 
     & > div:nth-child(2) {
-      width: 60px;
+      width: r(60);
       flex: none;
     }
   }
 
   .self-select-table-header {
-    height: 44px;
+    height: r(44);
     background-color: #f3f3f3;
-    font-size: 15px;
+    font-size: r(15);
     color: #000;
-    padding: 0 16px;
+    padding: 0 r(16);
   }
 
   .self-select-tr {
-    height: 81px;
+    height: r(81);
     background-color: #fff;
-    margin: 0 16px;
+    margin: 0 r(16);
 
     & :first-child div {
       text-align: left;
@@ -51,13 +51,13 @@
 
     .self-select-time {
       color: #8c8c8c;
-      font-size: 12px;
+      font-size: r(12);
     }
   
     .self-select-name {
       color: #325497;
-      font-size: 15px;
-      padding: 5px 0 10px;
+      font-size: r(15);
+      padding: r(5) 0 r(10);
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
@@ -65,23 +65,24 @@
   
     .self-select-spread {
       color: #325497;
-      font-size: 12px;
+      font-size: r(12);
     }
   
     .self-select-code {
       color: #8c8c8c;
-      font-size: 15px;
+      font-size: r(15);
     }
   
     .self-select-buy-sell-block {
-      width: 80px;
-      height: 42px;
-      line-height: 42px;
+      width: r(75);
+      height: r(42);
+      line-height: r(42);
       border-radius: 4px;
-      font-size: 16px;
+      font-size: r(16);
+      background-color: #fff;
       color: #8c8c8c;
-      transition: background-color .5s;
-      margin: 5px 0;
+      transition: background-color 1s;
+      margin: r(5) 0;
     }
 
     .self-select-buy-sell-block.increase {
@@ -96,21 +97,21 @@
   
     .self-select-low {
       color: #8c8c8c;
-      font-size: 12px;
+      font-size: r(12);
     }
   
     .self-select-high {
       color: #8c8c8c;
-      font-size: 12px;
+      font-size: r(12);
     }
   }
 
   & .self-select-tr:not(:last-child) {
-    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    border-bottom: r(1) solid rgba(0, 0, 0, .1);
   }
 
   .large-number {
-    font-size: 22px;
+    font-size: r(22);
   }
 }
 

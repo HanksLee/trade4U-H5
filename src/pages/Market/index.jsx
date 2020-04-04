@@ -16,6 +16,8 @@ const $$ = Dom7;
 @observer
 export default class extends React.Component {
   wsConnect = null
+  buyTimers = []
+  sellTimers = []
   state = {
     currentSymbol: null,
   }
@@ -54,15 +56,43 @@ export default class extends React.Component {
       const message = event.data;
       const data = JSON.parse(message).data
       const { selfSelectSymbolList, } = this.props.market
-      const newSelfSelectSymbolList = selfSelectSymbolList.map(item => {
+      const newSelfSelectSymbolList = selfSelectSymbolList.map((item, index) => {
         if (item.symbol_display.product_display.code === data.symbol) {
+          const buyItemDom = $$($$('.self-select-buy-block')[index])
+          const sellItemDom = $$($$('.self-select-sell-block')[index])
+          if (data.buy > item.product_details.buy) {
+            clearTimeout(this.buyTimers[index])
+            buyItemDom.addClass('increase')
+            this.buyTimers[index] = setTimeout(() => {
+              buyItemDom && buyItemDom.hasClass('increase') && buyItemDom.removeClass('increase')
+            }, 2000);
+          } else if (data.buy < item.product_details.buy) {
+            clearTimeout(this.buyTimers[index])
+            buyItemDom.addClass('decrease')
+            this.buyTimers[index] = setTimeout(() => {
+              buyItemDom && buyItemDom.hasClass('decrease') && buyItemDom.removeClass('decrease')
+            }, 2000);
+          }
+
+          if (data.sell > item.product_details.sell) {
+            clearTimeout(this.sellTimers[index])
+            sellItemDom.addClass('increase')
+            this.sellTimers[index] = setTimeout(() => {
+              sellItemDom && sellItemDom.hasClass('increase') && sellItemDom.removeClass('increase')
+            }, 2000);
+          } else if (data.sell < item.product_details.sell) {
+            clearTimeout(this.sellTimers[index])
+            sellItemDom.addClass('decrease')
+            this.sellTimers[index] = setTimeout(() => {
+              sellItemDom && sellItemDom.hasClass('decrease') && sellItemDom.removeClass('decrease')
+            }, 2000);
+          }
+
           return {
             ...item,
-            symbol_display: {
-              ...item.symbol_display,
+            product_details: {
+              ...item.product_details,
               ...data,
-              buyTrend: data.buy - item.symbol_display.buy,
-              sellTrend: data.sell - item.symbol_display.sell,
             }
           }
         }
@@ -90,20 +120,20 @@ export default class extends React.Component {
   addSpecialStyle = (num) => {
     const strs = String(num).split('.')
     if (strs.length > 1) {
-      if (strs[1].length > 2) {
-        if (strs[1].length < 4) {
+      if (strs[1].length > 0) {
+        if (strs[1].length < 2) {
           return (
             <>
-              <span>{strs[0]}.{strs[1][0]}{strs[1][1]}</span>
-              <span className="large-number">{strs[1][2]}</span>
+              <span>{strs[0]}.</span>
+              <span className="large-number">{strs[1][0]}</span>
             </>
           )
         } else {
           const last = strs[1].substr(4)
           return (
             <>
-              <span>{strs[0]}.{strs[1][0]}{strs[1][1]}</span>
-              <span className="large-number">{strs[1][2]}{strs[1][3]}</span>
+              <span>{strs[0]}.</span>
+              <span className="large-number">{strs[1][0]}{strs[1][1]}</span>
               {last}
             </>
           )
@@ -119,6 +149,7 @@ export default class extends React.Component {
   render() {
     const { selfSelectSymbolList, } = this.props.market;
     const { currentSymbol, } = this.state;
+
     return (
       <Page name="market">
         <Navbar>
@@ -145,37 +176,29 @@ export default class extends React.Component {
                     <div>
                       <div className="self-select-time">
                         {
-                          item.symbol_display.timestamp ?
-                            moment(Number(item.symbol_display.timestamp)).format('HH:mm:ss')
+                          item.product_details.timestamp ?
+                            moment(Number(item.product_details.timestamp)).format('HH:mm:ss')
                             : '--:--:--'
                         }
                       </div>
-                      <div className="self-select-name">{item.symbol_display.product_display.name}</div>
+                      <div className="self-select-name">{item.symbol_display.name}</div>
                       <div className="self-select-spread">{item.symbol_display.spread}</div>
                     </div>
-                    <div className="self-select-code">{item.symbol_display.product_display.code}</div>
+                    <div className="self-select-code">{item.product_details.symbol}</div>
                     <div>
-                      <div className={`self-select-buy-sell-block ${
-                        !item.symbol_display.buyTrend
-                          ? ''
-                          : (item.symbol_display.buyTrend > 0 ? 'increase' : 'decrease')
-                        }`}>
-                        {item.symbol_display.buy ? this.addSpecialStyle(item.symbol_display.buy) : '--'}
+                      <div className="self-select-buy-sell-block self-select-buy-block">
+                        {item.product_details.buy ? this.addSpecialStyle(item.product_details.buy) : '--'}
                       </div>
                       <div className="self-select-low">
-                        最低：{item.symbol_display.low ? item.symbol_display.low : '--'}
+                        最低：{item.product_details.low ? item.product_details.low : '--'}
                       </div>
                     </div>
                     <div>
-                      <div className={`self-select-buy-sell-block ${
-                        !item.symbol_display.sellTrend
-                          ? ''
-                          : (item.symbol_display.sellTrend > 0 ? 'increase' : 'decrease')
-                      }`}>
-                        {item.symbol_display.sell ? this.addSpecialStyle(item.symbol_display.sell) : '--'}
+                      <div className="self-select-buy-sell-block self-select-sell-block">
+                        {item.product_details.sell ? this.addSpecialStyle(item.product_details.sell) : '--'}
                       </div>
                       <div className="self-select-high">
-                        最高：{item.symbol_display.high ? item.symbol_display.high : '--'}
+                        最高：{item.product_details.high ? item.product_details.high : '--'}
                       </div>
                     </div>
                   </div>
