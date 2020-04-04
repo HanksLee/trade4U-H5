@@ -29,7 +29,11 @@ export default class extends React.Component {
       },
     })
     await this.props.market.updateSelfSelectSymbolList();
-    this.$f7router.back();
+    this.setState((preState) => ({
+      selfSelectSymbolList: preState.selfSelectSymbolList.filter(item => {
+        return preState.checkedItems.indexOf(item.symbol) === -1
+      })
+    }))
   }
   
   handleConfirm = async () => {
