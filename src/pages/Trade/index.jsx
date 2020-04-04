@@ -73,16 +73,15 @@ export default class extends React.Component {
 
     this.setState({
       loading: true,
-    }, () => {
-      setTimeout(() => {
-        this.setState({loading: false});
-      }, 3000);
+    }, async () => {
+      await this.onRefresh();
+      this.setState({loading: false});
     });
 
-    $$('.media-list').on('taphold', (evt) => {
+
+    this.$f7.$('.media-list').on('taphold', (evt) => {
       // console.log('target', evt.target);
       const dom = $$(evt.target).parents('.media-item')[0];
-      console.log('dom', dom.id)
 
       if (dom != null) {
         this.setState({
@@ -91,57 +90,25 @@ export default class extends React.Component {
           this.refs.actionsGroup.open();
         })
       }
-
     })
-  }
-
-  renderStats = () => {
-    return 'hello';
-  }
-
-  onTrade = () => {
-
-  }
-
-  onModify = () => {
-
-  }
-
-  onCreate = () => {
-
-  }
-
-  viewChart = () => {
-
   }
 
   goToPage = (url, opts = {}) => {
     this.$f7router.navigate(url, opts);
   }
 
-  loadMore = (done) => {
-    const self = this;
-    setTimeout(() => {
-      const { items, songs, authors } = self.state;
-      const picURL = `https://cdn.framework7.io/placeholder/abstract-88x88-${(Math.floor(Math.random() * 10) + 1)}.jpg`;
-      const song = songs[Math.floor(Math.random() * songs.length)];
-      const author = authors[Math.floor(Math.random() * authors.length)];
-      items.push({
-        title: song,
-        author,
-        cover: picURL,
-      });
-      self.setState({ items });
+  onRefresh = async (done) => {
+    const res = await this.$api.trade.getTradeInfo();
 
-      done();
-    }, 1000);
+    console.log('res', res);
+
   }
 
   render() {
     const {title, tapIndex, loading} = this.state;
 
     return (
-      <Page name="trade" className='trade-page' ptr onPtrRefresh={this.loadMore}>
+      <Page name="trade" className='trade-page' ptr onPtrRefresh={this.onRefresh}>
         <Navbar>
           <NavTitle>{title}</NavTitle>
           <NavRight>
@@ -257,16 +224,26 @@ export default class extends React.Component {
                 </Row>
               </div>
               <SwipeoutActions right>
-                <SwipeoutButton bgColor={'primary'} onClick={this.onTrade}>
+                <SwipeoutButton bgColor={'primary'} onClick={() => this.goToPage(`/trade/1`, {
+                  props: {
+                    mode: 'close'
+                  }
+                })}>
                   <Icon f7={'checkmark_alt_circle'} size={r(16)}></Icon>
                 </SwipeoutButton>
-                <SwipeoutButton bgColor={'primary'} onClick={this.onModify}>
+                <SwipeoutButton bgColor={'primary'} onClick={ () => this.goToPage(`/trade/1`, {props: {
+                    mode: 'update'
+                  }})}>
                   <Icon f7={'pencil'} size={r(16)}></Icon>
                 </SwipeoutButton>
-                <SwipeoutButton bgColor={'primary'} onClick={this.onCreate}>
+                <SwipeoutButton bgColor={'primary'} onClick={ () => this.goToPage(`/trade/1`, {
+                  props: {
+                    mode: 'add'
+                  }
+                })}>
                   <Icon f7={'plus'} size={r(16)}></Icon>
                 </SwipeoutButton>
-                <SwipeoutButton bgColor={'primary'} onClick={this.viewChart}>
+                <SwipeoutButton bgColor={'primary'} onClick={() => this.goToPage(`/chart/1`)}>
                   <Icon f7={'chart_bar_alt_fill'} size={r(16)}></Icon>
                 </SwipeoutButton>
               </SwipeoutActions>
@@ -291,13 +268,13 @@ export default class extends React.Component {
             </ActionsButton>
             <ActionsButton>
               <span onClick={ () => this.goToPage(`/trade/1`, {props: {
-                mode: 'modify'
+                mode: 'update'
                 }})}>修改</span>
             </ActionsButton>
             <ActionsButton>
               <span onClick={ () => this.goToPage(`/trade/1`, {
                 props: {
-                  mode: 'trade'
+                  mode: 'add'
                 }
               })}>交易</span>
             </ActionsButton>

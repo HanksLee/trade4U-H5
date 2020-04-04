@@ -1,0 +1,89 @@
+.trade-detail {
+
+
+  .trade-detail-title {
+    background-color: #FFF;
+    font-size: r(17);
+    text-align: center;
+    font-weight: bold;
+    text-align: center;
+    padding: r(16) 0;
+  }
+
+  .trade-detail-type {
+    background-color: #FFF;
+    height: 0;
+    overflow: hidden;
+    transition: height .3s;
+    font-size: r(17);
+    text-align: center;
+    //font-weight: bold;
+
+    &.active {
+      height: r(176);
+    }
+
+    .trade-detail-type-item {
+      padding: r(12) 0;
+    }
+  }
+
+  .trade-detail-price {
+    font-size: r(17);
+    font-weight: bold;
+    text-align: center;
+
+    strong {
+      font-size: r(27);
+    }
+  }
+
+  .trade-detail-actions {
+    color: white;
+    font-size: r(17);
+    text-align: center;
+    .trade-detail-action {
+      padding: r(12) 0;
+    }
+  }
+
+  .chart {
+    width: 100%;
+    height: r(400);
+  }
+
+  .stepper {
+    .stepper-button-minus,
+    .stepper-input-wrap,
+    .stepper-button-plus {
+      border: none;
+    }
+
+    .stepper-button-minus,
+    .stepper-button-plus {
+      &::before,
+      &::after {
+        background-color: #007aff;
+      }
+    }
+
+    .stepper-input-wrap {
+      input {
+        color: $grey;
+      }
+
+      &.up {
+        input {
+          color: $up;
+        }
+      }
+
+      &.down {
+        input {
+          color: $down;
+        }
+      }
+    }
+  }
+
+}

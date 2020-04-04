@@ -91,7 +91,11 @@ var routes = [
     },
   },
   {
-    path: '/trade/:id',
+    path: '/products/',
+    asyncComponent: () => import(/* webpackChunkName: 'trade-products-page' */ '../pages/TradeProducts/index.jsx'),
+  },
+  {
+    path: '/trade/:id/',
     asyncComponent: () => import(/* webpackChunkName: 'trade-detail-page' */ '../pages/TradeDetail/index.jsx'),
   },
   {
