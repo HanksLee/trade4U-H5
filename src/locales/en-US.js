@@ -1,9 +1,6 @@
 module.exports = {
-  'common.confirm': 'confirm',
-  'login.login': 'login',
-  'login.broker': 'broker',
-  'app.setting.setting': 'setting',
-  'app.setting.lang': 'language',
-  'app.setting.lang.chinese': 'Chinese',
-  'app.setting.lang.english': 'English',
+  'settings.setting': 'setting',
+  'settings.lang': 'language',
+  'settings.lang.chinese': 'Chinese',
+  'settings.lang.english': 'English',
 };
