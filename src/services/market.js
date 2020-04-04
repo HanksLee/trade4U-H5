@@ -12,6 +12,10 @@ const deleteSelfSelectSymbolList = (config) => {
   API.delete("/trader/self_select_symbol", config);
 }
 
+const sortSelfSelectSymbolList = (config) => {
+  API.post("/trader/symbol_sort", config);
+}
+
 const getSymbolTypeList = (config) =>
   API.get("/trader/symbol_type", config);
 
@@ -22,6 +26,7 @@ export default {
   getSelfSelectSymbolList,
   addSelfSelectSymbolList,
   deleteSelfSelectSymbolList,
+  sortSelfSelectSymbolList,
   getSymbolTypeList,
   getSymbolList,
 };

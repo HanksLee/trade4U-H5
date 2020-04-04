@@ -33,6 +33,9 @@ export default class extends React.Component {
   }
   
   handleConfirm = async () => {
+    await api.market.sortSelfSelectSymbolList({
+      symbol: this.state.selfSelectSymbolList.map(item => item.symbol),
+    })
     await this.props.market.updateSelfSelectSymbolList();
     this.$f7router.back();
   }
