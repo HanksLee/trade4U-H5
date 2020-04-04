@@ -14,7 +14,7 @@ build job:
   stage: build
   script:
     - npm install
-    - npm run build:qa
+    - npm run build-dev
 
 deploy job:
   stage: deploy
