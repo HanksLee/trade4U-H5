@@ -1,13 +1,15 @@
 .circle-add-icon {
-  width: r(22);
-  height: r(22);
+  width: 22px;
+  height: 22px;
   background: url('../../assets/img/circle-add.svg');
+  background-repeat: no-repeat;
 }
 
 .circle-add-selected-icon {
-  width: r(22);
-  height: r(22);
+  width: 22px;
+  height: 22px;
   background: url('../../assets/img/circle-add-selected.svg');
+  background-repeat: no-repeat;
 }
 
 .self-select-table {

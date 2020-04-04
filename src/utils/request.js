@@ -29,15 +29,15 @@ export default class API {
       },
       (err) => {
         const { response: { data, status, }, } = err;
-        f7.toast.show({
-          text: data.message,
-          position: 'center',
-          closeTimeout: 2000,
-        });
+        // f7.toast.show({
+        //   text: data.message,
+        //   position: 'center',
+        //   closeTimeout: 2000,
+        // });
 
         if (status == 401) {
-          localStorage.removeItem('MOON_H5_TOKEN');
-          f7.router.navigate('/login');
+          localStorage.removeItem('MOON_H5_TOKEN')
+          f7.router.app.views.main.router.navigate('/login')
         }
 
         NProgress.done();
