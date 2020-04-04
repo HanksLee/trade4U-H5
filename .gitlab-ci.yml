@@ -25,4 +25,4 @@ deploy job:
     - chmod 700 id_rsa
     - mkdir "${HOME}/.ssh"
     - echo "${SSH_HOST_KEY}" > "${HOME}/.ssh/known_hosts"
-    - rsync -hrvz --delete -e "ssh -i id_rsa" dist/qa/* root@47.75.61.170:/www/wwwroot/h5.cangshu360.com
+    - rsync -hrvz --delete -e "ssh -i id_rsa" www/* root@47.75.61.170:/www/wwwroot/h5.cangshu360.com
