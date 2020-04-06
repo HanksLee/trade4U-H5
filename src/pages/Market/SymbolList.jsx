@@ -25,7 +25,7 @@ export default class extends React.Component {
   
   componentDidMount() {
     this.getSymbolList({
-      symbolTypeName: this.symbolTypeName,
+      type__name: this.symbolTypeName,
       page: 1,
       pageSize,
     })
@@ -36,7 +36,7 @@ export default class extends React.Component {
     const { selfSelectSymbolList, } = this.props.market
     const ids = selfSelectSymbolList.map(item => item.id)
     this.setState((preState) => ({
-      symbolList: [...this.state.symbolList, ...res.data.results.filter(item => ids.indexOf(item.id) === -1)],
+      type__name: [...this.state.symbolList, ...res.data.results.filter(item => ids.indexOf(item.id) === -1)],
       next: res.data.next,
       page: preState.page + 1,
     }))
@@ -47,7 +47,7 @@ export default class extends React.Component {
     if (this.state.next && !this.isLoading) {
       this.isLoading = true
       this.getSymbolList({
-        symbolTypeName: this.symbolTypeName,
+        type__name: this.symbolTypeName,
         page: this.state.page + 1,
         pageSize,
       })

@@ -184,7 +184,7 @@ export default class extends React.Component {
                       <div className="self-select-name">{item.symbol_display.name}</div>
                       <div className="self-select-spread">{item.symbol_display.spread}</div>
                     </div>
-                    <div className="self-select-code">{item.product_details.symbol}</div>
+                    <div className="self-select-code">{item.product_details.code}</div>
                     <div>
                       <div className="self-select-buy-sell-block self-select-buy-block">
                         {item.product_details.buy ? this.addSpecialStyle(item.product_details.buy) : '--'}
