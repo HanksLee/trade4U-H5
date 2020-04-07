@@ -1,23 +1,17 @@
 import React from 'react';
-import { Page, Navbar, List, ListItem,
+import {
+  Page, Navbar, List, ListItem,
   NavLeft,
   Icon,
   Link,
 } from 'framework7-react';
 import './index.scss';
+import {inject, observer} from "mobx-react";
 
+@inject("common", 'trade', 'market')
+@observer
 export default class extends React.Component {
   state = {
-    products: [
-      {
-        id: 1,
-        name: 'ACUDS',
-      },
-      {
-        id: 2,
-        name: 'DDDD',
-      }
-    ],
   }
 
   componentDidMount() {
@@ -25,16 +19,23 @@ export default class extends React.Component {
   }
 
   onRefresh = async (done) => {
-    // @todo
+    this.props.market.getSymbolList();
   }
 
 
   render() {
-    const {selectedId, mode} = this.props;
+    const {
+      selectedId, mode,
+      market: {
+        symbolList,
+      }
+    } = this.props;
+    console.log('props', this.props);
+
 
     return (
       <Page name="trade-products" className={'trade-products'}
-      onPtrRefresh={this.onRefresh}
+            onPtrRefresh={this.onRefresh}
       >
         <Navbar>
           <NavLeft>
@@ -44,26 +45,30 @@ export default class extends React.Component {
           </NavLeft>
         </Navbar>
 
-        <List >
-          {this.state.products.map((product) => (
-            <ListItem
-              onClick={() => {
-                this.$f7router.back(`/trade/${product.id}/`, {
-                  props: {
-                    id: product.id,
-                    mode,
+        <List>
+          {symbolList.map((product) => {
+            const id = product?.id;
+            const name = product?.symbol_display?.name;
+
+              return (
+                <ListItem
+                  onClick={() => {
+                    this.props.market.setCurrentSymbol(product);
+                    this.$f7router.back(`/trade/${id}/`, {
+                      force: true,
+                    });
+                  }}
+                  key={id}
+                  title={name}
+                  after={
+                    id == selectedId
+                      ? <Icon style={{color: '#007aff'}} f7={'checkmark_alt'} size={r(18)}></Icon>
+                      : null
                   }
-                });
-              }}
-              key={product.id}
-              title={product.name}
-              after={
-                product.id == selectedId
-                  ? <Icon style={{ color: '#007aff' }} f7={'checkmark_alt'} size={r(18)}></Icon>
-                  : null
-              }
-            />
-          ))}
+                />
+              );
+            }
+          )}
         </List>
       </Page>
     );

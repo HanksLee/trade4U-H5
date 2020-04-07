@@ -13,13 +13,24 @@ import {
   Stepper,
   Row,
   Col,
+  Input
 } from 'framework7-react';
-import {tradeTypeOptions} from 'constant';
 import { createChart } from 'lightweight-charts';
 import echarts from 'echarts';
 import moment from 'moment';
-
+import { inject, observer } from "mobx-react";
+import utils from 'utils';
+import ws from 'utils/ws';
 import './index.scss';
+import {BaseReact} from "components/baseComponent";
+import {toJS} from 'mobx';
+import {
+  tradeTypeOptions,
+  tradeActionMap
+} from 'constant';
+
+console.log('tradeTypeOptions', tradeTypeOptions);
+
 
 function randomData() {
   now = new Date(+now + oneDay);
@@ -37,7 +48,7 @@ var data = [];
 var now = +new Date(1997, 9, 3);
 var oneDay = 24 * 3600 * 1000;
 var value = Math.random() * 1000;
-for (var i = 0; i < 1000; i++) {
+for (var i = 0; i < 10; i++) {
   data.push(randomData());
 }
 
@@ -50,10 +61,18 @@ for (var i = 0; i < 1000; i++) {
   data2.push(randomData());
 }
 
-export default class extends React.Component {
+@inject("common", 'trade', 'market')
+@observer
+export default class extends BaseReact {
+  wsConnect = null;
+  $myChart = null;
   state = {
     currentTradeType: tradeTypeOptions[0],
     opened: false,
+    lossValue: 0,
+    profitValue: 0,
+    priceValue: 0,
+    lotsValue: 0.01,
 
     chartOption: {
       title: {
@@ -61,16 +80,19 @@ export default class extends React.Component {
       },
       backgroundColor: 'white',
       grid: {
-        right: '14s%',
+        right: '14%',
       },
       tooltip: {
         trigger: 'axis',
         formatter: function (params) {
           params = params[0];
+          console.log('params', params);
+
           var date = new Date(params.name);
           // return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' : ' + params.value[1];
+          // return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`
 
-          return moment(date).foramt('YYYY.MM.DD HH:mm:ss')
+          return moment(date).foramt('YYYY.MM.DD HH:mm:ss') + ' : ' + params.value[1]
         },
         axisPointer: {
           animation: false
@@ -100,22 +122,82 @@ export default class extends React.Component {
   }
 
   componentDidMount() {
+    this.initSymbolList();
+    this.initTrade();
     this.initChart();
+    this.connectWebsocket();
+  }
+
+  initSymbolList = async () => {
+    const {
+      symbolList,
+      getSymbolList,
+      setCurrentSymbol,
+      getCurrentSymbol,
+    } = this.props.market;
+
+    const {id, mode} = this.props;
+
+    if (utils.isEmpty(symbolList)) {
+      await getSymbolList();
+    }
+
+
+    await getCurrentSymbol(
+      mode == 'add'
+        ? this.props.market.symbolList[0]?.id
+        : id,
+    );
+
+    const {currentSymbol} = this.props.market;
 
   }
 
+  initTrade = async () => {
+    const {id, mode, trade: {
+      currentTrade
+    }} = this.props;
+
+    if (mode != 'add') {
+      let action = currentTrade?.action;
+      let ret;
+
+      if (action == 0 || action == 1) {
+        ret = tradeTypeOptions[0];
+      } else {
+        ret = tradeTypeOptions.find(item => item.id == action);
+      }
+
+      console.log('ret', ret);
+
+      this.setState({
+        currentTradeType: ret,
+      });
+    }
+  }
+
   initChart = () => {
-    var myChart = echarts.init(document.querySelector('.chart'));
+    if (this.$myChart == null) {
+      this.$myChart = echarts.init(document.querySelector('.chart'));
+    }
+
 // 绘制图表
     const {chartOption } = this.state;
-    myChart.setOption({
+    const {
+      currentShowSymbol,
+    } = this.props.market;
+    // console.log('currentShowSymbol', toJS(currentShowSymbol));
+    //
+    // console.log('data', data);
+
+    this.$myChart.setOption({
       ...chartOption,
       series: [{
         name: '模拟数据',
         type: 'line',
         showSymbol: false,
         hoverAnimation: false,
-        data: data,
+        data: data ?? [],
         lineStyle: {
           color: '#44d7b6',
         }
@@ -124,12 +206,40 @@ export default class extends React.Component {
         type: 'line',
         showSymbol: false,
         hoverAnimation: false,
-        data: data2,
+        data: currentShowSymbol?.trendSell ?? [],
         lineStyle: {
           color: '#e94a39',
         },
       }]
-    });
+    }, true);
+  }
+
+
+  connectWebsocket = () => {
+    const {id, market: {
+      currentShowSymbol,
+    }} = this.props;
+
+    console.log('12312312');
+
+    this.wsConnect = ws(`symbol/${id}/trend`);
+
+    this.wsConnect.onmessage = evt => {
+      const msg = evt.data;
+      // const data = JSON.parse(msg).data;
+      // console.log('data', data);
+      // this.props.market.setCurrentSymbol({
+      //   trend: data.trend,
+      //   buy: data.buy,
+      //   sell: data.sell,
+      // });
+
+      for (var i = 0; i < 5; i++) {
+        data.shift();
+        data.push(randomData());
+      }
+      this.initChart();
+    }
   }
 
   onTradeTypeChanged = (currentTradeType) => {
@@ -145,18 +255,226 @@ export default class extends React.Component {
     })
   }
 
+  onTrade = async (mode) => {
+    const {
+      currentTradeType,
+      priceValue,
+      profitValue,
+      lossValue,
+      lotsValue,
+    } = this.state;
+    const {
+      currentSymbol,
+    } = this.props.market;
+    const {currentTrade} = this.props.trade;
+    const actionMode = this.props.mode;
+
+    let payload = {
+      trading_volume: lotsValue * (currentSymbol?.symbol_display?.contract_size) + '',
+      lots: lotsValue + '',
+      symbol: currentSymbol.id,
+      take_profit: profitValue + '',
+      stop_loss: lossValue + '',
+    };
+
+    if (actionMode == 'add') {
+      if (mode == 'buy') {
+        payload.open_price = currentSymbol?.buy;
+      } else if (mode == 'sell') {
+        payload.open_price = currentSymbol?.sell;
+      }
+
+      if (currentTradeType.id == 1) {
+        if (mode == 'buy') {
+          payload.action = '0';
+
+        } else if (mode == 'sell'){
+          payload.action = '1';
+        }
+      } else {
+        payload.action = currentTradeType.id;
+        payload.open_price = priceValue;
+      }
+    } else if (actionMode == 'update') {
+        payload.open_price = priceValue;
+    }
+
+    console.log('payload', JSON.stringify(payload));
+
+    const errMsg = this.getValidation(payload, mode);
+
+    if (errMsg) {
+      return this.$f7.toast.show({
+        text: errMsg,
+        position: 'center',
+        closeTimeout: 2000,
+      });
+    }
+
+    let res;
+    if (actionMode == 'add') {
+      try {
+        res = await this.$api.trade.createTrade(payload);
+
+        console.log('res', res);
+        if(res.status == 201) {
+          this.$f7.toast.show({
+            text: '下单成功',
+            position: 'center',
+            closeTimeout: 2000,
+          });
+          this.$f7.router.app.views.main.router.back('/trade/', {
+            force: true,
+          });
+        }
+
+      } catch (e) {
+        this.$f7.toast.show({
+          text: e,
+          position: 'center',
+          closeTimeout: 2000,
+        });
+      }
+    } else if (actionMode == 'update') {
+      payload = {
+        open_price: payload.open_price,
+        take_profit: payload.take_profit,
+        stop_loss: payload.stop_loss,
+      }
+      try {
+        res = await this.$api.trade.updateTrade(currentTrade.order_number, payload);
+
+        if(res.status == 200) {
+          this.$f7.toast.show({
+            text: '修改成功',
+            position: 'center',
+            closeTimeout: 2000,
+          });
+          this.$f7.router.app.views.main.router.back('/trade/', {
+            force: true,
+          });
+        }
+      } catch (e) {
+        this.$f7.toast.show({
+          text: e,
+          position: 'center',
+          closeTimeout: 2000,
+        });
+      }
+    }
+  }
+
+  getValidation = (payload, mode) => {
+    const {
+      currentSymbol,
+    } = this.props.market;
+    const {
+      currentTradeType
+    } = this.state;
+    let errMsg = '';
+    let buy = +currentSymbol?.buy;
+    let sell = +currentSymbol?.sell;
+    let limit = currentSymbol?.symbol_display?.limit_stop_level * 1 / (10 ** currentSymbol?.symbol_display?.decimals_place); // 止盈止损点位
+
+    if (mode == 'buy') {
+      if (payload.take_profit - buy < limit) {
+        errMsg = `止盈点位不得小于止盈止损点位`;
+      } else if (sell - payload.stop_loss < limit) {
+        errMsg = '止损点位不得小于止盈止损点位';
+      }
+    } else if (mode == 'sell') {
+      if (buy - payload.take_profit < limit) {
+        errMsg = '止盈点位不得小于止盈止损点位';
+      } else if (payload.stop_loss - sell < limit) {
+        errMsg = '止损点位不得小于止盈止损点位';
+      }
+    }
+
+    if (payload.action != 0 || payload.action != 1) {
+      // 挂单交易校验规则：https://zhidao.baidu.com/question/71819653.html
+      if (payload.action == 2 && payload.open_price >= currentSymbol.buy) {
+        errMsg = '请在当前买入价格下方挂单';
+      } else if (payload.action == 3 && payload.open_price <= currentSymbol.sell) {
+        errMsg = '请在当前卖出价格上方挂单';
+      } else if (payload.action == 4 && payload.open_price <= currentSymbol.buy) {
+        errMsg = '请在当前买入价格上方挂单';
+      } else if (payload.action == 5 && payload.open_price >= currentSymbol.sell) {
+        errMsg = '请在当前卖出价格上方挂单';
+      }
+    }
+
+    return errMsg;
+  }
+
+  onLotsChanged = (val) => {
+    val = this.state.lotsValue + (+val);
+    val = Number(val.toFixed(2));
+
+    this.setState({
+      lotsValue: val
+    })
+  }
+
+  onFieldChanged = (change, field) => {
+    const {
+      currentSymbol
+    } = this.props.market;
+    const limit = currentSymbol?.symbol_display?.decimals_place ?? 1;
+
+    let fieldValue = this.state[field];
+
+    if (!fieldValue) {
+      if (field == 'lossValue') {
+        fieldValue = +currentSymbol.sell + change;
+      } else {
+        fieldValue = +currentSymbol.buy + change;
+      }
+    } else {
+      fieldValue += change;
+    }
+
+    fieldValue = +(fieldValue).toFixed(limit);
+
+    this.setState({
+      [field]: fieldValue,
+    });
+  }
+
 
   render() {
-    console.log(this.props);
-    const {id, mode} = this.props;
-    const {currentTradeType, opened} = this.state;
+    const {
+      id,
+      mode,
+      market: {
+        currentSymbol,
+      },
+      trade: {
+        currentTrade,
+      }
+    } = this.props;
+    const {
+      currentTradeType,
+      opened,
+      priceValue,
+      profitValue,
+      lossValue,
+      lotsValue,
+    } = this.state;
+    const stepLevel = currentSymbol?.symbol_display?.decimals_place ? (
+      1 / 10 ** (currentSymbol?.symbol_display?.decimals_place)
+    ) : 0.001;
 
+    console.log(this.props);
+
+
+    // debugger;
 
     return (
-      <Page name="trade-detail" className={'trade-detail'}>
+      <Page name="trade-detail" className={'trade-detail'} onPageBeforeIn={pageData => {
+      }}>
         <Navbar>
           <NavLeft>
-            <Link onClick={() => this.$f7router.back()}>
+            <Link onClick={() => this.$f7.router.app.views.main.router.navigate('/trade/', {force: true})}>
               <Icon color={'white'} f7={'chevron_left'} size={r(18)}></Icon>
             </Link>
           </NavLeft>
@@ -171,76 +489,306 @@ export default class extends React.Component {
                 });
               }
             }>
-              {'USDAUS'}
+              {currentSymbol?.symbol_display?.name}
             </span>
             <Icon color={'white'} f7={'arrowtriangle_down_fill'} size={r(10)}></Icon>
           </NavTitle>
         </Navbar>
-        <section>
-          <div className={`trade-detail-title ${currentTradeType.color}`} onClick={this.toggleTypePanel}>
-            {currentTradeType.name}
-          </div>
-          <div className={`trade-detail-type ${opened ? 'active' : ''}`}>
-            {
-              tradeTypeOptions.map((item) => {
-                return (
-                    <div className={`trade-detail-type-item ${item.color}`} style={{
-                      display: currentTradeType.id == item.id ? 'none' : 'block',
+        {
+          mode == 'add' && (
+            <section>
+              <div className={`trade-detail-title ${currentTradeType.color}`} onClick={this.toggleTypePanel}>
+                {currentTradeType.name}
+              </div>
+              <div className={`trade-detail-type ${opened ? 'active' : ''}`}>
+                {
+                  tradeTypeOptions.map((item) => {
+                    return (
+                      <div className={`trade-detail-type-item ${item.color}`} style={{
+                        display: currentTradeType?.id == item.id ? 'none' : 'block',
 
-                    }} key={item.id} onClick={() => this.onTradeTypeChanged(item)}>
-                      {item.name}
-                    </div>
-                )
-              })
-            }
-          </div>
-        </section>
-          <List simple-list>
-            <ListItem title='价格' style={{
-              display: currentTradeType.id != 1 ? 'block' : 'none',
-            }}>
-              <Stepper step={1} small onStepperChange={(evt) => {
-                console.log('evt', evt);
+                      }} key={item.id} onClick={() => this.onTradeTypeChanged(item)}>
+                        {item.name}
+                      </div>
+                    )
+                  })
+                }
+              </div>
+            </section>
+          )
+        }
+        {
+          mode == 'add' && (
+            <Row bgColor={'white'} noGap className={'trade-detail-lots'}>
+              <Col width={'20'}>
+                <span className={'blue'} onClick={() => {
+                  this.onLotsChanged(-0.1);
+                }}>-0.1</span>
+              </Col>
+              <Col width={'20'}>
+                <span className={'blue'} onClick={() => {
+                  this.onLotsChanged(-0.01);
+                }}>-0.01</span>
+              </Col>
+              <Col width={'20'}>
+                <Input
+                  type="number"
+                  min={0.01}
+                  value={lotsValue}
+                  color={'black'}
+                  onChange={(evt) => {
+                    this.setState({
+                      lotsValue: evt.target.value,
+                    });
+                  }}
+                />
+              </Col>
+              <Col width={'20'}>
+                <span className={'blue'}
+                      onClick={() => {
+                        this.onLotsChanged(0.01);
+                      }}
+                >+0.01</span>
+              </Col>
+              <Col width={'20'}>
+                <span className={'blue'} onClick={() => {
+                  this.onLotsChanged(0.1);
+                }}>+0.1</span>
+              </Col>
+            </Row>
+          )
+        }
+        <List simple-list>
+          {
+            (mode == 'update' || mode == 'close') && currentTrade != null && (
+              <ListItem>
+                <div className={'trade-detail-info'}>
+                  <span>
+                    {
+                      mode == 'update' ? '修改'
+                        : mode == 'close'
+                        ? '平仓'
+                        : ''
+                    }：
+                  </span>
+                  <span>
+                    #{currentTrade.order_number}
+                  </span>
+                  <span>
+                    {tradeActionMap[currentTrade.action]}
+                  </span>
+                  <span>
+                    {currentTrade.lots}
+                  </span>
+                </div>
+              </ListItem>
+            )
+          }
+          <ListItem title='价格' style={{
+            display: currentTradeType?.id != 1 ? 'block' : 'none',
+          }}>
+            <Row className={'trade-detail-stepper align-items-center'}>
+              <Col width={'20'} onClick={() => {
+                this.onFieldChanged(-stepLevel, 'priceValue');
+              }}>
+                <Icon f7={'minus'} size={r(22)}></Icon>
+              </Col>
+              <Col width={'60'}>
+                <Input
+                  type="number"
+                  min={0.01}
+                  value={priceValue}
+                  onChange={(evt) => {
+                    this.setState({
+                      priceValue: evt.target.value,
+                    });
+                  }}
+                />
+              </Col>
+              <Col width={'20'} onClick={() => {
+                this.onFieldChanged(stepLevel, 'priceValue');
+              }}>
+                <Icon f7={'plus'} size={r(22)}></Icon>
+              </Col>
+            </Row>
+          </ListItem>
+          <ListItem title="止损">
+            <Row className={'trade-detail-stepper align-items-center'}>
+              <Col width={'20'} onClick={() => {
+                this.onFieldChanged(-stepLevel, 'lossValue');
+              }}>
+                <Icon f7={'minus'} size={r(22)}></Icon>
+              </Col>
+              <Col width={'60'}>
+                <Input
+                  type="number"
+                  min={0.01}
+                  value={lossValue}
+                  onChange={(evt) => {
+                    this.setState({
+                      lossValue: evt.target.value,
+                    });
+                  }}
+                />
+              </Col>
+              <Col width={'20'} onClick={() => {
+                this.onFieldChanged(stepLevel, 'lossValue');
+              }}>
+                <Icon f7={'plus'} size={r(22)}></Icon>
+              </Col>
+            </Row>
+          </ListItem>
+          <ListItem title="止盈">
+            <Row className={'trade-detail-stepper align-items-center'}>
+              <Col width={'20'} onClick={() => {
+                this.onFieldChanged(-stepLevel, 'profitValue');
+              }}>
+                <Icon f7={'minus'} size={r(22)}></Icon>
+              </Col>
+              <Col width={'60'}>
+                <Input
+                  type="number"
+                  min={0.01}
+                  value={profitValue}
+                  onChange={(evt) => {
+                    this.setState({
+                      profitValue: evt.target.value,
+                    });
+                  }}
+                />
+              </Col>
+              <Col width={'20'} onClick={() => {
+                this.onFieldChanged(stepLevel, 'profitValue');
+              }}>
+                <Icon f7={'plus'} size={r(22)}></Icon>
+              </Col>
+            </Row>
+          </ListItem>
+        </List>
+        <Row noGap className={'trade-detail-price'}>
+          <Col width={'50'} className={'p-down'}>
+            {currentSymbol?.sell}
+            <strong></strong>
 
-              }}></Stepper>
-            </ListItem>
-            <ListItem title="止损">
-              <Stepper step={1} small onStepperChange={(evt) => {
-                console.log('evt', evt);
-
-              }}></Stepper>
-            </ListItem>
-            <ListItem title="获利">
-              <Stepper step={1} small onStepperChange={(evt) => {
-                console.log('evt', evt);
-
-              }}></Stepper>
-            </ListItem>
-          </List>
-          <Row noGap className={'trade-detail-price'}>
-            <Col width={'50'} className={'p-down'}>
-              1.22
-              <strong>33</strong>
-              0
-            </Col>
-            <Col width={'50'} className={`p-up`}>
-              22.
-              <strong>21</strong>
-              3
-            </Col>
-          </Row>
-          <Row noGap className={'trade-detail-actions'}>
-            <Col width={'50'} className={'bg-down trade-detail-action'}>
+          </Col>
+          <Col width={'50'} className={`p-up`}>
+            {currentSymbol?.buy}
+            <strong></strong>
+          </Col>
+        </Row>
+        {
+          mode == 'add' && (
+            <Row noGap className={'trade-detail-actions'}>
+              <Col onClick={() => {
+                this.onTrade('sell');
+              }} width={'50'} className={'bg-down trade-detail-action'}>
               <span>
                 Sell
               </span>
-            </Col>
-            <Col width={'50'} className={`bg-up trade-detail-action`}>
+              </Col>
+              <Col
+                onClick={() => {
+                  this.onTrade('buy');
+                }}
+                width={'50'}
+                className={`bg-up trade-detail-action`}>
               <span>
                 Buy
                </span>
-            </Col>
-          </Row>
+              </Col>
+            </Row>
+          )
+        }
+        {
+          // 非挂单交易的修改
+          mode == 'update' && currentTradeType.id == 1 && (
+            <div
+              className={'trade-detail-actions update bg-down'}
+              onClick={() => {
+                this.onTrade(tradeActionMap[currentTrade.action]);
+              }}
+            >
+              修改
+            </div>
+          )
+        }
+        {
+          // 非挂单交易的修改
+          mode == 'update' && currentTradeType.id != 1 && (
+            <Row noGap className={'trade-detail-actions'}>
+              <Col onClick={() => {
+                this.onTrade(tradeActionMap[currentTrade.action]);
+              }} width={'50'} className={'bg-deep-grey trade-detail-action'}>
+              <span>
+                修改
+              </span>
+              </Col>
+              <Col
+                onClick={async () => {
+                  try {
+                    const res = await this.$api.trade.closeTrade(currentTrade.order_number);
+
+                    if (res.status == 200) {
+                      this.$f7.toast.show({
+                        text: '删除成功',
+                        position: 'center',
+                        closeTimeout: 2000,
+                      });
+
+                      this.$f7.router.app.views.main.router.back('/trade/', {
+                        force: true,
+                      });
+                    }
+                  } catch (e) {
+                    this.$f7.toast.show({
+                      text: e,
+                      position: 'center',
+                      closeTimeout: 2000,
+                    });
+                  }
+                }}
+                width={'50'}
+                className={`bg-down trade-detail-action`}>
+              <span>
+                删除
+               </span>
+              </Col>
+            </Row>
+          )
+        }
+        {
+          // 非挂单交易的修改
+          mode == 'close' && (
+            <div
+              className={'trade-detail-actions update bg-orange'}
+              onClick={async () => {
+                try {
+                  const res = await this.$api.trade.closeTrade(currentTrade.order_number);
+                  if (res.status == 200) {
+                    this.$f7.toast.show({
+                      text: '平仓成功',
+                      position: 'center',
+                      closeTimeout: 2000,
+                    });
+
+                    this.$f7.router.app.views.main.router.back('/trade/', {
+                      force: true,
+                    });
+                  }
+                } catch (e) {
+                  this.$f7.toast.show({
+                    text: e,
+                    position: 'center',
+                    closeTimeout: 2000,
+                  });
+                }
+              }}
+            >
+              平仓
+            </div>
+          )
+        }
+
         <div className={'chart'}></div>
       </Page>
     );

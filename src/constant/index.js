@@ -11,31 +11,40 @@ export const UPLOAD_URL = "https://upyun.com";
 
 export const tradeTypeOptions = [
   {
-    id: 1,
+    id: '1',
     name: '立即执行',
     color: '',
   },
   {
-    id: 2,
+    id: '2',
     name: 'Buy Limit',
     color: 'p-up',
   },
   {
-    id: 3,
+    id: '3',
     name: 'Sell Limit',
     color: 'p-down',
   },
   {
-    id: 4,
+    id: '4',
     name: 'Buy Stop',
     color: 'p-up',
   },
   {
-    id: 5,
+    id: '5',
     name: 'Sell Stop',
     color: 'p-down',
   }
 ];
+
+export const tradeActionMap = {
+  0: 'buy',
+  1: 'sell',
+  2: 'buy limit',
+  3: 'sell limit',
+  4: 'buy stop',
+  5: 'sell stop',
+}
 
 export const marketOptions = [
   {

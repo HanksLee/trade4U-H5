@@ -10,6 +10,38 @@
     padding: r(16) 0;
   }
 
+  .trade-detail-info {
+    text-align: center;
+    width: 100%;
+  }
+
+  .trade-detail-lots {
+    font-size: r(17);
+    text-align: center;
+    padding: r(12) 0;
+
+    input {
+      text-align: center;
+      color: $grey;
+    }
+
+    .blue {
+      color: #007aff;
+    }
+  }
+
+  .trade-detail-stepper {
+    .icon {
+      color: #007aff;
+    }
+
+    input {
+      text-align: center;
+      color: $grey;
+    }
+  }
+
+
   .trade-detail-type {
     background-color: #FFF;
     height: 0;
@@ -20,7 +52,7 @@
     //font-weight: bold;
 
     &.active {
-      height: r(176);
+      height: 200px;
     }
 
     .trade-detail-type-item {
@@ -43,6 +75,11 @@
     font-size: r(17);
     text-align: center;
     .trade-detail-action {
+      padding: r(12) 0;
+    }
+
+    &.update {
+      //background-color: $;
       padding: r(12) 0;
     }
   }
@@ -70,6 +107,7 @@
     .stepper-input-wrap {
       input {
         color: $grey;
+        width: 100px;
       }
 
       &.up {
