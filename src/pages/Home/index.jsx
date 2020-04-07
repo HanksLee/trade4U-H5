@@ -22,16 +22,16 @@ export default class extends React.Component {
       <Page name="home">
         <Views tabs className="safe-areas">
           <Toolbar tabbar labels bottom className="app-tabbar">
-            <Link tabLink="#view-market"  icon="market-icon" text="行情" />
+            <Link tabLink="#view-market" tabLinkActive icon="market-icon" text="行情" />
             <Link tabLink="#view-chart" icon="chart-icon" text="图表" />
-            <Link tabLink="#view-trade" tabLinkActive icon="trade-icon" text="交易" />
+            <Link tabLink="#view-trade"  icon="trade-icon" text="交易" />
             <Link tabLink="#view-history" icon="history-icon" text="历史" />
             <Link tabLink="#view-settings" icon="settings-icon" text="设置" />
           </Toolbar>
 
-          <View id="view-market" name="行情"  tab  url="/market/" />
+          <View id="view-market" name="行情" tabActive tab  url="/market/" />
           <View id="view-chart" name="图表" tab url="/chart/" />
-          <View id="view-trade" name="交易" tabActive tab url="/trade/" />
+          <View id="view-trade" name="交易" tab url="/trade/" />
           <View id="view-history" name="历史" tab url="/history/" />
           <View id="view-settings" name="设置" tab url="/settings/" />
         </Views>
