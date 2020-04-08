@@ -177,14 +177,14 @@ export default class extends React.Component {
                       <div className="self-select-time">
                         {
                           item.product_details.timestamp ?
-                            moment(Number(item.product_details.timestamp)).format('HH:mm:ss')
+                            moment(Number(item.product_details.timestamp) * 1000).format('HH:mm:ss')
                             : '--:--:--'
                         }
                       </div>
                       <div className="self-select-name">{item.symbol_display.name}</div>
                       <div className="self-select-spread">{item.symbol_display.spread}</div>
                     </div>
-                    <div className="self-select-code">{item.product_details.code}</div>
+                    <div className="self-select-code">{item.symbol_display.product_display.code}</div>
                     <div>
                       <div className="self-select-buy-sell-block self-select-buy-block">
                         {item.product_details.buy ? this.addSpecialStyle(item.product_details.buy) : '--'}
