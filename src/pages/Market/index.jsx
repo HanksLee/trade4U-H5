@@ -57,7 +57,8 @@ export default class extends React.Component {
       const data = JSON.parse(message).data
       const { selfSelectSymbolList, } = this.props.market
       const newSelfSelectSymbolList = selfSelectSymbolList.map((item, index) => {
-        if (item.symbol_display.product_display.code === data.symbol) {
+        if (item.symbol_display.product_display.code === data.symbol &&
+          Number(item.symbol_display.product_display.timestamp) < Number(data.timestamp)) {
           const buyItemDom = $$($$('.self-select-buy-block')[index])
           const sellItemDom = $$($$('.self-select-sell-block')[index])
           if (data.buy > item.product_details.buy) {

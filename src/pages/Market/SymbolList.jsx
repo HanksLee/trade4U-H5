@@ -36,7 +36,7 @@ export default class extends React.Component {
     const { selfSelectSymbolList, } = this.props.market
     const ids = selfSelectSymbolList.map(item => item.id)
     this.setState((preState) => ({
-      type__name: [...this.state.symbolList, ...res.data.results.filter(item => ids.indexOf(item.id) === -1)],
+      symbolList: [...this.state.symbolList, ...res.data.results.filter(item => ids.indexOf(item.id) === -1)],
       next: res.data.next,
       page: preState.page + 1,
     }))

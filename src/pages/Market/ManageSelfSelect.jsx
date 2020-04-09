@@ -80,7 +80,7 @@ export default class extends React.Component {
             <span onClick={this.handleDelete}>删除</span>
           </NavRight>
         </Navbar>
-        <List sortable className="sortable-enabled" onSortableSort={this.handleSort}>
+        <List sortable className="sortable-self-select-list sortable-enabled" onSortableSort={this.handleSort}>
           {
             selfSelectSymbolList.map(item => {
               return (
