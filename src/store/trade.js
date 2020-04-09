@@ -33,7 +33,16 @@ class TradeStore extends BaseStore {
   }
 
   @action
-  setTradeInfo = info => this.tradeInfo = info;
+  setTradeInfo = (info, overwrite = true) => {
+    if (overwrite) {
+      this.tradeInfo = info;
+    } else {
+      this.tradeInfo = {
+        ...this.tradeInfo,
+        ...info,
+      }
+    }
+  }
 
   @action
   getTradeList = (config) => {

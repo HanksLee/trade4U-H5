@@ -29,9 +29,6 @@ import {
   tradeActionMap
 } from 'constant';
 
-console.log('tradeTypeOptions', tradeTypeOptions);
-
-
 function randomData() {
   now = new Date(+now + oneDay);
   value = value + Math.random() * 21 - 10;
@@ -69,9 +66,9 @@ export default class extends BaseReact {
   state = {
     currentTradeType: tradeTypeOptions[0],
     opened: false,
-    lossValue: 0,
-    profitValue: 0,
-    priceValue: 0,
+    lossValue: undefined,
+    profitValue: undefined,
+    priceValue: undefined,
     lotsValue: 0.01,
 
     chartOption: {
@@ -210,7 +207,8 @@ export default class extends BaseReact {
         lineStyle: {
           color: '#e94a39',
         },
-      }]
+      }
+      ]
     }, true);
   }
 
@@ -270,11 +268,11 @@ export default class extends BaseReact {
     const actionMode = this.props.mode;
 
     let payload = {
-      trading_volume: lotsValue * (currentSymbol?.symbol_display?.contract_size) + '',
-      lots: lotsValue + '',
+      trading_volume: lotsValue * (currentSymbol?.symbol_display?.contract_size),
+      lots: lotsValue,
       symbol: currentSymbol.id,
-      take_profit: profitValue + '',
-      stop_loss: lossValue + '',
+      take_profit: profitValue,
+      stop_loss: lossValue,
     };
 
     if (actionMode == 'add') {
@@ -403,6 +401,10 @@ export default class extends BaseReact {
       }
     }
 
+    if (!payload.take_profit && !payload.stop_loss) {
+      errMsg = '';
+    }
+
     return errMsg;
   }
 
@@ -470,11 +472,11 @@ export default class extends BaseReact {
     // debugger;
 
     return (
-      <Page name="trade-detail" className={'trade-detail'} onPageBeforeIn={pageData => {
+      <Page noToolbar name="trade-detail" className={'trade-detail'} onPageBeforeIn={pageData => {
       }}>
         <Navbar>
           <NavLeft>
-            <Link onClick={() => this.$f7.router.app.views.main.router.navigate('/trade/', {force: true})}>
+            <Link onClick={() => this.$f7router.back({force: true})}>
               <Icon color={'white'} f7={'chevron_left'} size={r(18)}></Icon>
             </Link>
           </NavLeft>
@@ -567,7 +569,9 @@ export default class extends BaseReact {
                     {
                       mode == 'update' ? '修改'
                         : mode == 'close'
-                        ? '平仓'
+                        ? currentTradeType?.id == 1
+                          ? '平仓'
+                          : '删除'
                         : ''
                     }：
                   </span>
@@ -766,7 +770,7 @@ export default class extends BaseReact {
                   const res = await this.$api.trade.closeTrade(currentTrade.order_number);
                   if (res.status == 200) {
                     this.$f7.toast.show({
-                      text: '平仓成功',
+                      text: `${currentTradeType.id == 1 ? '平仓' : '删除'}成功`,
                       position: 'center',
                       closeTimeout: 2000,
                     });
@@ -784,7 +788,7 @@ export default class extends BaseReact {
                 }
               }}
             >
-              平仓
+              {currentTradeType.id == 1 ? '平仓' : '删除'}
             </div>
           )
         }

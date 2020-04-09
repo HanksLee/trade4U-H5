@@ -11,23 +11,23 @@
   .market-icon {
     background-image: url('../static/icons/market-icon.svg');
   }
-  
+
   .chart-icon {
     background-image: url('../static/icons/chart-icon.svg');
   }
-  
+
   .trade-icon {
     background-image: url('../static/icons/trade-icon.png');
   }
-  
+
   .history-icon {
-    background-image: url('../static/icons/history-icon.svg');
+    background-image: url('../static/icons/history-icon.png');
   }
-  
+
   .settings-icon {
     background-image: url('../static/icons/settings-icon.svg');
   }
-  
+
   .tab-link-active {
     .tabbar-label {
       color: #f2e206;
@@ -36,19 +36,19 @@
     .market-icon {
       background-image: url('../static/icons/market-icon-selected.svg');
     }
-    
+
     .chart-icon {
       background-image: url('../static/icons/chart-icon-selected.svg');
     }
-    
+
     .trade-icon {
-      background-image: url('../static/icons/trade-icon-selected.svg');
+      background-image: url('../static/icons/trade-icon-selected.png');
     }
-    
+
     .history-icon {
       background-image: url('../static/icons/history-icon-selected.svg');
     }
-    
+
     .settings-icon {
       background-image: url('../static/icons/settings-icon-selected.svg');
     }

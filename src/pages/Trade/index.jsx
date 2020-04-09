@@ -22,6 +22,7 @@ import {
   ActionsLabel,
   ActionsButton,
 } from 'framework7-react';
+import AddIcon from "assets/img/add.svg";
 import moment from 'moment';
 import { inject, observer } from "mobx-react";
 import './index.scss';
@@ -92,6 +93,27 @@ export default class extends BaseReact {
     })
   }
 
+  updateTradeInfo = (tradeInfo) => {
+    let payload = {};
+    const {tradeList, setTradeInfo} = this.props.trade;
+    if (utils.isEmpty(tradeInfo)) {
+      payload = {
+        balance: this.props.trade.tradeInfo.balance,
+        margin: this.props.trade.tradeInfo.margin,
+      };
+    }  else {
+      payload = {
+        balance: tradeInfo.balance,
+        margin: tradeInfo.margin,
+      };
+    }
+    payload.equity = tradeList.reduce((acc, cur) => acc + (+cur.profit) , 0);
+    payload.free_margin = (+payload.equity) - (+payload.margin);
+    payload.margin_level = (+payload.equity) / (+payload.margin);
+
+    setTradeInfo(payload);
+  }
+
   connectWebsocket = () => {
     this.wsConnect = ws('order');
 
@@ -104,7 +126,10 @@ export default class extends BaseReact {
       const msg = JSON.parse(evt.data);
 
       if (msg.type == 'meta_fund') {
-        setTradeInfo(msg.data);
+        this.updateTradeInfo({
+          balance: msg.data.balance,
+          margin: msg.data.margin,
+        });
       } else {
         let list = cloneDeep(this.props.trade?.tradeList);
         if (msg.type == 'order_open') {
@@ -120,6 +145,7 @@ export default class extends BaseReact {
           list = list.filter(item => item.order_number != msg.data.order_number);
         }
         setTradeList(list);
+        this.updateTradeInfo();
       }
     }
   }
@@ -133,15 +159,25 @@ export default class extends BaseReact {
   goToPage = (url, opts = {}) => {
     // this.$f7router.navigate(url, opts);
 
-    this.$f7.router.app.views.main.router.navigate(url, opts);
+    // this.$f7.router.app.views.main.router.navigate(url, opts);
+    this.$f7router.navigate(url, opts);
   }
+
 
   onRefresh = async (done) => {
     this.setState({
       loading: true,
     }, async () => {
       try {
-        await this.props.trade.getTradeInfo();
+        // await this.props.trade.getTradeInfo();
+        const res = await this.$api.trade.getTradeInfo();
+        let tradeInfo = {
+          balance: res.data.balance,
+          // equity: 1014404.86, // 净值
+          margin: res.data.margin,  // 预付看
+          // free_margin: 1014399.22, // 可用预付款
+          // margin_level: 18017848.22, // 预付款比例
+        };
         const res2 = await Promise.all([
           this.$api.trade.getTradeList({
             params: {
@@ -157,6 +193,7 @@ export default class extends BaseReact {
 
         const list = res2.map(item => item.data);
         this.props.trade.setTradeList([...list[0], ...list[1]]);
+        this.updateTradeInfo(tradeInfo);
       } catch (e) {
         this.$f7.toast.show({
           text: e.message,
@@ -180,13 +217,11 @@ export default class extends BaseReact {
         <Navbar>
           <NavTitle>{title}</NavTitle>
           <NavRight>
-            <Link  onClick={ () => this.goToPage(`/trade/${initSymbol}/`, {
+            <img alt="add" src={AddIcon} onClick={ () => this.goToPage(`/trade/${initSymbol}/`, {
               props: {
                 mode: 'add'
               }
-            })}>
-              <Icon color={'white'} f7={'plus'} size={r(18)}></Icon>
-            </Link>
+            })}/>
           </NavRight>
         </Navbar>
         <Block strong className={`trade-stats ${loading ? 'skeleton-text skeleton-effect-blink' : ''}`}>
@@ -204,7 +239,7 @@ export default class extends BaseReact {
           <Row className={'trade-stats-row'}>
             <Col width="33" className={'trade-stats-col'}>
               <p>预付款</p>
-              <p>{tradeInfo.margin}</p>
+              <p>{+(tradeInfo.margin)}</p>
             </Col>
             <Col width="33" className={'trade-stats-col'}>
               <p>可用预付款</p>
@@ -212,7 +247,7 @@ export default class extends BaseReact {
             </Col>
             <Col width="33" className={'trade-stats-col'}>
               <p>预付款比率(%)</p>
-              <p>{tradeInfo.margin_level}</p>
+              <p>{+(tradeInfo.margin_level) == 0 ? '--' : tradeInfo.margin_level}</p>
             </Col>
           </Row>
 
@@ -268,32 +303,50 @@ export default class extends BaseReact {
                 </Row>
                 <Row>
                   <Col width={'50'}>
-                    <span>止损：</span>
-                    <span>{item.stop_loss || '-'}</span>
+                    <Row className={'justify-content-space-between'}>
+                      <span>止损：</span>
+                      <span>{item.stop_loss || '-'}</span>
+                    </Row>
+
                   </Col>
                   <Col width={'50'}>
-                    <span>库存费：</span>
-                    <span>{item.swaps || '-'}</span>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col width={'50'}>
-                    <span>止盈：</span>
-                    <span>{item.take_profit || '-'}</span>
-                  </Col>
-                  <Col width={'50'}>
-                    <span>税费：</span>
-                    <span>{item.taxes || '-'}</span>
+                    <Row className={'justify-content-space-between'}>
+                      <span>库存费：</span>
+                      <span>{item.swaps || '-'}</span>
+                    </Row>
+
                   </Col>
                 </Row>
                 <Row>
                   <Col width={'50'}>
-                    <span>ID：</span>
-                    <span>{item.symbol}</span>
+                    <Row className={'justify-content-space-between'}>
+                      <span>止盈：</span>
+                      <span>{item.take_profit || '-'}</span>
+                    </Row>
+
                   </Col>
                   <Col width={'50'}>
-                    <span>手续费：</span>
-                    <span>{item.fee || '-'}</span>
+                    <Row className={'justify-content-space-between'}>
+                      <span>税费：</span>
+                      <span>{item.taxes || '-'}</span>
+                    </Row>
+
+                  </Col>
+                </Row>
+                <Row>
+                  <Col width={'50'}>
+                    <Row className={'justify-content-space-between'}>
+                      <span>ID：</span>
+                      <span>{item.symbol}</span>
+                    </Row>
+
+                  </Col>
+                  <Col width={'50'}>
+                    <Row className={'justify-content-space-between'}>
+                      <span>手续费：</span>
+                      <span>{item.fee || '-'}</span>
+                    </Row>
+
                   </Col>
                 </Row>
               </div>

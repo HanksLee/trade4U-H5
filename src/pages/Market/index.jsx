@@ -145,7 +145,7 @@ export default class extends React.Component {
     }
     return strs[0]
   }
-  
+
   render() {
     const { selfSelectSymbolList, } = this.props.market;
     const { currentSymbol, } = this.state;
@@ -214,7 +214,13 @@ export default class extends React.Component {
                 <ActionsLabel>{currentSymbol.symbol_display.description}</ActionsLabel>
               )
             }
-            <ActionsButton>交易</ActionsButton>
+            <ActionsButton onClick={() => {
+              this.$f7router.navigate(`/trade/${currentSymbol.symbol}/`, {
+                props: {
+                  mode: 'add',
+                }
+              })
+            }}>交易</ActionsButton>
             <ActionsButton>图表</ActionsButton>
             <ActionsButton onClick={this.navigateToSymbolDetail}>详细情况</ActionsButton>
           </ActionsGroup>
