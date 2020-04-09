@@ -22,7 +22,14 @@
     }
   }
 
+  .trade-data-title {
+    //font-size: ;
+    padding: 6px;
+
+  }
+
   .trade-data {
+
     .trade-data-top {
       font-size: r(17);
 
@@ -54,7 +61,7 @@
       }
 
       &.active {
-        height: r(66);
+        height: r(70);
       }
     }
   }

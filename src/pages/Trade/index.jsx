@@ -24,7 +24,7 @@ import {
 } from 'framework7-react';
 import AddIcon from "assets/img/add.svg";
 import moment from 'moment';
-import { inject, observer } from "mobx-react";
+import {inject, observer} from "mobx-react";
 import './index.scss';
 import ws from 'utils/ws'
 import {tradeActionMap} from 'constant';
@@ -79,10 +79,12 @@ export default class extends BaseReact {
     this.onRefresh();
 
     this.$f7.$('.media-list').on('taphold', (evt) => {
-      const {tradeList} = this.props.trade;
+      const {tradeList, futureTradeList} = this.props.trade;
       const dom = this.$f7.$(evt.target).parents('.media-item')[0];
       if (dom != null) {
-        this.props.trade.setCurrentTrade(tradeList[dom.id]);
+        const currentTrade = (tradeList[dom.id] || futureTradeList[dom.id]) ?? {};
+
+        this.props.trade.setCurrentTrade(currentTrade);
 
         this.setState({
           longTapIndex: dom.id,
@@ -101,15 +103,15 @@ export default class extends BaseReact {
         balance: this.props.trade.tradeInfo.balance,
         margin: this.props.trade.tradeInfo.margin,
       };
-    }  else {
+    } else {
       payload = {
         balance: tradeInfo.balance,
         margin: tradeInfo.margin,
       };
     }
-    payload.equity = tradeList.reduce((acc, cur) => acc + (+cur.profit) , 0);
-    payload.free_margin = (+payload.equity) - (+payload.margin);
-    payload.margin_level = (+payload.equity) / (+payload.margin);
+    payload.equity = tradeList.reduce((acc, cur) => acc + (cur.profit), 0) + payload.balance;
+    payload.free_margin = (payload.equity) - (payload.margin);
+    payload.margin_level = (payload.equity) / (payload.margin);
 
     setTradeInfo(payload);
   }
@@ -132,6 +134,7 @@ export default class extends BaseReact {
         });
       } else {
         let list = cloneDeep(this.props.trade?.tradeList);
+        let futureList = cloneDeep(this.props.trade?.futureTradeList);
         if (msg.type == 'order_open') {
           list = [msg.data, ...list];
         } else if (msg.type == 'order_profit') {
@@ -141,10 +144,13 @@ export default class extends BaseReact {
             }
             return item;
           });
-        } else if (msg.type == 'order_close' || msg.type == 'pending_order_close') {
+        } else if (msg.type == 'order_close') {
           list = list.filter(item => item.order_number != msg.data.order_number);
+        } else if (msg.type == 'pending_order_close') {
+          futureList = futureList.filter(item => item.order_number != msg.data.order_number);
         }
         setTradeList(list);
+        setTradeList(futureList, 'future');
         this.updateTradeInfo();
       }
     }
@@ -174,7 +180,7 @@ export default class extends BaseReact {
         let tradeInfo = {
           balance: res.data.balance,
           // equity: 1014404.86, // 净值
-          margin: res.data.margin,  // 预付看
+          margin: res.data.margin,  // 预付款
           // free_margin: 1014399.22, // 可用预付款
           // margin_level: 18017848.22, // 预付款比例
         };
@@ -192,7 +198,9 @@ export default class extends BaseReact {
         ]);
 
         const list = res2.map(item => item.data);
-        this.props.trade.setTradeList([...list[0], ...list[1]]);
+        this.props.trade.setTradeList(list[0]);
+        this.props.trade.setTradeList(list[1], 'future');
+
         this.updateTradeInfo(tradeInfo);
       } catch (e) {
         this.$f7.toast.show({
@@ -207,9 +215,149 @@ export default class extends BaseReact {
     });
   }
 
+  renderTradeList = (tradeList, type) => {
+    const {tapIndex, loading} = this.state;
+
+    return <List mediaList>
+      {
+        type == 'order'
+          ? <div className={'trade-data-title'}>持仓</div>
+          : <div className={'trade-data-title'}>挂单</div>
+      }
+      {tradeList.map((item, index) => (
+        <ListItem
+          // dataItem={item}
+          id={index}
+          key={index}
+          swipeout
+          className={`trade-data ${loading ? 'skeleton-text skeleton-effect-blink' : ''}`}
+          onSwipeoutOpen={() => {
+            this.props.trade.setCurrentTrade(item);
+          }}
+          // onSwipeoutClose={() => {
+          //   debugger
+          //   this.props.trade.setCurrentTrade({});
+          // }}
+          onClick={
+            () => {
+              this.setState({
+                tapIndex: tapIndex == index ? -1 : index,
+              })
+            }
+          }
+        >
+          {/*<img slot="media" src={item.cover} width="44" />*/}
+          <div slot={'title'} className={'trade-data-top'}>
+            <strong>{item.symbol_name},</strong>
+            <span className={`p-down`}>{tradeActionMap[item.action]} {item.lots}</span>
+          </div>
+          <div slot={'subtitle'} className={'trade-data-middle'}>
+            <Row className={'align-items-center'}>
+              <Col width={'60'}
+                   className={`${item.profit > 0 ? 'p-up' : item.profit < 0 ? 'p-down' : 'p-grey'} trade-data-middle-current`}>
+                <p>{item.profit}</p>
+              </Col>
+              <Col width={'20'}>
+                <p>开盘</p>
+                <p className={'p-down'}>{item.open_price}</p>
+              </Col>
+              <Col width={'20'}>
+                <p>目前</p>
+                <p className={`p-up`}>{item.new_price}</p>
+              </Col>
+            </Row>
+          </div>
+          <div slot={'footer'} className={`trade-data-bottom ${tapIndex == index ? 'active' : ''}`}>
+            <Row>
+              <Col width={'100'}>
+                {moment(item.create_time * 1000).format('YYYY.MM.DD HH:mm:ss')}
+              </Col>
+            </Row>
+            <Row>
+              <Col width={'50'}>
+                <Row className={'justify-content-space-between'}>
+                  <span>止损：</span>
+                  <span>{item.stop_loss || '-'}</span>
+                </Row>
+
+              </Col>
+              <Col width={'50'}>
+                <Row className={'justify-content-space-between'}>
+                  <span>库存费：</span>
+                  <span>{item.swaps || '-'}</span>
+                </Row>
+
+              </Col>
+            </Row>
+            <Row>
+              <Col width={'50'}>
+                <Row className={'justify-content-space-between'}>
+                  <span>止盈：</span>
+                  <span>{item.take_profit || '-'}</span>
+                </Row>
+
+              </Col>
+              <Col width={'50'}>
+                <Row className={'justify-content-space-between'}>
+                  <span>税费：</span>
+                  <span>{item.taxes || '-'}</span>
+                </Row>
+
+              </Col>
+            </Row>
+            <Row>
+              <Col width={'50'}>
+                <Row className={'justify-content-space-between'}>
+                  <span>ID：</span>
+                  <span>{item.symbol}</span>
+                </Row>
+
+              </Col>
+              <Col width={'50'}>
+                <Row className={'justify-content-space-between'}>
+                  <span>手续费：</span>
+                  <span>{item.fee || '-'}</span>
+                </Row>
+
+              </Col>
+            </Row>
+          </div>
+          <SwipeoutActions right>
+            <SwipeoutButton bgColor={'primary'} onClick={() => this.goToPage(`/trade/${item.symbol}/`, {
+              props: {
+                mode: 'close'
+              }
+            })}>
+              <Icon f7={'checkmark_alt_circle'} size={r(16)}></Icon>
+            </SwipeoutButton>
+            <SwipeoutButton bgColor={'primary'} onClick={
+              () => this.goToPage(`/trade/${item.symbol}/`, {
+                props: {
+                  mode: 'update',
+                }
+              })
+            }>
+              <Icon f7={'pencil'} size={r(16)}></Icon>
+            </SwipeoutButton>
+            <SwipeoutButton bgColor={'primary'} onClick={() => this.goToPage(`/trade/${item.symbol}/`, {
+              props: {
+                mode: 'add'
+              }
+            })}>
+              <Icon f7={'plus'} size={r(16)}></Icon>
+            </SwipeoutButton>
+            <SwipeoutButton bgColor={'primary'} onClick={() => this.goToPage(`/chart/${item.symbol}/`)}>
+              <Icon f7={'chart_bar_alt_fill'} size={r(16)}></Icon>
+            </SwipeoutButton>
+          </SwipeoutActions>
+        </ListItem>
+      ))}
+    </List>
+  }
+
   render() {
     const {title, tapIndex, loading} = this.state;
-    const {tradeInfo, tradeList, computedTradeList, currentTrade} = this.props.trade;
+    const {tradeInfo, tradeList, futureTradeList, computedTradeList, currentTrade} = this.props.trade;
     const initSymbol = utils.isEmpty(tradeList) ? 0 : tradeList[0]?.symbol;
 
     return (
@@ -217,7 +365,7 @@ export default class extends BaseReact {
         <Navbar>
           <NavTitle>{title}</NavTitle>
           <NavRight>
-            <img alt="add" src={AddIcon} onClick={ () => this.goToPage(`/trade/${initSymbol}/`, {
+            <img alt="add" src={AddIcon} onClick={() => this.goToPage(`/trade/${initSymbol}/`, {
               props: {
                 mode: 'add'
               }
@@ -247,138 +395,17 @@ export default class extends BaseReact {
             </Col>
             <Col width="33" className={'trade-stats-col'}>
               <p>预付款比率(%)</p>
-              <p>{+(tradeInfo.margin_level) == 0 ? '--' : tradeInfo.margin_level}</p>
+              <p>{(tradeInfo.margin_level) == 0 ? '--' : tradeInfo.margin_level}</p>
             </Col>
           </Row>
 
         </Block>
-        <List mediaList>
-          {computedTradeList.map((item, index) => (
-            <ListItem
-              // dataItem={item}
-              id={index}
-              key={index}
-              swipeout
-              className={`trade-data ${loading ? 'skeleton-text skeleton-effect-blink' : ''}`}
-              onSwipeoutOpen={() => {
-                this.props.trade.setCurrentTrade(item);
-              }}
-              // onSwipeoutClose={() => {
-              //   debugger
-              //   this.props.trade.setCurrentTrade({});
-              // }}
-              onClick={
-                () => {
-                  this.setState({
-                    tapIndex: tapIndex == index ? -1 : index,
-                  })
-                }
-              }
-            >
-              {/*<img slot="media" src={item.cover} width="44" />*/}
-              <div slot={'title'} className={'trade-data-top'}>
-                <strong>{item.symbol_name},</strong>
-                <span className={`p-down`}>{tradeActionMap[item.action]} {item.lots}</span>
-              </div>
-              <div slot={'subtitle'} className={'trade-data-middle'}>
-                <Row className={'align-items-center'}>
-                  <Col width={'60'} className={`${item.profit > 0 ? 'p-up' : item.profit < 0 ? 'p-down' : 'p-grey'} trade-data-middle-current`}>
-                    <p>{item.profit}</p>
-                  </Col>
-                  <Col width={'20'}>
-                    <p>开盘</p>
-                    <p className={'p-down'}>{item.open_price}</p>
-                  </Col>
-                  <Col width={'20'}>
-                    <p>目前</p>
-                    <p className={`p-up`}>{item.new_price}</p>
-                  </Col>
-                </Row>
-              </div>
-              <div slot={'footer'} className={`trade-data-bottom ${tapIndex == index ? 'active' : ''}`}>
-                <Row>
-                  <Col width={'100'}>
-                    {moment(item.create_time * 1000).format('YYYY.MM.DD HH:mm:ss')}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col width={'50'}>
-                    <Row className={'justify-content-space-between'}>
-                      <span>止损：</span>
-                      <span>{item.stop_loss || '-'}</span>
-                    </Row>
-
-                  </Col>
-                  <Col width={'50'}>
-                    <Row className={'justify-content-space-between'}>
-                      <span>库存费：</span>
-                      <span>{item.swaps || '-'}</span>
-                    </Row>
-
-                  </Col>
-                </Row>
-                <Row>
-                  <Col width={'50'}>
-                    <Row className={'justify-content-space-between'}>
-                      <span>止盈：</span>
-                      <span>{item.take_profit || '-'}</span>
-                    </Row>
-
-                  </Col>
-                  <Col width={'50'}>
-                    <Row className={'justify-content-space-between'}>
-                      <span>税费：</span>
-                      <span>{item.taxes || '-'}</span>
-                    </Row>
-
-                  </Col>
-                </Row>
-                <Row>
-                  <Col width={'50'}>
-                    <Row className={'justify-content-space-between'}>
-                      <span>ID：</span>
-                      <span>{item.symbol}</span>
-                    </Row>
-
-                  </Col>
-                  <Col width={'50'}>
-                    <Row className={'justify-content-space-between'}>
-                      <span>手续费：</span>
-                      <span>{item.fee || '-'}</span>
-                    </Row>
-
-                  </Col>
-                </Row>
-              </div>
-              <SwipeoutActions right>
-                <SwipeoutButton bgColor={'primary'} onClick={() => this.goToPage(`/trade/${item.symbol}/`, {
-                  props: {
-                    mode: 'close'
-                  }
-                })}>
-                  <Icon f7={'checkmark_alt_circle'} size={r(16)}></Icon>
-                </SwipeoutButton>
-                <SwipeoutButton bgColor={'primary'} onClick={
-                  () => this.goToPage(`/trade/${item.symbol}/`, {props: {
-                    mode: 'update',
-                  }})
-                }>
-                  <Icon f7={'pencil'} size={r(16)}></Icon>
-                </SwipeoutButton>
-                <SwipeoutButton bgColor={'primary'} onClick={ () => this.goToPage(`/trade/${item.symbol}/`, {
-                  props: {
-                    mode: 'add'
-                  }
-                })}>
-                  <Icon f7={'plus'} size={r(16)}></Icon>
-                </SwipeoutButton>
-                <SwipeoutButton bgColor={'primary'} onClick={() => this.goToPage(`/chart/${item.symbol}/`)}>
-                  <Icon f7={'chart_bar_alt_fill'} size={r(16)}></Icon>
-                </SwipeoutButton>
-              </SwipeoutActions>
-            </ListItem>
-          ))}
-        </List>
+        {
+          this.renderTradeList(tradeList, 'order')
+        }
+        {
+          this.renderTradeList(futureTradeList, 'future')
+        }
         <Actions ref="actionsGroup" onActionsClose={() => {
           this.props.trade.setCurrentTrade(currentTrade);
         }}>
@@ -398,12 +425,14 @@ export default class extends BaseReact {
               </span>
             </ActionsButton>
             <ActionsButton>
-              <span onClick={ () => this.goToPage(`/trade/${currentTrade?.symbol}/`, {props: {
-                mode: 'update',
-                }})}>修改</span>
+              <span onClick={() => this.goToPage(`/trade/${currentTrade?.symbol}/`, {
+                props: {
+                  mode: 'update',
+                }
+              })}>修改</span>
             </ActionsButton>
             <ActionsButton>
-              <span onClick={ () => this.goToPage(`/trade/${currentTrade?.symbol}/`, {
+              <span onClick={() => this.goToPage(`/trade/${currentTrade?.symbol}/`, {
                 props: {
                   mode: 'add'
                 }

@@ -141,7 +141,7 @@ export default class extends BaseReact {
 
 
     await getCurrentSymbol(
-      mode == 'add'
+      mode == 'add' && id == null
         ? this.props.market.symbolList[0]?.id
         : id,
     );
@@ -169,6 +169,9 @@ export default class extends BaseReact {
 
       this.setState({
         currentTradeType: ret,
+        lossValue: currentTrade.open_price,
+        profitValue: currentTrade.take_profit,
+        priceValue: currentTrade.stop_loss,
       });
     }
   }
@@ -321,7 +324,7 @@ export default class extends BaseReact {
             position: 'center',
             closeTimeout: 2000,
           });
-          this.$f7.router.app.views.main.router.back('/trade/', {
+          this.$f7router.back({
             force: true,
           });
         }

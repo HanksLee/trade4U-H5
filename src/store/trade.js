@@ -6,21 +6,14 @@ class TradeStore extends BaseStore {
   @observable
   tradeInfo = {};
   @observable
-  tradeList = [];
+  tradeList = []; // 持仓订单
+  @observable
+  futureTradeList = []; // 挂单订单
   @computed
   get computedTradeList() {
     let list = [];
 
-    list = this.tradeList.map(item => {
-      item.profit = item.profit && +item.profit;
-      item.swaps = item.swaps && +item.swaps;
-      item.taxes = item.taxes && +item.taxes;
-      item.take_profit = item.take_profit && +item.take_profit;
-      item.stop_loss = item.stop_loss && +item.stop_loss;
-      item.fee = item.fee && +item.fee;
-
-      return item;
-    });
+    list = this.tradeList;
 
     return list;
   }
@@ -52,8 +45,12 @@ class TradeStore extends BaseStore {
   }
 
   @action
-  setTradeList = list => {
-    this.tradeList = list;
+  setTradeList = (list, type = 'order') => {
+    if (type == 'order') {
+      this.tradeList = list;
+    } else {
+      this.futureTradeList = list;
+    }
   }
 
   @observable

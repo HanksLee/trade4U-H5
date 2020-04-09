@@ -56,6 +56,9 @@ export default class extends React.Component {
                     this.props.market.setCurrentSymbol(product);
                     this.$f7router.back(`/trade/${id}/`, {
                       force: true,
+                      props: {
+                        mode,
+                      }
                     });
                   }}
                   key={id}
