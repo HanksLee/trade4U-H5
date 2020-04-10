@@ -15,8 +15,11 @@ import {
   Col,
   Input
 } from 'framework7-react';
-import { createChart } from 'lightweight-charts';
-import echarts from 'echarts';
+import echarts from 'echarts/lib/echarts';
+import 'echarts/lib/chart/line';
+import 'echarts/lib/component/tooltip';
+import 'echarts/lib/component/title';
+
 import moment from 'moment';
 import { inject, observer } from "mobx-react";
 import utils from 'utils';
@@ -28,6 +31,8 @@ import {
   tradeTypeOptions,
   tradeActionMap
 } from 'constant';
+import cloneDeep from 'lodash/cloneDeep';
+
 
 function randomData() {
   now = new Date(+now + oneDay);
@@ -165,8 +170,6 @@ export default class extends BaseReact {
         ret = tradeTypeOptions.find(item => item.id == action);
       }
 
-      console.log('ret', ret);
-
       this.setState({
         currentTradeType: ret,
         lossValue: currentTrade.open_price,
@@ -197,7 +200,8 @@ export default class extends BaseReact {
         type: 'line',
         showSymbol: false,
         hoverAnimation: false,
-        data: data ?? [],
+        // data: data ?? [],
+        data: currentShowSymbol?.trendBuy ?? [],
         lineStyle: {
           color: '#44d7b6',
         }
@@ -215,30 +219,59 @@ export default class extends BaseReact {
     }, true);
   }
 
+  updateTrendData = (data) => {
+    const {
+      currentSymbol,
+      currentShowSymbol,
+      setCurrentSymbol,
+    } = this.props.market;
+
+    let trend = currentSymbol?.trend ?? [];
+    let newTrend = cloneDeep(trend);
+    let lastData = trend[trend.length - 1] ?? [];
+    let firstData = trend[0];
+
+    // 新变化的数据是最新的数据
+    if (data.timestamp > (lastData[0] ?? 0)) {
+      newTrend.push([data.timestamp, data.buy, data.sell]);
+
+    } else if (data.timestamp >= (firstData[0] ?? 0) && data.timestamp <= (lastData[0] ?? 0)) {
+      newTrend = newTrend.map(item => {
+        if (item[0] == data.timestamp) {
+          item = [data.timestamp, data.buy, data.sell];
+        }
+
+        return item;
+      });
+    }
+
+    setCurrentSymbol({
+      ...data,
+      trend: newTrend,
+    });
+  }
 
   connectWebsocket = () => {
     const {id, market: {
       currentShowSymbol,
     }} = this.props;
 
-    console.log('12312312');
-
     this.wsConnect = ws(`symbol/${id}/trend`);
+
+
 
     this.wsConnect.onmessage = evt => {
       const msg = evt.data;
-      // const data = JSON.parse(msg).data;
-      // console.log('data', data);
-      // this.props.market.setCurrentSymbol({
-      //   trend: data.trend,
-      //   buy: data.buy,
-      //   sell: data.sell,
-      // });
+      const data = JSON.parse(msg).data;
+      this.updateTrendData(data);
+      console.log('data', data.timestamp);
 
-      for (var i = 0; i < 5; i++) {
-        data.shift();
-        data.push(randomData());
-      }
+      // this.props.market.setCurrentSymbol(data);
+
+      // for (var i = 0; i < 5; i++) {
+      //   data.shift();
+      //   data.push(randomData());
+      // }
       this.initChart();
     }
   }
@@ -468,9 +501,6 @@ export default class extends BaseReact {
     const stepLevel = currentSymbol?.symbol_display?.decimals_place ? (
       1 / 10 ** (currentSymbol?.symbol_display?.decimals_place)
     ) : 0.001;
-
-    console.log(this.props);
-
 
     // debugger;
 

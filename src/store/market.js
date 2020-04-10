@@ -81,7 +81,8 @@ class MarketStore extends BaseStore {
         obj.trendBuy.push({
           name: moment(cur[0] * 1000).toString(),
           value: [
-            moment(cur[0] * 1000).format('YYYY.MM.DD HH:mm:ss'),
+            // moment(cur[0] * 1000).format('YYYY.MM.DD HH:mm:ss'),
+            new Date(cur[0] * 1000),
             +cur[1],
           ],
         });
@@ -89,7 +90,8 @@ class MarketStore extends BaseStore {
         obj.trendSell.push({
           name: moment(cur[0] * 1000).toString(),
           value: [
-            moment(cur[0] * 1000).format('YYYY.MM.DD HH:mm:ss'),
+            // moment(cur[0] * 1000).format('YYYY.MM.DD HH:mm:ss'),
+            new Date(cur[0] * 1000),
             +cur[2],
           ],
         });

@@ -126,7 +126,6 @@ export default class extends BaseReact {
 
     this.wsConnect.onmessage = evt => {
       const msg = JSON.parse(evt.data);
-
       if (msg.type == 'meta_fund') {
         this.updateTradeInfo({
           balance: msg.data.balance,
@@ -362,15 +361,22 @@ export default class extends BaseReact {
 
     return (
       <Page name="trade" className='trade-page' ptr onPtrRefresh={this.onRefresh}>
-        <Navbar>
-          <NavTitle>{title}</NavTitle>
+        <Navbar title={title}>
           <NavRight>
-            <img alt="add" src={AddIcon} onClick={() => this.goToPage(`/trade/${initSymbol}/`, {
-              props: {
-                mode: 'add'
-              }
-            })}/>
+            {/*<img alt="add" src={AddIcon} onClick={() => this.goToPage(`/trade/${initSymbol}/`, {*/}
+              {/*props: {*/}
+                {/*mode: 'add'*/}
+              {/*}*/}
+            {/*})}/>*/}
+            <Link iconF7={'plus'} color={'white'} onClick={() => {
+              this.goToPage(`/trade/${initSymbol}/`, {
+                props: {
+                  mode: 'add'
+                }
+              });
+            }}></Link>
           </NavRight>
+
         </Navbar>
         <Block strong className={`trade-stats ${loading ? 'skeleton-text skeleton-effect-blink' : ''}`}>
           <Row className={'trade-stats-row'}>
@@ -395,7 +401,7 @@ export default class extends BaseReact {
             </Col>
             <Col width="33" className={'trade-stats-col'}>
               <p>预付款比率(%)</p>
-              <p>{(tradeInfo.margin_level) == 0 ? '--' : tradeInfo.margin_level}</p>
+              <p>{(tradeInfo.margin_level) == 0 ? '--' : tradeInfo?.margin_level?.toFixed(5)}</p>
             </Col>
           </Row>
 
