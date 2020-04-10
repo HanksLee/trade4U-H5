@@ -386,7 +386,7 @@ export default class extends BaseReact {
             </Col>
             <Col width="33" className={'trade-stats-col'}>
               <p>净值</p>
-              <p>{tradeInfo.equity}</p>
+              <p>{tradeInfo?.equity?.toFixed(2)}</p>
             </Col>
             <Col width="33"></Col>
           </Row>
@@ -401,7 +401,7 @@ export default class extends BaseReact {
             </Col>
             <Col width="33" className={'trade-stats-col'}>
               <p>预付款比率(%)</p>
-              <p>{(tradeInfo.margin_level) == 0 ? '--' : tradeInfo?.margin_level?.toFixed(5)}</p>
+              <p>{(tradeInfo.margin_level) == 0 ? '--' : tradeInfo?.margin_level?.toFixed(2)}</p>
             </Col>
           </Row>
 
