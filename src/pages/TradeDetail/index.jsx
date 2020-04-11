@@ -32,6 +32,8 @@ import {
   tradeActionMap
 } from 'constant';
 import cloneDeep from 'lodash/cloneDeep';
+import maxBy from 'lodash/maxBy';
+import minBy from 'lodash/minBy';
 
 
 function randomData() {
@@ -86,15 +88,17 @@ export default class extends BaseReact {
       },
       tooltip: {
         trigger: 'axis',
+        // formatter: function (params) {
+        //   // return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' : ' + params.value[1];
+        //   // return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`
+        //   params = params[0];
+        //   return params.value[0] + ' / ' + params.value[1];
+        //
+        //   // return moment(date).foramt('YYYY.MM.DD HH:mm:ss') + ' : ' + params.value[1]
+        // },
         formatter: function (params) {
           params = params[0];
-          console.log('params', params);
-
-          var date = new Date(params.name);
-          // return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' : ' + params.value[1];
-          // return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`
-
-          return moment(date).foramt('YYYY.MM.DD HH:mm:ss') + ' : ' + params.value[1]
+          return params.value[0] + ' / ' + params.value[1];
         },
         axisPointer: {
           animation: false
@@ -102,14 +106,13 @@ export default class extends BaseReact {
       },
       xAxis: {
         show: false,
-        type: 'time',
+        type: 'category',
         splitLine: {
           show: false
-        }
+        },
       },
       yAxis: {
         position: 'right',
-
         type: 'value',
         boundaryGap: [0, '100%'],
         splitLine: {
@@ -172,9 +175,9 @@ export default class extends BaseReact {
 
       this.setState({
         currentTradeType: ret,
-        lossValue: currentTrade.open_price,
+        lossValue: currentTrade.stop_loss,
         profitValue: currentTrade.take_profit,
-        priceValue: currentTrade.stop_loss,
+        priceValue: currentTrade.open_price,
       });
     }
   }
@@ -188,13 +191,32 @@ export default class extends BaseReact {
     const {chartOption } = this.state;
     const {
       currentShowSymbol,
+      currentSymbol,
     } = this.props.market;
-    // console.log('currentShowSymbol', toJS(currentShowSymbol));
-    //
-    // console.log('data', data);
+    const trend = currentSymbol?.trend ?? [];
+
+    const maxBuy = maxBy(trend, item => item[1]);
+    const minBuy = minBy(trend, item => item[1]);
+    const maxSell = maxBy(trend, item => item[2]);
+    const minSell = minBy(trend, item => item[2]);
+    const max = Math.max(maxBuy ? maxBuy[1] : 0, maxSell ? maxSell[1] : 0);
+    const min = Math.min(minBuy ? minBuy[2] : 0, minSell ? minSell[2] : 0);
+    const interval = +(((max - min) / 10).toFixed(2));
+    console.log('interval', interval);
+
 
     this.$myChart.setOption({
       ...chartOption,
+      xAxis: {
+        ...chartOption.xAxis,
+        data: currentSymbol?.trendBuy?.value[0],
+      },
+      yAxis: {
+        ...chartOption.yAxis,
+        min,
+        max,
+        interval,
+      },
       series: [{
         name: '模拟数据',
         type: 'line',
@@ -441,7 +463,8 @@ export default class extends BaseReact {
   }
 
   onLotsChanged = (val) => {
-    val = this.state.lotsValue + (+val);
+    val = Number(val);
+    val = Number(this.state.lotsValue) + (val);
     val = Number(val.toFixed(2));
 
     this.setState({

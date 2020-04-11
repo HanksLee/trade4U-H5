@@ -233,7 +233,7 @@ export default class extends BaseReact {
           onSwipeoutOpen={() => {
             this.props.trade.setCurrentTrade(item);
           }}
-          // onSwipeoutClose={() => {
+          // onSwipeoutClose=fk{() => {
           //   debugger
           //   this.props.trade.setCurrentTrade({});
           // }}
@@ -254,10 +254,15 @@ export default class extends BaseReact {
             <Row className={'align-items-center'}>
               <Col width={'60'}
                    className={`${item.profit > 0 ? 'p-up' : item.profit < 0 ? 'p-down' : 'p-grey'} trade-data-middle-current`}>
-                <p>{item.profit}</p>
+                <p>{
+                     item.profit > 0
+                       ? `+${item.profit}`
+                       : item.profit
+                   }
+                 </p>
               </Col>
               <Col width={'20'}>
-                <p>开盘</p>
+                <p>开仓</p>
                 <p className={'p-down'}>{item.open_price}</p>
               </Col>
               <Col width={'20'}>
@@ -307,8 +312,8 @@ export default class extends BaseReact {
             <Row>
               <Col width={'50'}>
                 <Row className={'justify-content-space-between'}>
-                  <span>ID：</span>
-                  <span>{item.symbol}</span>
+                  <span>订单号：</span>
+                  <span>{item.order_number}</span>
                 </Row>
 
               </Col>
