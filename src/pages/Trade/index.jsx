@@ -219,9 +219,9 @@ export default class extends BaseReact {
 
     return <List mediaList>
       {
-        type == 'order'
+        tradeList.length > 0  && (type == 'order'
           ? <div className={'trade-data-title'}>持仓</div>
-          : <div className={'trade-data-title'}>挂单</div>
+          : <div className={'trade-data-title'}>挂单</div>)
       }
       {tradeList.map((item, index) => (
         <ListItem
@@ -382,7 +382,7 @@ export default class extends BaseReact {
           <Row className={'trade-stats-row'}>
             <Col width="33" className={'trade-stats-col'}>
               <p>结余</p>
-              <p>{tradeInfo.balance}</p>
+              <p>{tradeInfo?.balance?.toFixed(2)}</p>
             </Col>
             <Col width="33" className={'trade-stats-col'}>
               <p>净值</p>
@@ -393,11 +393,11 @@ export default class extends BaseReact {
           <Row className={'trade-stats-row'}>
             <Col width="33" className={'trade-stats-col'}>
               <p>预付款</p>
-              <p>{+(tradeInfo.margin)}</p>
+              <p>{+(tradeInfo?.margin?.toFixed(2))}</p>
             </Col>
             <Col width="33" className={'trade-stats-col'}>
               <p>可用预付款</p>
-              <p>{tradeInfo.free_margin}</p>
+              <p>{tradeInfo?.free_margin?.toFixed(2)}</p>
             </Col>
             <Col width="33" className={'trade-stats-col'}>
               <p>预付款比率(%)</p>

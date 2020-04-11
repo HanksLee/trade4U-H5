@@ -255,11 +255,7 @@ export default class extends BaseReact {
     const {id, market: {
       currentShowSymbol,
     }} = this.props;
-
     this.wsConnect = ws(`symbol/${id}/trend`);
-
-
-
     this.wsConnect.onmessage = evt => {
       const msg = evt.data;
       const data = JSON.parse(msg).data;
@@ -516,17 +512,22 @@ export default class extends BaseReact {
           <NavTitle>
             <span style={{marginRight: r(8)}} onClick={
               () => {
-                this.$f7router.navigate('/products/', {
-                  props: {
-                    selectedId: id,
-                    mode,
-                  }
-                });
+                if (mode == 'add') {
+                  this.$f7router.navigate('/products/', {
+                    props: {
+                      selectedId: id,
+                      mode,
+                    }
+                  });
+                }
+
               }
             }>
               {currentSymbol?.symbol_display?.name}
             </span>
-            <Icon color={'white'} f7={'arrowtriangle_down_fill'} size={r(10)}></Icon>
+            {
+              mode == 'add' &&  <Icon color={'white'} f7={'arrowtriangle_down_fill'} size={r(10)}></Icon>
+            }
           </NavTitle>
         </Navbar>
         {

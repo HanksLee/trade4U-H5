@@ -58,6 +58,7 @@ export default class extends React.Component {
                       force: true,
                       props: {
                         mode,
+                        id,
                       }
                     });
                   }}
