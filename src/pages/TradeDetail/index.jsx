@@ -88,17 +88,9 @@ export default class extends BaseReact {
       },
       tooltip: {
         trigger: 'axis',
-        // formatter: function (params) {
-        //   // return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' : ' + params.value[1];
-        //   // return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`
-        //   params = params[0];
-        //   return params.value[0] + ' / ' + params.value[1];
-        //
-        //   // return moment(date).foramt('YYYY.MM.DD HH:mm:ss') + ' : ' + params.value[1]
-        // },
         formatter: function (params) {
           params = params[0];
-          return params.value[0] + ' / ' + params.value[1];
+          return moment(params.value[0]).format('HH:mm:ss') + ' / ' + params.value[1];
         },
         axisPointer: {
           animation: false
@@ -202,7 +194,7 @@ export default class extends BaseReact {
     const max = Math.max(maxBuy ? maxBuy[1] : 0, maxSell ? maxSell[1] : 0);
     const min = Math.min(minBuy ? minBuy[2] : 0, minSell ? minSell[2] : 0);
     const interval = +(((max - min) / 10).toFixed(2));
-    console.log('interval', interval);
+
 
 
     this.$myChart.setOption({
