@@ -175,10 +175,7 @@ export default class extends BaseReact {
   }
 
   initChart = () => {
-    if (this.$myChart == null) {
-      this.$myChart = echarts.init(document.querySelector('.chart'));
-    }
-
+    this.$myChart = echarts.init(document.querySelector('.chart'));
 // 绘制图表
     const {chartOption } = this.state;
     const {
@@ -314,11 +311,11 @@ export default class extends BaseReact {
     const actionMode = this.props.mode;
 
     let payload = {
-      trading_volume: lotsValue * (currentSymbol?.symbol_display?.contract_size),
-      lots: lotsValue,
-      symbol: currentSymbol.id,
-      take_profit: profitValue,
-      stop_loss: lossValue,
+      // trading_volume: lotsValue * (currentSymbol?.symbol_display?.contract_size),
+      // lots: lotsValue,
+      // symbol: currentSymbol.id,
+      // take_profit: profitValue,
+      // stop_loss: lossValue,
     };
 
     if (actionMode == 'add') {
@@ -374,7 +371,7 @@ export default class extends BaseReact {
 
       } catch (e) {
         this.$f7.toast.show({
-          text: e,
+          text: e.response.data.message,
           position: 'center',
           closeTimeout: 2000,
         });
@@ -400,7 +397,7 @@ export default class extends BaseReact {
         }
       } catch (e) {
         this.$f7.toast.show({
-          text: e,
+          text: e.response.data.message,
           position: 'center',
           closeTimeout: 2000,
         });
@@ -794,7 +791,7 @@ export default class extends BaseReact {
                     }
                   } catch (e) {
                     this.$f7.toast.show({
-                      text: e,
+                      text: e.response.data.message,
                       position: 'center',
                       closeTimeout: 2000,
                     });
@@ -830,7 +827,7 @@ export default class extends BaseReact {
                   }
                 } catch (e) {
                   this.$f7.toast.show({
-                    text: e,
+                    text: e.response.data.message,
                     position: 'center',
                     closeTimeout: 2000,
                   });
