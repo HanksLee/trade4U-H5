@@ -1,6 +1,10 @@
 .app-tabbar {
+  .tab-link {
+    padding-bottom: 2px !important;
+  }
+
   .icon {
-    width: r(26);
+    width: r(24);
     margin-bottom: r(2);
   }
 
