@@ -47,7 +47,6 @@
     "Samsung >= 5"
   ],
   "dependencies": {
-    "antd-mobile": "^2.3.1",
     "axios": "^0.19.2",
     "dom7": "^2.1.3",
     "echarts": "^4.7.0",
@@ -76,6 +75,8 @@
     "@babel/preset-env": "^7.9.0",
     "@babel/preset-react": "^7.9.4",
     "@babel/runtime": "^7.9.2",
+    "antd": "^4.1.3",
+    "antd-mobile": "^2.3.1",
     "babel-loader": "^8.1.0",
     "chalk": "^3.0.0",
     "copy-webpack-plugin": "^5.1.1",
@@ -90,6 +91,7 @@
     "ora": "^4.0.3",
     "postcss-loader": "^3.0.0",
     "postcss-preset-env": "^6.7.0",
+    "rc-form": "https://github.com/crazyCode2/rc-form.git",
     "rimraf": "^3.0.2",
     "sass-loader": "^8.0.2",
     "sass-resources-loader": "^2.0.1",

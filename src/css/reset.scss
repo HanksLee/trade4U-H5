@@ -4,7 +4,9 @@
     padding-left: 0;
 
     .item-inner {
-      padding-left: calc(var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left));
+      padding-left: calc(
+        var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left)
+      );
     }
   }
 }
