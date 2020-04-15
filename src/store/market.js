@@ -68,6 +68,9 @@ class MarketStore extends BaseStore {
   get currentShowSymbol() {
     const obj = {};
 
+    obj.min_volume = parseFloat((this.currentSymbol?.symbol_display?.min_trading_volume / this.currentSymbol?.symbol_display?.contract_size)?.toFixed(2));
+    obj.basic_step = parseFloat((this.currentSymbol?.symbol_display?.volume_step / this.currentSymbol?.symbol_display?.contract_size)?.toFixed(2));
+
     if (!utils.isEmpty(this.currentSymbol.trend)) {
       const trend = cloneDeep(this.currentSymbol.trend);
       obj.trendBuy = [];

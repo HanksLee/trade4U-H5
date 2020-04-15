@@ -126,7 +126,9 @@ export default class extends BaseReact {
   };
 
   connectWebsocket = () => {
-    this.wsConnect = ws("order");
+    if (this.wsConnect == null) {
+      this.wsConnect = ws("order");
+    }
 
     const { setTradeInfo, setTradeList } = this.props.trade;
 

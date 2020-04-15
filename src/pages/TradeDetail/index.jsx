@@ -119,6 +119,7 @@ export default class extends BaseReact {
   }
 
   componentDidMount() {
+    print('1111');
     this.initSymbolList();
     this.initTrade();
     this.initChart();
@@ -148,6 +149,10 @@ export default class extends BaseReact {
 
     const {currentSymbol} = this.props.market;
 
+  }
+
+  componentWillUnmount() {
+    console.log(1111);
   }
 
   initTrade = async () => {
@@ -191,8 +196,6 @@ export default class extends BaseReact {
     const max = Math.max(maxBuy ? maxBuy[1] : 0, maxSell ? maxSell[1] : 0);
     const min = Math.min(minBuy ? minBuy[2] : 0, minSell ? minSell[2] : 0);
     const interval = +(((max - min) / 10).toFixed(2));
-
-
 
     this.$myChart.setOption({
       ...chartOption,
@@ -258,15 +261,20 @@ export default class extends BaseReact {
 
     setCurrentSymbol({
       ...data,
+      timestamp: data.timestamp >= currentSymbol.timestamp ? data.timestamp : currentSymbol.timestamp,
       trend: newTrend,
     });
   }
 
   connectWebsocket = () => {
-    const {id, market: {
+    const {id, prevSelectedId, market: {
       currentShowSymbol,
     }} = this.props;
-    this.wsConnect = ws(`symbol/${id}/trend`);
+
+    if (!prevSelectedId || prevSelectedId != id) {
+      this.wsConnect = ws(`symbol/${id}/trend`);
+    }
+
     this.wsConnect.onmessage = evt => {
       const msg = evt.data;
       const data = JSON.parse(msg).data;
@@ -452,9 +460,19 @@ export default class extends BaseReact {
   }
 
   onLotsChanged = (val) => {
+    const {
+      market: {
+        currentShowSymbol,
+      }
+    } = this.props;
     val = Number(val);
     val = Number(this.state.lotsValue) + (val);
     val = Number(val.toFixed(2));
+
+
+    if (val < currentShowSymbol?.min_volume) {
+      return
+    }
 
     this.setState({
       lotsValue: val
@@ -493,6 +511,7 @@ export default class extends BaseReact {
       mode,
       market: {
         currentSymbol,
+        currentShowSymbol,
       },
       trade: {
         currentTrade,
@@ -509,7 +528,6 @@ export default class extends BaseReact {
     const stepLevel = currentSymbol?.symbol_display?.decimals_place ? (
       1 / 10 ** (currentSymbol?.symbol_display?.decimals_place)
     ) : 0.001;
-
     // debugger;
 
     return (
@@ -570,21 +588,23 @@ export default class extends BaseReact {
             <Row bgColor={'white'} noGap className={'trade-detail-lots'}>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(-0.1);
-                }}>-0.1</span>
+                  this.onLotsChanged(0-currentShowSymbol?.basic_step * 10);
+                }}>-{currentShowSymbol?.basic_step * 10}</span>
               </Col>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(-0.01);
-                }}>-0.01</span>
+                  this.onLotsChanged(0-currentShowSymbol?.basic_step);
+                }}>-{currentShowSymbol?.basic_step}</span>
               </Col>
               <Col width={'20'}>
                 <Input
                   type="number"
-                  min={0.01}
+                  min={currentShowSymbol?.min_volume}
                   value={lotsValue}
                   color={'black'}
                   onChange={(evt) => {
+                    if (evt.target.value < currentShowSymbol?.min_volume) return;
+
                     this.setState({
                       lotsValue: evt.target.value,
                     });
@@ -594,14 +614,14 @@ export default class extends BaseReact {
               <Col width={'20'}>
                 <span className={'blue'}
                       onClick={() => {
-                        this.onLotsChanged(0.01);
+                        this.onLotsChanged(currentShowSymbol?.basic_step);
                       }}
-                >+0.01</span>
+                    >+{currentShowSymbol?.basic_step}</span>
               </Col>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(0.1);
-                }}>+0.1</span>
+                  this.onLotsChanged(currentShowSymbol?.basic_step * 10);
+                }}>+{currentShowSymbol?.basic_step * 10}</span>
               </Col>
             </Row>
           )
