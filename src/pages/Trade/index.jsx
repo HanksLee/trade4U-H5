@@ -73,6 +73,8 @@ export default class extends BaseReact {
   // }
 
   componentDidMount() {
+    console.log('init----');
+
     this.initData();
     this.connectWebsocket();
   }
@@ -134,6 +136,7 @@ export default class extends BaseReact {
 
     this.wsConnect.onmessage = (evt) => {
       const msg = JSON.parse(evt.data);
+      console.log('data', msg.data);
       if (msg.type == "meta_fund") {
         this.updateTradeInfo({
           balance: msg.data.balance,
