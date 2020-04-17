@@ -64,7 +64,8 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-intl-universal": "^2.2.5",
-    "template7": "^1.4.2"
+    "template7": "^1.4.2",
+    "vconsole": "^3.3.4"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

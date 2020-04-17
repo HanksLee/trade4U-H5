@@ -198,6 +198,11 @@ export default class extends BaseReact {
     const max = Math.max(maxBuy ? maxBuy[1] : 0, maxSell ? maxSell[1] : 0);
     const min = Math.min(minBuy ? minBuy[2] : 0, minSell ? minSell[2] : 0);
     const interval = +(((max - min) / 10).toFixed(2));
+    console.log('min', min);
+    console.log('max', max);
+    console.log('interval', interval);
+
+
 
     this.$myChart.setOption({
       ...chartOption,
@@ -274,31 +279,44 @@ export default class extends BaseReact {
     }} = this.props;
 
     if (!prevSelectedId || +prevSelectedId != id) {
+      if (this.wsConnect) this.wsConnect.close();
 
-      if (this.wsConnect) {
-        this.wsConnect.close();
+      this.wsConnect = ws(`symbol/${id}/trend`);
+      this.wsConnect.onmessage = evt => {
+        const msg = evt.data;
+        const data = JSON.parse(msg).data;
+        console.log('data', data);
 
-        this.wsConnect.onclose = evt => {
-          this.wsConnect = ws(`symbol/${id}/trend`);
-          this.wsConnect.onmessage = evt => {
-            const msg = evt.data;
-
-            const data = JSON.parse(msg).data;
-
-            this.updateTrendData(data);
-            this.initChart();
-          }
-        }
-      } else {
-        this.wsConnect = ws(`symbol/${id}/trend`);
-        this.wsConnect.onmessage = evt => {
-          const msg = evt.data;
-          const data = JSON.parse(msg).data;
-
-          this.updateTrendData(data);
-          this.initChart();
-        }
+        this.updateTrendData(data);
+        this.initChart();
       }
+
+      // if (this.wsConnect) {
+      //   this.wsConnect.close();
+      //
+      //   this.wsConnect.onclose = evt => {
+      //     this.wsConnect = ws(`symbol/${id}/trend`);
+      //     this.wsConnect.onmessage = evt => {
+      //       const msg = evt.data;
+      //
+      //       const data = JSON.parse(msg).data;
+      //
+      //       this.updateTrendData(data);
+      //       this.initChart();
+      //     }
+      //   }
+      // } else {
+      //   this.wsConnect = ws(`symbol/${id}/trend`);
+      //   this.wsConnect.onmessage = evt => {
+      //     const msg = evt.data;
+      //     const data = JSON.parse(msg).data;
+      //     console.log('data', data);
+      //
+      //
+      //     this.updateTrendData(data);
+      //     this.initChart();
+      //   }
+      // }
     }
   }
 
@@ -383,6 +401,7 @@ export default class extends BaseReact {
             position: 'center',
             closeTimeout: 2000,
           });
+          this.wsConnect.close();
           this.$f7router.back({
             force: true,
           });
@@ -410,7 +429,8 @@ export default class extends BaseReact {
             position: 'center',
             closeTimeout: 2000,
           });
-          this.$f7.router.app.views.main.router.back('/trade/', {
+          this.wsConnect.close();
+          this.$f7router.back('/trade/', {
             force: true,
           });
         }
@@ -546,7 +566,10 @@ export default class extends BaseReact {
       }}>
         <Navbar>
           <NavLeft>
-            <Link onClick={() => this.$f7router.back({force: true})}>
+            <Link onClick={() => {
+              this.wsConnect.close();
+              this.$f7router.back({force: true})
+            }}>
               <Icon color={'white'} f7={'chevron_left'} size={r(18)}></Icon>
             </Link>
           </NavLeft>
@@ -816,8 +839,8 @@ export default class extends BaseReact {
                         position: 'center',
                         closeTimeout: 2000,
                       });
-
-                      this.$f7.router.app.views.main.router.back('/trade/', {
+                      this.wsConnect.close();
+                      this.$f7router.back('/trade/', {
                         force: true,
                       });
                     }
@@ -828,6 +851,8 @@ export default class extends BaseReact {
                       closeTimeout: 2000,
                     });
                   }
+
+
                 }}
                 width={'50'}
                 className={`bg-down trade-detail-action`}>
@@ -852,8 +877,8 @@ export default class extends BaseReact {
                       position: 'center',
                       closeTimeout: 2000,
                     });
-
-                    this.$f7.router.app.views.main.router.back('/trade/', {
+                    this.wsConnect.close();
+                    this.$f7router.back('/trade/', {
                       force: true,
                     });
                   }
