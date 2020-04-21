@@ -320,6 +320,13 @@ export default class extends BaseReact {
     }
   }
 
+  componentWillUnmount = () => {
+
+    if (this.wsConnect) {
+      this.wsConnect.close()
+    }
+  }
+
   onTradeTypeChanged = (currentTradeType) => {
     this.setState({
       currentTradeType,
@@ -403,7 +410,7 @@ export default class extends BaseReact {
           });
           this.wsConnect.close();
           this.$f7router.back({
-            force: true,
+            force: false,
           });
         }
 
@@ -431,7 +438,7 @@ export default class extends BaseReact {
           });
           this.wsConnect.close();
           this.$f7router.back('/trade/', {
-            force: true,
+            force: false,
           });
         }
       } catch (e) {
@@ -568,7 +575,7 @@ export default class extends BaseReact {
           <NavLeft>
             <Link onClick={() => {
               this.wsConnect.close();
-              this.$f7router.back({force: true})
+              this.$f7router.back({force: false})
             }}>
               <Icon color={'white'} f7={'chevron_left'} size={r(18)}></Icon>
             </Link>
@@ -577,7 +584,7 @@ export default class extends BaseReact {
             <span style={{marginRight: r(8)}} onClick={
               () => {
                 if (mode == 'add') {
-                  this.wsConnect.close();
+                  // this.wsConnect.close();
                   this.$f7router.navigate('/products/', {
                     props: {
                       selectedId: id,
@@ -841,7 +848,7 @@ export default class extends BaseReact {
                       });
                       this.wsConnect.close();
                       this.$f7router.back('/trade/', {
-                        force: true,
+                        force: false,
                       });
                     }
                   } catch (e) {
@@ -879,7 +886,7 @@ export default class extends BaseReact {
                     });
                     this.wsConnect.close();
                     this.$f7router.back('/trade/', {
-                      force: true,
+                      force: false,
                     });
                   }
                 } catch (e) {

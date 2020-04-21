@@ -168,6 +168,12 @@ export default class extends BaseReact {
     };
   };
 
+  componentWillUnmount = () => {
+    if (this.wsConnect) {
+      this.wsConnect.close()
+    }
+  }
+
   goToPage = (url, opts = {}) => {
     this.$f7router.navigate(url, opts);
   };
