@@ -11,13 +11,13 @@ import store from 'store';
 import intl from 'react-intl-universal';
 import enLocale from '../locales/en-US';
 import cnLocale from '../locales/zh-CN';
-import VConsole from 'vconsole';
 
 import '../css/icons.css';
 import '../css/app.scss';
 
 if (process.env.MODE != 'prod') {
-  new VConsole();
+  const eruda = require('../../node_modules/eruda/eruda.js');
+  eruda.init();
 }
 
 

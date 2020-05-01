@@ -64,8 +64,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-intl-universal": "^2.2.5",
-    "template7": "^1.4.2",
-    "vconsole": "^3.3.4"
+    "template7": "^1.4.2"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -84,6 +83,7 @@
     "cpy-cli": "^3.1.0",
     "cross-env": "^7.0.2",
     "css-loader": "^3.4.2",
+    "eruda": "^2.3.2",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.0.3",
     "mini-css-extract-plugin": "^0.9.0",
