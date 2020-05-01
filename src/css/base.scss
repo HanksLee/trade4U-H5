@@ -26,3 +26,24 @@ body {
   height: calc(100vh - 50px);
   overflow: scroll;
 }
+
+#app {
+  transform: translateZ(0);
+  animation-name: 'repaint';
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+  animation-timing-function: linear;
+}
+
+@keyframes repaint {
+  0% {
+    zoom: 99.99999%;
+  }
+  99% {
+    zoom: 99.99999%;
+  }
+  100% {
+    zoom: 99.99998%;
+  }
+}
