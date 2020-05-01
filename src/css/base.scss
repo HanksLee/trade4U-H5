@@ -29,7 +29,7 @@ body {
 
 #app {
   transform: translateZ(0);
-  animation-name: 'repaint';
+  animation-name: repaint;
   animation-duration: 2s;
   animation-iteration-count: infinite;
   animation-play-state: running;
