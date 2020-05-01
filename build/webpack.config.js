@@ -255,7 +255,8 @@ module.exports = {
           : false,
     }),
     new MiniCssExtractPlugin({
-      filename: "css/[name].css",
+      filename: env === "production" ? 'css/[name].[chunkhash:5].css' : 'css/[name].css',
+      chunkFilename: env === "production" ? 'css/[name].[chunkhash:5].css' : 'css/[name].css',
     }),
     new CopyWebpackPlugin([
       {
