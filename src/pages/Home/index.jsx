@@ -11,10 +11,11 @@ export default class extends React.Component {
       const token = utils.getLStorage('MOON_H5_TOKEN');
     });
 
+    document.querySelector('.framework7-root').style.height = "99.99%";
     setTimeout(() => {
       console.log('repaint')
-      document.querySelector('.page .page-current').style.height = "100%";
-    }, 5000);
+      document.querySelector('.framework7-root').style.height = "100%";
+    }, 2000);
   }
 
   render() {
