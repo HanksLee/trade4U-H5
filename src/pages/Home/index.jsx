@@ -11,7 +11,10 @@ export default class extends React.Component {
       const token = utils.getLStorage('MOON_H5_TOKEN');
     });
 
-    window.dispatchEvent(new Event('resize'));
+    setTimeout(() => {
+      console.log('repaint')
+      document.querySelector('.page .page-current').style.height = "100%";
+    }, 5000);
   }
 
   render() {
@@ -23,17 +26,13 @@ export default class extends React.Component {
           <View id="view-trade" name="交易" tab url="/trade/" />
           <View id="view-history" name="历史" tab url="/history/" />
           <View id="view-settings" name="设置" tab url="/settings/" />
-          {
-            this.state.showToolbar && (
-              <Toolbar tabbar labels bottom className="app-tabbar">
-                <Link tabLink="#view-market" tabLinkActive icon="market-icon" text="行情" />
-                <Link tabLink="#view-chart" icon="chart-icon" text="图表" />
-                <Link tabLink="#view-trade"  icon="trade-icon" text="交易" />
-                <Link tabLink="#view-history" icon="history-icon" text="历史" />
-                <Link tabLink="#view-settings" icon="settings-icon" text="设置" />
-              </Toolbar>
-            )
-          }
+          <Toolbar tabbar labels bottom className="app-tabbar">
+            <Link tabLink="#view-market" tabLinkActive icon="market-icon" text="行情" />
+            <Link tabLink="#view-chart" icon="chart-icon" text="图表" />
+            <Link tabLink="#view-trade"  icon="trade-icon" text="交易" />
+            <Link tabLink="#view-history" icon="history-icon" text="历史" />
+            <Link tabLink="#view-settings" icon="settings-icon" text="设置" />
+          </Toolbar>
         </Views>
       </Page>
     )

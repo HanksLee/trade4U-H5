@@ -26,14 +26,3 @@ body {
   height: calc(100vh - 50px);
   overflow: scroll;
 }
-
-#app {
-  transform: translateZ(0);
-  animation-name: repaint;
-  animation-duration: 20s;
-  animation-iteration-count: infinite;
-  animation-play-state: running;
-  animation-timing-function: linear;
-}
-
-@keyframes repaint {from { zoom: 99.99999%; } to { zoom: 99.99998%; }}
