@@ -3,16 +3,22 @@ import { Page, Views, View, Toolbar, Link, LoginScreen } from 'framework7-react'
 import utils from 'utils';
 
 export default class extends React.Component {
+  state = {
+    showApp: false,
+  }
   componentDidMount() {
     this.$f7ready((f7) => {
       const token = utils.getLStorage('MOON_H5_TOKEN');
     });
 
-    window.dispatchEvent(new Event('resize'));
-    console.log('dispatchEvent', 'resize');
+    this.setState({
+      showApp: true,
+    })
   }
 
   render() {
+    if (!this.state.showApp) return null;
+    console.log('redraw');
     return (
       <Page name="home">
         <Views tabs className="safe-areas">
