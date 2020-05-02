@@ -63,29 +63,33 @@ export default class extends React.Component {
           const sellItemDom = $$($$('.self-select-sell-block')[index])
           if (data.buy > item.product_details.buy) {
             clearTimeout(this.buyTimers[index])
+            buyItemDom.removeClass('decrease')
             buyItemDom.addClass('increase')
             this.buyTimers[index] = setTimeout(() => {
-              buyItemDom && buyItemDom.hasClass('increase') && buyItemDom.removeClass('increase')
+              buyItemDom && buyItemDom.removeClass('increase')
             }, 2000);
           } else if (data.buy < item.product_details.buy) {
             clearTimeout(this.buyTimers[index])
+            buyItemDom.removeClass('increase')
             buyItemDom.addClass('decrease')
             this.buyTimers[index] = setTimeout(() => {
-              buyItemDom && buyItemDom.hasClass('decrease') && buyItemDom.removeClass('decrease')
+              buyItemDom && buyItemDom.removeClass('decrease')
             }, 2000);
           }
 
           if (data.sell > item.product_details.sell) {
             clearTimeout(this.sellTimers[index])
+            sellItemDom.removeClass('decrease')
             sellItemDom.addClass('increase')
             this.sellTimers[index] = setTimeout(() => {
-              sellItemDom && sellItemDom.hasClass('increase') && sellItemDom.removeClass('increase')
+              sellItemDom && sellItemDom.removeClass('increase')
             }, 2000);
           } else if (data.sell < item.product_details.sell) {
             clearTimeout(this.sellTimers[index])
+            sellItemDom.removeClass('increase')
             sellItemDom.addClass('decrease')
             this.sellTimers[index] = setTimeout(() => {
-              sellItemDom && sellItemDom.hasClass('decrease') && sellItemDom.removeClass('decrease')
+              sellItemDom && sellItemDom.removeClass('decrease')
             }, 2000);
           }
 
