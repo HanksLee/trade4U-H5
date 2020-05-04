@@ -71,8 +71,10 @@ export default class extends React.Component {
     let scrollTop = $$(".history-page .page-content")[0].scrollTop;
     let scrollHeight = $$(".history-page .page-content")[0].scrollHeight;
 
+    console.log(window.innerHeight, scrollTop, scrollHeight);
+
     // Checks that the page has scrolled to the bottom
-    if (window.innerHeight + scrollTop === scrollHeight) {
+    if (window.innerHeight + scrollTop >= scrollHeight) {
       this.getList();
     }
   };
