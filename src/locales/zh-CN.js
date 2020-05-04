@@ -1,5 +1,6 @@
 module.exports = {
   "settings.setting": "设置",
+  "settings.confirm": "确认",
   "settings.lang": "语言",
   "settings.lang.chinese": "中文",
   "settings.lang.english": "英文",
@@ -25,6 +26,8 @@ module.exports = {
   "settings.account.birth.extra": "请选择出生日期",
   "settings.account.id-card": "身分证号",
   "settings.account.id-card.placeholder": "请输入身分证号",
+  "settings.account.id-card-front.placeholder": "上传身分证正面",
+  "settings.account.id-card-back.placeholder": "上传身分证反面",
   "settings.account.id-card-photo": "身分证照片",
   "settings.account.mobile": "电话",
   "settings.account.mobile.placeholder": "请输入电话",

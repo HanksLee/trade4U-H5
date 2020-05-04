@@ -36,6 +36,8 @@ export default class extends React.Component {
     id_card_back: "",
     emailError: false,
     idCardError: false,
+    mobileError: false,
+    postalError: false,
   };
 
   componentDidMount() {
@@ -78,16 +80,48 @@ export default class extends React.Component {
 
   onErrorClick = () => {
     if (this.state.emailError) {
-      Toast.info("信箱格式有誤");
+      Toast.info("信箱格式有误");
     }
 
     if (this.state.idCardError) {
-      Toast.info("身分證只能有英文和數字");
+      Toast.info("身分证只能有数字");
+    }
+
+    if (this.state.mobileError) {
+      Toast.info("手机号只能有数字");
+    }
+
+    if (this.state.postalError) {
+      Toast.info("邮递区号只能有数字");
     }
   };
 
-  onIdCardBlur = (value) => {
-    if (vaidator.isEmail(value)) {
+  onMobileBlur = (value) => {
+    if (/^[0-9]*$/.test(value) == false) {
+      this.setState({
+        idCardError: true,
+      });
+    } else {
+      this.setState({
+        idCardError: false,
+      });
+    }
+  };
+
+  onPostalBlur = (value) => {
+    if (/^[0-9]*$/.test(value) == false) {
+      this.setState({
+        idCardError: true,
+      });
+    } else {
+      this.setState({
+        idCardError: false,
+      });
+    }
+  };
+
+  onIDCardBlur = (value) => {
+    if (/^[0-9]*$/.test(value) == false) {
       this.setState({
         idCardError: true,
       });
@@ -100,8 +134,9 @@ export default class extends React.Component {
 
   onEmailBlur = (value) => {
     if (
-      / ^ ([\w\.\-]){1,64} \@ ([\w\.\-]){1,64} $ /.test(value) === false &&
-      value !== ""
+      /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/.test(
+        value
+      ) === false
     ) {
       this.setState({
         emailError: true,
@@ -144,11 +179,11 @@ export default class extends React.Component {
         const res = await api.setting.updateAccountInfo(payload);
 
         if (res.status === 200) {
-          Toast.success("帳號資料更新成功", 1);
+          Toast.success("帐号资料更新成功", 1);
           this.getList();
         }
       } else {
-        Toast.fail("格式有誤，請再做檢查", 2);
+        Toast.fail("格式有误，请再做检查", 2);
       }
     });
   };
@@ -164,7 +199,9 @@ export default class extends React.Component {
           class="text-color-white"
         >
           <NavRight>
-            <div onClick={this.handleSubmit}>確認</div>
+            <div onClick={this.handleSubmit}>
+              {intl.get("settings.confirm")}
+            </div>
           </NavRight>
         </Navbar>
         <div className="info-status-wrap">
@@ -280,15 +317,9 @@ export default class extends React.Component {
             {...getFieldProps("id_card", {
               initialValue: userInfo["id_card"] || "",
               validateTrigger: "onBlur",
-              rules: [
-                {
-                  pattern: /^.[A-Za-z0-9]+$/,
-                  message: "身分證號只能輸入英文和數字",
-                },
-              ],
             })}
             error={this.state.idCardError}
-            onBlur={this.onIdCardBlur}
+            onBlur={this.onIDCardBlur}
             onErrorClick={this.onErrorClick}
             placeholder={intl.get("settings.account.id-card.placeholder")}
           >
@@ -320,7 +351,9 @@ export default class extends React.Component {
               <div className="upload-image-preview">
                 <div>
                   <img src="../../../assets/img/camera.svg" alt="camera" />
-                  <p className="ant-upload-text">上傳身分證正面</p>
+                  <p className="ant-upload-text">
+                    {intl.get("settings.account.id-card-front.placeholder")}
+                  </p>
                 </div>
               </div>
             )}
@@ -343,7 +376,9 @@ export default class extends React.Component {
               <div className="upload-image-preview">
                 <div>
                   <img src="../../../assets/img/camera.svg" alt="camera" />
-                  <p className="ant-upload-text">上傳身分證反面</p>
+                  <p className="ant-upload-text">
+                    {intl.get("settings.account.id-card-back.placeholder")}
+                  </p>
                 </div>
               </div>
             )}
@@ -357,14 +392,11 @@ export default class extends React.Component {
             {...getFieldProps("mobile", {
               initialValue: userInfo["mobile"] || "",
               validateTrigger: "onBlur",
-              rules: [
-                {
-                  pattern: /[^/d] /g,
-                  message: "手機號只能輸入數字",
-                },
-              ],
             })}
-            type="digit"
+            type="number"
+            error={this.state.mobileError}
+            onBlur={this.onMobileBlur}
+            onErrorClick={this.onErrorClick}
             placeholder={intl.get("settings.account.mobile.placeholder")}
           >
             {intl.get("settings.account.mobile")}
@@ -422,14 +454,11 @@ export default class extends React.Component {
             {...getFieldProps("postal", {
               initialValue: userInfo["postal"] || "",
               validateTrigger: "onBlur",
-              rules: [
-                {
-                  pattern: /[^/d] /g,
-                  message: "郵遞區號只能輸入數字",
-                },
-              ],
             })}
-            type="digit"
+            type="number"
+            error={this.state.postalError}
+            onBlur={this.onPostalBlur}
+            onErrorClick={this.onErrorClick}
             placeholder={intl.get("settings.account.postal-code.placeholder")}
           >
             {intl.get("settings.account.postal-code")}
@@ -443,12 +472,6 @@ export default class extends React.Component {
             {...getFieldProps("email", {
               initialValue: userInfo["email"] || "",
               validateTrigger: "onBlur",
-              rules: [
-                {
-                  pattern: / ^ ([\w\.\-]){1,64} \@ ([\w\.\-]){1,64} $ /,
-                  message: "信箱格式錯誤",
-                },
-              ],
             })}
             placeholder={intl.get("settings.account.email.placeholder")}
             error={this.state.emailError}

@@ -1,5 +1,6 @@
 module.exports = {
   "settings.setting": "setting",
+  "settings.confirm": "confirm",
   "settings.lang": "language",
   "settings.lang.chinese": "Chinese",
   "settings.lang.english": "English",
@@ -26,6 +27,8 @@ module.exports = {
   "settings.account.birth.extra": "Select Birth.",
   "settings.account.id-card": "ID Card",
   "settings.account.id-card.placeholder": "Input ID Card",
+  "settings.account.id-card-front.placeholder": "upload front of ID card",
+  "settings.account.id-card-back.placeholder": "upload back of ID card",
   "settings.account.mobile": "mobile",
   "settings.account.mobile.placeholder": "Input Mobile",
   "settings.account.id-card-photo": "ID Card's Photo",

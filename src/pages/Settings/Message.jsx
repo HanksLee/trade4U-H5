@@ -1,29 +1,47 @@
 import intl from "react-intl-universal";
 import React from "react";
 import utils from "utils";
-import {
-  List,
-  InputItem,
-  DatePicker,
-  WhiteSpace,
-  Picker,
-  Toast,
-} from "antd-mobile";
 import { Page, Navbar } from "framework7-react";
 import api from "services";
 import moment from "moment";
+import ws from "utils/ws";
 import "./index.scss";
 
 export default class extends React.Component {
+  wsConnect = null;
   state = {
     announcement: {},
     notification: {},
+    hasNotify: false,
+    hasAnnouncement: false,
   };
 
   componentWillMount() {
     this.getNotificationMessageList();
     this.getMessageList();
+    this.connnetWebsocket();
   }
+
+  componentWillUnmount = () => {
+    if (this.wsConnect) {
+      this.wsConnect.close();
+    }
+  };
+
+  connnetWebsocket = () => {
+    this.wsConnect = ws("notify");
+    this.wsConnect.onmessage = (event) => {
+      const message = event.data;
+
+      const type = JSON.parse(message).type;
+      if (type == "notify") {
+        this.setState({ hasNotify: true });
+      }
+      if (type == "announcement") {
+        this.setState({ hasAnnouncement: true });
+      }
+    };
+  };
 
   goAnnouncement = () => {
     this.$f7router.navigate("/settings/message/announcement");
@@ -50,46 +68,24 @@ export default class extends React.Component {
         announcement: res.data.results[0],
       });
     }
-
-    // res.data.results.forEach(function(item, index, array) {
-    //   if (tempArray.indexOf(item.message_type_title) < 0) {
-    //     tempArray.push(item.message_type_title);
-    //   }
-    // });
-
-    // const announcement = res.data.results.find(function(item, index, array) {
-    //   return item.message_type_title == tempArray[0];
-    // });
-
-    // const notice = res.data.results.find(function(item, index, array) {
-    //   return item.message_type_title == tempArray[1];
-    // });
-
-    // this.setState({
-    //   announcement: announcement,
-    //   notice: notice
-    // });
   };
 
   render() {
-    const { announcement, notification } = this.state;
+    const { announcement, notification, hasNotify } = this.state;
     return (
       <Page>
         <Navbar
           title={intl.get("settings.message")}
           backLink="Back"
-          class="text-color-white"
-        >
-          {/* <NavRight>
-            <div onClick={this.handleSubmit}>確認</div>
-          </NavRight> */}
-        </Navbar>
+          className="text-color-white"
+        ></Navbar>
         {announcement && (
           <div
             className="message-wrap announcement"
             onClick={this.goAnnouncement}
           >
             <div className="message-icon-container">
+              {hasNotify && <span className="has-unread-message"></span>}
               <img
                 src="../../../assets/img/announcement-icon.svg"
                 alt="announcement-icon.svg"
@@ -115,14 +111,14 @@ export default class extends React.Component {
               </p>
             </div>
             <div className="message-goto-container">
-              <span>></span>
+              <i className="icon icon-forward"></i>
             </div>
           </div>
         )}
-        {/* <WhiteSpace size="xs" /> */}
         {notification && (
           <div className="message-wrap" onClick={this.goNotification}>
             <div className="message-icon-container">
+              {hasNotify && <span className="has-unread-message"></span>}
               <img
                 src="../../../assets/img/notice-icon.svg"
                 alt="notice-icon.svg"
@@ -144,7 +140,7 @@ export default class extends React.Component {
               </p>
             </div>
             <div className="message-goto-container">
-              <span>></span>
+              <i className="icon icon-forward"></i>
             </div>
           </div>
         )}
