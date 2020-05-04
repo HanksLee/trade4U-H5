@@ -43,8 +43,8 @@ module.exports = {
   },
   output: {
     path: resolvePath("www"),
-    filename: "js/[name].js",
-    chunkFilename: "js/[name].js",
+    filename: env === "production" ? 'assets/js/build.[chunkhash:5].js' : 'build.js',
+    chunkFilename: env === "production" ? 'assets/js/[name].[chunkhash:5].js' : '[name].js',
     publicPath: "",
     hotUpdateChunkFilename: "hot/hot-update.js",
     hotUpdateMainFilename: "hot/hot-update.json",
@@ -255,7 +255,8 @@ module.exports = {
           : false,
     }),
     new MiniCssExtractPlugin({
-      filename: "css/[name].css",
+      filename: env === "production" ? 'css/[name].[chunkhash:5].css' : 'css/[name].css',
+      chunkFilename: env === "production" ? 'css/[name].[chunkhash:5].css' : 'css/[name].css',
     }),
     new CopyWebpackPlugin([
       {

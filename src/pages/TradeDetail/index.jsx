@@ -76,7 +76,7 @@ export default class extends BaseReact {
     lossValue: undefined,
     profitValue: undefined,
     priceValue: undefined,
-    lotsValue: 0.01,
+    lotsValue: 0,
 
     chartOption: {
       title: {
@@ -119,7 +119,6 @@ export default class extends BaseReact {
   }
 
   componentDidMount() {
-    print('1111');
     this.initSymbolList();
     this.initTrade();
     this.initChart();
@@ -147,12 +146,15 @@ export default class extends BaseReact {
         : id,
     );
 
-    const {currentSymbol} = this.props.market;
+    const {currentShowSymbol} = this.props.market;
+    this.setState({
+      lotsValue: currentShowSymbol?.min_volume,
+    })
 
   }
 
   componentWillUnmount() {
-    console.log(1111);
+
   }
 
   initTrade = async () => {
@@ -196,6 +198,11 @@ export default class extends BaseReact {
     const max = Math.max(maxBuy ? maxBuy[1] : 0, maxSell ? maxSell[1] : 0);
     const min = Math.min(minBuy ? minBuy[2] : 0, minSell ? minSell[2] : 0);
     const interval = +(((max - min) / 10).toFixed(2));
+    console.log('min', min);
+    console.log('max', max);
+    console.log('interval', interval);
+
+
 
     this.$myChart.setOption({
       ...chartOption,
@@ -271,23 +278,52 @@ export default class extends BaseReact {
       currentShowSymbol,
     }} = this.props;
 
-    if (!prevSelectedId || prevSelectedId != id) {
+    if (!prevSelectedId || +prevSelectedId != id) {
+      if (this.wsConnect) this.wsConnect.close();
+
       this.wsConnect = ws(`symbol/${id}/trend`);
-    }
+      this.wsConnect.onmessage = evt => {
+        const msg = evt.data;
+        const data = JSON.parse(msg).data;
+        console.log('data', data);
 
-    this.wsConnect.onmessage = evt => {
-      const msg = evt.data;
-      const data = JSON.parse(msg).data;
-      this.updateTrendData(data);
-      console.log('data', data.timestamp);
+        this.updateTrendData(data);
+        this.initChart();
+      }
 
-      // this.props.market.setCurrentSymbol(data);
-
-      // for (var i = 0; i < 5; i++) {
-      //   data.shift();
-      //   data.push(randomData());
+      // if (this.wsConnect) {
+      //   this.wsConnect.close();
+      //
+      //   this.wsConnect.onclose = evt => {
+      //     this.wsConnect = ws(`symbol/${id}/trend`);
+      //     this.wsConnect.onmessage = evt => {
+      //       const msg = evt.data;
+      //
+      //       const data = JSON.parse(msg).data;
+      //
+      //       this.updateTrendData(data);
+      //       this.initChart();
+      //     }
+      //   }
+      // } else {
+      //   this.wsConnect = ws(`symbol/${id}/trend`);
+      //   this.wsConnect.onmessage = evt => {
+      //     const msg = evt.data;
+      //     const data = JSON.parse(msg).data;
+      //     console.log('data', data);
+      //
+      //
+      //     this.updateTrendData(data);
+      //     this.initChart();
+      //   }
       // }
-      this.initChart();
+    }
+  }
+
+  componentWillUnmount = () => {
+
+    if (this.wsConnect) {
+      this.wsConnect.close()
     }
   }
 
@@ -319,11 +355,11 @@ export default class extends BaseReact {
     const actionMode = this.props.mode;
 
     let payload = {
-      // trading_volume: lotsValue * (currentSymbol?.symbol_display?.contract_size),
-      // lots: lotsValue,
-      // symbol: currentSymbol.id,
-      // take_profit: profitValue,
-      // stop_loss: lossValue,
+      trading_volume: lotsValue * (currentSymbol?.symbol_display?.contract_size),
+      lots: lotsValue,
+      symbol: currentSymbol.id,
+      take_profit: profitValue,
+      stop_loss: lossValue,
     };
 
     if (actionMode == 'add') {
@@ -372,8 +408,9 @@ export default class extends BaseReact {
             position: 'center',
             closeTimeout: 2000,
           });
+          this.wsConnect.close();
           this.$f7router.back({
-            force: true,
+            force: false,
           });
         }
 
@@ -399,8 +436,9 @@ export default class extends BaseReact {
             position: 'center',
             closeTimeout: 2000,
           });
-          this.$f7.router.app.views.main.router.back('/trade/', {
-            force: true,
+          this.wsConnect.close();
+          this.$f7router.back('/trade/', {
+            force: false,
           });
         }
       } catch (e) {
@@ -535,7 +573,10 @@ export default class extends BaseReact {
       }}>
         <Navbar>
           <NavLeft>
-            <Link onClick={() => this.$f7router.back({force: true})}>
+            <Link onClick={() => {
+              this.wsConnect.close();
+              this.$f7router.back({force: false})
+            }}>
               <Icon color={'white'} f7={'chevron_left'} size={r(18)}></Icon>
             </Link>
           </NavLeft>
@@ -543,6 +584,7 @@ export default class extends BaseReact {
             <span style={{marginRight: r(8)}} onClick={
               () => {
                 if (mode == 'add') {
+                  // this.wsConnect.close();
                   this.$f7router.navigate('/products/', {
                     props: {
                       selectedId: id,
@@ -589,12 +631,12 @@ export default class extends BaseReact {
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
                   this.onLotsChanged(0-currentShowSymbol?.basic_step * 10);
-                }}>-{currentShowSymbol?.basic_step * 10}</span>
+                }}>{-currentShowSymbol?.basic_step * 10 || '-'}</span>
               </Col>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
                   this.onLotsChanged(0-currentShowSymbol?.basic_step);
-                }}>-{currentShowSymbol?.basic_step}</span>
+                }}>{-currentShowSymbol?.basic_step || '-'}</span>
               </Col>
               <Col width={'20'}>
                 <Input
@@ -616,12 +658,12 @@ export default class extends BaseReact {
                       onClick={() => {
                         this.onLotsChanged(currentShowSymbol?.basic_step);
                       }}
-                    >+{currentShowSymbol?.basic_step}</span>
+                    >{currentShowSymbol?.basic_step && '+' + currentShowSymbol?.basic_step || '-'}</span>
               </Col>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
                   this.onLotsChanged(currentShowSymbol?.basic_step * 10);
-                }}>+{currentShowSymbol?.basic_step * 10}</span>
+                }}>{currentShowSymbol?.basic_step && '+' + currentShowSymbol?.basic_step * 10 || '-'}</span>
               </Col>
             </Row>
           )
@@ -804,9 +846,9 @@ export default class extends BaseReact {
                         position: 'center',
                         closeTimeout: 2000,
                       });
-
-                      this.$f7.router.app.views.main.router.back('/trade/', {
-                        force: true,
+                      this.wsConnect.close();
+                      this.$f7router.back('/trade/', {
+                        force: false,
                       });
                     }
                   } catch (e) {
@@ -816,6 +858,8 @@ export default class extends BaseReact {
                       closeTimeout: 2000,
                     });
                   }
+
+
                 }}
                 width={'50'}
                 className={`bg-down trade-detail-action`}>
@@ -840,9 +884,9 @@ export default class extends BaseReact {
                       position: 'center',
                       closeTimeout: 2000,
                     });
-
-                    this.$f7.router.app.views.main.router.back('/trade/', {
-                      force: true,
+                    this.wsConnect.close();
+                    this.$f7router.back('/trade/', {
+                      force: false,
                     });
                   }
                 } catch (e) {

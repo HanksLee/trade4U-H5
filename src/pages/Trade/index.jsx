@@ -73,6 +73,8 @@ export default class extends BaseReact {
   // }
 
   componentDidMount() {
+    console.log('init----');
+
     this.initData();
     this.connectWebsocket();
   }
@@ -161,16 +163,18 @@ export default class extends BaseReact {
           );
         }
         setTradeList(list);
-
-        this.wsConnect.close();
+        setTradeList(futureList, 'future');
       }
     };
   };
 
-  goToPage = (url, opts = {}) => {
-    // this.$f7router.navigate(url, opts);
+  componentWillUnmount = () => {
+    if (this.wsConnect) {
+      this.wsConnect.close()
+    }
+  }
 
-    // this.$f7.router.app.views.main.router.navigate(url, opts);
+  goToPage = (url, opts = {}) => {
     this.$f7router.navigate(url, opts);
   };
 
@@ -480,48 +484,48 @@ export default class extends BaseReact {
                 tradeActionMap[currentTrade?.action]
               } ${currentTrade?.profit}`}
             </ActionsLabel>
-            <ActionsButton color={"red"}>
-              <span
-                onClick={() =>
-                  this.goToPage(`/trade/${currentTrade?.symbol}/`, {
-                    props: {
-                      mode: "close",
-                    },
-                  })
-                }
+            <ActionsButton color={"red"}
+                           onClick={() =>
+                             this.goToPage(`/trade/${currentTrade?.symbol}/`, {
+                               props: {
+                                 mode: "close",
+                               },
+                             })
+                           }
+            >
+              <div
               >
                 平仓
-              </span>
+              </div>
             </ActionsButton>
-            <ActionsButton>
+            <ActionsButton onClick={() =>
+              this.goToPage(`/trade/${currentTrade?.symbol}/`, {
+                props: {
+                  mode: "update",
+                },
+              })
+            }>
               <span
-                onClick={() =>
-                  this.goToPage(`/trade/${currentTrade?.symbol}/`, {
-                    props: {
-                      mode: "update",
-                    },
-                  })
-                }
+
               >
                 修改
               </span>
             </ActionsButton>
-            <ActionsButton>
+            <ActionsButton                 onClick={() =>
+              this.goToPage(`/trade/${currentTrade?.symbol}/`, {
+                props: {
+                  mode: "add",
+                },
+              })
+            }>
               <span
-                onClick={() =>
-                  this.goToPage(`/trade/${currentTrade?.symbol}/`, {
-                    props: {
-                      mode: "add",
-                    },
-                  })
-                }
+
               >
                 交易
               </span>
             </ActionsButton>
-            <ActionsButton>
+            <ActionsButton onClick={() => this.goToPage(`/chart/${currentTrade?.symbol}/`)}>
               <span
-                onClick={() => this.goToPage(`/chart/${currentTrade?.symbol}/`)}
               >
                 图表
               </span>

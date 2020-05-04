@@ -36,12 +36,13 @@ export default class extends React.Component {
         name="trade-products"
         className={"trade-products"}
         onPtrRefresh={this.onRefresh}
+        noToolbar
       >
         <Navbar>
           <NavLeft>
             <Link
               onClick={() =>
-                this.$f7router.back({
+                this.$f7router.back(`/trade/${selectedId}/`, {
                   props: {
                     mode,
                     id: selectedId,
