@@ -3,26 +3,22 @@ import { Page, Navbar, List, ListItem } from 'framework7-react';
 import './index.scss';
 
 export default class extends React.Component {
-  constructor() {
-    super();
-
+  constructor(props) {
+    super(props)
     this.state = {
-      products: this.$f7.data.products,
+      id: this.$f7route.params.id,
     }
   }
+
   render() {
+    const { id, } = this.state;
+
     return (
       <Page name="chart">
-        <Navbar title="Chart" />
-        <List>
-          {this.state.products.map((product) => (
-            <ListItem
-              key={product.id}
-              title={product.title}
-              link={`/product/${product.id}/`}
-            />
-          ))}
-        </List>
+        <Navbar title="图表" />
+        {
+          id ? <span>敬请期待</span> : <span>暂无图表数据</span>
+        }
       </Page>
     );
   }
