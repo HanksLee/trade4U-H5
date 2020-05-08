@@ -31,8 +31,7 @@ export default class API {
         return res;
       },
       (err) => {
-        console.log(err);
-        if (err && err.data) {
+        if (err) {
           const {
             response: { data, status },
           } = err;
