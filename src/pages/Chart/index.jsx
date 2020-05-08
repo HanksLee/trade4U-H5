@@ -1,5 +1,6 @@
 import React from 'react';
-import { Page, Navbar, List, ListItem } from 'framework7-react';
+import { Page, Navbar } from 'framework7-react';
+import TVChartContainer from './TVChartContainer';
 import './index.scss';
 
 export default class extends React.Component {
@@ -16,9 +17,7 @@ export default class extends React.Component {
     return (
       <Page name="chart">
         <Navbar title="图表" />
-        {
-          id ? <span>敬请期待</span> : <span>暂无图表数据</span>
-        }
+        <TVChartContainer />
       </Page>
     );
   }
