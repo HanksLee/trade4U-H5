@@ -91,7 +91,7 @@ var routes = [
     },
   },
   {
-    path: "/chart/:id",
+    path: "/chart/:id?",
     options: {
       history: true,
     },

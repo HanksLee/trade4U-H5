@@ -1,6 +1,6 @@
 import api from 'services';
 import React from 'react';
-import { Page, Navbar, List, ListItem, NavTitle, NavRight, NavLeft, Icon, Link } from 'framework7-react';
+import { Page, Navbar, List, ListItem, NavTitle, NavRight, NavLeft, Icon, Link, Searchbar, Subnavbar } from 'framework7-react';
 import './index.scss';
 import { inject, observer } from "mobx-react";
 
@@ -13,13 +13,12 @@ export default class extends React.Component {
     super(props)
 
     this.symbolTypeName = this.$f7route.params.symbol_type_name
-    this.isLoading = false
     this.state = {
-      symbolTypeName: '',
       symbolList: [],
       page: 0,
       next: null,
       selectedSymbols: [],
+      isLoading: true,
     }
   }
   
@@ -31,26 +30,41 @@ export default class extends React.Component {
     })
   }
 
-  getSymbolList = async (query) => {
+  getSymbolList = async (query, init = true) => {
+    this.setState({
+      isLoading: true,
+    })
     const res = await api.market.getSymbolList({ params: query, })
     const { selfSelectSymbolList, } = this.props.market
-    const ids = selfSelectSymbolList.map(item => item.id)
-    this.setState((preState) => ({
-      symbolList: [...this.state.symbolList, ...res.data.results.filter(item => ids.indexOf(item.id) === -1)],
-      next: res.data.next,
-      page: preState.page + 1,
-    }))
-    this.isLoading = false
+    const ids = selfSelectSymbolList.map(item => item.symbol_display.id)
+
+    if (init) {
+      this.setState((preState) => ({
+        symbolList: [...res.data.results.filter(item => {
+          return ids.indexOf(item.symbol_display.id) === -1
+        })],
+        next: res.data.next,
+        page: 1,
+      }))
+    } else {
+      this.setState((preState) => ({
+        symbolList: [...this.state.symbolList, ...res.data.results.filter(item => ids.indexOf(item.id) === -1)],
+        next: res.data.next,
+        page: preState.page + 1,
+      }))
+    }
+    this.setState({
+      isLoading: false,
+    })
   }
 
   loadMoreSymbol = async () => {
-    if (this.state.next && !this.isLoading) {
-      this.isLoading = true
+    if (this.state.next && !this.state.isLoading) {
       this.getSymbolList({
         type__name: this.symbolTypeName,
         page: this.state.page + 1,
         pageSize,
-      })
+      }, false)
     }
   }
   
@@ -80,8 +94,25 @@ export default class extends React.Component {
     }))
   }
 
+  handleSearch = (e) => {
+    this.getSymbolList({
+      type__name: this.symbolTypeName,
+      search: e.target.value,
+      page: 1,
+      pageSize,
+    })
+  }
+
+  handleClearSearch = () => {
+    this.getSymbolList({
+      type__name: this.symbolTypeName,
+      page: 1,
+      pageSize,
+    })
+  }
+
   render() {
-    const { symbolList, symbolTypeName, selectedSymbols, } = this.state;
+    const { symbolList, selectedSymbols, isLoading, } = this.state;
 
     return (
       <Page noToolbar infinite infiniteDistance={50} onInfinite={this.loadMoreSymbol} infinitePreloader={this.state.next}>
@@ -91,12 +122,27 @@ export default class extends React.Component {
               <Icon color={'white'} f7={'chevron_left'} size={r(18)}></Icon>
             </Link>
           </NavLeft>
-          <NavTitle>{symbolTypeName}</NavTitle>
+          <NavTitle>{this.symbolTypeName}</NavTitle>
           <NavRight>
             <span onClick={this.confirm}>完成</span>
           </NavRight>
         </Navbar>
+        <div className="symbol-searchbar">
+          <Searchbar
+            customSearch={true}
+            disableButton={false}
+            placeholder="搜索交易产品"
+            clearButton={true}
+            onChange={this.handleSearch}
+            onClickClear={this.handleClearSearch}
+          />
+        </div>
         <List>
+          {
+            symbolList.length === 0 && (
+              <ListItem title={isLoading ? '加载中...' : '暂无数据'}></ListItem>
+            )
+          }
           {
             symbolList.map(item => {
               return (
