@@ -198,11 +198,14 @@ export default class extends React.Component {
           backLink="Back"
           class="text-color-white"
         >
-          <NavRight>
-            <div onClick={this.handleSubmit}>
-              {intl.get("settings.confirm")}
-            </div>
-          </NavRight>
+          {(userInfo["inspect_status"] === 0 ||
+            userInfo["inspect_status"] === 3) && (
+            <NavRight>
+              <div onClick={this.handleSubmit}>
+                {intl.get("settings.confirm")}
+              </div>
+            </NavRight>
+          )}
         </Navbar>
         <div className="info-status-wrap">
           <div className="info-status-line"></div>

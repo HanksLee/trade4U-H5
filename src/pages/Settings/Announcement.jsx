@@ -25,13 +25,16 @@ export default class extends React.Component {
           <div className="card-title-container">
             <p className="card-title">{announcement[item].title}</p>
             <p className="card-time">
-              {moment(announcement[item].create_time).format(
+              {moment(announcement[item].create_time * 1000).format(
                 "YYYY/MM/DD hh:mm:ss"
               )}
             </p>
           </div>
           <div className="card-content-container">
-            <p className="card-content">{announcement[item].content}</p>
+            <p
+              className="card-content"
+              dangerouslySetInnerHTML={{ __html: announcement[item].content }}
+            ></p>
           </div>
         </div>
       );

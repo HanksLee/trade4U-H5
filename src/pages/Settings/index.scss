@@ -18,10 +18,21 @@
   }
 }
 
-// div[id^="am-picker-popup-container"] {
-//   position: relative;
-//   z-index: 5000;
-// }
+.message-entry {
+  .message-icon-container {
+    width: 30px;
+    position: relative;
+    > .has-unread-message {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #f00;
+      position: absolute;
+      right: -3px;
+      top: -3px;
+    }
+  }
+}
 
 .info-status-wrap {
   position: relative;

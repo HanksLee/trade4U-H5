@@ -2,8 +2,11 @@ import intl from "react-intl-universal";
 import React from "react";
 import utils from "utils";
 import { Page, Navbar, List, ListItem, ListInput } from "framework7-react";
+import { inject, observer } from "mobx-react";
 import "./index.scss";
 
+@inject("message")
+@observer
 export default class extends React.Component {
   state = {
     currentLang: utils.getLStorage("MOON_H5_LANG"),
@@ -19,6 +22,7 @@ export default class extends React.Component {
 
   render() {
     const { currentLang } = this.state;
+    const { hasNotify, hasAnnouncement } = this.props.message;
     return (
       <Page name="settings">
         <Navbar title={intl.get("settings.setting")} />
@@ -67,12 +71,16 @@ export default class extends React.Component {
           <ListItem
             title={intl.get("settings.message")}
             link={`/settings/message`}
+            className="message-entry"
           >
-            <img
-              slot="media"
-              src="../../../assets/img/message-center-icon.svg"
-              width="30"
-            />
+            <div slot="media" className="message-icon-container">
+              {hasAnnouncement ||
+                (hasNotify && <span className="has-unread-message"></span>)}
+              <img
+                src="../../../assets/img/message-center-icon.svg"
+                width="30"
+              />
+            </div>
           </ListItem>
         </List>
       </Page>

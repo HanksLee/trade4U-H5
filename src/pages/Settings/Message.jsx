@@ -4,44 +4,47 @@ import utils from "utils";
 import { Page, Navbar } from "framework7-react";
 import api from "services";
 import moment from "moment";
-import ws from "utils/ws";
+// import ws from "utils/ws";
+import { inject, observer } from "mobx-react";
 import "./index.scss";
 
+@inject("message")
+@observer
 export default class extends React.Component {
   wsConnect = null;
   state = {
     announcement: {},
     notification: {},
-    hasNotify: false,
-    hasAnnouncement: false,
   };
 
   componentWillMount() {
     this.getNotificationMessageList();
     this.getMessageList();
-    this.connnetWebsocket();
+    // this.connnetWebsocket();
   }
 
-  componentWillUnmount = () => {
-    if (this.wsConnect) {
-      this.wsConnect.close();
-    }
-  };
+  // componentWillUnmount = () => {
+  //   if (this.wsConnect) {
+  //     this.wsConnect.close();
+  //   }
+  // };
 
-  connnetWebsocket = () => {
-    this.wsConnect = ws("notify");
-    this.wsConnect.onmessage = (event) => {
-      const message = event.data;
+  // connnetWebsocket = () => {
+  //   this.wsConnect = ws("notify");
+  //   console.log(this.wsConnect);
+  //   this.wsConnect.onmessage = (event) => {
+  //     console.log(event);
+  //     const message = event.data;
 
-      const type = JSON.parse(message).type;
-      if (type == "notify") {
-        this.setState({ hasNotify: true });
-      }
-      if (type == "announcement") {
-        this.setState({ hasAnnouncement: true });
-      }
-    };
-  };
+  //     const type = JSON.parse(message).type;
+  //     if (type == "notify") {
+  //       this.setState({ hasNotify: true });
+  //     }
+  //     if (type == "announcement") {
+  //       this.setState({ hasAnnouncement: true });
+  //     }
+  //   };
+  // };
 
   goAnnouncement = () => {
     this.$f7router.navigate("/settings/message/announcement");
@@ -71,7 +74,8 @@ export default class extends React.Component {
   };
 
   render() {
-    const { announcement, notification, hasNotify } = this.state;
+    const { announcement, notification } = this.state;
+    const { hasNotify, hasAnnouncement } = this.props.message;
     return (
       <Page>
         <Navbar
@@ -85,7 +89,7 @@ export default class extends React.Component {
             onClick={this.goAnnouncement}
           >
             <div className="message-icon-container">
-              {hasNotify && <span className="has-unread-message"></span>}
+              {hasAnnouncement && <span className="has-unread-message"></span>}
               <img
                 src="../../../assets/img/announcement-icon.svg"
                 alt="announcement-icon.svg"
@@ -97,18 +101,26 @@ export default class extends React.Component {
               </p>
               <p className="message-content-time">
                 <span className="message-date">
-                  {moment(announcement["create_time"]).format("YYYY/MM/DD")}
+                  {moment(announcement["create_time"] * 1000).format(
+                    "YYYY/MM/DD"
+                  )}
                 </span>
                 <span>
-                  {moment(announcement["create_time"]).format("hh:mm:ss")}
+                  {moment(announcement["create_time"] * 1000).format(
+                    "hh:mm:ss"
+                  )}
                 </span>
               </p>
-              <p className="message-content-content">
-                {announcement["content"] && announcement["content"].length > 20
-                  ? announcement["content"].substr(0, 20)
-                  : announcement["content"]}
-                ...
-              </p>
+              <p
+                className="message-content-content"
+                dangerouslySetInnerHTML={{
+                  __html:
+                    announcement["content"] &&
+                    announcement["content"].length > 20
+                      ? `${announcement["content"].substr(0, 20)}...`
+                      : announcement["content"],
+                }}
+              ></p>
             </div>
             <div className="message-goto-container">
               <i className="icon icon-forward"></i>
@@ -128,10 +140,14 @@ export default class extends React.Component {
               <p className="message-content-title">服务消息</p>
               <p className="message-content-time">
                 <span className="message-date">
-                  {moment(notification["create_time"]).format("YYYY/MM/DD")}
+                  {moment(notification["create_time"] * 1000).format(
+                    "YYYY/MM/DD"
+                  )}
                 </span>
                 <span>
-                  {moment(notification["create_time"]).format("hh:mm:ss")}
+                  {moment(notification["create_time"] * 1000).format(
+                    "hh:mm:ss"
+                  )}
                 </span>
               </p>
               <p className="message-content-content">

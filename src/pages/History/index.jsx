@@ -47,6 +47,7 @@ export default class extends React.Component {
     select_time_end: "",
     currentDatePicker: "",
     search: "",
+    tapIndex: -1,
   };
 
   componentDidMount() {
@@ -337,7 +338,7 @@ export default class extends React.Component {
   };
 
   renderHistoryList = () => {
-    const { historyList, dataLoading, totalData } = this.state;
+    const { historyList, dataLoading, totalData, tapIndex } = this.state;
 
     return (
       <>
@@ -348,20 +349,12 @@ export default class extends React.Component {
               id={index}
               key={index}
               className={`history-data`}
+              onClick={() => {
+                this.setState({
+                  tapIndex: tapIndex == index ? -1 : index,
+                });
+              }}
             >
-              <div className="balance-wrap">
-                <div className="balance-title">
-                  <div>结馀</div>
-                </div>
-                <div>
-                  <div className="balance-date">
-                    {moment(item.create_time * 1000).format(
-                      "YYYY.MM.DD HH:mm:ss"
-                    )}
-                  </div>
-                  <div className="balance-num">{item.after_balance}</div>
-                </div>
-              </div>
               {!utils.isEmpty(item.order) ? (
                 <div className={"history-data-top"}>
                   <strong>{item.order.symbol_name},</strong>
@@ -391,27 +384,122 @@ export default class extends React.Component {
                           : item.order.profit}
                       </p>
                     </Col>
-                    <Col width={"20"}>
+                    <Col width={"20"} style={{ textAlign: "right" }}>
                       <p>开仓</p>
-                      <p className={"p-down"}>{item.order.open_price}</p>
+                      <p>{item.order.open_price}</p>
                     </Col>
-                    <Col width={"20"}>
+                    <Col width={"20"} style={{ textAlign: "right" }}>
                       <p>目前</p>
-                      <p className={`p-up`}>{item.order.new_price}</p>
+                      <p>{item.order.new_price}</p>
                     </Col>
                   </Row>
                 </div>
               ) : (
                 <div className={"history-data-middle"}>
                   <Row className={"align-items-center"}>
-                    <Col width={"60"}></Col>
-                    <Col width={"20"}>
-                      <p>动作</p>
-                      <p className={"p-down"}>{item.cause}</p>
+                    <Col width={"30"} className="data-cause">
+                      {item.cause == "withdraw" && <strong>充值</strong>}
+                      {item.cause == "recharge" && <strong>提现</strong>}
                     </Col>
-                    <Col width={"20"}>
-                      <p>金额</p>
-                      <p className={`p-up`}>{item.amount}</p>
+                    <Col width={"30"} className="data-amount">
+                      {item.cause == "withdraw" && (
+                        <strong className={`p-up`}>+{item.amount}</strong>
+                      )}
+                      {item.cause == "recharge" && (
+                        <strong className={`p-down`}>-{item.amount}</strong>
+                      )}
+                    </Col>
+                    <Col width={"40"} className="data-time">
+                      <p>
+                        {moment(item.create_time * 1000).format("YYYY/MM/DD")}
+                      </p>
+                      <p>
+                        {moment(item.create_time * 1000).format("hh:mm:ss")}
+                      </p>
+                    </Col>
+                  </Row>
+                </div>
+              )}
+              {!utils.isEmpty(item.order) && (
+                <div
+                  className={`history-data-bottom ${
+                    tapIndex == index ? "active" : ""
+                  }`}
+                >
+                  <Row>
+                    <Col width={"50"}>
+                      <Row className={"justify-content-space-between"}>
+                        <span>止损：</span>
+                        <span>{item.order.stop_loss || "-"}</span>
+                      </Row>
+                    </Col>
+                    <Col width={"50"}>
+                      <Row className={"justify-content-space-between"}>
+                        <span>库存费：</span>
+                        <span>{item.order.swaps || "-"}</span>
+                      </Row>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col width={"50"}>
+                      <Row className={"justify-content-space-between"}>
+                        <span>止盈：</span>
+                        <span>{item.order.take_profit || "-"}</span>
+                      </Row>
+                    </Col>
+                    <Col width={"50"}>
+                      <Row className={"justify-content-space-between"}>
+                        <span>税费：</span>
+                        <span>{item.order.taxes || "-"}</span>
+                      </Row>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col width={"50"}>
+                      <Row className={"justify-content-space-between"}>
+                        <span>订单号：</span>
+                        <span>{item.order.order_number}</span>
+                      </Row>
+                    </Col>
+                    <Col width={"50"}>
+                      <Row className={"justify-content-space-between"}>
+                        <span>手续费：</span>
+                        <span>{item.order.fee || "-"}</span>
+                      </Row>
+                    </Col>
+                    <Col width={"50"}>
+                      <Row>
+                        <span>平仓时间：</span>
+                        <span>
+                          <p>
+                            {moment(item.order.close_time * 1000).format(
+                              "YYYY/MM/DD"
+                            )}
+                          </p>
+                          <p>
+                            {moment(item.order.close_time * 1000).format(
+                              "hh:mm:ss"
+                            )}
+                          </p>
+                        </span>
+                      </Row>
+                    </Col>
+                    <Col width={"50"}>
+                      <Row>
+                        <span>开仓时间：</span>
+                        <span>
+                          <p>
+                            {moment(item.order.create_time * 1000).format(
+                              "YYYY/MM/DD"
+                            )}
+                          </p>
+                          <p>
+                            {moment(item.order.create_time * 1000).format(
+                              "hh:mm:ss"
+                            )}
+                          </p>
+                        </span>
+                      </Row>
                     </Col>
                   </Row>
                 </div>
@@ -427,17 +515,16 @@ export default class extends React.Component {
         <Block strong className={`history-stats `}>
           <Row className={"history-stats-row"}>
             <Col width="33" className={"history-stats-col"}>
+              <p>入金</p>
+              <p>{!utils.isEmpty(totalData) ? totalData.topup : 0}</p>
+            </Col>
+            <Col width="33" className={"history-stats-col"}>
               <p>利润</p>
               <p>{!utils.isEmpty(totalData) ? totalData.profit : 0}</p>
             </Col>
             <Col width="33"></Col>
-            <Col width="33"></Col>
           </Row>
           <Row className={"history-stats-row"}>
-            <Col width="33" className={"history-stats-col"}>
-              <p>入金</p>
-              <p>{!utils.isEmpty(totalData) ? totalData.topup : 0}</p>
-            </Col>
             <Col width="33" className={"history-stats-col"}>
               <p>出金</p>
               <p>{!utils.isEmpty(totalData) ? totalData.withdraw : 0}</p>
@@ -446,6 +533,7 @@ export default class extends React.Component {
               <p>结余</p>
               <p>{!utils.isEmpty(totalData) ? totalData.balance : 0}</p>
             </Col>
+            <Col width="33"></Col>
           </Row>
         </Block>
       </>
@@ -462,7 +550,6 @@ export default class extends React.Component {
       currentDatePicker,
       search,
     } = this.state;
-    console.log(search);
 
     return (
       <Page name="history" className="history-page">

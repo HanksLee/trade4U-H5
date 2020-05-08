@@ -43,7 +43,7 @@ module.exports = {
   "settings.account.postal-code.placeholder": "请输入邮递区号",
   "settings.account.email": "邮件",
   "settings.account.email.placeholder": "请输入邮件",
-  "settings.message": "消息中心",
+  "settings.message": "信息中心",
   "settings.message.announcement": "站內公告",
   "settings.message.notification": "服务消息",
 };

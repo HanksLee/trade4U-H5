@@ -114,32 +114,10 @@
 
 .history-data {
   border-bottom: 10px solid var(--f7-page-bg-color);
-  .balance-wrap {
-    display: flex;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-
-    > div {
-      flex: 1 1 0;
-    }
-
-    .balance-date,
-    .balance-num {
-      text-align: right;
-    }
-
-    .balance-title {
-      font-size: 17px;
-    }
-
-    .balance-date {
-      color: #c8c8c8;
-      font-size: 14px;
-    }
-
-    .balance-num {
-      color: #007aff;
-      font-size: 24px;
-    }
+  .item-content {
+    padding-right: calc(
+      var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left)
+    );
   }
 
   .history-data-top {
@@ -158,6 +136,35 @@
     .history-data-middle-current {
       font-size: r(36);
       font-weight: bold;
+    }
+
+    .data-cause,
+    .data-amount {
+      font-size: 0.04533rem;
+    }
+
+    .data-cause {
+      color: #000;
+    }
+
+    .data-time {
+      text-align: right;
+    }
+  }
+
+  .history-data-bottom {
+    font-size: r(10);
+    color: $grey;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s;
+
+    .row {
+      margin-bottom: r(4);
+    }
+
+    &.active {
+      height: r(120);
     }
   }
 }

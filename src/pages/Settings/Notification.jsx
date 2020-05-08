@@ -25,7 +25,7 @@ export default class extends React.Component {
           <div className="card-title-container">
             <p className="card-title">{notification[item].title}</p>
             <p className="card-time">
-              {moment(notification[item].create_time).format(
+              {moment(notification[item].create_time * 1000).format(
                 "YYYY/MM/DD hh:mm:ss"
               )}
             </p>
