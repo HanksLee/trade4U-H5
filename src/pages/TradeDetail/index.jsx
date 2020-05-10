@@ -142,7 +142,7 @@ export default class extends BaseReact {
 
     await getCurrentSymbol(
       mode == 'add' && id == null
-        ? this.props.market.symbolList[0]?.id
+        ? this.props.market.symbolList[0]?.symbol
         : id,
     );
 
