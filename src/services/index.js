@@ -3,6 +3,7 @@ import market from "./market";
 import trade from "./trade";
 import setting from "./setting";
 import history from "./history";
+import trend from "./trend";
 
 export default {
   common,
@@ -10,4 +11,5 @@ export default {
   trade,
   setting,
   history,
+  trend,
 };

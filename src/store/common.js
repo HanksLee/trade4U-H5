@@ -9,6 +9,14 @@ class CommonStore extends BaseStore {
   setTest = val => {
     this.test = val;
   }
+
+  @observable
+  lastChartSymbol = null;
+
+  @action
+  setLastChartSymbol = symbol => {
+    this.lastChartSymbol = symbol;
+  }
 }
 
 export default new CommonStore();

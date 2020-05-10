@@ -524,7 +524,12 @@ export default class extends BaseReact {
                 交易
               </span>
             </ActionsButton>
-            <ActionsButton onClick={() => this.goToPage(`/chart/${currentTrade?.symbol}/`)}>
+            <ActionsButton onClick={() => {
+              console.log('currentTrade', currentTrade)
+              this.goToPage(`/chart/${currentTrade.symbol}/`, {
+                context: currentTrade,
+              })
+            }}>
               <span
               >
                 图表

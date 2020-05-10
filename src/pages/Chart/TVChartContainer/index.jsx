@@ -1,18 +1,10 @@
 import * as React from 'react';
+import Datafeed from './datafeed';
 import './index.scss';
-
-function getLanguageFromURL() {
-	const regex = new RegExp('[\\?&]lang=([^&#]*)');
-	const results = regex.exec(window.location.search);
-	return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, ' '));
-}
+import { supportedResolution } from 'constant';
 
 export default class TVChartContainer extends React.PureComponent {
 	static defaultProps = {
-		symbol: 'AAPL',
-		interval: 'D',
-		containerId: 'tv_chart_container',
-		datafeedUrl: 'https://demo_feed.tradingview.com',
 		libraryPath: '/assets/charting_library/',
 		chartsStorageUrl: 'https://saveload.tradingview.com',
 		chartsStorageApiVersion: '1.1',
@@ -26,45 +18,33 @@ export default class TVChartContainer extends React.PureComponent {
 	tvWidget = null;
 
 	componentDidMount() {
+		console.log('componentDidMount', this.props.symbol);
 		const widgetOptions = {
-			symbol: this.props.symbol,
-			// BEWARE: no trailing slash is expected in feed URL
-			datafeed: new window.Datafeeds.UDFCompatibleDatafeed(this.props.datafeedUrl),
-			interval: this.props.interval,
-			container_id: this.props.containerId,
-			library_path: this.props.libraryPath,
-
-			locale: getLanguageFromURL() || 'en',
-			disabled_features: ['use_localstorage_for_settings'],
-			enabled_features: ['study_templates'],
-			charts_storage_url: this.props.chartsStorageUrl,
-			charts_storage_api_version: this.props.chartsStorageApiVersion,
-			client_id: this.props.clientId,
-			user_id: this.props.userId,
-			fullscreen: this.props.fullscreen,
-			autosize: this.props.autosize,
-			studies_overrides: this.props.studiesOverrides,
+			symbol: this.props.symbol || '000',
+			datafeed: Datafeed,
+			interval: '1',
+			container_id: 'tv_chart_container',
+			library_path: '/assets/charting_library/',
+			autosize: true,
+			locale: 'zh',
+			disabled_features: [
+				'header_compare',
+				'header_screenshot',
+				'header_undo_redo',
+				'header_screenshot'
+			],
 		};
 
-		const tvWidget = new window.TradingView.widget(widgetOptions);
-		this.tvWidget = tvWidget;
+		this.tvWidget = new window.TradingView.widget(widgetOptions);
+	}
 
-		tvWidget.onChartReady(() => {
-			tvWidget.headerReady().then(() => {
-				const button = tvWidget.createButton();
-				button.setAttribute('title', 'Click to show a notification popup');
-				button.classList.add('apply-common-tooltip');
-				button.addEventListener('click', () => tvWidget.showNoticeDialog({
-					title: 'Notification',
-					body: 'TradingView Charting Library API works correctly',
-					callback: () => {
-						console.log('Noticed!');
-					},
-				}));
-
-				button.innerHTML = 'Check API';
-			});
-		});
+	componentWillReceiveProps(nextProps) {
+		console.log('componentWillReceiveProps', this.props.symbol, nextProps.symbol)
+    if (this.props.symbol !== nextProps.symbol) {
+			this.tvWidget.onChartReady(() => {
+				this.tvWidget.setSymbol(nextProps.symbol, supportedResolution);
+			})
+		}
 	}
 
 	componentWillUnmount() {
@@ -76,7 +56,7 @@ export default class TVChartContainer extends React.PureComponent {
 
 	render() {
 		return (
-			<div id={this.props.containerId} className="TVChartContainer" />
+			<div id="tv_chart_container" className="TVChartContainer" />
 		);
 	}
 }
