@@ -63,7 +63,7 @@ export default class extends React.Component {
             name="username"
             inlineLabel={true}
             label="用户名"
-            placeholder="111111"
+            placeholder="请输入用户名"
             value={this.state.username}
             onInput={(e) => this.setState({username: e.target.value})}
           ></ListInput>
@@ -72,7 +72,7 @@ export default class extends React.Component {
             name="password"
             inlineLabel={true}
             label="密码"
-            placeholder="123123"
+            placeholder="请输入密码"
             value={this.state.password}
             onInput={(e) => this.setState({password: e.target.value})}
           ></ListInput>
