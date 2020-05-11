@@ -1,0 +1,11 @@
+#view-trade, #view-market {
+  .TVChartContainer {
+    height: 100% !important;
+  }
+}
+
+#view-chart {
+  .TVChartContainer {
+    height: calc(100vh - 90px) !important;
+  }
+}
