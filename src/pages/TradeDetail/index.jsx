@@ -568,6 +568,9 @@ export default class extends BaseReact {
     ) : 0.001;
     // debugger;
 
+    console.log('lossValue', lossValue);
+
+
     return (
       <Page noToolbar name="trade-detail" className={'trade-detail'} onPageBeforeIn={pageData => {
       }}>
@@ -735,7 +738,8 @@ export default class extends BaseReact {
                 <Input
                   type="number"
                   min={0.01}
-                  value={lossValue}
+                  placeholder={'未设置'}
+                  value={lossValue || undefined}
                   onChange={(evt) => {
                     this.setState({
                       lossValue: evt.target.value,
@@ -761,7 +765,8 @@ export default class extends BaseReact {
                 <Input
                   type="number"
                   min={0.01}
-                  value={profitValue}
+                  placeholder={'未设置'}
+                  value={profitValue || undefined}
                   onChange={(evt) => {
                     this.setState({
                       profitValue: evt.target.value,

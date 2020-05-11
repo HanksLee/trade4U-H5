@@ -122,7 +122,7 @@ export default class extends BaseReact {
     payload.equity =
       tradeList.reduce((acc, cur) => acc + cur.profit, 0) + payload.balance;
     payload.free_margin = payload.equity - payload.margin;
-    payload.margin_level = payload.equity / payload.margin;
+    payload.margin_level = (payload.equity / payload.margin) * 100;
 
     setTradeInfo(payload);
   };
@@ -463,8 +463,8 @@ export default class extends BaseReact {
             <Col width="33" className={"trade-stats-col"}>
               <p>预付款比率(%)</p>
               <p>
-                {tradeInfo.margin_level == 0
-                  ? "--"
+                {tradeInfo.margin == 0
+                  ? "-"
                   : tradeInfo?.margin_level?.toFixed(2)}
               </p>
             </Col>
