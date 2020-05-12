@@ -28,19 +28,21 @@ export default {
 	resolveSymbol: async (symbol, onSymbolResolvedCallback) => {
 		console.log('resolveSymbol', symbol);
 		if (symbol === '000') return;
-		const res = await api.trend.getSymbolTrend(symbol)
+		const res = await api.trend.getSymbolTrend(symbol);
+		const res2 = await api.market.getCurrentSymbol(symbol);
 		const data = res.data;
-		console.log('res', data)
 		setTimeout(function() {
 			onSymbolResolvedCallback({
-				name: symbol,
+				name: data.name,
 				ticker: symbol,
+				type: res2.data.product_details.type,
+				description: res2.data.symbol_display.description,
 				supported_resolutions: supportedResolution,
 				timezone: 'Asia/Hong_Kong',
 			  session: '24x7',
-				has_intraday: true,
-				intraday_multipliers: ['1', '60'],
-				pricescale: 100,
+				minmov: 1,
+			  pricescale: Math.pow(10, res2.data.symbol_display.decimals_place),
+				minmove2: 0,
 			})
 		}, 0)
 	},
@@ -51,7 +53,7 @@ export default {
 		if (firstDataRequest) {
 			const res = await api.trend.getSymbolTrend(symbolInfo.ticker, {
 				params: {
-					type: resolutionMap[resolution],
+					unit: resolutionMap[resolution],
 				}
 			})
 			const trend = res.data.trend;

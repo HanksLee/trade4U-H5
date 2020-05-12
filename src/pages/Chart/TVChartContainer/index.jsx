@@ -11,7 +11,7 @@ export default class TVChartContainer extends React.PureComponent {
 		const widgetOptions = {
 			symbol: this.props.symbol || '000',
 			datafeed: Datafeed,
-			interval: '1',
+			interval: 'D',
 			container_id: this.containerId,
 			library_path: '/assets/charting_library/',
 			autosize: true,
@@ -28,9 +28,9 @@ export default class TVChartContainer extends React.PureComponent {
 				'go_to_date',
 				'adaptive_logo',
 				'main_series_scale_menu',
-				'legend_widget',
 				'timeframes_toolbar',
 			],
+			debug: true,
 		};
 		this.tvWidget = new window.TradingView.widget(widgetOptions);
 	}
