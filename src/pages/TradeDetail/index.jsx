@@ -119,6 +119,7 @@ export default class extends BaseReact {
   }
 
   componentDidMount() {
+
     this.initSymbolList();
     this.initTrade();
     this.initChart();
@@ -139,16 +140,15 @@ export default class extends BaseReact {
       await getSymbolList();
     }
 
-
     await getCurrentSymbol(
-      mode == 'add' && id == null
-        ? this.props.market.symbolList[0]?.symbol
+      mode == 'add' && (id == null || id == 0)
+        ? this.props.market.symbolList[0]?.id
         : id,
     );
 
     const {currentShowSymbol} = this.props.market;
     this.setState({
-      lotsValue: currentShowSymbol?.min_volume,
+      lotsValue: currentShowSymbol?.min_lots,
     })
 
   }
@@ -198,9 +198,9 @@ export default class extends BaseReact {
     const max = Math.max(maxBuy ? maxBuy[1] : 0, maxSell ? maxSell[1] : 0);
     const min = Math.min(minBuy ? minBuy[2] : 0, minSell ? minSell[2] : 0);
     const interval = +(((max - min) / 10).toFixed(2));
-    console.log('min', min);
-    console.log('max', max);
-    console.log('interval', interval);
+    // console.log('min', min);
+    // console.log('max', max);
+    // console.log('interval', interval);
 
 
 
@@ -386,7 +386,7 @@ export default class extends BaseReact {
 
     console.log('payload', JSON.stringify(payload));
 
-    const errMsg = this.getValidation(payload, mode);
+    // const errMsg = this.getValidation(payload, mode);
 
     if (errMsg) {
       return this.$f7.toast.show({
@@ -508,7 +508,7 @@ export default class extends BaseReact {
     val = Number(val.toFixed(2));
 
 
-    if (val < currentShowSymbol?.min_volume) {
+    if (val < currentShowSymbol?.min_lots) {
       return
     }
 
@@ -644,11 +644,11 @@ export default class extends BaseReact {
               <Col width={'20'}>
                 <Input
                   type="number"
-                  min={currentShowSymbol?.min_volume}
+                  min={currentShowSymbol?.min_lots}
                   value={lotsValue}
                   color={'black'}
                   onChange={(evt) => {
-                    if (evt.target.value < currentShowSymbol?.min_volume) return;
+                    if (evt.target.value < currentShowSymbol?.min_lots) return;
 
                     this.setState({
                       lotsValue: evt.target.value,

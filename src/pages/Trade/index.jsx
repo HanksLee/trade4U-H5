@@ -74,9 +74,14 @@ export default class extends BaseReact {
 
   componentDidMount() {
     console.log('init----');
-
+    console.log(111111);
     this.initData();
     this.connectWebsocket();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    console.log('nextProps', nextProps);
+
   }
 
   initData = () => {
