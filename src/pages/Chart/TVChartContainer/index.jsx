@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Datafeed from './datafeed';
+import DatafeedProvider from './DatafeedProvider';
 import './index.scss';
 import { supportedResolution } from 'constant';
 
@@ -10,7 +10,7 @@ export default class TVChartContainer extends React.PureComponent {
 	componentDidMount() {
 		const widgetOptions = {
 			symbol: this.props.symbol || '000',
-			datafeed: Datafeed,
+			datafeed: new DatafeedProvider(),
 			interval: 'D',
 			container_id: this.containerId,
 			library_path: '/assets/charting_library/',
