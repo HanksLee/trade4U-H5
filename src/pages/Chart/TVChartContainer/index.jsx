@@ -29,6 +29,7 @@ export default class TVChartContainer extends React.PureComponent {
 				'adaptive_logo',
 				'main_series_scale_menu',
 				'timeframes_toolbar',
+				'volume_force_overlay',
 			],
 			debug: true,
 		};
