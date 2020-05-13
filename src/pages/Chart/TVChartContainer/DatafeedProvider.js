@@ -10,6 +10,7 @@ const resolutionMap = {
   '60': '1h',
   '240': '4h',
   'D': '1d',
+  '1D': '1d',
   '7D': '7d',
 };
 
@@ -17,6 +18,8 @@ export default class DatafeedProvider {
   wsConnect = null;
   lastItem = null;
   interval = null;
+  subscriberList = [];
+  kChartData = [];
 
   onReady = cb => {
     console.log('onReady')
@@ -45,66 +48,87 @@ export default class DatafeedProvider {
         minmov: 1,
         pricescale: Math.pow(10, res2.data.symbol_display.decimals_place),
         minmove2: 0,
+        has_intraday: true,
+        // intraday_multipliers: ['1', '60'],
       })
     }, 0)
   }
 
-  getBars = async function(symbolInfo, resolution, from, to, onHistoryCallback, onErrorCallback, firstDataRequest) {
-    if (!symbolInfo.name) return;
-    console.log('getBars', this.interval, resolution)
-    if (!this.interval || this.interval !== resolution) {
-      this.interval = resolution;
-      const res = await api.trend.getSymbolTrend(symbolInfo.ticker, {
-        params: {
-          unit: resolutionMap[resolution],
-        }
-      })
-      const trend = res.data.trend;
-      const bars = [];
-      trend.forEach(item => {
-        bars.push({
-          time: item[0] * 1000, //TradingView requires bar time in ms
-          low: item[6],
-          high: item[5],
-          open: item[8],
-          close: item[7],
-          volume: item[4] 
-        })
-      });
-      console.log('bars', bars)
-      if (bars.length) {
-        onHistoryCallback(bars, {noData: false})
-      } else {
-        onHistoryCallback(bars, {noData: true})
-      }
-    }
+  getChartData = (trend) => {
+    return trend.map(item => ({
+      time: item[0] * 1000, //TradingView requires bar time in ms
+      low: item[6],
+      high: item[5],
+      open: item[8],
+      close: item[7],
+      volume: item[4],
+    }));
   }
 
-  subscribeBars = (symbolInfo, _, onRealtimeCallback) => {
-    console.log('subscribeBars');
+  getBars = async function(symbolInfo, resolution, from, to, onHistoryCallback, onErrorCallback, firstDataRequest) {
+    console.log('getBars', symbolInfo.name, resolution)
+    if (!symbolInfo.name) return;
+
+    const existingData = this.kChartData || []
+    if (existingData.length) {
+      return
+    }
+
+    console.log('getSymbolTrend', symbolInfo.ticker)
+    const res = await api.trend.getSymbolTrend(symbolInfo.ticker, {
+      params: {
+        unit: resolutionMap[resolution],
+      }
+    })
+
+    const bars = this.getChartData(res.data.trend);
+    this.kChartData = bars;
+    onHistoryCallback(bars, { noData: !bars.length, });
+  
     this.wsConnect = ws(`symbol/${symbolInfo.ticker}/trend`);
     this.wsConnect.onmessage = () => {
       const message = event.data;
       const data = JSON.parse(message).data;
-      if (!this.lastItem) {
-        this.lastItem = data;
-      } else if (this.lastItem.timestamp >= data.timestamp) {
-        return;
-      }
-      console.log('sub', data)
-      onRealtimeCallback({
+      const formatData = {
         time: data.timestamp * 1000, //TradingView requires bar time in ms
         low: data.low,
         high: data.high,
         open: data.open,
         close: data.close,
         volume: data.volume,
-      });
+      }
+
+      this.subscriberList = this.subscriberList || [];
+      for (const sub of this.subscriberList) {
+        if (sub.symbol !== this.symbol || sub.resolution !== resolution) {
+          this.kChartData = [];
+          return;
+        }
+        if (typeof sub.callback !== 'function') return;
+        sub.callback(formatData);
+      }
     }
   }
 
-  unsubscribeBars = () => {
-    console.log('unsubscribeBars');
-    this.wsConnect.close();
+  subscribeBars = (symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) => {
+    console.log('subscribeBars', symbolInfo.name);
+    this.subscriberList = this.subscriberList || [];
+    const found = this.subscriberList.some(n => n.uid === subscriberUID)
+    if (found) return
+
+    this.subscriberList.push({
+      symbol: symbolInfo,
+      resolution: resolution,
+      uid: subscriberUID,
+      callback: onRealtimeCallback
+    })
+  }
+
+  unsubscribeBars = (subscriberUID) => {
+    console.log('unsubscribeBars', subscriberUID);
+    this.subscriberList = this.subscriberList || []
+    const idx = this.subscriberList.findIndex(n => n.uid === subscriberUID)
+    if (idx < 0) return
+    this.subscriberList.splice(idx, 1)
   }
 }

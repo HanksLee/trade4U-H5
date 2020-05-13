@@ -11,7 +11,7 @@ export default class TVChartContainer extends React.PureComponent {
 		const widgetOptions = {
 			symbol: this.props.symbol || '000',
 			datafeed: new DatafeedProvider(),
-			interval: 'D',
+			interval: '5',
 			container_id: this.containerId,
 			library_path: '/assets/charting_library/',
 			autosize: true,
