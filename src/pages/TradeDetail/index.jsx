@@ -148,7 +148,7 @@ export default class extends BaseReact {
 
     const {currentShowSymbol} = this.props.market;
     this.setState({
-      lotsValue: currentShowSymbol?.min_lots,
+      lotsValue: currentShowSymbol?.symbol_display?.min_lots,
     })
 
   }
@@ -647,7 +647,7 @@ export default class extends BaseReact {
               <Col width={'20'}>
                 <Input
                   type="number"
-                  min={currentShowSymbol?.min_lots}
+                  min={currentShowSymbol?.symbol_display?.min_lots}
                   value={lotsValue}
                   color={'black'}
                   onChange={(evt) => {
