@@ -63,6 +63,14 @@
       &.active {
         height: r(70);
       }
+
+      .justify-content-space-between {
+        span {
+          &:last-child {
+            color: black;
+          }
+        }
+      }
     }
   }
 

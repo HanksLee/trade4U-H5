@@ -35,6 +35,7 @@ import cloneDeep from "lodash/cloneDeep";
 @observer
 export default class extends BaseReact {
   wsConnect = null;
+  $event = null;
   state = {
     title: "交易",
     tapIndex: -1,
@@ -73,15 +74,15 @@ export default class extends BaseReact {
   // }
 
   componentDidMount() {
-    console.log('init----');
-    console.log(111111);
+    this.initEvents();
     this.initData();
     this.connectWebsocket();
   }
 
-  componentWillReceiveProps(nextProps) {
-    console.log('nextProps', nextProps);
-
+  initEvents = () => {
+    this.props.common.globalEvent.on('refresh-trade-page', () => {
+        this.onRefresh();
+    });
   }
 
   initData = () => {
@@ -181,6 +182,8 @@ export default class extends BaseReact {
 
   goToPage = (url, opts = {}) => {
     this.$f7router.navigate(url, opts);
+
+
   };
 
   onRefresh = async (done) => {
@@ -290,7 +293,7 @@ export default class extends BaseReact {
                   <p className={"p-down"}>{item.open_price}</p>
                 </Col>
                 <Col width={"20"}>
-                  <p>目前</p>
+                  <p>现价</p>
                   <p className={`p-up`}>{item.new_price}</p>
                 </Col>
               </Row>
@@ -530,7 +533,6 @@ export default class extends BaseReact {
               </span>
             </ActionsButton>
             <ActionsButton onClick={() => {
-              console.log('currentTrade', currentTrade)
               this.goToPage(`/chart/${currentTrade.symbol}/`, {
                 context: currentTrade,
               })
