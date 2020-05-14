@@ -174,6 +174,7 @@ export default class extends React.Component {
       password,
       code,
       key: this.state.codeInfo.key,
+      platform: 'client_pc',
     });
 
     if (res.status === 201) {

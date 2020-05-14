@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Navbar, NavLeft, NavTitle, Link, Icon } from 'framework7-react';
+import { Page, Navbar, NavLeft, NavTitle, Link, Icon, NavRight } from 'framework7-react';
 import { inject, observer } from "mobx-react";
 import TVChartContainer from './TVChartContainer';
 import './index.scss';
@@ -18,15 +18,15 @@ export default class extends React.Component {
       this.props.common.setLastChartSymbol(id);
     }
   }
-  
-  componentDidMount() {
-    setInterval(() => {
-      // console.log(this.state.id, this.props.common.lastChartSymbol)
-      // if (!this.state.id && this.props.common.lastChartSymbol) {
-      // }
-    }, 1000);
+
+  navigateToTradePage = () => {
+    const { id, } = this.state;
+    this.$f7router.navigate(`/trade/${id}/`, {
+      props: {
+        mode: 'add',
+      }
+    });
   }
-  
 
   render() {
     const { id, } = this.state;
@@ -45,6 +45,13 @@ export default class extends React.Component {
             )
           }
           <NavTitle>图表</NavTitle>
+          {
+            id && (
+              <NavRight>
+                <span onClick={this.navigateToTradePage}>交易</span>
+              </NavRight>
+            )
+          }
         </Navbar>
         <TVChartContainer symbol={id || lastChartSymbol} />
       </Page>
