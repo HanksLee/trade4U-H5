@@ -11,6 +11,7 @@ import utils from "utils";
 import Framework7 from 'framework7/framework7-lite.esm.bundle.js';
 import { inject, observer } from "mobx-react";
 
+
 @inject("common", "message")
 @observer
 export default class extends React.Component {
