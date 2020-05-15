@@ -316,7 +316,6 @@ export default class extends React.Component {
         )
         .then((res) => {
           if (res.status === 200) {
-            console.log(res);
             this.setState({
               hasMore: historyList.length < res.data.count,
               dataLoading: false,

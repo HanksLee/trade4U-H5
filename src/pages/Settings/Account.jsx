@@ -285,6 +285,10 @@ export default class extends React.Component {
             </div>
           )}
         </div>
+        {!utils.isEmpty(userInfo["reason"]) &&
+          userInfo["inspect_status"] === 3 && (
+            <div className="error-msg">{`未通过信息：${userInfo["reason"]}`}</div>
+          )}
         <List>
           <InputItem
             {...getFieldProps("first_name", {
