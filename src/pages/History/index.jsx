@@ -91,29 +91,8 @@ export default class extends React.Component {
 
   btnClick = () => {
     const that = this;
-    // const { page_size, page, select_time_end, select_time_start } = this.state;
-    // let queryString = "";
-
-    const now = new Date();
-    const nowDay = now.getDay();
-    const nowTimestamp = Date.parse(now) / 1000;
-    const today = new Date(
-      new Date().getFullYear(),
-      new Date().getMonth(),
-      new Date().getDate()
-    );
-    const todayTimestamp = Date.parse(today) / 1000;
-    const thisWeek = new Date(today.getTime() - nowDay * 60 * 60 * 24 * 1000);
-    const thisWeekTimestamp = Date.parse(thisWeek) / 1000;
-    const thisMonth = new Date(
-      new Date().getFullYear(),
-      new Date().getMonth(),
-      1
-    );
-    const thisMonthTimestamp = Date.parse(thisMonth) / 1000;
 
     $$(".select-btn").on("click", function (e) {
-      // $$(this).addClass('hello').attr('title', 'world').insertAfter('.something-else');
       e.preventDefault();
       $$(this)
         .addClass("button-active")
@@ -128,6 +107,23 @@ export default class extends React.Component {
     });
 
     $$(".time-select").on("click", function (e) {
+      let now = new Date();
+      let nowDay = now.getDay();
+      let nowTimestamp = Date.parse(now) / 1000;
+      const today = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        new Date().getDate()
+      );
+      let todayTimestamp = Date.parse(today) / 1000;
+      let thisWeek = new Date(today.getTime() - nowDay * 60 * 60 * 24 * 1000);
+      let thisWeekTimestamp = Date.parse(thisWeek) / 1000;
+      let thisMonth = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        1
+      );
+      const thisMonthTimestamp = Date.parse(thisMonth) / 1000;
       switch ($$(this).index()) {
         case 0:
           if (
@@ -320,6 +316,7 @@ export default class extends React.Component {
         )
         .then((res) => {
           if (res.status === 200) {
+            console.log(res);
             this.setState({
               hasMore: historyList.length < res.data.count,
               dataLoading: false,
@@ -398,16 +395,15 @@ export default class extends React.Component {
                 <div className={"history-data-middle"}>
                   <Row className={"align-items-center"}>
                     <Col width={"30"} className="data-cause">
-                      {item.cause == "withdraw" && <strong>充值</strong>}
-                      {item.cause == "recharge" && <strong>提现</strong>}
+                      <strong>{item.cause_name}</strong>
                     </Col>
                     <Col width={"30"} className="data-amount">
-                      {item.cause == "withdraw" && (
-                        <strong className={`p-up`}>+{item.amount}</strong>
-                      )}
-                      {item.cause == "recharge" && (
-                        <strong className={`p-down`}>-{item.amount}</strong>
-                      )}
+                      <strong
+                        className={item.in_or_out === 0 ? `p-down` : `p-up`}
+                      >
+                        {item.in_or_out === 0 ? "-" : "+"}
+                        {item.amount}
+                      </strong>
                     </Col>
                     <Col width={"40"} className="data-time">
                       <p>
@@ -458,7 +454,10 @@ export default class extends React.Component {
                     <Col width={"50"}>
                       <Row className={"justify-content-space-between"}>
                         <span>订单号：</span>
-                        <span>{item.order.order_number}</span>
+                        <span>
+                          {"..."}
+                          {item.order.order_number.substr(-11)}
+                        </span>
                       </Row>
                     </Col>
                     <Col width={"50"}>
@@ -470,7 +469,7 @@ export default class extends React.Component {
                     <Col width={"50"}>
                       <Row>
                         <span>平仓时间：</span>
-                        <span>
+                        <span style={{ textAlign: "right" }}>
                           <p>
                             {moment(item.order.close_time * 1000).format(
                               "YYYY/MM/DD"
@@ -487,7 +486,7 @@ export default class extends React.Component {
                     <Col width={"50"}>
                       <Row>
                         <span>开仓时间：</span>
-                        <span>
+                        <span style={{ textAlign: "right" }}>
                           <p>
                             {moment(item.order.create_time * 1000).format(
                               "YYYY/MM/DD"
