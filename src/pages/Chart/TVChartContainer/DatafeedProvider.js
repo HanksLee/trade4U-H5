@@ -30,7 +30,6 @@ export default class DatafeedProvider {
   }
 
   resolveSymbol = async (symbol, onSymbolResolvedCallback) => {
-    console.log('resolveSymbol', symbol);
     if (symbol === '000') return;
     const res = await api.trend.getSymbolTrend(symbol);
     const res2 = await api.market.getCurrentSymbol(symbol);
@@ -65,15 +64,13 @@ export default class DatafeedProvider {
   }
 
   getBars = async function(symbolInfo, resolution, from, to, onHistoryCallback, onErrorCallback, firstDataRequest) {
-    console.log('getBars', symbolInfo.name, resolution)
     if (!symbolInfo.name) return;
 
-    const existingData = this.kChartData || []
+    const existingData = this.kChartData || [];
     if (existingData.length) {
-      return
+      return;
     }
 
-    console.log('getSymbolTrend', symbolInfo.ticker)
     const res = await api.trend.getSymbolTrend(symbolInfo.ticker, {
       params: {
         unit: resolutionMap[resolution],
@@ -85,7 +82,7 @@ export default class DatafeedProvider {
     onHistoryCallback(bars, { noData: !bars.length, });
   
     this.wsConnect = ws(`symbol/${symbolInfo.ticker}/trend`);
-    this.wsConnect.onmessage = () => {
+    this.wsConnect.onmessage = (event) => {
       const message = event.data;
       const data = JSON.parse(message).data;
       const formatData = {
@@ -95,7 +92,7 @@ export default class DatafeedProvider {
         open: data.open,
         close: data.close,
         volume: data.volume,
-      }
+      };
 
       this.subscriberList = this.subscriberList || [];
       for (const sub of this.subscriberList) {
@@ -110,24 +107,22 @@ export default class DatafeedProvider {
   }
 
   subscribeBars = (symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) => {
-    console.log('subscribeBars', symbolInfo.name);
     this.subscriberList = this.subscriberList || [];
-    const found = this.subscriberList.some(n => n.uid === subscriberUID)
-    if (found) return
+    const found = this.subscriberList.some(n => n.uid === subscriberUID);
+    if (found) return;
 
     this.subscriberList.push({
       symbol: symbolInfo,
       resolution: resolution,
       uid: subscriberUID,
-      callback: onRealtimeCallback
-    })
+      callback: onRealtimeCallback,
+    });
   }
 
   unsubscribeBars = (subscriberUID) => {
-    console.log('unsubscribeBars', subscriberUID);
-    this.subscriberList = this.subscriberList || []
-    const idx = this.subscriberList.findIndex(n => n.uid === subscriberUID)
-    if (idx < 0) return
-    this.subscriberList.splice(idx, 1)
+    this.subscriberList = this.subscriberList || [];
+    const idx = this.subscriberList.findIndex(n => n.uid === subscriberUID);
+    if (idx < 0) return;
+    this.subscriberList.splice(idx, 1);
   }
 }
