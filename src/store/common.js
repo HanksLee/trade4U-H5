@@ -11,14 +11,6 @@ class CommonStore extends BaseStore {
   }
 
   @observable
-  lastChartSymbol = null;
-
-  @action
-  setLastChartSymbol = symbol => {
-    this.lastChartSymbol = symbol;
-  }
-
-  @observable
   globalEvent = null;
 
   @action

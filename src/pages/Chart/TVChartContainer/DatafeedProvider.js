@@ -22,7 +22,6 @@ export default class DatafeedProvider {
   kChartData = [];
 
   onReady = cb => {
-    console.log('onReady')
     setTimeout(() => {
       cb({
         supported_resolutions: supportedResolution,
