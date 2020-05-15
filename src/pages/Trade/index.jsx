@@ -35,6 +35,7 @@ import cloneDeep from "lodash/cloneDeep";
 @observer
 export default class extends BaseReact {
   wsConnect = null;
+  $event = null;
   state = {
     title: "交易",
     tapIndex: -1,
@@ -73,10 +74,15 @@ export default class extends BaseReact {
   // }
 
   componentDidMount() {
-    console.log('init----');
-
+    this.initEvents();
     this.initData();
     this.connectWebsocket();
+  }
+
+  initEvents = () => {
+    this.props.common.globalEvent.on('refresh-trade-page', () => {
+        this.onRefresh();
+    });
   }
 
   initData = () => {
@@ -122,7 +128,7 @@ export default class extends BaseReact {
     payload.equity =
       tradeList.reduce((acc, cur) => acc + cur.profit, 0) + payload.balance;
     payload.free_margin = payload.equity - payload.margin;
-    payload.margin_level = payload.equity / payload.margin;
+    payload.margin_level = (payload.equity / payload.margin) * 100;
 
     setTradeInfo(payload);
   };
@@ -176,6 +182,8 @@ export default class extends BaseReact {
 
   goToPage = (url, opts = {}) => {
     this.$f7router.navigate(url, opts);
+
+
   };
 
   onRefresh = async (done) => {
@@ -285,7 +293,7 @@ export default class extends BaseReact {
                   <p className={"p-down"}>{item.open_price}</p>
                 </Col>
                 <Col width={"20"}>
-                  <p>目前</p>
+                  <p>现价</p>
                   <p className={`p-up`}>{item.new_price}</p>
                 </Col>
               </Row>
@@ -463,8 +471,8 @@ export default class extends BaseReact {
             <Col width="33" className={"trade-stats-col"}>
               <p>预付款比率(%)</p>
               <p>
-                {tradeInfo.margin_level == 0
-                  ? "--"
+                {tradeInfo.margin == 0
+                  ? "-"
                   : tradeInfo?.margin_level?.toFixed(2)}
               </p>
             </Col>
@@ -524,7 +532,11 @@ export default class extends BaseReact {
                 交易
               </span>
             </ActionsButton>
-            <ActionsButton onClick={() => this.goToPage(`/chart/${currentTrade?.symbol}/`)}>
+            <ActionsButton onClick={() => {
+              this.goToPage(`/chart/${currentTrade.symbol}/`, {
+                context: currentTrade,
+              })
+            }}>
               <span
               >
                 图表

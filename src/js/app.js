@@ -16,8 +16,8 @@ import '../css/icons.css';
 import '../css/app.scss';
 
 if (process.env.MODE != 'prod') {
-  const eruda = require('../../node_modules/eruda/eruda.js');
-  eruda.init();
+  // const eruda = require('../../node_modules/eruda/eruda.js');
+  // eruda.init();
 }
 
 

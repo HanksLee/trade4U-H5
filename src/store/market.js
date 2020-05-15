@@ -101,7 +101,10 @@ class MarketStore extends BaseStore {
       }
     }
 
-    return obj;
+    return {
+      ...this.currentSymbol,
+      ...obj,
+    };
   }
 
   @action

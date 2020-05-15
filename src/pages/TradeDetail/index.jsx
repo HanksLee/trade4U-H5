@@ -119,6 +119,7 @@ export default class extends BaseReact {
   }
 
   componentDidMount() {
+
     this.initSymbolList();
     this.initTrade();
     this.initChart();
@@ -139,16 +140,15 @@ export default class extends BaseReact {
       await getSymbolList();
     }
 
-
     await getCurrentSymbol(
-      mode == 'add' && id == null
+      mode == 'add' && (id == null || id == 0)
         ? this.props.market.symbolList[0]?.id
         : id,
     );
 
     const {currentShowSymbol} = this.props.market;
     this.setState({
-      lotsValue: currentShowSymbol?.min_volume,
+      lotsValue: currentShowSymbol?.symbol_display?.min_lots,
     })
 
   }
@@ -198,9 +198,9 @@ export default class extends BaseReact {
     const max = Math.max(maxBuy ? maxBuy[1] : 0, maxSell ? maxSell[1] : 0);
     const min = Math.min(minBuy ? minBuy[2] : 0, minSell ? minSell[2] : 0);
     const interval = +(((max - min) / 10).toFixed(2));
-    console.log('min', min);
-    console.log('max', max);
-    console.log('interval', interval);
+    // console.log('min', min);
+    // console.log('max', max);
+    // console.log('interval', interval);
 
 
 
@@ -285,7 +285,7 @@ export default class extends BaseReact {
       this.wsConnect.onmessage = evt => {
         const msg = evt.data;
         const data = JSON.parse(msg).data;
-        console.log('data', data);
+        // console.log('data', data);
 
         this.updateTrendData(data);
         this.initChart();
@@ -384,24 +384,24 @@ export default class extends BaseReact {
         payload.open_price = priceValue;
     }
 
-    console.log('payload', JSON.stringify(payload));
+    // console.log('payload', JSON.stringify(payload));
 
-    const errMsg = this.getValidation(payload, mode);
+    // const errMsg = this.getValidation(payload, mode);
 
-    if (errMsg) {
-      return this.$f7.toast.show({
-        text: errMsg,
-        position: 'center',
-        closeTimeout: 2000,
-      });
-    }
+    // if (errMsg) {
+    //   return this.$f7.toast.show({
+    //     text: errMsg,
+    //     position: 'center',
+    //     closeTimeout: 2000,
+    //   });
+    // }
 
     let res;
     if (actionMode == 'add') {
       try {
         res = await this.$api.trade.createTrade(payload);
 
-        console.log('res', res);
+        // console.log('res', res);
         if(res.status == 201) {
           this.$f7.toast.show({
             text: '下单成功',
@@ -503,12 +503,15 @@ export default class extends BaseReact {
         currentShowSymbol,
       }
     } = this.props;
+    console.log('val', val);
+
     val = Number(val);
-    val = Number(this.state.lotsValue) + (val);
+    val = Number(this.state.lotsValue || 0) + (val);
     val = Number(val.toFixed(2));
 
 
-    if (val < currentShowSymbol?.min_volume) {
+
+    if (val < currentShowSymbol?.symbol_display?.min_lots) {
       return
     }
 
@@ -567,6 +570,9 @@ export default class extends BaseReact {
       1 / 10 ** (currentSymbol?.symbol_display?.decimals_place)
     ) : 0.001;
     // debugger;
+
+    console.log('lotsValue', lotsValue);
+
 
     return (
       <Page noToolbar name="trade-detail" className={'trade-detail'} onPageBeforeIn={pageData => {
@@ -641,11 +647,14 @@ export default class extends BaseReact {
               <Col width={'20'}>
                 <Input
                   type="number"
-                  min={currentShowSymbol?.min_volume}
+                  min={currentShowSymbol?.symbol_display?.min_lots}
                   value={lotsValue}
                   color={'black'}
                   onChange={(evt) => {
-                    if (evt.target.value < currentShowSymbol?.min_volume) return;
+
+                    console.log('evt', evt.target.value);
+
+                    if (evt.target.value < currentShowSymbol?.min_lots) return;
 
                     this.setState({
                       lotsValue: evt.target.value,
@@ -735,7 +744,8 @@ export default class extends BaseReact {
                 <Input
                   type="number"
                   min={0.01}
-                  value={lossValue}
+                  placeholder={'未设置'}
+                  value={lossValue || undefined}
                   onChange={(evt) => {
                     this.setState({
                       lossValue: evt.target.value,
@@ -761,7 +771,8 @@ export default class extends BaseReact {
                 <Input
                   type="number"
                   min={0.01}
-                  value={profitValue}
+                  placeholder={'未设置'}
+                  value={profitValue || undefined}
                   onChange={(evt) => {
                     this.setState({
                       profitValue: evt.target.value,

@@ -1,10 +1,10 @@
 import api from 'services';
 import React from 'react';
-import { Page, Navbar, List, ListItem, NavTitle, NavRight, NavLeft, Icon, Link, Searchbar, Subnavbar } from 'framework7-react';
+import { Page, Navbar, List, ListItem, NavTitle, NavRight, NavLeft, Icon, Link, Searchbar } from 'framework7-react';
 import './index.scss';
 import { inject, observer } from "mobx-react";
 
-const pageSize = 20
+const pageSize = 60
 
 @inject("market")
 @observer
@@ -16,7 +16,7 @@ export default class extends React.Component {
     this.state = {
       symbolList: [],
       page: 0,
-      next: null,
+      next: false,
       selectedSymbols: [],
       isLoading: true,
     }
@@ -26,7 +26,7 @@ export default class extends React.Component {
     this.getSymbolList({
       type__name: this.symbolTypeName,
       page: 1,
-      pageSize,
+      page_size: pageSize,
     })
   }
 
@@ -43,13 +43,13 @@ export default class extends React.Component {
         symbolList: [...res.data.results.filter(item => {
           return ids.indexOf(item.symbol_display.id) === -1
         })],
-        next: res.data.next,
+        next: !!res.data.next,
         page: 1,
       }))
     } else {
       this.setState((preState) => ({
         symbolList: [...this.state.symbolList, ...res.data.results.filter(item => ids.indexOf(item.id) === -1)],
-        next: res.data.next,
+        next: !!res.data.next,
         page: preState.page + 1,
       }))
     }
@@ -63,7 +63,7 @@ export default class extends React.Component {
       this.getSymbolList({
         type__name: this.symbolTypeName,
         page: this.state.page + 1,
-        pageSize,
+        page_size: pageSize,
       }, false)
     }
   }
@@ -99,7 +99,7 @@ export default class extends React.Component {
       type__name: this.symbolTypeName,
       search: e.target.value,
       page: 1,
-      pageSize,
+      page_size: pageSize,
     })
   }
 
@@ -107,7 +107,7 @@ export default class extends React.Component {
     this.getSymbolList({
       type__name: this.symbolTypeName,
       page: 1,
-      pageSize,
+      page_size: pageSize,
     })
   }
 

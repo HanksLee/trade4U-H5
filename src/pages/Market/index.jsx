@@ -1,6 +1,5 @@
-import api from 'services';
 import React from 'react';
-import { Page, Navbar, List, NavRight, NavLeft, NavTitle,
+import { Page, Navbar, NavRight, NavLeft, NavTitle,
   Actions, ActionsLabel, ActionsGroup, ActionsButton } from 'framework7-react';
 import EditIcon from "assets/img/edit2.svg";
 import AddIcon from "assets/img/add.svg";
@@ -115,6 +114,13 @@ export default class extends React.Component {
     this.$f7router.navigate('/market/symbol_type')
   }
 
+  navigateToChart = () => {
+    const { currentSymbol } = this.state
+    this.$f7router.navigate(`/chart/${currentSymbol.symbol}`, {
+      context: currentSymbol,
+    })
+  }
+
   navigateToSymbolDetail = () => {
     const { currentSymbol } = this.state
     this.$f7router.navigate(`/market/symbol/${currentSymbol.id}`, {
@@ -226,7 +232,7 @@ export default class extends React.Component {
                 }
               })
             }}>交易</ActionsButton>
-            <ActionsButton>图表</ActionsButton>
+            <ActionsButton onClick={this.navigateToChart}>图表</ActionsButton>
             <ActionsButton onClick={this.navigateToSymbolDetail}>详细情况</ActionsButton>
           </ActionsGroup>
           <ActionsGroup>
