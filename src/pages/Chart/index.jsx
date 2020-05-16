@@ -30,9 +30,7 @@ export default class extends React.Component {
   }
 
   getSymbolDetail = async (id) => {
-    console.log('getSymbolDetail', id)
     const res = await api.market.getCurrentSymbol(id);
-    console.log('getSymbolDetail', res.data.symbol_display.name);
     this.setState({
       symbolName: res.data.symbol_display.name,
     })
@@ -62,7 +60,7 @@ export default class extends React.Component {
 
   render() {
     const { id, lastSymbol, symbolName, } = this.state;
-console.log('symbolName', symbolName)
+
     return (
       <PageContent name="chart" noToolbar={!!id}>
         <Navbar>
