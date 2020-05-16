@@ -1,4 +1,5 @@
 import React from 'react';
+import api from 'services'
 import { PageContent, Navbar, NavLeft, NavTitle, Link, Icon, NavRight } from 'framework7-react';
 import { inject, observer } from "mobx-react";
 import TVChartContainer from './TVChartContainer';
@@ -14,6 +15,7 @@ export default class extends React.Component {
     this.state = {
       id,
       lastSymbol: id,
+      symbolName: '',
     }
     if (id) {
       utils.setLStorage("LATEST_SYMBOL", id);
@@ -21,7 +23,19 @@ export default class extends React.Component {
   }
 
   componentDidMount() {
+    if (this.state.id) {
+      this.getSymbolDetail(this.state.id);
+    }
     this.initEvents();
+  }
+
+  getSymbolDetail = async (id) => {
+    console.log('getSymbolDetail', id)
+    const res = await api.market.getCurrentSymbol(id);
+    console.log('getSymbolDetail', res.data.symbol_display.name);
+    this.setState({
+      symbolName: res.data.symbol_display.name,
+    })
   }
 
   initEvents = () => {
@@ -34,6 +48,7 @@ export default class extends React.Component {
     this.setState({
       lastSymbol: utils.getLStorage("LATEST_SYMBOL"),
     })
+    this.getSymbolDetail(utils.getLStorage("LATEST_SYMBOL"));
   }
 
   navigateToTradePage = () => {
@@ -46,8 +61,8 @@ export default class extends React.Component {
   }
 
   render() {
-    const { id, lastSymbol, } = this.state;
-
+    const { id, lastSymbol, symbolName, } = this.state;
+console.log('symbolName', symbolName)
     return (
       <PageContent name="chart" noToolbar={!!id}>
         <Navbar>
@@ -60,7 +75,7 @@ export default class extends React.Component {
               </NavLeft>
             )
           }
-          <NavTitle>图表</NavTitle>
+          <NavTitle>图表{symbolName ? ` (${symbolName})` : ''}</NavTitle>
           {
             id && (
               <NavRight>

@@ -17,7 +17,7 @@ const resolutionMap = {
 export default class DatafeedProvider {
   wsConnect = null;
   lastItem = null;
-  interval = null;
+  lastResolution = null;
   subscriberList = [];
   kChartData = [];
 
@@ -31,20 +31,18 @@ export default class DatafeedProvider {
 
   resolveSymbol = async (symbol, onSymbolResolvedCallback) => {
     if (symbol === '000') return;
-    const res = await api.trend.getSymbolTrend(symbol);
-    const res2 = await api.market.getCurrentSymbol(symbol);
-    const data = res.data;
+    const res = await api.market.getCurrentSymbol(symbol);
     setTimeout(function() {
       onSymbolResolvedCallback({
-        name: data.name,
+        name: symbol,
         ticker: symbol,
-        type: res2.data.product_details.type,
-        description: res2.data.symbol_display.description,
+        type: res.data.product_details.type,
+        description: res.data.symbol_display.description,
         supported_resolutions: supportedResolution,
         timezone: 'Asia/Hong_Kong',
         session: '24x7',
         minmov: 1,
-        pricescale: Math.pow(10, res2.data.symbol_display.decimals_place),
+        pricescale: Math.pow(10, res.data.symbol_display.decimals_place),
         minmove2: 0,
         has_intraday: true,
         // intraday_multipliers: ['1', '60'],
@@ -63,8 +61,15 @@ export default class DatafeedProvider {
     }));
   }
 
-  getBars = async function(symbolInfo, resolution, from, to, onHistoryCallback, onErrorCallback, firstDataRequest) {
-    if (!symbolInfo.name) return;
+  getBars = async function(symbolInfo, resolution, from, to, onHistoryCallback) {
+    console.log('getBars', symbolInfo, resolution);
+
+    if (!symbolInfo) return;
+
+    if (resolution !== this.lastResolution) {
+      this.lastResolution = resolution;
+      this.kChartData = [];
+    }
 
     const existingData = this.kChartData || [];
     if (existingData.length) {
