@@ -16,7 +16,7 @@ const resolutionMap = {
 
 export default class DatafeedProvider {
   wsConnect = null;
-  lastItem = null;
+  lastSymbolName = null;
   lastResolution = null;
   subscriberList = [];
   kChartData = [];
@@ -68,7 +68,9 @@ export default class DatafeedProvider {
 
     if (resolution !== this.lastResolution) {
       this.lastResolution = resolution;
+      this.lastSymbolName = symbolInfo.name;
       this.kChartData = [];
+      this.subscriberList = [];
     }
 
     const existingData = this.kChartData || [];
@@ -86,6 +88,7 @@ export default class DatafeedProvider {
     this.kChartData = bars;
     onHistoryCallback(bars, { noData: !bars.length, });
   
+    if (this.wsConnect) this.wsConnect.close();
     this.wsConnect = ws(`symbol/${symbolInfo.ticker}/trend`);
     this.wsConnect.onmessage = (event) => {
       const message = event.data;
@@ -101,12 +104,12 @@ export default class DatafeedProvider {
 
       this.subscriberList = this.subscriberList || [];
       for (const sub of this.subscriberList) {
-        if (sub.symbol !== this.symbol || sub.resolution !== resolution) {
+        if (sub.symbolName !== this.lastSymbolName || sub.resolution !== resolution) {
           this.kChartData = [];
-          return;
+        } else {
+          if (typeof sub.callback !== 'function') return;
+          sub.callback(formatData);
         }
-        if (typeof sub.callback !== 'function') return;
-        sub.callback(formatData);
       }
     }
   }
@@ -117,7 +120,7 @@ export default class DatafeedProvider {
     if (found) return;
 
     this.subscriberList.push({
-      symbol: symbolInfo,
+      symbolName: symbolInfo.name,
       resolution: resolution,
       uid: subscriberUID,
       callback: onRealtimeCallback,
