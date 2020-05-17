@@ -1,6 +1,6 @@
 import React from 'react';
 import api from 'services'
-import { PageContent, Navbar, NavLeft, NavTitle, Link, Icon, NavRight } from 'framework7-react';
+import { Page, Navbar, NavLeft, NavTitle, Link, Icon, NavRight } from 'framework7-react';
 import { inject, observer } from "mobx-react";
 import TVChartContainer from './TVChartContainer';
 import utils from 'utils';
@@ -62,7 +62,7 @@ export default class extends React.Component {
     const { id, lastSymbol, symbolName, } = this.state;
 
     return (
-      <PageContent name="chart" noToolbar={!!id}>
+      <Page name="chart" noToolbar={!!id}>
         <Navbar>
           {
             id && (
@@ -83,7 +83,7 @@ export default class extends React.Component {
           }
         </Navbar>
         <TVChartContainer symbol={id || lastSymbol} />
-      </PageContent>
+      </Page>
     );
   }
 }
