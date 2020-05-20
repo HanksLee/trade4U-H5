@@ -8,9 +8,8 @@ import {
   LoginScreen,
 } from "framework7-react";
 import utils from "utils";
-import Framework7 from 'framework7/framework7-lite.esm.bundle.js';
+import Framework7 from "framework7/framework7-lite.esm.bundle.js";
 import { inject, observer } from "mobx-react";
-
 
 @inject("common", "message")
 @observer
@@ -32,8 +31,8 @@ export default class extends React.Component {
   };
 
   updateLastestSymbol = () => {
-    this.$event.emit('update-latest-symbol');
-  }
+    this.$event.emit("update-latest-symbol");
+  };
 
   render() {
     return (
@@ -45,12 +44,40 @@ export default class extends React.Component {
           <View id="view-history" name="历史" tab url="/history/" />
           <View id="view-settings" name="设置" tab url="/settings/" />
           <Toolbar tabbar labels bottom className="app-tabbar">
-            <Link tabLink="#view-market" tabLinkActive icon="market-icon" text="行情" />
-            <Link tabLink="#view-chart" icon="chart-icon" text="图表" onClick={this.updateLastestSymbol} />
-            <Link tabLink="#view-trade" icon="trade-icon" text="交易" force={true} reloadCurrent={true} reloadCurrent={true} onClick={() => {
-              this.$event.emit('refresh-trade-page');
-            }}/>
-            <Link tabLink="#view-history" icon="history-icon" text="历史" />
+            <Link
+              tabLink="#view-market"
+              tabLinkActive
+              icon="market-icon"
+              text="行情"
+            />
+            <Link
+              tabLink="#view-chart"
+              icon="chart-icon"
+              text="图表"
+              onClick={this.updateLastestSymbol}
+            />
+            <Link
+              tabLink="#view-trade"
+              icon="trade-icon"
+              text="交易"
+              force={true}
+              reloadCurrent={true}
+              reloadCurrent={true}
+              onClick={() => {
+                this.$event.emit("refresh-trade-page");
+              }}
+            />
+            <Link
+              tabLink="#view-history"
+              icon="history-icon"
+              text="历史"
+              force={true}
+              reloadCurrent={true}
+              reloadCurrent={true}
+              onClick={() => {
+                this.$event.emit("refresh-history-page");
+              }}
+            />
             <Link tabLink="#view-settings" icon="settings-icon" text="设置" />
           </Toolbar>
         </Views>

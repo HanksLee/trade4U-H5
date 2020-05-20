@@ -1,5 +1,6 @@
 import React from "react";
 import api from "services";
+import { inject, observer } from "mobx-react";
 import axios from "axios";
 import {
   Page,
@@ -29,6 +30,8 @@ const $$ = Dom7;
 let CancelToken = axios.CancelToken;
 let cancel;
 
+@inject("common")
+@observer
 export default class extends React.Component {
   state = {
     initcalLoading: true,
@@ -51,15 +54,15 @@ export default class extends React.Component {
   };
 
   componentDidMount() {
-    // this.getList();
-    // this.getTimes();
-    this.btnClick();
+    this.initEvents();
     window.addEventListener("scroll", this.handleScroll, true);
   }
 
-  componentWillUnmount() {
-    window.removeEventListener("scroll", this.handleScroll, true);
-  }
+  initEvents = () => {
+    this.props.common.globalEvent.on("refresh-history-page", () => {
+      this.btnClick();
+    });
+  };
 
   handleScroll = () => {
     const { error, hasMore, dataLoading } = this.state;
@@ -382,11 +385,11 @@ export default class extends React.Component {
                     </Col>
                     <Col width={"20"} style={{ textAlign: "right" }}>
                       <p>开仓</p>
-                      <p>{item.order.open_price}</p>
+                      <p className="value-text">{item.order.open_price}</p>
                     </Col>
                     <Col width={"20"} style={{ textAlign: "right" }}>
                       <p>目前</p>
-                      <p>{item.order.new_price}</p>
+                      <p className="value-text">{item.order.new_price}</p>
                     </Col>
                   </Row>
                 </div>
@@ -425,13 +428,17 @@ export default class extends React.Component {
                     <Col width={"50"}>
                       <Row className={"justify-content-space-between"}>
                         <span>止损：</span>
-                        <span>{item.order.stop_loss || "-"}</span>
+                        <span className="value-text">
+                          {item.order.stop_loss || "-"}
+                        </span>
                       </Row>
                     </Col>
                     <Col width={"50"}>
                       <Row className={"justify-content-space-between"}>
                         <span>库存费：</span>
-                        <span>{item.order.swaps || "-"}</span>
+                        <span className="value-text">
+                          {item.order.swaps || "-"}
+                        </span>
                       </Row>
                     </Col>
                   </Row>
@@ -439,13 +446,17 @@ export default class extends React.Component {
                     <Col width={"50"}>
                       <Row className={"justify-content-space-between"}>
                         <span>止盈：</span>
-                        <span>{item.order.take_profit || "-"}</span>
+                        <span className="value-text">
+                          {item.order.take_profit || "-"}
+                        </span>
                       </Row>
                     </Col>
                     <Col width={"50"}>
                       <Row className={"justify-content-space-between"}>
                         <span>税费：</span>
-                        <span>{item.order.taxes || "-"}</span>
+                        <span className="value-text">
+                          {item.order.taxes || "-"}
+                        </span>
                       </Row>
                     </Col>
                   </Row>
@@ -453,8 +464,7 @@ export default class extends React.Component {
                     <Col width={"50"}>
                       <Row className={"justify-content-space-between"}>
                         <span>订单号：</span>
-                        <span>
-                          {"..."}
+                        <span className="value-text">
                           {item.order.order_number.substr(-11)}
                         </span>
                       </Row>
@@ -462,19 +472,21 @@ export default class extends React.Component {
                     <Col width={"50"}>
                       <Row className={"justify-content-space-between"}>
                         <span>手续费：</span>
-                        <span>{item.order.fee || "-"}</span>
+                        <span className="value-text">
+                          {item.order.fee || "-"}
+                        </span>
                       </Row>
                     </Col>
                     <Col width={"50"}>
                       <Row>
                         <span>平仓时间：</span>
                         <span style={{ textAlign: "right" }}>
-                          <p>
+                          <p className="value-text">
                             {moment(item.order.close_time * 1000).format(
                               "YYYY/MM/DD"
                             )}
                           </p>
-                          <p>
+                          <p className="value-text">
                             {moment(item.order.close_time * 1000).format(
                               "hh:mm:ss"
                             )}
@@ -486,12 +498,12 @@ export default class extends React.Component {
                       <Row>
                         <span>开仓时间：</span>
                         <span style={{ textAlign: "right" }}>
-                          <p>
+                          <p className="value-text">
                             {moment(item.order.create_time * 1000).format(
                               "YYYY/MM/DD"
                             )}
                           </p>
-                          <p>
+                          <p className="value-text">
                             {moment(item.order.create_time * 1000).format(
                               "hh:mm:ss"
                             )}
