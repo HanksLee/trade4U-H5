@@ -8,6 +8,10 @@ body {
   max-width: 540px;
   min-width: 320px;
   font-family: -apple-system, BlinkMacSystemFont, PingFang SC, Helvetica, Tahoma, Arial, "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
+
+  * {
+    user-select: none;
+  }
 }
 
 .tab-page {
