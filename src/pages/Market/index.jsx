@@ -140,7 +140,7 @@ export default class extends React.Component {
             </>
           )
         } else {
-          const last = strs[1].substr(4)
+          const last = strs[1].substr(2)
           return (
             <>
               <span>{strs[0]}.</span>
