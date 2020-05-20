@@ -165,11 +165,11 @@ export default class extends React.Component {
       <Page name="market">
         <Navbar>
           <NavLeft>
-            <img alt="edit" src={EditIcon} onClick={this.navigateToManagePage} />
+            <img className="nav-cion" alt="edit" src={EditIcon} onClick={this.navigateToManagePage} />
           </NavLeft>
           <NavTitle>行情</NavTitle>
           <NavRight>
-            <img alt="add" src={AddIcon} onClick={this.navigateToSymbolTypePage} />
+            <img className="nav-cion" alt="add" src={AddIcon} onClick={this.navigateToSymbolTypePage} />
           </NavRight>
         </Navbar>
         <div className="self-select-table">

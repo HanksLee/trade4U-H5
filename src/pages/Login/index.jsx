@@ -57,7 +57,7 @@ export default class extends React.Component {
           <NavTitle style={{ margin: 'auto' }}>登录</NavTitle>
         </Navbar>
         <img alt="logo" className="logo" src={logo} />
-        <List form>
+        <List form className="login-list">
           <ListInput
             type="text"
             name="username"
