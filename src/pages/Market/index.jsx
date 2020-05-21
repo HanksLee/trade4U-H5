@@ -198,7 +198,7 @@ export default class extends React.Component {
                     <div className="self-select-code">{item.symbol_display.product_display.code}</div>
                     <div>
                       <div className="self-select-buy-sell-block self-select-buy-block">
-                        {item.product_details.buy ? this.addSpecialStyle(item.product_details.buy) : '--'}
+                        {item.product_details.buy ? this.addSpecialStyle(item.product_details.sell) : '--'}
                       </div>
                       <div className="self-select-low">
                         最低：{item.product_details.low ? item.product_details.low : '--'}
@@ -206,7 +206,7 @@ export default class extends React.Component {
                     </div>
                     <div>
                       <div className="self-select-buy-sell-block self-select-sell-block">
-                        {item.product_details.sell ? this.addSpecialStyle(item.product_details.sell) : '--'}
+                        {item.product_details.sell ? this.addSpecialStyle(item.product_details.buy) : '--'}
                       </div>
                       <div className="self-select-high">
                         最高：{item.product_details.high ? item.product_details.high : '--'}
