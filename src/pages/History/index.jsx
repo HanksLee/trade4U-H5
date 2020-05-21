@@ -1,5 +1,6 @@
 import React from "react";
 import api from "services";
+import { inject, observer } from "mobx-react";
 import axios from "axios";
 import {
   Page,
@@ -29,6 +30,8 @@ const $$ = Dom7;
 let CancelToken = axios.CancelToken;
 let cancel;
 
+@inject("common")
+@observer
 export default class extends React.Component {
   state = {
     initcalLoading: true,
@@ -51,15 +54,15 @@ export default class extends React.Component {
   };
 
   componentDidMount() {
-    // this.getList();
-    // this.getTimes();
-    this.btnClick();
+    this.initEvents();
     window.addEventListener("scroll", this.handleScroll, true);
   }
 
-  componentWillUnmount() {
-    window.removeEventListener("scroll", this.handleScroll, true);
-  }
+  initEvents = () => {
+    this.props.common.globalEvent.on("refresh-history-page", () => {
+      this.btnClick();
+    });
+  };
 
   handleScroll = () => {
     const { error, hasMore, dataLoading } = this.state;
@@ -91,29 +94,8 @@ export default class extends React.Component {
 
   btnClick = () => {
     const that = this;
-    // const { page_size, page, select_time_end, select_time_start } = this.state;
-    // let queryString = "";
-
-    const now = new Date();
-    const nowDay = now.getDay();
-    const nowTimestamp = Date.parse(now) / 1000;
-    const today = new Date(
-      new Date().getFullYear(),
-      new Date().getMonth(),
-      new Date().getDate()
-    );
-    const todayTimestamp = Date.parse(today) / 1000;
-    const thisWeek = new Date(today.getTime() - nowDay * 60 * 60 * 24 * 1000);
-    const thisWeekTimestamp = Date.parse(thisWeek) / 1000;
-    const thisMonth = new Date(
-      new Date().getFullYear(),
-      new Date().getMonth(),
-      1
-    );
-    const thisMonthTimestamp = Date.parse(thisMonth) / 1000;
 
     $$(".select-btn").on("click", function (e) {
-      // $$(this).addClass('hello').attr('title', 'world').insertAfter('.something-else');
       e.preventDefault();
       $$(this)
         .addClass("button-active")
@@ -128,6 +110,23 @@ export default class extends React.Component {
     });
 
     $$(".time-select").on("click", function (e) {
+      let now = new Date();
+      let nowDay = now.getDay();
+      let nowTimestamp = Date.parse(now) / 1000;
+      const today = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        new Date().getDate()
+      );
+      let todayTimestamp = Date.parse(today) / 1000;
+      let thisWeek = new Date(today.getTime() - nowDay * 60 * 60 * 24 * 1000);
+      let thisWeekTimestamp = Date.parse(thisWeek) / 1000;
+      let thisMonth = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        1
+      );
+      const thisMonthTimestamp = Date.parse(thisMonth) / 1000;
       switch ($$(this).index()) {
         case 0:
           if (
@@ -386,11 +385,11 @@ export default class extends React.Component {
                     </Col>
                     <Col width={"20"} style={{ textAlign: "right" }}>
                       <p>开仓</p>
-                      <p>{item.order.open_price}</p>
+                      <p className="value-text">{item.order.open_price}</p>
                     </Col>
                     <Col width={"20"} style={{ textAlign: "right" }}>
                       <p>目前</p>
-                      <p>{item.order.new_price}</p>
+                      <p className="value-text">{item.order.new_price}</p>
                     </Col>
                   </Row>
                 </div>
@@ -398,16 +397,15 @@ export default class extends React.Component {
                 <div className={"history-data-middle"}>
                   <Row className={"align-items-center"}>
                     <Col width={"30"} className="data-cause">
-                      {item.cause == "withdraw" && <strong>充值</strong>}
-                      {item.cause == "recharge" && <strong>提现</strong>}
+                      <strong>{item.cause_name}</strong>
                     </Col>
                     <Col width={"30"} className="data-amount">
-                      {item.cause == "withdraw" && (
-                        <strong className={`p-up`}>+{item.amount}</strong>
-                      )}
-                      {item.cause == "recharge" && (
-                        <strong className={`p-down`}>-{item.amount}</strong>
-                      )}
+                      <strong
+                        className={item.in_or_out === 0 ? `p-down` : `p-up`}
+                      >
+                        {item.in_or_out === 0 ? "-" : "+"}
+                        {item.amount}
+                      </strong>
                     </Col>
                     <Col width={"40"} className="data-time">
                       <p>
@@ -430,13 +428,17 @@ export default class extends React.Component {
                     <Col width={"50"}>
                       <Row className={"justify-content-space-between"}>
                         <span>止损：</span>
-                        <span>{item.order.stop_loss || "-"}</span>
+                        <span className="value-text">
+                          {item.order.stop_loss || "-"}
+                        </span>
                       </Row>
                     </Col>
                     <Col width={"50"}>
                       <Row className={"justify-content-space-between"}>
                         <span>库存费：</span>
-                        <span>{item.order.swaps || "-"}</span>
+                        <span className="value-text">
+                          {item.order.swaps || "-"}
+                        </span>
                       </Row>
                     </Col>
                   </Row>
@@ -444,13 +446,17 @@ export default class extends React.Component {
                     <Col width={"50"}>
                       <Row className={"justify-content-space-between"}>
                         <span>止盈：</span>
-                        <span>{item.order.take_profit || "-"}</span>
+                        <span className="value-text">
+                          {item.order.take_profit || "-"}
+                        </span>
                       </Row>
                     </Col>
                     <Col width={"50"}>
                       <Row className={"justify-content-space-between"}>
                         <span>税费：</span>
-                        <span>{item.order.taxes || "-"}</span>
+                        <span className="value-text">
+                          {item.order.taxes || "-"}
+                        </span>
                       </Row>
                     </Col>
                   </Row>
@@ -458,25 +464,29 @@ export default class extends React.Component {
                     <Col width={"50"}>
                       <Row className={"justify-content-space-between"}>
                         <span>订单号：</span>
-                        <span>{item.order.order_number}</span>
+                        <span className="value-text">
+                          {item.order.order_number.substr(-11)}
+                        </span>
                       </Row>
                     </Col>
                     <Col width={"50"}>
                       <Row className={"justify-content-space-between"}>
                         <span>手续费：</span>
-                        <span>{item.order.fee || "-"}</span>
+                        <span className="value-text">
+                          {item.order.fee || "-"}
+                        </span>
                       </Row>
                     </Col>
                     <Col width={"50"}>
                       <Row>
                         <span>平仓时间：</span>
-                        <span>
-                          <p>
+                        <span style={{ textAlign: "right" }}>
+                          <p className="value-text">
                             {moment(item.order.close_time * 1000).format(
                               "YYYY/MM/DD"
                             )}
                           </p>
-                          <p>
+                          <p className="value-text">
                             {moment(item.order.close_time * 1000).format(
                               "hh:mm:ss"
                             )}
@@ -487,13 +497,13 @@ export default class extends React.Component {
                     <Col width={"50"}>
                       <Row>
                         <span>开仓时间：</span>
-                        <span>
-                          <p>
+                        <span style={{ textAlign: "right" }}>
+                          <p className="value-text">
                             {moment(item.order.create_time * 1000).format(
                               "YYYY/MM/DD"
                             )}
                           </p>
-                          <p>
+                          <p className="value-text">
                             {moment(item.order.create_time * 1000).format(
                               "hh:mm:ss"
                             )}

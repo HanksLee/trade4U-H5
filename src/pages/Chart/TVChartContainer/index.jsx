@@ -1,17 +1,18 @@
 import * as React from 'react';
 import DatafeedProvider from './DatafeedProvider';
+import utils from 'utils';
 import './index.scss';
-import { supportedResolution } from 'constant';
 
 export default class TVChartContainer extends React.PureComponent {
 	tvWidget = null;
-  containerId = 'tv_chart_container_' + (new Date()).getTime()
+	containerId = 'tv_chart_container_' + (new Date()).getTime()
+	isReady = false
 
 	componentDidMount() {
 		const widgetOptions = {
-			symbol: this.props.symbol || '000',
+			symbol: this.props.symbol || utils.getLStorage("LATEST_SYMBOL") || '000',
 			datafeed: new DatafeedProvider(),
-			interval: '5',
+			interval: '1D',
 			container_id: this.containerId,
 			library_path: '/assets/charting_library/',
 			autosize: true,
@@ -34,13 +35,19 @@ export default class TVChartContainer extends React.PureComponent {
 			debug: true,
 		};
 		this.tvWidget = new window.TradingView.widget(widgetOptions);
+		this.tvWidget.onChartReady(() => {
+			this.isReady = true;
+			// this.tvWidget.activeChart().onIntervalChanged().subscribe(null, (interval, timeframeObj) => {
+			// 	if (interval !== '1D' && interval !== '7D') {
+			// 		this.tvWidget.activeChart().setChartType(2);
+			// 	}
+			// });
+		})
 	}
 
 	componentWillReceiveProps(nextProps) {
-    if (this.props.symbol !== nextProps.symbol) {
-			this.tvWidget.onChartReady(() => {
-				this.tvWidget.setSymbol(nextProps.symbol, supportedResolution);
-			})
+    if (this.props.symbol !== nextProps.symbol && this.isReady) {
+			this.tvWidget.setSymbol(nextProps.symbol, '1D');
 		}
 	}
 

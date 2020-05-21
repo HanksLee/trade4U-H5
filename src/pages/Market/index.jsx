@@ -1,6 +1,5 @@
-import api from 'services';
 import React from 'react';
-import { Page, Navbar, List, NavRight, NavLeft, NavTitle,
+import { Page, Navbar, NavRight, NavLeft, NavTitle,
   Actions, ActionsLabel, ActionsGroup, ActionsButton } from 'framework7-react';
 import EditIcon from "assets/img/edit2.svg";
 import AddIcon from "assets/img/add.svg";
@@ -141,7 +140,7 @@ export default class extends React.Component {
             </>
           )
         } else {
-          const last = strs[1].substr(4)
+          const last = strs[1].substr(2)
           return (
             <>
               <span>{strs[0]}.</span>
@@ -166,11 +165,11 @@ export default class extends React.Component {
       <Page name="market">
         <Navbar>
           <NavLeft>
-            <img alt="edit" src={EditIcon} onClick={this.navigateToManagePage} />
+            <img className="nav-cion" alt="edit" src={EditIcon} onClick={this.navigateToManagePage} />
           </NavLeft>
           <NavTitle>行情</NavTitle>
           <NavRight>
-            <img alt="add" src={AddIcon} onClick={this.navigateToSymbolTypePage} />
+            <img className="nav-cion" alt="add" src={AddIcon} onClick={this.navigateToSymbolTypePage} />
           </NavRight>
         </Navbar>
         <div className="self-select-table">
@@ -199,7 +198,7 @@ export default class extends React.Component {
                     <div className="self-select-code">{item.symbol_display.product_display.code}</div>
                     <div>
                       <div className="self-select-buy-sell-block self-select-buy-block">
-                        {item.product_details.buy ? this.addSpecialStyle(item.product_details.buy) : '--'}
+                        {item.product_details.buy ? this.addSpecialStyle(item.product_details.sell) : '--'}
                       </div>
                       <div className="self-select-low">
                         最低：{item.product_details.low ? item.product_details.low : '--'}
@@ -207,7 +206,7 @@ export default class extends React.Component {
                     </div>
                     <div>
                       <div className="self-select-buy-sell-block self-select-sell-block">
-                        {item.product_details.sell ? this.addSpecialStyle(item.product_details.sell) : '--'}
+                        {item.product_details.sell ? this.addSpecialStyle(item.product_details.buy) : '--'}
                       </div>
                       <div className="self-select-high">
                         最高：{item.product_details.high ? item.product_details.high : '--'}

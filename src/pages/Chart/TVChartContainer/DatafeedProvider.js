@@ -16,13 +16,12 @@ const resolutionMap = {
 
 export default class DatafeedProvider {
   wsConnect = null;
-  lastItem = null;
-  interval = null;
+  lastSymbolName = null;
+  lastResolution = null;
   subscriberList = [];
   kChartData = [];
 
   onReady = cb => {
-    console.log('onReady')
     setTimeout(() => {
       cb({
         supported_resolutions: supportedResolution,
@@ -31,22 +30,19 @@ export default class DatafeedProvider {
   }
 
   resolveSymbol = async (symbol, onSymbolResolvedCallback) => {
-    console.log('resolveSymbol', symbol);
     if (symbol === '000') return;
-    const res = await api.trend.getSymbolTrend(symbol);
-    const res2 = await api.market.getCurrentSymbol(symbol);
-    const data = res.data;
+    const res = await api.market.getCurrentSymbol(symbol);
     setTimeout(function() {
       onSymbolResolvedCallback({
-        name: data.name,
+        name: symbol,
         ticker: symbol,
-        type: res2.data.product_details.type,
-        description: res2.data.symbol_display.description,
+        type: res.data.product_details.type,
+        description: res.data.symbol_display.description,
         supported_resolutions: supportedResolution,
         timezone: 'Asia/Hong_Kong',
         session: '24x7',
         minmov: 1,
-        pricescale: Math.pow(10, res2.data.symbol_display.decimals_place),
+        pricescale: Math.pow(10, res.data.symbol_display.decimals_place),
         minmove2: 0,
         has_intraday: true,
         // intraday_multipliers: ['1', '60'],
@@ -60,21 +56,28 @@ export default class DatafeedProvider {
       low: item[6],
       high: item[5],
       open: item[8],
-      close: item[7],
+      close: item[2],
       volume: item[4],
     }));
   }
 
-  getBars = async function(symbolInfo, resolution, from, to, onHistoryCallback, onErrorCallback, firstDataRequest) {
-    console.log('getBars', symbolInfo.name, resolution)
-    if (!symbolInfo.name) return;
+  getBars = async function(symbolInfo, resolution, from, to, onHistoryCallback) {
+    console.log('getBars', symbolInfo, resolution);
 
-    const existingData = this.kChartData || []
-    if (existingData.length) {
-      return
+    if (!symbolInfo) return;
+
+    if (resolution !== this.lastResolution) {
+      this.lastResolution = resolution;
+      this.lastSymbolName = symbolInfo.name;
+      this.kChartData = [];
+      this.subscriberList = [];
     }
 
-    console.log('getSymbolTrend', symbolInfo.ticker)
+    const existingData = this.kChartData || [];
+    if (existingData.length) {
+      return;
+    }
+
     const res = await api.trend.getSymbolTrend(symbolInfo.ticker, {
       params: {
         unit: resolutionMap[resolution],
@@ -85,8 +88,9 @@ export default class DatafeedProvider {
     this.kChartData = bars;
     onHistoryCallback(bars, { noData: !bars.length, });
   
+    if (this.wsConnect) this.wsConnect.close();
     this.wsConnect = ws(`symbol/${symbolInfo.ticker}/trend`);
-    this.wsConnect.onmessage = () => {
+    this.wsConnect.onmessage = (event) => {
       const message = event.data;
       const data = JSON.parse(message).data;
       const formatData = {
@@ -94,41 +98,39 @@ export default class DatafeedProvider {
         low: data.low,
         high: data.high,
         open: data.open,
-        close: data.close,
+        close: data.sell,
         volume: data.volume,
-      }
+      };
 
       this.subscriberList = this.subscriberList || [];
       for (const sub of this.subscriberList) {
-        if (sub.symbol !== this.symbol || sub.resolution !== resolution) {
+        if (sub.symbolName !== this.lastSymbolName || sub.resolution !== resolution) {
           this.kChartData = [];
-          return;
+        } else {
+          if (typeof sub.callback !== 'function') return;
+          sub.callback(formatData);
         }
-        if (typeof sub.callback !== 'function') return;
-        sub.callback(formatData);
       }
     }
   }
 
   subscribeBars = (symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) => {
-    console.log('subscribeBars', symbolInfo.name);
     this.subscriberList = this.subscriberList || [];
-    const found = this.subscriberList.some(n => n.uid === subscriberUID)
-    if (found) return
+    const found = this.subscriberList.some(n => n.uid === subscriberUID);
+    if (found) return;
 
     this.subscriberList.push({
-      symbol: symbolInfo,
+      symbolName: symbolInfo.name,
       resolution: resolution,
       uid: subscriberUID,
-      callback: onRealtimeCallback
-    })
+      callback: onRealtimeCallback,
+    });
   }
 
   unsubscribeBars = (subscriberUID) => {
-    console.log('unsubscribeBars', subscriberUID);
-    this.subscriberList = this.subscriberList || []
-    const idx = this.subscriberList.findIndex(n => n.uid === subscriberUID)
-    if (idx < 0) return
-    this.subscriberList.splice(idx, 1)
+    this.subscriberList = this.subscriberList || [];
+    const idx = this.subscriberList.findIndex(n => n.uid === subscriberUID);
+    if (idx < 0) return;
+    this.subscriberList.splice(idx, 1);
   }
 }
