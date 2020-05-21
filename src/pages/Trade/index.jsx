@@ -138,7 +138,7 @@ export default class extends BaseReact {
       this.wsConnect = ws("order");
     }
 
-    const { setTradeInfo, setTradeList } = this.props.trade;
+    const { setTradeInfo, setTradeList,  } = this.props.trade;
 
     this.wsConnect.onmessage = (evt) => {
       const msg = JSON.parse(evt.data);
@@ -168,8 +168,13 @@ export default class extends BaseReact {
             (item) => item.order_number != msg.data.order_number
           );
         }
+
         setTradeList(list);
         setTradeList(futureList, 'future');
+        this.updateTradeInfo({
+          balance: this.props.trade.tradeInfo.balance,
+          margin: this.props.trade.tradeInfo.margin,
+        });
       }
     };
   };
