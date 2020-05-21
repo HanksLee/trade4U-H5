@@ -19,6 +19,10 @@
 }
 
 .self-select-table {
+  * {
+    user-select: none;
+  }
+
   background-color: #fff;
   padding-bottom: var(--f7-toolbar-height);
 
