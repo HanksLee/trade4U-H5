@@ -19,6 +19,10 @@
 }
 
 .self-select-table {
+  * {
+    user-select: none;
+  }
+
   background-color: #fff;
   padding-bottom: var(--f7-toolbar-height);
 
@@ -106,12 +110,12 @@
   
     .self-select-low {
       color: #8c8c8c;
-      font-size: r(12);
+      font-size: r(11);
     }
   
     .self-select-high {
       color: #8c8c8c;
-      font-size: r(12);
+      font-size: r(11);
     }
   }
 
@@ -127,4 +131,8 @@
 .symbol-display-block {
   height: var(--f7-list-item-min-height);
   line-height: var(--f7-list-item-min-height);
+}
+
+.nav-cion {
+  padding: 10px 5px;
 }
