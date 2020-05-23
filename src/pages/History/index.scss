@@ -2,7 +2,12 @@
   // outline: 1px solid red;
 }
 
-.ios-translucent-bars .navbar {
+.device-android .page {
+  background-color: #f3f3f3;
+}
+
+.device-ios .navbar,
+.device-android .navbar {
   background-color: #325497;
   height: auto;
   min-height: calc(var(--f7-subnavbar-height) + 1px);
@@ -79,7 +84,8 @@
   }
 }
 
-.ios-translucent-bars .subnavbar {
+.device-ios .subnavbar,
+.device-android .subnavbar {
   background-color: #325497;
 
   .subnavbar-inner {
@@ -113,7 +119,7 @@
 }
 
 .history-data {
-  border-bottom: 10px solid var(--f7-page-bg-color);
+  border-bottom: 10px solid #efeff4;
   .item-content {
     padding-right: calc(
       var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left)
@@ -176,6 +182,7 @@
 
 .media-list {
   ul {
+    &::before,
     &::after {
       background-color: transparent;
     }
