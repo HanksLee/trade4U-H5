@@ -295,11 +295,11 @@ export default class extends BaseReact {
                 </Col>
                 <Col width={"20"}>
                   <p>开仓</p>
-                  <p className={"p-down"}>{item.open_price}</p>
+                  <p className={""}>{item.open_price}</p>
                 </Col>
                 <Col width={"20"}>
                   <p>现价</p>
-                  <p className={`p-up`}>{item.new_price}</p>
+                  <p className={``}>{item.new_price}</p>
                 </Col>
               </Row>
             </div>
@@ -483,8 +483,10 @@ export default class extends BaseReact {
             </Col>
           </Row>
         </Block>
-        {this.renderTradeList(tradeList, "order")}
-        {this.renderTradeList(futureTradeList, "future")}
+        <div className={'trade-list-wrapper'}>
+          {this.renderTradeList(tradeList, "order")}
+          {this.renderTradeList(futureTradeList, "future")}
+        </div>
         <Actions
           ref="actionsGroup"
           onActionsClose={() => {
@@ -508,7 +510,11 @@ export default class extends BaseReact {
             >
               <div
               >
-                平仓
+                {
+                  currentTrade.action != 0
+                    ? '删除'
+                    : '平仓'
+                }
               </div>
             </ActionsButton>
             <ActionsButton onClick={() =>

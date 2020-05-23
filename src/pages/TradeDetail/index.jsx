@@ -570,9 +570,9 @@ export default class extends BaseReact {
       1 / 10 ** (currentSymbol?.symbol_display?.decimals_place)
     ) : 0.001;
     // debugger;
-
-    console.log('lotsValue', lotsValue);
-
+    const actionSwitch = currentSymbol?.symbol_display?.action;
+    const useBuyBtn = actionSwitch?.includes('0');
+    const useSellBtn = actionSwitch?.includes('1');
 
     return (
       <Page noToolbar name="trade-detail" className={'trade-detail'} onPageBeforeIn={pageData => {
@@ -618,10 +618,24 @@ export default class extends BaseReact {
                 {
                   tradeTypeOptions.map((item) => {
                     return (
-                      <div className={`trade-detail-type-item ${item.color}`} style={{
+                      <div className={`
+                      trade-detail-type-item ${item.color}
+                      ${
+                        ((item.id == 2 || item.id == 4) && !useBuyBtn)
+                          ? 'bg-grey'
+                          : ((item.id == 3 || item.id == 5) && !useSellBtn)
+                            ? 'bg-grey'
+                            : ''
+                        }
+                      `} style={{
                         display: currentTradeType?.id == item.id ? 'none' : 'block',
 
-                      }} key={item.id} onClick={() => this.onTradeTypeChanged(item)}>
+                      }} key={item.id} onClick={() => {
+                        if ((item.id == 2 || item.id == 4) && !useBuyBtn) return;
+                        if ((item.id == 3 || item.id == 5) && !useSellBtn) return;
+
+                        this.onTradeTypeChanged(item);
+                      }}>
                         {item.name}
                       </div>
                     )
@@ -636,13 +650,13 @@ export default class extends BaseReact {
             <Row bgColor={'white'} noGap className={'trade-detail-lots'}>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(0-currentShowSymbol?.basic_step * 10);
-                }}>{-currentShowSymbol?.basic_step * 10 || '-'}</span>
+                  this.onLotsChanged(0-currentShowSymbol?.symbol_display?.lots_step * 10);
+                }}>{-currentShowSymbol?.symbol_display?.lots_step * 10 || '-'}</span>
               </Col>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(0-currentShowSymbol?.basic_step);
-                }}>{-currentShowSymbol?.basic_step || '-'}</span>
+                  this.onLotsChanged(0-currentShowSymbol?.symbol_display?.lots_step);
+                }}>{-currentShowSymbol?.symbol_display?.lots_step || '-'}</span>
               </Col>
               <Col width={'20'}>
                 <Input
@@ -651,8 +665,6 @@ export default class extends BaseReact {
                   value={lotsValue}
                   color={'black'}
                   onChange={(evt) => {
-
-                    console.log('evt', evt.target.value);
 
                     if (evt.target.value < currentShowSymbol?.min_lots) return;
 
@@ -665,14 +677,14 @@ export default class extends BaseReact {
               <Col width={'20'}>
                 <span className={'blue'}
                       onClick={() => {
-                        this.onLotsChanged(currentShowSymbol?.basic_step);
+                        this.onLotsChanged(currentShowSymbol?.symbol_display?.lots_step);
                       }}
-                    >{currentShowSymbol?.basic_step && '+' + currentShowSymbol?.basic_step || '-'}</span>
+                    >{currentShowSymbol?.symbol_display?.lots_step && '+' + currentShowSymbol?.symbol_display?.lots_step || '-'}</span>
               </Col>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(currentShowSymbol?.basic_step * 10);
-                }}>{currentShowSymbol?.basic_step && '+' + currentShowSymbol?.basic_step * 10 || '-'}</span>
+                  this.onLotsChanged(currentShowSymbol?.symbol_display?.lots_step * 10);
+                }}>{currentShowSymbol?.symbol_display?.lots_step && '+' + currentShowSymbol?.symbol_display?.lots_step * 10 || '-'}</span>
               </Col>
             </Row>
           )
@@ -803,18 +815,22 @@ export default class extends BaseReact {
           mode == 'add' && (
             <Row noGap className={'trade-detail-actions'}>
               <Col onClick={() => {
+                if (!useSellBtn) return;
+
                 this.onTrade('sell');
-              }} width={'50'} className={'bg-down trade-detail-action'}>
+              }} width={'50'} className={`bg-down trade-detail-action ${!useSellBtn ? 'bg-grey' : ''}`}>
               <span>
                 Sell
               </span>
               </Col>
               <Col
                 onClick={() => {
+                  if (!useBuyBtn) return;
+
                   this.onTrade('buy');
                 }}
                 width={'50'}
-                className={`bg-up trade-detail-action`}>
+                className={`bg-up trade-detail-action ${!useBuyBtn ? 'bg-grey' : ''}`}>
               <span>
                 Buy
                </span>
