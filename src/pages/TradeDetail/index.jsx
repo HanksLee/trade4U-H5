@@ -21,7 +21,7 @@ import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/title';
 
 import moment from 'moment';
-import { inject, observer } from "mobx-react";
+import {inject, observer} from "mobx-react";
 import utils from 'utils';
 import ws from 'utils/ws';
 import './index.scss';
@@ -109,8 +109,8 @@ export default class extends BaseReact {
         boundaryGap: [0, '100%'],
         splitLine: {
           show: true,
-          lineStyle:{
-            type:'dashed'
+          lineStyle: {
+            type: 'dashed'
           }
 
         }
@@ -119,11 +119,13 @@ export default class extends BaseReact {
   }
 
   componentDidMount() {
-
     this.initSymbolList();
     this.initTrade();
-    this.initChart();
-    this.connectWebsocket();
+    setTimeout(() => {
+      this.initChart();
+      this.connectWebsocket();
+    }, 600);
+
   }
 
   initSymbolList = async () => {
@@ -158,9 +160,11 @@ export default class extends BaseReact {
   }
 
   initTrade = async () => {
-    const {id, mode, trade: {
-      currentTrade
-    }} = this.props;
+    const {
+      id, mode, trade: {
+        currentTrade
+      }
+    } = this.props;
 
     if (mode != 'add') {
       let action = currentTrade?.action;
@@ -183,8 +187,11 @@ export default class extends BaseReact {
 
   initChart = () => {
     this.$myChart = echarts.init(document.querySelector('.chart'));
+    window.$echart = echarts;
+    window.$myChart = this.$myChart;
+
 // 绘制图表
-    const {chartOption } = this.state;
+    const {chartOption} = this.state;
     const {
       currentShowSymbol,
       currentSymbol,
@@ -197,14 +204,9 @@ export default class extends BaseReact {
     const minSell = minBy(trend, item => item[2]);
     const max = Math.max(maxBuy ? maxBuy[1] : 0, maxSell ? maxSell[1] : 0);
     const min = Math.min(minBuy ? minBuy[2] : 0, minSell ? minSell[2] : 0);
-    const interval = +(((max - min) / 10).toFixed(2));
-    // console.log('min', min);
-    // console.log('max', max);
-    // console.log('interval', interval);
+    const interval = +(((max - min) / 10).toFixed(currentSymbol?.symbol_display?.decimals_place));
 
-
-
-    this.$myChart.setOption({
+    const options = {
       ...chartOption,
       xAxis: {
         ...chartOption.xAxis,
@@ -237,7 +239,11 @@ export default class extends BaseReact {
         },
       }
       ]
-    }, true);
+    };
+
+    // console.log(JSON.stringify(options));
+
+    this.$myChart.setOption(options, true);
   }
 
   updateTrendData = (data) => {
@@ -274,9 +280,11 @@ export default class extends BaseReact {
   }
 
   connectWebsocket = () => {
-    const {id, prevSelectedId, market: {
-      currentShowSymbol,
-    }} = this.props;
+    const {
+      id, prevSelectedId, market: {
+        currentShowSymbol,
+      }
+    } = this.props;
 
     if (!prevSelectedId || +prevSelectedId != id) {
       if (this.wsConnect) this.wsConnect.close();
@@ -373,7 +381,7 @@ export default class extends BaseReact {
         if (mode == 'buy') {
           payload.action = '0';
 
-        } else if (mode == 'sell'){
+        } else if (mode == 'sell') {
           payload.action = '1';
         }
       } else {
@@ -381,7 +389,7 @@ export default class extends BaseReact {
         payload.open_price = priceValue;
       }
     } else if (actionMode == 'update') {
-        payload.open_price = priceValue;
+      payload.open_price = priceValue;
     }
 
     // console.log('payload', JSON.stringify(payload));
@@ -402,7 +410,7 @@ export default class extends BaseReact {
         res = await this.$api.trade.createTrade(payload);
 
         // console.log('res', res);
-        if(res.status == 201) {
+        if (res.status == 201) {
           this.$f7.toast.show({
             text: '下单成功',
             position: 'center',
@@ -431,7 +439,7 @@ export default class extends BaseReact {
       try {
         res = await this.$api.trade.updateTrade(currentTrade.order_number, payload);
 
-        if(res.status == 200) {
+        if (res.status == 200) {
           this.$f7.toast.show({
             text: '修改成功',
             position: 'center',
@@ -505,12 +513,10 @@ export default class extends BaseReact {
         currentShowSymbol,
       }
     } = this.props;
-    console.log('val', val);
 
     val = Number(val);
     val = Number(this.state.lotsValue || 0) + (val);
     val = Number(val.toFixed(2));
-
 
 
     if (val < currentShowSymbol?.symbol_display?.min_lots) {
@@ -578,7 +584,7 @@ export default class extends BaseReact {
 
   updateTradeInfo = (tradeInfo) => {
     let payload = {};
-    const { tradeList, setTradeInfo } = this.props.trade;
+    const {tradeList, setTradeInfo} = this.props.trade;
     if (utils.isEmpty(tradeInfo)) {
       payload = {
         balance: this.props.trade.tradeInfo.balance,
@@ -657,7 +663,7 @@ export default class extends BaseReact {
               {currentSymbol?.symbol_display?.name}
             </span>
             {
-              mode == 'add' &&  <Icon color={'white'} f7={'arrowtriangle_down_fill'} size={r(10)}></Icon>
+              mode == 'add' && <Icon color={'white'} f7={'arrowtriangle_down_fill'} size={r(10)}></Icon>
             }
           </NavTitle>
         </Navbar>
@@ -677,8 +683,8 @@ export default class extends BaseReact {
                         ((item.id == 2 || item.id == 4) && !useBuyBtn)
                           ? 'bg-grey'
                           : ((item.id == 3 || item.id == 5) && !useSellBtn)
-                            ? 'bg-grey'
-                            : ''
+                          ? 'bg-grey'
+                          : ''
                         }
                       `} style={{
                         display: currentTradeType?.id == item.id ? 'none' : 'block',
@@ -703,12 +709,12 @@ export default class extends BaseReact {
             <Row bgColor={'white'} noGap className={'trade-detail-lots'}>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(0-currentShowSymbol?.symbol_display?.lots_step * 10);
+                  this.onLotsChanged(0 - currentShowSymbol?.symbol_display?.lots_step * 10);
                 }}>{-currentShowSymbol?.symbol_display?.lots_step * 10 || '-'}</span>
               </Col>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(0-currentShowSymbol?.symbol_display?.lots_step);
+                  this.onLotsChanged(0 - currentShowSymbol?.symbol_display?.lots_step);
                 }}>{-currentShowSymbol?.symbol_display?.lots_step || '-'}</span>
               </Col>
               <Col width={'20'}>
@@ -732,7 +738,7 @@ export default class extends BaseReact {
                       onClick={() => {
                         this.onLotsChanged(currentShowSymbol?.symbol_display?.lots_step);
                       }}
-                    >{currentShowSymbol?.symbol_display?.lots_step && '+' + currentShowSymbol?.symbol_display?.lots_step || '-'}</span>
+                >{currentShowSymbol?.symbol_display?.lots_step && '+' + currentShowSymbol?.symbol_display?.lots_step || '-'}</span>
               </Col>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
