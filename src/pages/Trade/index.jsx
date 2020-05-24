@@ -30,6 +30,9 @@ import ws from "utils/ws";
 import { tradeActionMap } from "constant";
 import utils from "utils";
 import cloneDeep from "lodash/cloneDeep";
+import Dom7 from 'dom7';
+
+const $$ = Dom7;
 
 @inject("common", "trade")
 @observer
@@ -89,48 +92,6 @@ export default class extends BaseReact {
     if (this.state.loading) return;
 
     this.onRefresh();
-
-    this.$f7.$(".trade-list-in-transaction").on("taphold", (evt) => {
-      const { tradeList, futureTradeList } = this.props.trade;
-      const dom = this.$f7.$(evt.target).parents(".media-item")[0];
-      if (dom != null) {
-        const currentTrade =
-          (tradeList[dom.id] || futureTradeList[dom.id]) ?? {};
-
-        this.props.trade.setCurrentTrade(currentTrade);
-
-        this.setState(
-          {
-            longTapIndex: dom.id,
-          },
-          () => {
-            this.refs.actionsGroup.open();
-          }
-        );
-      }
-    });
-
-    this.$f7.$(".trade-list-pending").on("taphold", (evt) => {
-      const { tradeList, futureTradeList } = this.props.trade;
-      console.log('evt', evt.target);
-
-      const dom = this.$f7.$(evt.target).parents(".media-item")[0];
-      if (dom != null) {
-        const currentTrade =
-          (tradeList[dom.id] || futureTradeList[dom.id]) ?? {};
-
-        this.props.trade.setCurrentTrade(currentTrade);
-
-        this.setState(
-          {
-            longTapIndex: dom.id,
-          },
-          () => {
-            this.refs.actionsGroup.open();
-          }
-        );
-      }
-    });
   };
 
   updateTradeInfo = (tradeInfo) => {
@@ -213,6 +174,50 @@ export default class extends BaseReact {
 
   };
 
+  bindEvents = () => {
+    this.$f7.$(".trade-list-in-transaction").on("taphold", (evt) => {
+      const { tradeList, futureTradeList } = this.props.trade;
+      const dom = this.$f7.$(evt.target).parents(".media-item")[0];
+      if (dom != null) {
+        const currentTrade =
+          (tradeList?.find(item => item.order_number == dom.id) || futureTradeList.find(item => item.order_number == dom.id)) ?? {};
+
+        this.props.trade.setCurrentTrade(currentTrade);
+
+        this.setState(
+          {
+            longTapIndex: dom.id,
+          },
+          () => {
+            this.refs.actionsGroup.open();
+          }
+        );
+      }
+    });
+
+    this.$f7.$(".trade-list-pending").on("taphold", (evt) => {
+      const { tradeList, futureTradeList } = this.props.trade;
+      // console.log('evt', evt.target);
+
+      const dom = this.$f7.$(evt.target).parents(".media-item")[0];
+      if (dom != null) {
+        const currentTrade =
+          (tradeList?.find(item => item.order_number == dom.id) || futureTradeList.find(item => item.order_number == dom.id)) ?? {};
+
+        this.props.trade.setCurrentTrade(currentTrade);
+
+        this.setState(
+          {
+            longTapIndex: dom.id,
+          },
+          () => {
+            this.refs.actionsGroup.open();
+          }
+        );
+      }
+    });
+  }
+
   onRefresh = async (done) => {
     this.setState(
       {
@@ -247,6 +252,15 @@ export default class extends BaseReact {
           this.props.trade.setTradeList(list[1], "future");
 
           this.updateTradeInfo(tradeInfo);
+          this.bindEvents();
+          // console.log('list', $$('.trade-data'));
+          //
+          // $$('.trade-data').forEach(dom => {
+          //   $$(`#${dom.id}`).on('taphold', evt => {
+          //     console.log('evt', evt.target);
+          //
+          //   })
+          // });
         } catch (e) {
           this.$f7.toast.show({
             text: e.response.data.message,
@@ -277,8 +291,8 @@ export default class extends BaseReact {
         {tradeList.map((item, index) => (
           <ListItem
             // dataItem={item}
-            id={index}
-            key={index}
+            id={item.order_number}
+            key={item.order_number}
             swipeout
             className={`trade-data ${
               loading ? "skeleton-text skeleton-effect-blink" : ""
@@ -443,9 +457,6 @@ export default class extends BaseReact {
       currentTrade,
     } = this.props.trade;
     const initSymbol = utils.isEmpty(tradeList) ? 0 : tradeList[0]?.symbol;
-
-    console.log('currentTrade', currentTrade);
-
 
     return (
       <Page

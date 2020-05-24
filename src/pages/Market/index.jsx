@@ -27,6 +27,8 @@ export default class extends React.Component {
 
     $$('.self-select-tr').on('taphold', (evt) => {
       const dom = $$(evt.target).parents('.self-select-tr')[0] || $$(evt.target)[0];
+      console.log('dom', dom);
+
       if (dom) {
         const id = $$(dom).data('id')
         const { selfSelectSymbolList, } = this.props.market
