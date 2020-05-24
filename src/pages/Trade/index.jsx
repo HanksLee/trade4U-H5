@@ -90,8 +90,30 @@ export default class extends BaseReact {
 
     this.onRefresh();
 
-    this.$f7.$(".media-list").on("taphold", (evt) => {
+    this.$f7.$(".trade-list-in-transaction").on("taphold", (evt) => {
       const { tradeList, futureTradeList } = this.props.trade;
+      const dom = this.$f7.$(evt.target).parents(".media-item")[0];
+      if (dom != null) {
+        const currentTrade =
+          (tradeList[dom.id] || futureTradeList[dom.id]) ?? {};
+
+        this.props.trade.setCurrentTrade(currentTrade);
+
+        this.setState(
+          {
+            longTapIndex: dom.id,
+          },
+          () => {
+            this.refs.actionsGroup.open();
+          }
+        );
+      }
+    });
+
+    this.$f7.$(".trade-list-pending").on("taphold", (evt) => {
+      const { tradeList, futureTradeList } = this.props.trade;
+      console.log('evt', evt.target);
+
       const dom = this.$f7.$(evt.target).parents(".media-item")[0];
       if (dom != null) {
         const currentTrade =
@@ -243,7 +265,9 @@ export default class extends BaseReact {
     const { tapIndex, loading } = this.state;
 
     return (
-      <List mediaList>
+      <List mediaList className={`trade-list-${type == 'order' ? 'in-transaction' : 'pending'}`} style={{
+        paddingBottom: type == 'order' ? 0 : 80,
+      }}>
         {tradeList.length > 0 &&
           (type == "order" ? (
             <div className={"trade-data-title"}>持仓</div>
@@ -295,11 +319,11 @@ export default class extends BaseReact {
                 </Col>
                 <Col width={"20"}>
                   <p>开仓</p>
-                  <p className={""}>{item.open_price}</p>
+                  <p className={"p-black"}>{item.open_price}</p>
                 </Col>
                 <Col width={"20"}>
                   <p>现价</p>
-                  <p className={``}>{item.new_price}</p>
+                  <p className={`p-black`}>{item.new_price}</p>
                 </Col>
               </Row>
             </div>
@@ -420,6 +444,9 @@ export default class extends BaseReact {
     } = this.props.trade;
     const initSymbol = utils.isEmpty(tradeList) ? 0 : tradeList[0]?.symbol;
 
+    console.log('currentTrade', currentTrade);
+
+
     return (
       <Page
         name="trade"
@@ -483,10 +510,8 @@ export default class extends BaseReact {
             </Col>
           </Row>
         </Block>
-        <div className={'trade-list-wrapper'}>
-          {this.renderTradeList(tradeList, "order")}
-          {this.renderTradeList(futureTradeList, "future")}
-        </div>
+        {this.renderTradeList(tradeList, "order")}
+        {this.renderTradeList(futureTradeList, "future")}
         <Actions
           ref="actionsGroup"
           onActionsClose={() => {
@@ -511,7 +536,7 @@ export default class extends BaseReact {
               <div
               >
                 {
-                  currentTrade.action != 0
+                  currentTrade.status == "pending"
                     ? '删除'
                     : '平仓'
                 }
@@ -530,7 +555,7 @@ export default class extends BaseReact {
                 修改
               </span>
             </ActionsButton>
-            <ActionsButton                 onClick={() =>
+            <ActionsButton onClick={() =>
               this.goToPage(`/trade/${currentTrade?.symbol}/`, {
                 props: {
                   mode: "add",

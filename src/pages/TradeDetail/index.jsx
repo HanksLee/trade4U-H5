@@ -409,6 +409,7 @@ export default class extends BaseReact {
             closeTimeout: 2000,
           });
           this.wsConnect.close();
+          this.onTradeListPageRefresh();
           this.$f7router.back({
             force: false,
           });
@@ -437,6 +438,7 @@ export default class extends BaseReact {
             closeTimeout: 2000,
           });
           this.wsConnect.close();
+          this.onTradeListPageRefresh();
           this.$f7router.back('/trade/', {
             force: false,
           });
@@ -544,6 +546,57 @@ export default class extends BaseReact {
       [field]: fieldValue,
     });
   }
+
+  onTradeListPageRefresh = async () => {
+    const res = await this.$api.trade.getTradeInfo();
+    let tradeInfo = {
+      balance: res.data.balance,
+      // equity: 1014404.86, // 净值
+      margin: res.data.margin, // 预付款
+      // free_margin: 1014399.22, // 可用预付款
+      // margin_level: 18017848.22, // 预付款比例
+    };
+    const res2 = await Promise.all([
+      this.$api.trade.getTradeList({
+        params: {
+          status: "in_transaction",
+        },
+      }),
+      this.$api.trade.getTradeList({
+        params: {
+          status: "pending",
+        },
+      }),
+    ]);
+
+    const list = res2.map((item) => item.data);
+    this.props.trade.setTradeList(list[0]);
+    this.props.trade.setTradeList(list[1], "future");
+
+    this.updateTradeInfo(tradeInfo);
+  }
+
+  updateTradeInfo = (tradeInfo) => {
+    let payload = {};
+    const { tradeList, setTradeInfo } = this.props.trade;
+    if (utils.isEmpty(tradeInfo)) {
+      payload = {
+        balance: this.props.trade.tradeInfo.balance,
+        margin: this.props.trade.tradeInfo.margin,
+      };
+    } else {
+      payload = {
+        balance: tradeInfo.balance,
+        margin: tradeInfo.margin,
+      };
+    }
+    payload.equity =
+      tradeList.reduce((acc, cur) => acc + cur.profit, 0) + payload.balance;
+    payload.free_margin = payload.equity - payload.margin;
+    payload.margin_level = (payload.equity / payload.margin) * 100;
+
+    setTradeInfo(payload);
+  };
 
 
   render() {
@@ -874,6 +927,7 @@ export default class extends BaseReact {
                         closeTimeout: 2000,
                       });
                       this.wsConnect.close();
+                      this.onTradeListPageRefresh();
                       this.$f7router.back('/trade/', {
                         force: false,
                       });
@@ -912,6 +966,7 @@ export default class extends BaseReact {
                       closeTimeout: 2000,
                     });
                     this.wsConnect.close();
+                    this.onTradeListPageRefresh();
                     this.$f7router.back('/trade/', {
                       force: false,
                     });
