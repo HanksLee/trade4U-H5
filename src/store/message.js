@@ -13,6 +13,7 @@ class TradeStore extends BaseStore {
   @action
   connnetNotifyWebsocket = () => {
     this.wsConnect = ws("notify");
+    // console.log(this.wsConnect);
     this.wsConnect.onmessage = (event) => {
       const message = event.data;
 

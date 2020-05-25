@@ -1,0 +1,12 @@
+.settings-icon-container {
+  position: relative;
+  > .has-unread-message {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #f00;
+    position: absolute;
+    right: 25%;
+    top: 2%;
+  }
+}

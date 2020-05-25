@@ -1,6 +1,6 @@
-import logo from '../../assets/img/logo.svg';
-import React from 'react';
-import utils from 'utils';
+import logo from "../../assets/img/logo.svg";
+import React from "react";
+import utils from "utils";
 import {
   Page,
   Navbar,
@@ -11,10 +11,13 @@ import {
   Button,
   NavTitle,
   Icon,
-} from 'framework7-react';
-import api from 'services'
-import './index.scss';
+} from "framework7-react";
+import api from "services";
+// import { inject, observer } from "mobx-react";
+import "./index.scss";
 
+// @inject("message")
+// @observer
 export default class extends React.Component {
   constructor() {
     super();
@@ -24,16 +27,17 @@ export default class extends React.Component {
       brokerList: [],
       searchResult: [],
       codeInfo: null,
-      username: '',
-      password: '',
-      code: '',
-    }
+      username: "",
+      password: "",
+      code: "",
+    };
   }
 
   componentDidMount() {
-    const token = utils.getLStorage('MOON_H5_TOKEN');
+    const token = utils.getLStorage("MOON_H5_TOKEN");
     if (token) {
-      this.props.history.push('/app');
+      this.props.message.connnetNotifyWebsocket();
+      this.props.history.push("/app");
     } else {
       this.getCodeImg();
     }
@@ -47,14 +51,14 @@ export default class extends React.Component {
         codeInfo: res.data,
       });
     }
-  }
+  };
 
   renderLoginPanel = () => {
-    const { codeInfo, } = this.state;
+    const { codeInfo } = this.state;
     return (
       <>
         <Navbar>
-          <NavTitle style={{ margin: 'auto' }}>登录</NavTitle>
+          <NavTitle style={{ margin: "auto" }}>登录</NavTitle>
         </Navbar>
         <img alt="logo" className="logo" src={logo} />
         <List form className="login-list">
@@ -65,7 +69,7 @@ export default class extends React.Component {
             label="用户名"
             placeholder="请输入用户名"
             value={this.state.username}
-            onInput={(e) => this.setState({username: e.target.value})}
+            onInput={(e) => this.setState({ username: e.target.value })}
           ></ListInput>
           <ListInput
             type="password"
@@ -74,7 +78,7 @@ export default class extends React.Component {
             label="密码"
             placeholder="请输入密码"
             value={this.state.password}
-            onInput={(e) => this.setState({password: e.target.value})}
+            onInput={(e) => this.setState({ password: e.target.value })}
           ></ListInput>
           <ListInput
             type="text"
@@ -83,88 +87,95 @@ export default class extends React.Component {
             label="验证码"
             placeholder="请输入验证码"
             value={this.state.code}
-            onInput={(e) => this.setState({code: e.target.value})}
+            onInput={(e) => this.setState({ code: e.target.value })}
           >
-            {
-              codeInfo ? (
-                <img
-                  src={codeInfo.image}
-                  className="login-code-img"
-                  onClick={this.getCodeImg}
-                  alt="验证码"
-                  slot="content-end"
-                />
-              ) : null
-            }
+            {codeInfo ? (
+              <img
+                src={codeInfo.image}
+                className="login-code-img"
+                onClick={this.getCodeImg}
+                alt="验证码"
+                slot="content-end"
+              />
+            ) : null}
           </ListInput>
         </List>
-        <Button fill className="login-btn" onClick={this.login}>登录</Button>
+        <Button fill className="login-btn" onClick={this.login}>
+          登录
+        </Button>
       </>
     );
-  }
+  };
 
   renderBrokerChoosePanel = () => {
     return (
       <>
         <Navbar>
-          <NavTitle style={{ margin: 'auto' }}>证券商</NavTitle>
+          <NavTitle style={{ margin: "auto" }}>证券商</NavTitle>
         </Navbar>
-        <Searchbar placeholder="输入券商名" onChange={this.searchBroker} disableButton={false} />
+        <Searchbar
+          placeholder="输入券商名"
+          onChange={this.searchBroker}
+          disableButton={false}
+        />
         <img alt="logo" className="logo" src={logo} />
         <List>
-          {
-            this.state.searchResult.map(item => (
-              <ListItem onClick={() => this.chooseBroker(item.token)} title={item.broker.name}>
-                <img
-                  className="broker-logo"
-                  src={item.broker.logo}
-                  slot="media"
-                />
-              </ListItem>
-            ))
-          }
+          {this.state.searchResult.map((item) => (
+            <ListItem
+              onClick={() => this.chooseBroker(item.token)}
+              title={item.broker.name}
+            >
+              <img
+                className="broker-logo"
+                src={item.broker.logo}
+                slot="media"
+              />
+            </ListItem>
+          ))}
         </List>
       </>
     );
-  }
+  };
 
   searchBroker = (event) => {
     const value = event.target.value;
-    if (value !== '') {
+    if (value !== "") {
       this.setState({
-        searchResult: this.state.brokerList.filter(item => item.broker.name.indexOf(value) !== -1),
+        searchResult: this.state.brokerList.filter(
+          (item) => item.broker.name.indexOf(value) !== -1
+        ),
       });
     } else {
       this.setState({
         searchResult: this.state.brokerList,
       });
     }
-  }
+  };
 
   chooseBroker = (token) => {
-    utils.setLStorage('MOON_H5_TOKEN', token);
-    this.$f7router.navigate('/');
-  }
+    utils.setLStorage("MOON_H5_TOKEN", token);
+    this.$f7router.navigate("/");
+  };
 
   login = async () => {
-    const { username, password, code, } = this.state;
-    if (username === '') {
+    const { username, password, code } = this.state;
+    if (username === "") {
       this.$f7.toast.show({
-        text: '请输入用户名',
+        text: "请输入用户名",
       });
       return;
     }
 
-    if (password === '') {
+    if (password === "") {
       this.$f7.toast.show({
-        text: '请输入密码',
+        text: "请输入密码",
       });
       return;
     }
 
-    if (code === '') {
+    if (code === "") {
       this.$f7.toast.show({
-        text: '请输入验证码',
+        text: "请输入验证码",
       });
       return;
     }
@@ -174,7 +185,7 @@ export default class extends React.Component {
       password,
       code,
       key: this.state.codeInfo.key,
-      platform: 'client_pc',
+      platform: "client_pc",
     });
 
     if (res.status === 201) {
@@ -183,16 +194,16 @@ export default class extends React.Component {
         brokerList: res.data.results,
         searchResult: res.data.results,
       });
+
+      // this.props.message.connnetNotifyWebsocket();
     }
-  }
+  };
 
   render() {
-    const { isLogin, } = this.state;
+    const { isLogin } = this.state;
     return (
       <Page name="login">
-        {
-          isLogin ? this.renderBrokerChoosePanel() :  this.renderLoginPanel()
-        }
+        {isLogin ? this.renderBrokerChoosePanel() : this.renderLoginPanel()}
       </Page>
     );
   }
