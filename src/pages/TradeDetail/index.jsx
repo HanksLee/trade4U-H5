@@ -21,7 +21,7 @@ import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/title';
 
 import moment from 'moment';
-import { inject, observer } from "mobx-react";
+import {inject, observer} from "mobx-react";
 import utils from 'utils';
 import ws from 'utils/ws';
 import './index.scss';
@@ -109,8 +109,8 @@ export default class extends BaseReact {
         boundaryGap: [0, '100%'],
         splitLine: {
           show: true,
-          lineStyle:{
-            type:'dashed'
+          lineStyle: {
+            type: 'dashed'
           }
 
         }
@@ -119,11 +119,13 @@ export default class extends BaseReact {
   }
 
   componentDidMount() {
-
     this.initSymbolList();
     this.initTrade();
-    this.initChart();
-    this.connectWebsocket();
+    setTimeout(() => {
+      this.initChart();
+      this.connectWebsocket();
+    }, 600);
+
   }
 
   initSymbolList = async () => {
@@ -158,9 +160,11 @@ export default class extends BaseReact {
   }
 
   initTrade = async () => {
-    const {id, mode, trade: {
-      currentTrade
-    }} = this.props;
+    const {
+      id, mode, trade: {
+        currentTrade
+      }
+    } = this.props;
 
     if (mode != 'add') {
       let action = currentTrade?.action;
@@ -183,8 +187,11 @@ export default class extends BaseReact {
 
   initChart = () => {
     this.$myChart = echarts.init(document.querySelector('.chart'));
+    window.$echart = echarts;
+    window.$myChart = this.$myChart;
+
 // 绘制图表
-    const {chartOption } = this.state;
+    const {chartOption} = this.state;
     const {
       currentShowSymbol,
       currentSymbol,
@@ -197,14 +204,9 @@ export default class extends BaseReact {
     const minSell = minBy(trend, item => item[2]);
     const max = Math.max(maxBuy ? maxBuy[1] : 0, maxSell ? maxSell[1] : 0);
     const min = Math.min(minBuy ? minBuy[2] : 0, minSell ? minSell[2] : 0);
-    const interval = +(((max - min) / 10).toFixed(2));
-    // console.log('min', min);
-    // console.log('max', max);
-    // console.log('interval', interval);
+    const interval = +(((max - min) / 10).toFixed(currentSymbol?.symbol_display?.decimals_place));
 
-
-
-    this.$myChart.setOption({
+    const options = {
       ...chartOption,
       xAxis: {
         ...chartOption.xAxis,
@@ -237,7 +239,11 @@ export default class extends BaseReact {
         },
       }
       ]
-    }, true);
+    };
+
+    // console.log(JSON.stringify(options));
+
+    this.$myChart.setOption(options, true);
   }
 
   updateTrendData = (data) => {
@@ -274,9 +280,11 @@ export default class extends BaseReact {
   }
 
   connectWebsocket = () => {
-    const {id, prevSelectedId, market: {
-      currentShowSymbol,
-    }} = this.props;
+    const {
+      id, prevSelectedId, market: {
+        currentShowSymbol,
+      }
+    } = this.props;
 
     if (!prevSelectedId || +prevSelectedId != id) {
       if (this.wsConnect) this.wsConnect.close();
@@ -373,7 +381,7 @@ export default class extends BaseReact {
         if (mode == 'buy') {
           payload.action = '0';
 
-        } else if (mode == 'sell'){
+        } else if (mode == 'sell') {
           payload.action = '1';
         }
       } else {
@@ -381,7 +389,7 @@ export default class extends BaseReact {
         payload.open_price = priceValue;
       }
     } else if (actionMode == 'update') {
-        payload.open_price = priceValue;
+      payload.open_price = priceValue;
     }
 
     // console.log('payload', JSON.stringify(payload));
@@ -402,13 +410,14 @@ export default class extends BaseReact {
         res = await this.$api.trade.createTrade(payload);
 
         // console.log('res', res);
-        if(res.status == 201) {
+        if (res.status == 201) {
           this.$f7.toast.show({
             text: '下单成功',
             position: 'center',
             closeTimeout: 2000,
           });
           this.wsConnect.close();
+          this.onTradeListPageRefresh();
           this.$f7router.back({
             force: false,
           });
@@ -430,13 +439,14 @@ export default class extends BaseReact {
       try {
         res = await this.$api.trade.updateTrade(currentTrade.order_number, payload);
 
-        if(res.status == 200) {
+        if (res.status == 200) {
           this.$f7.toast.show({
             text: '修改成功',
             position: 'center',
             closeTimeout: 2000,
           });
           this.wsConnect.close();
+          this.onTradeListPageRefresh();
           this.$f7router.back('/trade/', {
             force: false,
           });
@@ -503,12 +513,10 @@ export default class extends BaseReact {
         currentShowSymbol,
       }
     } = this.props;
-    console.log('val', val);
 
     val = Number(val);
     val = Number(this.state.lotsValue || 0) + (val);
     val = Number(val.toFixed(2));
-
 
 
     if (val < currentShowSymbol?.symbol_display?.min_lots) {
@@ -545,6 +553,57 @@ export default class extends BaseReact {
     });
   }
 
+  onTradeListPageRefresh = async () => {
+    const res = await this.$api.trade.getTradeInfo();
+    let tradeInfo = {
+      balance: res.data.balance,
+      // equity: 1014404.86, // 净值
+      margin: res.data.margin, // 预付款
+      // free_margin: 1014399.22, // 可用预付款
+      // margin_level: 18017848.22, // 预付款比例
+    };
+    const res2 = await Promise.all([
+      this.$api.trade.getTradeList({
+        params: {
+          status: "in_transaction",
+        },
+      }),
+      this.$api.trade.getTradeList({
+        params: {
+          status: "pending",
+        },
+      }),
+    ]);
+
+    const list = res2.map((item) => item.data);
+    this.props.trade.setTradeList(list[0]);
+    this.props.trade.setTradeList(list[1], "future");
+
+    this.updateTradeInfo(tradeInfo);
+  }
+
+  updateTradeInfo = (tradeInfo) => {
+    let payload = {};
+    const {tradeList, setTradeInfo} = this.props.trade;
+    if (utils.isEmpty(tradeInfo)) {
+      payload = {
+        balance: this.props.trade.tradeInfo.balance,
+        margin: this.props.trade.tradeInfo.margin,
+      };
+    } else {
+      payload = {
+        balance: tradeInfo.balance,
+        margin: tradeInfo.margin,
+      };
+    }
+    payload.equity =
+      tradeList.reduce((acc, cur) => acc + cur.profit, 0) + payload.balance;
+    payload.free_margin = payload.equity - payload.margin;
+    payload.margin_level = (payload.equity / payload.margin) * 100;
+
+    setTradeInfo(payload);
+  };
+
 
   render() {
     const {
@@ -570,9 +629,9 @@ export default class extends BaseReact {
       1 / 10 ** (currentSymbol?.symbol_display?.decimals_place)
     ) : 0.001;
     // debugger;
-
-    console.log('lotsValue', lotsValue);
-
+    const actionSwitch = currentSymbol?.symbol_display?.action;
+    const useBuyBtn = actionSwitch?.includes('0');
+    const useSellBtn = actionSwitch?.includes('1');
 
     return (
       <Page noToolbar name="trade-detail" className={'trade-detail'} onPageBeforeIn={pageData => {
@@ -604,7 +663,7 @@ export default class extends BaseReact {
               {currentSymbol?.symbol_display?.name}
             </span>
             {
-              mode == 'add' &&  <Icon color={'white'} f7={'arrowtriangle_down_fill'} size={r(10)}></Icon>
+              mode == 'add' && <Icon color={'white'} f7={'arrowtriangle_down_fill'} size={r(10)}></Icon>
             }
           </NavTitle>
         </Navbar>
@@ -618,10 +677,24 @@ export default class extends BaseReact {
                 {
                   tradeTypeOptions.map((item) => {
                     return (
-                      <div className={`trade-detail-type-item ${item.color}`} style={{
+                      <div className={`
+                      trade-detail-type-item ${item.color}
+                      ${
+                        ((item.id == 2 || item.id == 4) && !useBuyBtn)
+                          ? 'bg-grey'
+                          : ((item.id == 3 || item.id == 5) && !useSellBtn)
+                          ? 'bg-grey'
+                          : ''
+                        }
+                      `} style={{
                         display: currentTradeType?.id == item.id ? 'none' : 'block',
 
-                      }} key={item.id} onClick={() => this.onTradeTypeChanged(item)}>
+                      }} key={item.id} onClick={() => {
+                        if ((item.id == 2 || item.id == 4) && !useBuyBtn) return;
+                        if ((item.id == 3 || item.id == 5) && !useSellBtn) return;
+
+                        this.onTradeTypeChanged(item);
+                      }}>
                         {item.name}
                       </div>
                     )
@@ -636,13 +709,13 @@ export default class extends BaseReact {
             <Row bgColor={'white'} noGap className={'trade-detail-lots'}>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(0-currentShowSymbol?.basic_step * 10);
-                }}>{-currentShowSymbol?.basic_step * 10 || '-'}</span>
+                  this.onLotsChanged(0 - currentShowSymbol?.symbol_display?.lots_step * 10);
+                }}>{-currentShowSymbol?.symbol_display?.lots_step * 10 || '-'}</span>
               </Col>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(0-currentShowSymbol?.basic_step);
-                }}>{-currentShowSymbol?.basic_step || '-'}</span>
+                  this.onLotsChanged(0 - currentShowSymbol?.symbol_display?.lots_step);
+                }}>{-currentShowSymbol?.symbol_display?.lots_step || '-'}</span>
               </Col>
               <Col width={'20'}>
                 <Input
@@ -651,8 +724,6 @@ export default class extends BaseReact {
                   value={lotsValue}
                   color={'black'}
                   onChange={(evt) => {
-
-                    console.log('evt', evt.target.value);
 
                     if (evt.target.value < currentShowSymbol?.min_lots) return;
 
@@ -665,14 +736,14 @@ export default class extends BaseReact {
               <Col width={'20'}>
                 <span className={'blue'}
                       onClick={() => {
-                        this.onLotsChanged(currentShowSymbol?.basic_step);
+                        this.onLotsChanged(currentShowSymbol?.symbol_display?.lots_step);
                       }}
-                    >{currentShowSymbol?.basic_step && '+' + currentShowSymbol?.basic_step || '-'}</span>
+                >{currentShowSymbol?.symbol_display?.lots_step && '+' + currentShowSymbol?.symbol_display?.lots_step || '-'}</span>
               </Col>
               <Col width={'20'}>
                 <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(currentShowSymbol?.basic_step * 10);
-                }}>{currentShowSymbol?.basic_step && '+' + currentShowSymbol?.basic_step * 10 || '-'}</span>
+                  this.onLotsChanged(currentShowSymbol?.symbol_display?.lots_step * 10);
+                }}>{currentShowSymbol?.symbol_display?.lots_step && '+' + currentShowSymbol?.symbol_display?.lots_step * 10 || '-'}</span>
               </Col>
             </Row>
           )
@@ -803,18 +874,22 @@ export default class extends BaseReact {
           mode == 'add' && (
             <Row noGap className={'trade-detail-actions'}>
               <Col onClick={() => {
+                if (!useSellBtn) return;
+
                 this.onTrade('sell');
-              }} width={'50'} className={'bg-down trade-detail-action'}>
+              }} width={'50'} className={`bg-down trade-detail-action ${!useSellBtn ? 'bg-grey' : ''}`}>
               <span>
                 Sell
               </span>
               </Col>
               <Col
                 onClick={() => {
+                  if (!useBuyBtn) return;
+
                   this.onTrade('buy');
                 }}
                 width={'50'}
-                className={`bg-up trade-detail-action`}>
+                className={`bg-up trade-detail-action ${!useBuyBtn ? 'bg-grey' : ''}`}>
               <span>
                 Buy
                </span>
@@ -858,6 +933,7 @@ export default class extends BaseReact {
                         closeTimeout: 2000,
                       });
                       this.wsConnect.close();
+                      this.onTradeListPageRefresh();
                       this.$f7router.back('/trade/', {
                         force: false,
                       });
@@ -896,6 +972,7 @@ export default class extends BaseReact {
                       closeTimeout: 2000,
                     });
                     this.wsConnect.close();
+                    this.onTradeListPageRefresh();
                     this.$f7router.back('/trade/', {
                       force: false,
                     });

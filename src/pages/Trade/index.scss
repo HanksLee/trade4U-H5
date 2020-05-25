@@ -61,7 +61,7 @@
       }
 
       &.active {
-        height: r(70);
+        height: r(100);
       }
 
       .justify-content-space-between {
@@ -80,6 +80,7 @@
 
       .item-inner {
         padding-left: calc(var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left));
+        padding-bottom: 0;
       }
     }
   }

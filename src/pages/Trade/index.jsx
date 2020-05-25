@@ -30,6 +30,9 @@ import ws from "utils/ws";
 import { tradeActionMap } from "constant";
 import utils from "utils";
 import cloneDeep from "lodash/cloneDeep";
+import Dom7 from 'dom7';
+
+const $$ = Dom7;
 
 @inject("common", "trade")
 @observer
@@ -89,26 +92,6 @@ export default class extends BaseReact {
     if (this.state.loading) return;
 
     this.onRefresh();
-
-    this.$f7.$(".media-list").on("taphold", (evt) => {
-      const { tradeList, futureTradeList } = this.props.trade;
-      const dom = this.$f7.$(evt.target).parents(".media-item")[0];
-      if (dom != null) {
-        const currentTrade =
-          (tradeList[dom.id] || futureTradeList[dom.id]) ?? {};
-
-        this.props.trade.setCurrentTrade(currentTrade);
-
-        this.setState(
-          {
-            longTapIndex: dom.id,
-          },
-          () => {
-            this.refs.actionsGroup.open();
-          }
-        );
-      }
-    });
   };
 
   updateTradeInfo = (tradeInfo) => {
@@ -191,6 +174,50 @@ export default class extends BaseReact {
 
   };
 
+  bindEvents = () => {
+    this.$f7.$(".trade-list-in-transaction").on("taphold", (evt) => {
+      const { tradeList, futureTradeList } = this.props.trade;
+      const dom = this.$f7.$(evt.target).parents(".media-item")[0];
+      if (dom != null) {
+        const currentTrade =
+          (tradeList?.find(item => item.order_number == dom.id) || futureTradeList.find(item => item.order_number == dom.id)) ?? {};
+
+        this.props.trade.setCurrentTrade(currentTrade);
+
+        this.setState(
+          {
+            longTapIndex: dom.id,
+          },
+          () => {
+            this.refs.actionsGroup.open();
+          }
+        );
+      }
+    });
+
+    this.$f7.$(".trade-list-pending").on("taphold", (evt) => {
+      const { tradeList, futureTradeList } = this.props.trade;
+      // console.log('evt', evt.target);
+
+      const dom = this.$f7.$(evt.target).parents(".media-item")[0];
+      if (dom != null) {
+        const currentTrade =
+          (tradeList?.find(item => item.order_number == dom.id) || futureTradeList.find(item => item.order_number == dom.id)) ?? {};
+
+        this.props.trade.setCurrentTrade(currentTrade);
+
+        this.setState(
+          {
+            longTapIndex: dom.id,
+          },
+          () => {
+            this.refs.actionsGroup.open();
+          }
+        );
+      }
+    });
+  }
+
   onRefresh = async (done) => {
     this.setState(
       {
@@ -225,6 +252,15 @@ export default class extends BaseReact {
           this.props.trade.setTradeList(list[1], "future");
 
           this.updateTradeInfo(tradeInfo);
+          this.bindEvents();
+          // console.log('list', $$('.trade-data'));
+          //
+          // $$('.trade-data').forEach(dom => {
+          //   $$(`#${dom.id}`).on('taphold', evt => {
+          //     console.log('evt', evt.target);
+          //
+          //   })
+          // });
         } catch (e) {
           this.$f7.toast.show({
             text: e.response.data.message,
@@ -243,7 +279,9 @@ export default class extends BaseReact {
     const { tapIndex, loading } = this.state;
 
     return (
-      <List mediaList>
+      <List mediaList className={`trade-list-${type == 'order' ? 'in-transaction' : 'pending'}`} style={{
+        paddingBottom: type == 'order' ? 0 : 80,
+      }}>
         {tradeList.length > 0 &&
           (type == "order" ? (
             <div className={"trade-data-title"}>持仓</div>
@@ -253,8 +291,8 @@ export default class extends BaseReact {
         {tradeList.map((item, index) => (
           <ListItem
             // dataItem={item}
-            id={index}
-            key={index}
+            id={item.order_number}
+            key={item.order_number}
             swipeout
             className={`trade-data ${
               loading ? "skeleton-text skeleton-effect-blink" : ""
@@ -295,11 +333,11 @@ export default class extends BaseReact {
                 </Col>
                 <Col width={"20"}>
                   <p>开仓</p>
-                  <p className={"p-down"}>{item.open_price}</p>
+                  <p className={"p-black"}>{item.open_price}</p>
                 </Col>
                 <Col width={"20"}>
                   <p>现价</p>
-                  <p className={`p-up`}>{item.new_price}</p>
+                  <p className={`p-black`}>{item.new_price}</p>
                 </Col>
               </Row>
             </div>
@@ -508,7 +546,11 @@ export default class extends BaseReact {
             >
               <div
               >
-                平仓
+                {
+                  currentTrade.status == "pending"
+                    ? '删除'
+                    : '平仓'
+                }
               </div>
             </ActionsButton>
             <ActionsButton onClick={() =>
@@ -524,7 +566,7 @@ export default class extends BaseReact {
                 修改
               </span>
             </ActionsButton>
-            <ActionsButton                 onClick={() =>
+            <ActionsButton onClick={() =>
               this.goToPage(`/trade/${currentTrade?.symbol}/`, {
                 props: {
                   mode: "add",
