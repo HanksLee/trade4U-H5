@@ -36,7 +36,6 @@ export default class extends React.Component {
   componentDidMount() {
     const token = utils.getLStorage("MOON_H5_TOKEN");
     if (token) {
-      this.props.message.connnetNotifyWebsocket();
       this.props.history.push("/app");
     } else {
       this.getCodeImg();
