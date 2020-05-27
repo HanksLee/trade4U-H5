@@ -10,6 +10,7 @@ import {
 import utils from "utils";
 import Framework7 from "framework7/framework7-lite.esm.bundle.js";
 import { inject, observer } from "mobx-react";
+import "./index.scss";
 
 @inject("common", "message")
 @observer
@@ -35,6 +36,7 @@ export default class extends React.Component {
   };
 
   render() {
+    const { hasAnnouncement, hasNotify } = this.props.message;
     return (
       <Page name="home">
         <Views tabs className="safe-areas">
@@ -78,7 +80,17 @@ export default class extends React.Component {
                 this.$event.emit("refresh-history-page");
               }}
             />
-            <Link tabLink="#view-settings" icon="settings-icon" text="设置" />
+            <Link
+              tabLink="#view-settings"
+              icon="settings-icon"
+              text="设置"
+              className="settings-icon-container"
+            >
+              {(hasAnnouncement || hasNotify) && (
+                <span className="has-unread-message"></span>
+              )}
+              {/* <span className="has-unread-message"></span> */}
+            </Link>
           </Toolbar>
         </Views>
       </Page>

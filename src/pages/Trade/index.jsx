@@ -30,7 +30,7 @@ import ws from "utils/ws";
 import { tradeActionMap } from "constant";
 import utils from "utils";
 import cloneDeep from "lodash/cloneDeep";
-import Dom7 from 'dom7';
+import Dom7 from "dom7";
 
 const $$ = Dom7;
 
@@ -83,10 +83,10 @@ export default class extends BaseReact {
   }
 
   initEvents = () => {
-    this.props.common.globalEvent.on('refresh-trade-page', () => {
-        this.onRefresh();
+    this.props.common.globalEvent.on("refresh-trade-page", () => {
+      this.onRefresh();
     });
-  }
+  };
 
   initData = () => {
     if (this.state.loading) return;
@@ -122,7 +122,7 @@ export default class extends BaseReact {
       this.wsConnect = ws("order");
     }
 
-    const { setTradeInfo, setTradeList,  } = this.props.trade;
+    const { setTradeInfo, setTradeList } = this.props.trade;
 
     this.wsConnect.onmessage = (evt) => {
       const msg = JSON.parse(evt.data);
@@ -154,7 +154,7 @@ export default class extends BaseReact {
         }
 
         setTradeList(list);
-        setTradeList(futureList, 'future');
+        setTradeList(futureList, "future");
         this.updateTradeInfo({
           balance: this.props.trade.tradeInfo.balance,
           margin: this.props.trade.tradeInfo.margin,
@@ -165,23 +165,45 @@ export default class extends BaseReact {
 
   componentWillUnmount = () => {
     if (this.wsConnect) {
-      this.wsConnect.close()
+      this.wsConnect.close();
     }
-  }
+  };
 
   goToPage = (url, opts = {}) => {
     this.$f7router.navigate(url, opts);
-
-
   };
 
   bindEvents = () => {
+    this.$f7.$(".transaction-btn").on("click", (evt) => {
+      evt.stopPropagation();
+      const { tradeList, futureTradeList } = this.props.trade;
+      const dom = this.$f7.$(evt.target).parents(".media-item")[0];
+      if (dom != null) {
+        const currentTrade =
+          (tradeList?.find((item) => item.order_number == dom.id) ||
+            futureTradeList.find((item) => item.order_number == dom.id)) ??
+          {};
+
+        this.props.trade.setCurrentTrade(currentTrade);
+
+        this.setState(
+          {
+            longTapIndex: dom.id,
+          },
+          () => {
+            this.refs.actionsGroup.open();
+          }
+        );
+      }
+    });
     this.$f7.$(".trade-list-in-transaction").on("taphold", (evt) => {
       const { tradeList, futureTradeList } = this.props.trade;
       const dom = this.$f7.$(evt.target).parents(".media-item")[0];
       if (dom != null) {
         const currentTrade =
-          (tradeList?.find(item => item.order_number == dom.id) || futureTradeList.find(item => item.order_number == dom.id)) ?? {};
+          (tradeList?.find((item) => item.order_number == dom.id) ||
+            futureTradeList.find((item) => item.order_number == dom.id)) ??
+          {};
 
         this.props.trade.setCurrentTrade(currentTrade);
 
@@ -203,7 +225,9 @@ export default class extends BaseReact {
       const dom = this.$f7.$(evt.target).parents(".media-item")[0];
       if (dom != null) {
         const currentTrade =
-          (tradeList?.find(item => item.order_number == dom.id) || futureTradeList.find(item => item.order_number == dom.id)) ?? {};
+          (tradeList?.find((item) => item.order_number == dom.id) ||
+            futureTradeList.find((item) => item.order_number == dom.id)) ??
+          {};
 
         this.props.trade.setCurrentTrade(currentTrade);
 
@@ -217,7 +241,7 @@ export default class extends BaseReact {
         );
       }
     });
-  }
+  };
 
   onRefresh = async (done) => {
     this.setState(
@@ -280,9 +304,15 @@ export default class extends BaseReact {
     const { tapIndex, loading } = this.state;
 
     return (
-      <List mediaList className={`trade-list-${type == 'order' ? 'in-transaction' : 'pending'}`} style={{
-        paddingBottom: type == 'order' ? 0 : 80,
-      }}>
+      <List
+        mediaList
+        className={`trade-list-${
+          type == "order" ? "in-transaction" : "pending"
+        }`}
+        style={{
+          paddingBottom: type == "order" ? 0 : 80,
+        }}
+      >
         {tradeList.length > 0 &&
           (type == "order" ? (
             <div className={"trade-data-title"}>持仓</div>
@@ -313,10 +343,15 @@ export default class extends BaseReact {
           >
             {/*<img slot="media" src={item.cover} width="44" />*/}
             <div slot={"title"} className={"trade-data-top"}>
-              <strong>{item.symbol_name},</strong>
-              <span className={`p-down`}>
-                {tradeActionMap[item.action]} {item.lots}
-              </span>
+              <div className="transaction-title">
+                <strong>{item.symbol_name},</strong>
+                <span className={`p-down`}>
+                  {tradeActionMap[item.action]} {item.lots}
+                </span>
+              </div>
+              <div className="transaction-btn">
+                <span>交易</span>
+              </div>
             </div>
             <div slot={"subtitle"} className={"trade-data-middle"}>
               <Row className={"align-items-center"}>
@@ -539,59 +574,48 @@ export default class extends BaseReact {
                 tradeActionMap[currentTrade?.action]
               } ${currentTrade?.profit}`}
             </ActionsLabel>
-            <ActionsButton color={"red"}
-                           onClick={() =>
-                             this.goToPage(`/trade/${currentTrade?.symbol}/`, {
-                               props: {
-                                 mode: "close",
-                               },
-                             })
-                           }
+            <ActionsButton
+              color={"red"}
+              onClick={() =>
+                this.goToPage(`/trade/${currentTrade?.symbol}/`, {
+                  props: {
+                    mode: "close",
+                  },
+                })
+              }
             >
-              <div
-              >
-                {
-                  currentTrade.status == "pending"
-                    ? '删除'
-                    : '平仓'
-                }
-              </div>
+              <div>{currentTrade.status == "pending" ? "删除" : "平仓"}</div>
             </ActionsButton>
-            <ActionsButton onClick={() =>
-              this.goToPage(`/trade/${currentTrade?.symbol}/`, {
-                props: {
-                  mode: "update",
-                },
-              })
-            }>
-              <span
-
-              >
-                修改
-              </span>
+            <ActionsButton
+              onClick={() =>
+                this.goToPage(`/trade/${currentTrade?.symbol}/`, {
+                  props: {
+                    mode: "update",
+                  },
+                })
+              }
+            >
+              <span>修改</span>
             </ActionsButton>
-            <ActionsButton onClick={() =>
-              this.goToPage(`/trade/${currentTrade?.symbol}/`, {
-                props: {
-                  mode: "add",
-                },
-              })
-            }>
-              <span
-
-              >
-                交易
-              </span>
+            <ActionsButton
+              onClick={() =>
+                this.goToPage(`/trade/${currentTrade?.symbol}/`, {
+                  props: {
+                    mode: "add",
+                  },
+                })
+              }
+            >
+              <span>交易</span>
             </ActionsButton>
-            <ActionsButton onClick={() => {
-              this.goToPage(`/chart/${currentTrade.symbol}/`, {
-                context: currentTrade,
-              })
-            }}>
-              <span
-              >
-                图表
-              </span>
+            <ActionsButton
+              onClick={() => {
+                this.goToPage(`/chart/${currentTrade.symbol}/`, {
+                  context: currentTrade,
+                });
+              }}
+            >
+              <span>图表</span>
             </ActionsButton>
           </ActionsGroup>
           <ActionsGroup>

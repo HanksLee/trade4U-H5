@@ -47,10 +47,12 @@ export default class extends React.Component {
   // };
 
   goAnnouncement = () => {
+    this.props.message.switchHasAnnouncementStatus(false);
     this.$f7router.navigate("/settings/message/announcement");
   };
 
   goNotification = () => {
+    this.props.message.switchHasNotifyStatus(false);
     this.$f7router.navigate("/settings/message/notification");
   };
 
@@ -96,9 +98,7 @@ export default class extends React.Component {
               />
             </div>
             <div className="message-content-container">
-              <p className="message-content-title">
-                {announcement["message_type_title"]}
-              </p>
+              <p className="message-content-title">站內公告</p>
               <p className="message-content-time">
                 <span className="message-date">
                   {moment(announcement["create_time"] * 1000).format(
