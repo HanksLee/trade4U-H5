@@ -20,9 +20,7 @@ class MessageStore extends BaseStore {
 
   @action connnetNotifyWebsocket = () => {
     this.wsConnect = ws("notify");
-    console.log(this.wsConnect);
     this.wsConnect.onmessage = (event) => {
-      console.log(event);
       const message = event.data;
 
       const type = JSON.parse(message).type;
