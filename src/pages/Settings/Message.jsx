@@ -47,10 +47,12 @@ export default class extends React.Component {
   // };
 
   goAnnouncement = () => {
+    this.props.message.switchHasAnnouncementStatus(false);
     this.$f7router.navigate("/settings/message/announcement");
   };
 
   goNotification = () => {
+    this.props.message.switchHasNotifyStatus(false);
     this.$f7router.navigate("/settings/message/notification");
   };
 

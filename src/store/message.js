@@ -2,7 +2,7 @@ import { computed, action, observable } from "mobx";
 import BaseStore from "store/base";
 import ws from "utils/ws";
 
-class TradeStore extends BaseStore {
+class MessageStore extends BaseStore {
   @observable
   wsConnect = null;
   @observable
@@ -10,23 +10,31 @@ class TradeStore extends BaseStore {
   @observable
   hasAnnouncement = false;
 
-  @action
-  connnetNotifyWebsocket = () => {
+  @action switchHasNotifyStatus = (status) => {
+    this.hasNotify = status;
+  };
+
+  @action switchHasAnnouncementStatus = (status) => {
+    this.hasAnnouncement = status;
+  };
+
+  @action connnetNotifyWebsocket = () => {
     this.wsConnect = ws("notify");
-    // console.log(this.wsConnect);
+    console.log(this.wsConnect);
     this.wsConnect.onmessage = (event) => {
+      console.log(event);
       const message = event.data;
 
       const type = JSON.parse(message).type;
 
       if (type == "notify") {
-        this.hasNotify = true;
+        this.switchHasNotifyStatus(true);
       }
       if (type == "announcement") {
-        this.hasAnnouncement = true;
+        this.switchHasAnnouncementStatus(true);
       }
     };
   };
 }
 
-export default new TradeStore();
+export default new MessageStore();

@@ -18,11 +18,11 @@ export default class extends React.Component {
   $event = null;
   componentDidMount() {
     this.$f7ready((f7) => {
-      this.props.message.connnetNotifyWebsocket();
       const token = utils.getLStorage("MOON_H5_TOKEN");
       this.$event = new Framework7.Events();
       this.props.common.setGlobalEvent(this.$event);
     });
+    this.props.message.connnetNotifyWebsocket();
   }
 
   componentWillUnmount = () => {
@@ -36,7 +36,7 @@ export default class extends React.Component {
   };
 
   render() {
-    const { hasAnnouncement, hasNotify } = this.props;
+    const { hasAnnouncement, hasNotify } = this.props.message;
     return (
       <Page name="home">
         <Views tabs className="safe-areas">
