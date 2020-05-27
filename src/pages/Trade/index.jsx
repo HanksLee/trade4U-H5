@@ -108,6 +108,7 @@ export default class extends BaseReact {
         margin: tradeInfo.margin,
       };
     }
+    payload.profit = tradeList.reduce((acc, cur) => acc + cur.profit, 0);
     payload.equity =
       tradeList.reduce((acc, cur) => acc + cur.profit, 0) + payload.balance;
     payload.free_margin = payload.equity - payload.margin;
@@ -500,7 +501,10 @@ export default class extends BaseReact {
               <p>净值</p>
               <p>{tradeInfo?.equity?.toFixed(2)}</p>
             </Col>
-            <Col width="33"></Col>
+            <Col width="33" className={'trade-stats-col'}>
+              <p>持仓盈亏</p>
+              <p>{tradeInfo?.profit?.toFixed(2)}</p>
+            </Col>
           </Row>
           <Row className={"trade-stats-row"}>
             <Col width="33" className={"trade-stats-col"}>
