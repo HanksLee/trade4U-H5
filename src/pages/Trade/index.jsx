@@ -40,7 +40,7 @@ export default class extends BaseReact {
   wsConnect = null;
   $event = null;
   state = {
-    title: "持仓盈亏",
+    title: "交易",
     tapIndex: -1,
     // currentTrade: null,
     loading: false,
