@@ -198,6 +198,7 @@ export default class extends BaseReact {
     });
     this.$f7.$(".trade-list-in-transaction").on("taphold", (evt) => {
       const { tradeList, futureTradeList } = this.props.trade;
+      console.log('evt', evt.target);
       const dom = this.$f7.$(evt.target).parents(".media-item")[0];
       if (dom != null) {
         const currentTrade =
@@ -220,7 +221,7 @@ export default class extends BaseReact {
 
     this.$f7.$(".trade-list-pending").on("taphold", (evt) => {
       const { tradeList, futureTradeList } = this.props.trade;
-      // console.log('evt', evt.target);
+      console.log('evt', evt.target);
 
       const dom = this.$f7.$(evt.target).parents(".media-item")[0];
       if (dom != null) {
@@ -337,7 +338,7 @@ export default class extends BaseReact {
             // }}
             onClick={() => {
               this.setState({
-                tapIndex: tapIndex == index ? -1 : index,
+                tapIndex: tapIndex == item.order_number ? -1 : item.order_number,
               });
             }}
           >
@@ -380,7 +381,7 @@ export default class extends BaseReact {
             <div
               slot={"footer"}
               className={`trade-data-bottom ${
-                tapIndex == index ? "active" : ""
+                tapIndex == item.order_number ? "active" : ""
               }`}
             >
               <Row>
