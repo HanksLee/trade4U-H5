@@ -42,6 +42,7 @@ export default class TVChartContainer extends React.PureComponent {
 			// 		this.tvWidget.activeChart().setChartType(2);
 			// 	}
 			// });
+			this.tvWidget.activeChart().setTimezone('Asia/Shanghai');
 		})
 	}
 

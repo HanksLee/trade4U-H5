@@ -39,7 +39,7 @@ export default class DatafeedProvider {
         type: res.data.product_details.type,
         description: res.data.symbol_display.description,
         supported_resolutions: supportedResolution,
-        timezone: 'Asia/Hong_Kong',
+        timezone: 'Asia/Shanghai',
         session: '24x7',
         minmov: 1,
         pricescale: Math.pow(10, res.data.symbol_display.decimals_place),
