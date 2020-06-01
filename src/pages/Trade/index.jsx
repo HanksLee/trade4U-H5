@@ -138,7 +138,10 @@ export default class extends BaseReact {
           list = [msg.data, ...list];
         } else if (msg.type == "order_profit") {
           list = list.map((item) => {
-            if (item.order_number == msg.data.order_number) {
+            if (
+              item.order_number == msg.data.order_number &&
+              msg.data.timestamp > item.timestamp
+            ) {
               item = msg.data;
             }
             return item;
