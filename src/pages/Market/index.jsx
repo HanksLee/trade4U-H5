@@ -25,7 +25,7 @@ export default class extends React.Component {
     await this.props.market.getSelfSelectSymbolList();
     this.connnetWebsocket()
 
-    $$('.self-select-tr').on('taphold', (evt) => {
+    $$('.self-select-tr').on('click', (evt) => {
       const dom = $$(evt.target).parents('.self-select-tr')[0] || $$(evt.target)[0];
       console.log('dom', dom);
 
