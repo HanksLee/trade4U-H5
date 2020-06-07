@@ -3,18 +3,6 @@ html, body {
   margin: 0;
 }
 
-html {
-  font-size: 100vw;
-
-  @media screen and (max-width: 320px) {
-    font-size: 320px;
-  }
-
-  @media screen and (min-width: 540px) {
-    font-size: 540px;
-  }
-}
-
 body {
   margin: 0 auto;
   max-width: 540px;

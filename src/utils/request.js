@@ -1,7 +1,7 @@
 import axios from "axios";
 import NProgress from "nprogress";
-import utils from 'utils';
-import {f7} from 'framework7-react';
+import utils from "utils";
+import { f7 } from "framework7-react";
 
 export default class API {
   created(config) {
@@ -9,18 +9,21 @@ export default class API {
   }
 
   handleInterceptors() {
-    this.api.interceptors.request.use((config) => {
-      const token = utils.getLStorage('MOON_H5_TOKEN');
-      if (token) {
-        config['headers']['Authorization'] = `Token ${token}`;
-      }
+    this.api.interceptors.request.use(
+      (config) => {
+        const token = utils.getLStorage("MOON_H5_TOKEN");
+        if (token) {
+          config["headers"]["Authorization"] = `Token ${token}`;
+        }
 
-      NProgress.start();
-      return config;
-    }, (err) => {
-      NProgress.done();
-      return Promise.reject(err);
-    });
+        NProgress.start();
+        return config;
+      },
+      (err) => {
+        NProgress.done();
+        return Promise.reject(err);
+      }
+    );
 
     this.api.interceptors.response.use(
       async (res) => {
@@ -28,19 +31,22 @@ export default class API {
         return res;
       },
       (err) => {
-        const { response: { data, status, }, } = err;
-        f7.toast.show({
-          text: data.message
-        });
-
-        if (status == 401) {
-          localStorage.removeItem('MOON_H5_TOKEN');
-
-          window.location.href =
-            process.env.NODE_ENV === "production"
-              ? "/login"
-              : window.location.origin + "/#/login";
+        if (err) {
+          const {
+            response: { data, status },
+          } = err;
+          if (status == 400) {
+            f7.toast.show({
+              text: data.message,
+              position: "center",
+              closeTimeout: 2000,
+            });
+          } else if (status == 401) {
+            localStorage.removeItem("MOON_H5_TOKEN");
+            f7.router.app.views.main.router.navigate("/login");
+          }
         }
+
         NProgress.done();
         return Promise.reject(err);
       }
@@ -58,9 +64,9 @@ export default class API {
 }
 
 const apiMap = {
-  dev: '/api/moon/api',
-  qa: 'http://api.cangshu360.com/api',
-  prod: 'http://api.cangshu360.com/api',
+  dev: "/api/moon/api",
+  qa: "http://api.cangshu360.com/api",
+  prod: "http://api.trading8a.com/api",
 };
 
 export const moonAPI = new API({

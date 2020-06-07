@@ -1,4 +1,36 @@
 // placeholder
-.page {
-  height: 100vh;
+.p-up {
+  color: $up;
+}
+
+.p-down {
+  color: $down;
+}
+
+.p-grey {
+  color: $grey;
+}
+
+.p-black {
+  color: black;
+}
+
+.bg-up {
+  background-color: $up;
+}
+
+.bg-down {
+   background-color: $down;
+}
+
+.bg-grey {
+  background-color: $grey;
+}
+
+.bg-deep-grey {
+  background-color: #CCC;
+}
+
+.bg-orange {
+  background-color: #f7b500;
 }

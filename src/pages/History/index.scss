@@ -1,0 +1,242 @@
+* {
+  // outline: 1px solid red;
+}
+
+.device-android .page {
+  background-color: #f3f3f3;
+}
+
+.device-ios .navbar,
+.device-android .navbar {
+  background-color: #325497;
+  height: auto;
+  min-height: calc(var(--f7-subnavbar-height) + 1px);
+  padding: 12px 0;
+
+  .button {
+    margin: 0;
+    border-top: 1px solid #fff;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    border-radius: unset;
+    box-sizing: border-box;
+    color: #fff;
+    --f7-button-border-width: 0px;
+  }
+  .button:first-child {
+    border-radius: var(--f7-button-border-radius) 0 0
+      var(--f7-button-border-radius);
+    border-left: 1px solid #fff;
+  }
+
+  .button:last-child {
+    border-radius: 0 var(--f7-button-border-radius)
+      var(--f7-button-border-radius) 0;
+  }
+
+  .button.button-active {
+    background-color: #fff;
+    color: #325497;
+  }
+
+  .subnavbar {
+    height: auto;
+  }
+
+  .subnavbar-inner {
+    flex-wrap: wrap;
+  }
+
+  .segmented,
+  .date-picker-bar {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .segmented {
+    margin-top: 5px;
+  }
+
+  .date-picker-bar {
+    margin-bottom: 5px;
+    > * {
+      background-color: #fff;
+      color: #333;
+      line-height: 28px;
+      text-align: center;
+      border-radius: 5px;
+      font-size: var(--f7-button-font-size);
+      font-weight: var(--f7-button-font-weight);
+    }
+
+    > input {
+      width: 120px;
+    }
+
+    > div {
+      padding: 0 10px;
+    }
+  }
+
+  .segmented {
+    margin-bottom: 5px;
+  }
+}
+
+.device-ios .subnavbar,
+.device-android .subnavbar {
+  background-color: #325497;
+
+  .subnavbar-inner {
+    padding: 0 18px;
+    padding-bottom: 7px;
+  }
+
+  .am-search.am-search-start .am-search-input .am-search-synthetic-ph {
+    padding-left: 0;
+  }
+
+  .am-search-synthetic-ph {
+    text-align: left;
+  }
+
+  .am-search {
+    width: 100%;
+    height: auto;
+    background-color: #fff;
+    border-radius: 5px;
+  }
+
+  .am-search-cancel {
+    height: auto;
+    line-height: unset;
+  }
+
+  .am-search.am-search-start .am-search-input input[type="search"] {
+    padding: 0 43px 0 20px;
+  }
+}
+
+.history-data {
+  border-bottom: 10px solid #efeff4;
+  .item-content {
+    padding-right: calc(
+      var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left)
+    );
+  }
+
+  .history-data-top {
+    margin-top: 10px;
+    font-size: r(17);
+
+    strong {
+      color: black;
+      font-weight: normal;
+    }
+  }
+
+  .history-data-middle {
+    font-size: r(11);
+    color: $grey;
+    .history-data-middle-current {
+      font-size: 0.07rem;
+      font-weight: bold;
+    }
+
+    .data-cause,
+    .data-amount {
+      font-size: 0.04533rem;
+    }
+
+    .data-cause,
+    .value-text {
+      color: #000;
+    }
+
+    .data-time {
+      text-align: right;
+    }
+  }
+
+  .history-data-bottom {
+    font-size: r(10);
+    color: $grey;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s;
+
+    .row {
+      margin-bottom: r(4);
+
+      .value-text {
+        color: #000;
+      }
+    }
+
+    &.active {
+      height: r(120);
+    }
+  }
+}
+
+.media-list {
+  ul {
+    &::before,
+    &::after {
+      background-color: transparent;
+    }
+  }
+  .item-content {
+    padding-left: 0;
+
+    .item-inner {
+      padding-left: calc(
+        var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left)
+      );
+      &::after {
+        background-color: transparent;
+      }
+    }
+  }
+
+  .ant-spin {
+    text-align: center;
+    margin-bottom: 7px;
+    // background-color: rgba(0, 0, 0, 0.1);
+    svg {
+      color: gray;
+    }
+  }
+}
+
+p {
+  margin: 0;
+}
+
+.history-stats {
+  padding-bottom: r(8);
+  margin-bottom: r(70);
+  &::before {
+    background-color: transparent;
+  }
+
+  .history-stats-row {
+    margin-bottom: r(16);
+
+    .history-stats-col {
+      p {
+        margin-bottom: r(4);
+        &:first-child {
+          font-size: r(13);
+          color: $grey;
+        }
+
+        &:last-child {
+          font-size: r(17);
+          color: $grey;
+        }
+      }
+    }
+  }
+}

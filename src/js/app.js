@@ -1,29 +1,54 @@
-// Import React and ReactDOM
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-// Import Framework7
 import Framework7 from 'framework7/framework7-lite.esm.bundle.js';
-
-// Import Framework7-React Plugin
 import Framework7React from 'framework7-react';
 import utils from "utils";
-// Import Framework7 Styles
 import 'framework7/css/framework7.bundle.css';
+import App from '../components/app.jsx';
+import { configure } from "mobx";
+import {Provider} from 'mobx-react';
+import store from 'store';
+import intl from 'react-intl-universal';
+import enLocale from '../locales/en-US';
+import cnLocale from '../locales/zh-CN';
 
-// Import Icons and App Custom Styles
 import '../css/icons.css';
 import '../css/app.scss';
 
-// Import App Component
-import App from '../components/app.jsx';
+if (process.env.MODE != 'prod') {
+  // const eruda = require('../../node_modules/eruda/eruda.js');
+  // eruda.init();
+}
 
-// utils.setRootFontSizeFromClient();
-// Init F7 Vue Plugin
+
+utils.setRootFontSizeFromClient();
 Framework7.use(Framework7React)
 
-// Mount React App
+function initLang() {
+  const locales = {
+    "en-US": enLocale,
+    "zh-CN": cnLocale,
+  };
+  const lang = utils.getLStorage('MOON_H5_LANG');
+  if (!lang) {
+    if (navigator.language === 'zh-CN') {
+      utils.setLStorage('MOON_H5_LANG', 'zh-CN');
+      intl.init({ currentLocale: 'zh-CN', locales, });
+    } else {
+      utils.setLStorage('MOON_H5_LANG', 'en-US');
+      intl.init({ currentLocale: 'en-US', locales, });
+    }
+  } else {
+    intl.init({ currentLocale: lang, locales, });
+  }
+}
+
+configure({ enforceActions: "observed", });
+initLang();
+
 ReactDOM.render(
-  React.createElement(App),
+  <Provider {...store}>
+    <App />
+  </Provider>,
   document.getElementById('app'),
 );

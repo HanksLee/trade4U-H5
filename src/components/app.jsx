@@ -1,44 +1,23 @@
 import React from 'react';
-
-import {
-  App,
-  Panel,
-  Views,
-  View,
-  Popup,
-  Page,
-  Navbar,
-  Toolbar,
-  NavRight,
-  Link,
-  Block,
-  BlockTitle,
-  LoginScreen,
-  LoginScreenTitle,
-  List,
-  ListItem,
-  ListInput,
-  ListButton,
-  BlockFooter,
-} from 'framework7-react';
-
-
+import { App, View } from 'framework7-react';
 import routes from '../js/routes';
+import './index.scss';
 
 export default class extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      // Framework7 Parameters
       f7params: {
-        name: 'moon-h5-f7', // App name
-        theme: 'auto', // Automatic theme detection
+        name: 'moon-h5-f7',
+        theme: 'auto',
+        touch: {
+          tapHold: true,
+          tapHoldDelay: 300,
+        },
         // App root data
         data: function () {
           return {
-
-            // Demo products for Catalog section
             products: [
               {
                 id: '1',
@@ -58,124 +37,30 @@ export default class extends React.Component {
             ]
           };
         },
-
-        // App routes
         routes: routes,
       },
-      // Login screen demo data
-      username: '',
-      password: '',
     }
   }
+
+  componentDidMount() {
+    this.$f7ready((f7) => {
+        f7.on('connection', (isOnline) => {
+          if (!isOnline) {
+            f7.toast.show({
+              text: '请检查设备当前网络连接状况~',
+              position: 'center',
+              closeTimeout: 2000,
+            });
+          }
+        })
+    });
+  }
+
   render() {
     return (
       <App params={ this.state.f7params } >
-
-        {/* Left panel with cover effect*/}
-        <Panel left cover themeDark>
-          <View>
-            <Page>
-              <Navbar title="Left Panel"/>
-              <Block>Left panel content goes here</Block>
-            </Page>
-          </View>
-        </Panel>
-
-
-        {/* Right panel with reveal effect*/}
-        <Panel right reveal themeDark>
-          <View>
-            <Page>
-              <Navbar title="Right Panel"/>
-              <Block>Right panel content goes here</Block>
-            </Page>
-          </View>
-        </Panel>
-
-
-        {/* Views/Tabs container */}
-        <Views tabs className="safe-areas">
-          {/* Tabbar for switching views-tabs */}
-          <Toolbar tabbar labels bottom>
-            <Link tabLink="#view-home" tabLinkActive iconIos="f7:house_fill" iconAurora="f7:house_fill" iconMd="material:home" text="Home" />
-            <Link tabLink="#view-chart" iconIos="f7:house_fill" iconAurora="f7:house_fill" iconMd="material:home" text="Chart" />
-            <Link tabLink="#view-trade" iconIos="f7:house_fill" iconAurora="f7:house_fill" iconMd="material:home" text="Trade" />
-            <Link tabLink="#view-history" iconIos="f7:house_fill" iconAurora="f7:house_fill" iconMd="material:home" text="History" />
-            {/* <Link tabLink="#view-catalog" iconIos="f7:square_list_fill" iconAurora="f7:square_list_fill" iconMd="material:view_list" text="Catalog" /> */}
-            <Link tabLink="#view-settings" iconIos="f7:gear" iconAurora="f7:gear" iconMd="material:settings" text="Settings" />
-          </Toolbar>
-
-          {/* Your main view/tab, should have "view-main" class. It also has "tabActive" prop */}
-          <View id="view-home" main tab tabActive url="/" />
-
-          {/* Catalog View */}
-          {/* <View id="view-catalog" name="catalog" tab url="/catalog/" /> */}
-          <View id="view-chart" name="chart" tab url="/chart/" />
-          <View id="view-trade" name="trade" tab url="/trade/" />
-          <View id="view-history" name="history" tab url="/history/" />
-          {/* Settings View */}
-          <View id="view-settings" name="settings" tab url="/settings/" />
-
-        </Views>
-
-
-        {/* Popup */}
-        <Popup id="my-popup">
-          <View>
-            <Page>
-              <Navbar title="Popup">
-                <NavRight>
-                  <Link popupClose>Close</Link>
-                </NavRight>
-              </Navbar>
-              <Block>
-                <p>Popup content goes here.</p>
-              </Block>
-            </Page>
-          </View>
-        </Popup>
-
-        <LoginScreen id="my-login-screen">
-          <View>
-            <Page loginScreen>
-              <LoginScreenTitle>Login</LoginScreenTitle>
-              <List form>
-                <ListInput
-                  type="text"
-                  name="username"
-                  placeholder="Your username"
-                  value={this.state.username}
-                  onInput={(e) => this.setState({username: e.target.value})}
-                ></ListInput>
-                <ListInput
-                  type="password"
-                  name="password"
-                  placeholder="Your password"
-                  value={this.state.password}
-                  onInput={(e) => this.setState({password: e.target.value})}
-                ></ListInput>
-              </List>
-              <List>
-                <ListButton title="Sign In" onClick={() => this.alertLoginData()} />
-                <BlockFooter>
-                  Some text about login information.<br />Click "Sign In" to close Login Screen
-                </BlockFooter>
-              </List>
-            </Page>
-          </View>
-        </LoginScreen>
+        <View main url="/" />
       </App>
     )
-  }
-  alertLoginData() {
-    this.$f7.dialog.alert('Username: ' + this.state.username + '<br>Password: ' + this.state.password, () => {
-      this.$f7.loginScreen.close();
-    });
-  }
-  componentDidMount() {
-    this.$f7ready((f7) => {
-
-      // Call F7 APIs here
-    });
   }
 }
