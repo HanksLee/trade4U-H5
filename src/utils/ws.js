@@ -14,11 +14,11 @@ if (window.location.protocol === "http:") {
 }
 
 export default function ws(path) {
-  const token = utils.getLStorage("MOON_DESKTOP_TOKEN");
+  const token = utils.getLStorage("MOON_H5_TOKEN");
 
   return new WebSocket(
     `${wsProtocol}://stock-ws.${
-      wsMap[process.env.MODE]
+    wsMap[process.env.MODE]
     }/ws/trader/${path}?token=${token}`
   );
 }
