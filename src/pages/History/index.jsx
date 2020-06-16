@@ -320,10 +320,11 @@ export default class extends React.Component {
         .then((res) => {
           if (res.status === 200) {
             this.setState({
-              hasMore: historyList.length < res.data.count,
               dataLoading: false,
               historyList: [...historyList, ...res.data.results],
               page: page + 1,
+            }, () => {
+              this.setState({ hasMore: this.state.historyList.length < res.data.count, })
             });
             if (page == 1) {
               this.setState({ totalData: res.data.total_data });
