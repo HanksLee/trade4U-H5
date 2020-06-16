@@ -362,8 +362,8 @@ export default class extends React.Component {
                   </span>
                 </div>
               ) : (
-                <div className={"history-data-top"}></div>
-              )}
+                  <div className={"history-data-top"}></div>
+                )}
               {!utils.isEmpty(item.order) ? (
                 <div className={"history-data-middle"}>
                   <Row className={"align-items-center"}>
@@ -373,9 +373,9 @@ export default class extends React.Component {
                         item.order.profit > 0
                           ? "p-up"
                           : item.order.profit < 0
-                          ? "p-down"
-                          : "p-grey"
-                      } history-data-middle-current`}
+                            ? "p-down"
+                            : "p-grey"
+                        } history-data-middle-current`}
                     >
                       <p>
                         {item.order.profit > 0
@@ -394,35 +394,36 @@ export default class extends React.Component {
                   </Row>
                 </div>
               ) : (
-                <div className={"history-data-middle"}>
-                  <Row className={"align-items-center"}>
-                    <Col width={"30"} className="data-cause">
-                      <strong>{item.cause_name}</strong>
-                    </Col>
-                    <Col width={"30"} className="data-amount">
-                      <strong
-                        className={item.in_or_out === 0 ? `p-down` : `p-up`}
-                      >
-                        {item.in_or_out === 0 ? "-" : "+"}
-                        {item.amount}
-                      </strong>
-                    </Col>
-                    <Col width={"40"} className="data-time">
-                      <p>
-                        {moment(item.create_time * 1000).format("YYYY/MM/DD")}
-                      </p>
-                      <p>
-                        {moment(item.create_time * 1000).format("hh:mm:ss")}
-                      </p>
-                    </Col>
-                  </Row>
-                </div>
-              )}
+                  <div className={"history-data-middle"}>
+                    <Row className={"align-items-center"}>
+                      <Col width={"30"} className="data-cause">
+                        <strong>{item.cause_name}</strong>
+                      </Col>
+                      <Col width={"30"} className="data-amount">
+                        <strong
+                          className={item.in_or_out === 0 ? `p-down` : `p-up`}
+                        >
+                          {item.in_or_out === 0 ? "-" : "+"}
+                          {item.amount}
+                        </strong>
+                      </Col>
+                      <Col width={"40"} className="data-time">
+                        <p>
+                          {moment(item.create_time * 1000).format("YYYY/MM/DD")}
+                        </p>
+                        <p>
+                          {moment(item.create_time * 1000).format("HH:mm:ss")}
+                        </p>
+                        <p>{item.create_time}</p>
+                      </Col>
+                    </Row>
+                  </div>
+                )}
               {!utils.isEmpty(item.order) && (
                 <div
                   className={`history-data-bottom ${
                     tapIndex == index ? "active" : ""
-                  }`}
+                    }`}
                 >
                   <Row>
                     <Col width={"50"}>
@@ -488,7 +489,7 @@ export default class extends React.Component {
                           </p>
                           <p className="value-text">
                             {moment(item.order.close_time * 1000).format(
-                              "hh:mm:ss"
+                              "HH:mm:ss"
                             )}
                           </p>
                         </span>
@@ -505,7 +506,7 @@ export default class extends React.Component {
                           </p>
                           <p className="value-text">
                             {moment(item.order.create_time * 1000).format(
-                              "hh:mm:ss"
+                              "HH:mm:ss"
                             )}
                           </p>
                         </span>
@@ -620,7 +621,7 @@ export default class extends React.Component {
           value={
             (currentDatePicker == "select_time_start" &&
               select_time_start != "") ||
-            (currentDatePicker == "select_time_end" && select_time_end != "")
+              (currentDatePicker == "select_time_end" && select_time_end != "")
               ? currentDatePicker == "select_time_start"
                 ? new Date(select_time_start)
                 : new Date(select_time_end)
