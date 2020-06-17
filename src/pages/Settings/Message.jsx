@@ -107,7 +107,7 @@ export default class extends React.Component {
                 </span>
                 <span>
                   {moment(announcement["create_time"] * 1000).format(
-                    "hh:mm:ss"
+                    "HH:mm:ss"
                   )}
                 </span>
               </p>
@@ -116,7 +116,7 @@ export default class extends React.Component {
                 dangerouslySetInnerHTML={{
                   __html:
                     announcement["content"] &&
-                    announcement["content"].length > 20
+                      announcement["content"].length > 20
                       ? `${announcement["content"].substr(0, 20)}...`
                       : announcement["content"],
                 }}
@@ -146,7 +146,7 @@ export default class extends React.Component {
                 </span>
                 <span>
                   {moment(notification["create_time"] * 1000).format(
-                    "hh:mm:ss"
+                    "HH:mm:ss"
                   )}
                 </span>
               </p>

@@ -1,5 +1,15 @@
+.toolbar {
+  box-sizing: initial;
+  padding-bottom: 30px;
+
+  .toolbar-inner {
+    bottom: initial;
+  }
+}
+
 .settings-icon-container {
   position: relative;
+
   > .has-unread-message {
     width: 10px;
     height: 10px;

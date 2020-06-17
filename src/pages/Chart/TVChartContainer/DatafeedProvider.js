@@ -96,7 +96,7 @@ export default class DatafeedProvider {
 
     if (this.wsConnect) this.wsConnect.close();
     this.wsConnect = ws(
-      `symbol/${symbolInfo.ticker}/trend${resolutionMap[resolution]}`
+      `symbol/${symbolInfo.ticker}/trend/${resolutionMap[resolution]}`
     );
     this.wsConnect.onmessage = (event) => {
       const message = event.data;
