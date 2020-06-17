@@ -22,9 +22,8 @@
   * {
     user-select: none;
   }
-
   background-color: #fff;
-  padding-bottom: var(--f7-toolbar-height);
+  // padding-bottom: var(--f7-toolbar-height);
 
   .self-select-table-header,
   .self-select-tr {
@@ -66,7 +65,7 @@
       color: #8c8c8c;
       font-size: r(12);
     }
-  
+
     .self-select-name {
       color: #325497;
       font-size: r(15);
@@ -75,17 +74,17 @@
       white-space: nowrap;
       overflow: hidden;
     }
-  
+
     .self-select-spread {
       color: #325497;
       font-size: r(12);
     }
-  
+
     .self-select-code {
       color: #8c8c8c;
       font-size: r(15);
     }
-  
+
     .self-select-buy-sell-block {
       width: r(75);
       height: r(42);
@@ -107,12 +106,12 @@
       background-color: #44d7b6;
       color: #fff;
     }
-  
+
     .self-select-low {
       color: #8c8c8c;
       font-size: r(11);
     }
-  
+
     .self-select-high {
       color: #8c8c8c;
       font-size: r(11);
