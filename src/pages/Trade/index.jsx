@@ -80,6 +80,7 @@ export default class extends BaseReact {
     this.initEvents();
     this.initData();
     this.connectWebsocket();
+    setInterval(this.connectWebsocket, 3000);
   }
 
   initEvents = () => {
@@ -312,7 +313,7 @@ export default class extends BaseReact {
         mediaList
         className={`trade-list-${
           type == "order" ? "in-transaction" : "pending"
-        }`}
+          }`}
         style={{
           paddingBottom: type == "order" ? 0 : 80,
         }}
@@ -321,8 +322,8 @@ export default class extends BaseReact {
           (type == "order" ? (
             <div className={"trade-data-title"}>持仓</div>
           ) : (
-            <div className={"trade-data-title"}>挂单</div>
-          ))}
+              <div className={"trade-data-title"}>挂单</div>
+            ))}
         {tradeList.map((item, index) => (
           <ListItem
             // dataItem={item}
@@ -331,7 +332,7 @@ export default class extends BaseReact {
             swipeout
             className={`trade-data ${
               loading ? "skeleton-text skeleton-effect-blink" : ""
-            }`}
+              }`}
             onSwipeoutOpen={() => {
               this.props.trade.setCurrentTrade(item);
             }}
@@ -365,9 +366,9 @@ export default class extends BaseReact {
                     item.profit > 0
                       ? "p-up"
                       : item.profit < 0
-                      ? "p-down"
-                      : "p-grey"
-                  } trade-data-middle-current`}
+                        ? "p-down"
+                        : "p-grey"
+                    } trade-data-middle-current`}
                 >
                   <p>{item.profit > 0 ? `+${item.profit}` : item.profit}</p>
                 </Col>
@@ -385,7 +386,7 @@ export default class extends BaseReact {
               slot={"footer"}
               className={`trade-data-bottom ${
                 tapIndex == item.order_number ? "active" : ""
-              }`}
+                }`}
             >
               <Row>
                 <Col width={"100"}>
@@ -529,7 +530,7 @@ export default class extends BaseReact {
           strong
           className={`trade-stats ${
             loading ? "skeleton-text skeleton-effect-blink" : ""
-          }`}
+            }`}
         >
           <Row className={"trade-stats-row"}>
             <Col width="33" className={"trade-stats-col"}>
@@ -576,7 +577,7 @@ export default class extends BaseReact {
             <ActionsLabel>
               {`交易：${currentTrade?.symbol_name}, ${
                 tradeActionMap[currentTrade?.action]
-              } ${currentTrade?.profit}`}
+                } ${currentTrade?.profit}`}
             </ActionsLabel>
             <ActionsButton
               color={"red"}

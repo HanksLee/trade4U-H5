@@ -1,6 +1,8 @@
 import React from 'react';
-import { Page, Navbar, NavRight, NavLeft, NavTitle,
-  Actions, ActionsLabel, ActionsGroup, ActionsButton } from 'framework7-react';
+import {
+  Page, Navbar, NavRight, NavLeft, NavTitle,
+  Actions, ActionsLabel, ActionsGroup, ActionsButton
+} from 'framework7-react';
 import EditIcon from "assets/img/edit2.svg";
 import AddIcon from "assets/img/add.svg";
 import { inject, observer } from "mobx-react";
@@ -23,7 +25,8 @@ export default class extends React.Component {
 
   async componentDidMount() {
     await this.props.market.getSelfSelectSymbolList();
-    this.connnetWebsocket()
+    this.connnetWebsocket();
+    setInterval(this.connnetWebsocket, 3000);
 
     $$('.self-select-tr').on('click', (evt) => {
       const dom = $$(evt.target).parents('.self-select-tr')[0] || $$(evt.target)[0];

@@ -23,6 +23,7 @@ export default class extends React.Component {
       this.props.common.setGlobalEvent(this.$event);
     });
     this.props.message.connnetNotifyWebsocket();
+    setInterval(this.props.message.connnetNotifyWebsocket(), 3000);
   }
 
   componentWillUnmount = () => {

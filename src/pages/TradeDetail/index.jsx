@@ -21,12 +21,12 @@ import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/title';
 
 import moment from 'moment';
-import {inject, observer} from "mobx-react";
+import { inject, observer } from "mobx-react";
 import utils from 'utils';
 import ws from 'utils/ws';
 import './index.scss';
-import {BaseReact} from "components/baseComponent";
-import {toJS} from 'mobx';
+import { BaseReact } from "components/baseComponent";
+import { toJS } from 'mobx';
 import {
   tradeTypeOptions,
   tradeActionMap
@@ -124,7 +124,7 @@ export default class extends BaseReact {
     setTimeout(() => {
       this.initChart();
       this.connectWebsocket();
-    }, 600);
+    }, 3000);
 
   }
 
@@ -136,7 +136,7 @@ export default class extends BaseReact {
       getCurrentSymbol,
     } = this.props.market;
 
-    const {id, mode} = this.props;
+    const { id, mode } = this.props;
 
     if (utils.isEmpty(symbolList)) {
       await getSymbolList();
@@ -148,7 +148,7 @@ export default class extends BaseReact {
         : id,
     );
 
-    const {currentShowSymbol} = this.props.market;
+    const { currentShowSymbol } = this.props.market;
     this.setState({
       lotsValue: currentShowSymbol?.symbol_display?.min_lots,
     })
@@ -190,8 +190,8 @@ export default class extends BaseReact {
     window.$echart = echarts;
     window.$myChart = this.$myChart;
 
-// 绘制图表
-    const {chartOption} = this.state;
+    // 绘制图表
+    const { chartOption } = this.state;
     const {
       currentShowSymbol,
       currentSymbol,
@@ -359,7 +359,7 @@ export default class extends BaseReact {
     const {
       currentSymbol,
     } = this.props.market;
-    const {currentTrade} = this.props.trade;
+    const { currentTrade } = this.props.trade;
     const actionMode = this.props.mode;
 
     let payload = {
@@ -584,7 +584,7 @@ export default class extends BaseReact {
 
   updateTradeInfo = (tradeInfo) => {
     let payload = {};
-    const {tradeList, setTradeInfo} = this.props.trade;
+    const { tradeList, setTradeInfo } = this.props.trade;
     if (utils.isEmpty(tradeInfo)) {
       payload = {
         balance: this.props.trade.tradeInfo.balance,
@@ -640,13 +640,13 @@ export default class extends BaseReact {
           <NavLeft>
             <Link onClick={() => {
               this.wsConnect.close();
-              this.$f7router.back({force: false})
+              this.$f7router.back({ force: false })
             }}>
               <Icon color={'white'} f7={'chevron_left'} size={r(18)}></Icon>
             </Link>
           </NavLeft>
           <NavTitle>
-            <span style={{marginRight: r(8)}} onClick={
+            <span style={{ marginRight: r(8) }} onClick={
               () => {
                 if (mode == 'add') {
                   // this.wsConnect.close();
@@ -683,18 +683,18 @@ export default class extends BaseReact {
                         ((item.id == 2 || item.id == 4) && !useBuyBtn)
                           ? 'bg-grey'
                           : ((item.id == 3 || item.id == 5) && !useSellBtn)
-                          ? 'bg-grey'
-                          : ''
+                            ? 'bg-grey'
+                            : ''
                         }
                       `} style={{
-                        display: currentTradeType?.id == item.id ? 'none' : 'block',
+                          display: currentTradeType?.id == item.id ? 'none' : 'block',
 
-                      }} key={item.id} onClick={() => {
-                        if ((item.id == 2 || item.id == 4) && !useBuyBtn) return;
-                        if ((item.id == 3 || item.id == 5) && !useSellBtn) return;
+                        }} key={item.id} onClick={() => {
+                          if ((item.id == 2 || item.id == 4) && !useBuyBtn) return;
+                          if ((item.id == 3 || item.id == 5) && !useSellBtn) return;
 
-                        this.onTradeTypeChanged(item);
-                      }}>
+                          this.onTradeTypeChanged(item);
+                        }}>
                         {item.name}
                       </div>
                     )
@@ -735,9 +735,9 @@ export default class extends BaseReact {
               </Col>
               <Col width={'20'}>
                 <span className={'blue'}
-                      onClick={() => {
-                        this.onLotsChanged(currentShowSymbol?.symbol_display?.lots_step);
-                      }}
+                  onClick={() => {
+                    this.onLotsChanged(currentShowSymbol?.symbol_display?.lots_step);
+                  }}
                 >{currentShowSymbol?.symbol_display?.lots_step && '+' + currentShowSymbol?.symbol_display?.lots_step || '-'}</span>
               </Col>
               <Col width={'20'}>
@@ -757,10 +757,10 @@ export default class extends BaseReact {
                     {
                       mode == 'update' ? '修改'
                         : mode == 'close'
-                        ? currentTradeType?.id == 1
-                          ? '平仓'
-                          : '删除'
-                        : ''
+                          ? currentTradeType?.id == 1
+                            ? '平仓'
+                            : '删除'
+                          : ''
                     }：
                   </span>
                   <span>
@@ -878,8 +878,8 @@ export default class extends BaseReact {
 
                 this.onTrade('sell');
               }} width={'50'} className={`bg-down trade-detail-action ${!useSellBtn ? 'bg-grey' : ''}`}>
-              <span>
-                Sell
+                <span>
+                  Sell
               </span>
               </Col>
               <Col
@@ -890,8 +890,8 @@ export default class extends BaseReact {
                 }}
                 width={'50'}
                 className={`bg-up trade-detail-action ${!useBuyBtn ? 'bg-grey' : ''}`}>
-              <span>
-                Buy
+                <span>
+                  Buy
                </span>
               </Col>
             </Row>
@@ -917,8 +917,8 @@ export default class extends BaseReact {
               <Col onClick={() => {
                 this.onTrade(tradeActionMap[currentTrade.action]);
               }} width={'50'} className={'bg-deep-grey trade-detail-action'}>
-              <span>
-                修改
+                <span>
+                  修改
               </span>
               </Col>
               <Col
@@ -950,8 +950,8 @@ export default class extends BaseReact {
                 }}
                 width={'50'}
                 className={`bg-down trade-detail-action`}>
-              <span>
-                删除
+                <span>
+                  删除
                </span>
               </Col>
             </Row>
