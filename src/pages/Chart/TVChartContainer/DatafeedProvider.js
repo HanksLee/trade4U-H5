@@ -127,7 +127,7 @@ export default class DatafeedProvider {
     onHistoryCallback(bars, { noData: !bars.length });
 
     this.connectWebsocket();
-    setInterval(this.connectWebsocket(), 3000)
+    // setInterval(this.connectWebsocket(), 3000)
 
   };
 

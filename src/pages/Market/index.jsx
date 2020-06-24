@@ -26,7 +26,7 @@ export default class extends React.Component {
   async componentDidMount() {
     await this.props.market.getSelfSelectSymbolList();
     this.connnetWebsocket();
-    setInterval(this.connnetWebsocket, 3000);
+    // setInterval(this.connnetWebsocket, 3000);
 
     $$('.self-select-tr').on('click', (evt) => {
       const dom = $$(evt.target).parents('.self-select-tr')[0] || $$(evt.target)[0];

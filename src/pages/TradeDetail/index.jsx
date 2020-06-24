@@ -124,7 +124,7 @@ export default class extends BaseReact {
     setTimeout(() => {
       this.initChart();
       this.connectWebsocket();
-    }, 3000);
+    }, 600);
 
   }
 

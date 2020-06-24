@@ -80,7 +80,7 @@ export default class extends BaseReact {
     this.initEvents();
     this.initData();
     this.connectWebsocket();
-    setInterval(this.connectWebsocket, 3000);
+    // setInterval(this.connectWebsocket, 3000);
   }
 
   initEvents = () => {
