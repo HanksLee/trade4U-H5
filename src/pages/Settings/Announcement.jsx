@@ -26,7 +26,7 @@ export default class extends React.Component {
             <p className="card-title">{announcement[item].title}</p>
             <p className="card-time">
               {moment(announcement[item].create_time * 1000).format(
-                "YYYY/MM/DD hh:mm:ss"
+                "YYYY/MM/DD HH:mm:ss"
               )}
             </p>
           </div>

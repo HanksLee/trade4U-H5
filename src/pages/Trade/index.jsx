@@ -80,7 +80,6 @@ export default class extends BaseReact {
     this.initEvents();
     this.initData();
     this.connectWebsocket();
-    // setInterval(this.connectWebsocket, 3000);
   }
 
   initEvents = () => {
@@ -119,52 +118,73 @@ export default class extends BaseReact {
   };
 
   connectWebsocket = () => {
+    const that = this;
     if (this.wsConnect == null) {
       this.wsConnect = ws("order");
     }
+
+    // setInterval(function () {
+    //   that.wsConnect.send(`{"type":"ping"}`);
+    // }, 3000)
 
     const { setTradeInfo, setTradeList } = this.props.trade;
 
     this.wsConnect.onmessage = (evt) => {
       const msg = JSON.parse(evt.data);
-      if (msg.type == "meta_fund") {
-        this.updateTradeInfo({
-          balance: msg.data.balance,
-          margin: msg.data.margin,
-        });
-      } else {
-        let list = cloneDeep(this.props.trade?.tradeList);
-        let futureList = cloneDeep(this.props.trade?.futureTradeList);
-        if (msg.type == "order_open") {
-          list = [msg.data, ...list];
-        } else if (msg.type == "order_profit") {
-          list = list.map((item) => {
-            if (
-              item.order_number == msg.data.order_number &&
-              msg.data.timestamp > item.timestamp
-            ) {
-              item = msg.data;
-            }
-            return item;
-          });
-        } else if (msg.type == "order_close") {
-          list = list.filter(
-            (item) => item.order_number != msg.data.order_number
-          );
-        } else if (msg.type == "pending_order_close") {
-          futureList = futureList.filter(
-            (item) => item.order_number != msg.data.order_number
-          );
-        }
+      if (msg.type === 'pong') {
+        clearInterval(this.orderInterval);
 
-        setTradeList(list);
-        setTradeList(futureList, "future");
-        this.updateTradeInfo({
-          balance: this.props.trade.tradeInfo.balance,
-          margin: this.props.trade.tradeInfo.margin,
-        });
+        // 如果一定时间没有调用clearInterval，则执行重连
+        this.orderInterval = setInterval(function () {
+          that.connectWebsocket();
+        }, 1000);
       }
+      if (msg.type && msg.type !== 'pong') { // 消息推送
+        // code ...      
+        if (msg.type == "meta_fund") {
+          this.updateTradeInfo({
+            balance: msg.data.balance,
+            margin: msg.data.margin,
+          });
+        } else {
+          let list = cloneDeep(this.props.trade?.tradeList);
+          let futureList = cloneDeep(this.props.trade?.futureTradeList);
+          if (msg.type == "order_open") {
+            list = [msg.data, ...list];
+          } else if (msg.type == "order_profit") {
+            list = list.map((item) => {
+              if (
+                item.order_number == msg.data.order_number &&
+                msg.data.timestamp > item.timestamp
+              ) {
+                item = msg.data;
+              }
+              return item;
+            });
+          } else if (msg.type == "order_close") {
+            list = list.filter(
+              (item) => item.order_number != msg.data.order_number
+            );
+          } else if (msg.type == "pending_order_close") {
+            futureList = futureList.filter(
+              (item) => item.order_number != msg.data.order_number
+            );
+          }
+
+          setTradeList(list);
+          setTradeList(futureList, "future");
+          this.updateTradeInfo({
+            balance: this.props.trade.tradeInfo.balance,
+            margin: this.props.trade.tradeInfo.margin,
+          });
+        }
+      }
+
     };
+
+    this.wsConnect.onclose = (evt) => {
+      setInterval(function () { that.connectWebsocket() }, 3000)
+    }
   };
 
   componentWillUnmount = () => {

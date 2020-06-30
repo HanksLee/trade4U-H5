@@ -26,7 +26,6 @@ export default class extends React.Component {
   async componentDidMount() {
     await this.props.market.getSelfSelectSymbolList();
     this.connnetWebsocket();
-    // setInterval(this.connnetWebsocket, 3000);
 
     $$('.self-select-tr').on('click', (evt) => {
       const dom = $$(evt.target).parents('.self-select-tr')[0] || $$(evt.target)[0];
@@ -55,60 +54,82 @@ export default class extends React.Component {
   }
 
   connnetWebsocket = () => {
-    this.wsConnect = ws('self-select-symbol')
+    const that = this;
+    this.wsConnect = ws('self-select-symbol');
+
+    // setInterval(function () {
+    //   that.wsConnect.send(`{"type":"ping"}`);
+    // }, 3000)
+
     this.wsConnect.onmessage = (event) => {
       const message = event.data;
       const data = JSON.parse(message).data
-      const { selfSelectSymbolList, } = this.props.market
-      const newSelfSelectSymbolList = selfSelectSymbolList.map((item, index) => {
-        if (item.symbol_display.product_display.code === data.symbol &&
-          Number(item.product_details.timestamp) < Number(data.timestamp)) {
-          const buyItemDom = $$($$('.self-select-buy-block')[index])
-          const sellItemDom = $$($$('.self-select-sell-block')[index])
-          if (data.buy > item.product_details.buy) {
-            clearTimeout(this.buyTimers[index])
-            buyItemDom.removeClass('decrease')
-            buyItemDom.addClass('increase')
-            this.buyTimers[index] = setTimeout(() => {
-              buyItemDom && buyItemDom.removeClass('increase')
-            }, 2000);
-          } else if (data.buy < item.product_details.buy) {
-            clearTimeout(this.buyTimers[index])
-            buyItemDom.removeClass('increase')
-            buyItemDom.addClass('decrease')
-            this.buyTimers[index] = setTimeout(() => {
-              buyItemDom && buyItemDom.removeClass('decrease')
-            }, 2000);
-          }
+      if (message.type === 'pong') {
+        clearInterval(this.interval);
 
-          if (data.sell > item.product_details.sell) {
-            clearTimeout(this.sellTimers[index])
-            sellItemDom.removeClass('decrease')
-            sellItemDom.addClass('increase')
-            this.sellTimers[index] = setTimeout(() => {
-              sellItemDom && sellItemDom.removeClass('increase')
-            }, 2000);
-          } else if (data.sell < item.product_details.sell) {
-            clearTimeout(this.sellTimers[index])
-            sellItemDom.removeClass('increase')
-            sellItemDom.addClass('decrease')
-            this.sellTimers[index] = setTimeout(() => {
-              sellItemDom && sellItemDom.removeClass('decrease')
-            }, 2000);
-          }
+        // 如果一定时间没有调用clearInterval，则执行重连
+        this.interval = setInterval(function () {
+          that.connnetWebsocket();
+        }, 1000);
+      }
+      if (message.type && message.type !== 'pong') { // 消息推送
+        // code ...          
+        const { selfSelectSymbolList, } = this.props.market
+        const newSelfSelectSymbolList = selfSelectSymbolList.map((item, index) => {
+          if (item.symbol_display.product_display.code === data.symbol &&
+            Number(item.product_details.timestamp) < Number(data.timestamp)) {
+            const buyItemDom = $$($$('.self-select-buy-block')[index])
+            const sellItemDom = $$($$('.self-select-sell-block')[index])
+            if (data.buy > item.product_details.buy) {
+              clearTimeout(this.buyTimers[index])
+              buyItemDom.removeClass('decrease')
+              buyItemDom.addClass('increase')
+              this.buyTimers[index] = setTimeout(() => {
+                buyItemDom && buyItemDom.removeClass('increase')
+              }, 2000);
+            } else if (data.buy < item.product_details.buy) {
+              clearTimeout(this.buyTimers[index])
+              buyItemDom.removeClass('increase')
+              buyItemDom.addClass('decrease')
+              this.buyTimers[index] = setTimeout(() => {
+                buyItemDom && buyItemDom.removeClass('decrease')
+              }, 2000);
+            }
 
-          return {
-            ...item,
-            product_details: {
-              ...item.product_details,
-              ...data,
+            if (data.sell > item.product_details.sell) {
+              clearTimeout(this.sellTimers[index])
+              sellItemDom.removeClass('decrease')
+              sellItemDom.addClass('increase')
+              this.sellTimers[index] = setTimeout(() => {
+                sellItemDom && sellItemDom.removeClass('increase')
+              }, 2000);
+            } else if (data.sell < item.product_details.sell) {
+              clearTimeout(this.sellTimers[index])
+              sellItemDom.removeClass('increase')
+              sellItemDom.addClass('decrease')
+              this.sellTimers[index] = setTimeout(() => {
+                sellItemDom && sellItemDom.removeClass('decrease')
+              }, 2000);
+            }
+
+            return {
+              ...item,
+              product_details: {
+                ...item.product_details,
+                ...data,
+              }
             }
           }
-        }
-        return item
-      })
-      this.props.market.setSelfSelectSymbolList(newSelfSelectSymbolList)
+          return item
+        })
+        this.props.market.setSelfSelectSymbolList(newSelfSelectSymbolList)
+      }
+
     };
+
+    this.wsConnect.onclose = (evt) => {
+      setInterval(function () { that.connectWebsocket() }, 3000)
+    }
   }
 
   navigateToManagePage = () => {

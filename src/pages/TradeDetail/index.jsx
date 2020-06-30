@@ -285,18 +285,41 @@ export default class extends BaseReact {
         currentShowSymbol,
       }
     } = this.props;
+    const that = this;
 
     if (!prevSelectedId || +prevSelectedId != id) {
       if (this.wsConnect) this.wsConnect.close();
 
       this.wsConnect = ws(`symbol/${id}/trend`);
+
+      // setInterval(function () {
+      //   that.wsConnect.send(`{"type":"ping"}`);
+      // }, 3000)
+
       this.wsConnect.onmessage = evt => {
         const msg = evt.data;
         const data = JSON.parse(msg).data;
-        // console.log('data', data);
+        if (msg.type === 'pong') {
+          clearInterval(this.orderInterval);
 
-        this.updateTrendData(data);
-        this.initChart();
+          // 如果一定时间没有调用clearInterval，则执行重连
+          this.orderInterval = setInterval(function () {
+            that.connectWebsocket();
+          }, 1000);
+        }
+        if (msg.type && msg.type !== 'pong') { // 消息推送
+          // code ...          
+
+          // console.log('data', data);
+
+          this.updateTrendData(data);
+          this.initChart();
+        }
+
+      }
+
+      this.wsConnect.onclose = (evt) => {
+        setInterval(function () { that.connectWebsocket() }, 3000)
       }
 
       // if (this.wsConnect) {

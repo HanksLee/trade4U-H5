@@ -61,36 +61,58 @@ export default class DatafeedProvider {
     }));
   };
 
-  connectWebsocket = () => {
+  connectWebsocket = (symbolInfo, resolution) => {
+    const that = this;
     if (this.wsConnect) this.wsConnect.close();
     this.wsConnect = ws(
       `symbol/${symbolInfo.ticker}/trend/${resolutionMap[resolution]}`
     );
+
+    // setInterval(function () {
+    //   that.wsConnect.send(`{"type":"ping"}`);
+    // }, 3000)
+
     this.wsConnect.onmessage = event => {
       const message = event.data;
       const data = JSON.parse(message).data;
-      const formatData = {
-        time: data.timestamp * 1000, //TradingView requires bar time in ms
-        low: data.low,
-        high: data.high,
-        open: data.open,
-        close: data.sell,
-        volume: data.volume
-      };
+      if (message.type === 'pong') {
+        clearInterval(this.interval);
 
-      this.subscriberList = this.subscriberList || [];
-      for (const sub of this.subscriberList) {
-        if (
-          sub.symbolName !== this.lastSymbolName ||
-          sub.resolution !== this.lastResolution
-        ) {
-          this.kChartData = [];
-        } else {
-          if (typeof sub.callback !== "function") return;
-          sub.callback(formatData);
+        // 如果一定时间没有调用clearInterval，则执行重连
+        this.interval = setInterval(function () {
+          that.connnetWebsocket();
+        }, 1000);
+      }
+      if (message.type && message.type !== 'pong') { // 消息推送
+        // code ...      
+        const formatData = {
+          time: data.timestamp * 1000, //TradingView requires bar time in ms
+          low: data.low,
+          high: data.high,
+          open: data.open,
+          close: data.sell,
+          volume: data.volume
+        };
+
+        this.subscriberList = this.subscriberList || [];
+        for (const sub of this.subscriberList) {
+          if (
+            sub.symbolName !== this.lastSymbolName ||
+            sub.resolution !== this.lastResolution
+          ) {
+            this.kChartData = [];
+          } else {
+            if (typeof sub.callback !== "function") return;
+            sub.callback(formatData);
+          }
         }
       }
+
     };
+
+    this.wsConnect.onclose = (evt) => {
+      setInterval(function () { that.connectWebsocket() }, 3000)
+    }
   }
 
   getBars = async function (
@@ -126,8 +148,7 @@ export default class DatafeedProvider {
     this.kChartData = bars;
     onHistoryCallback(bars, { noData: !bars.length });
 
-    this.connectWebsocket();
-    // setInterval(this.connectWebsocket(), 3000)
+    this.connectWebsocket(symbolInfo, resolution);
 
   };
 
