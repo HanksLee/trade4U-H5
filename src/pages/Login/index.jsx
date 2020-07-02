@@ -110,7 +110,7 @@ export default class extends React.Component {
     return (
       <>
         <Navbar>
-          <NavTitle style={{ margin: "auto" }}>证券商</NavTitle>
+          <NavTitle style={{ margin: "auto" }}>交易商</NavTitle>
         </Navbar>
         <Searchbar
           placeholder="输入券商名"
