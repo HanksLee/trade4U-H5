@@ -30,7 +30,7 @@ class MessageStore extends BaseStore {
     }, 30000)
 
     this.wsConnect.onmessage = (event) => {
-      const message = JSON.parse(message);
+      const message = JSON.parse(event.data);
       const type = message.type;
       if (message.type === 'pong') {
         clearInterval(this.interval);

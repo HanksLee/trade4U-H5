@@ -73,7 +73,7 @@ export default class DatafeedProvider {
     // }, 3000)
 
     this.wsConnect.onmessage = event => {
-      const message = JSON.parse(message);
+      const message = JSON.parse(event.data);
       const data = message.data;
       if (message.type === 'pong') {
         clearInterval(this.interval);

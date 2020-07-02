@@ -297,8 +297,8 @@ export default class extends BaseReact {
       // }, 3000)
 
       this.wsConnect.onmessage = evt => {
-        const msg = evt.data;
-        const data = JSON.parse(msg).data;
+        const msg = JSON.parse(evt.data);
+        const data = msg.data;
         if (msg.type === 'pong') {
           clearInterval(this.orderInterval);
 
