@@ -62,8 +62,8 @@ export default class extends React.Component {
     // }, 3000)
 
     this.wsConnect.onmessage = (event) => {
-      const message = event.data;
-      const data = JSON.parse(message).data
+      const message = JSON.parse(event.data);
+      const data = message.data
       if (message.type === 'pong') {
         clearInterval(this.interval);
 
@@ -73,7 +73,7 @@ export default class extends React.Component {
         }, 1000);
       }
       if (message.type && message.type !== 'pong') { // 消息推送
-        // code ...          
+        // code ...   
         const { selfSelectSymbolList, } = this.props.market
         const newSelfSelectSymbolList = selfSelectSymbolList.map((item, index) => {
           if (item.symbol_display.product_display.code === data.symbol &&
