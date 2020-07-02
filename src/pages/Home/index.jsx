@@ -21,15 +21,19 @@ export default class extends React.Component {
       const token = utils.getLStorage("MOON_H5_TOKEN");
       this.$event = new Framework7.Events();
       this.props.common.setGlobalEvent(this.$event);
+
+
+      // if (token) {
+      //   this.props.message.connectNotifyWebsocket();
+      // }
     });
-    this.props.message.connnetNotifyWebsocket();
-    // setInterval(this.props.message.connnetNotifyWebsocket(), 3000);
   }
 
   componentWillUnmount = () => {
-    if (this.props.message.wsConnect) {
-      this.props.message.wsConnect.close();
-    }
+    // const token = utils.getLStorage("MOON_H5_TOKEN");
+    // if (token && this.props.message.wsConnect) {
+    //   this.props.message.wsConnect.close();
+    // }
   };
 
   updateLastestSymbol = () => {

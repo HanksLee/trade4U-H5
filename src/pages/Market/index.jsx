@@ -53,7 +53,7 @@ export default class extends React.Component {
     }
   }
 
-  connnetWebsocket = () => {
+  connectWebsocket = () => {
     const that = this;
     this.wsConnect = ws('self-select-symbol');
 

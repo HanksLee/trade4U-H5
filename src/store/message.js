@@ -18,13 +18,16 @@ class MessageStore extends BaseStore {
     this.hasAnnouncement = status;
   };
 
-  @action connnetNotifyWebsocket = () => {
+  @action connectNotifyWebsocket = () => {
     this.wsConnect = ws("notify");
+    console.log(this.wsConnect)
     const that = this;
 
-    // setInterval(function () {
-    //   that.wsConnect.send(`{"type":"ping"}`);
-    // }, 3000)
+    setTimeout(function () {
+      setInterval(function () {
+        that.wsConnect.send(`{"type":"ping"}`);
+      }, 3000)
+    }, 30000)
 
     this.wsConnect.onmessage = (event) => {
       const message = event.data;
@@ -34,7 +37,7 @@ class MessageStore extends BaseStore {
 
         // 如果一定时间没有调用clearInterval，则执行重连
         this.interval = setInterval(function () {
-          that.connnetNotifyWebsocket();
+          that.connectNotifyWebsocket();
         }, 1000);
       }
       if (message.type && message.type !== 'pong') { // 消息推送
@@ -50,7 +53,7 @@ class MessageStore extends BaseStore {
     };
 
     this.wsConnect.onclose = (evt) => {
-      setInterval(function () { that.connnetNotifyWebsocket() }, 3000)
+      setInterval(function () { that.connectNotifyWebsocket() }, 3000)
     }
   };
 }

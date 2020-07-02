@@ -80,7 +80,7 @@ export default class DatafeedProvider {
 
         // 如果一定时间没有调用clearInterval，则执行重连
         this.interval = setInterval(function () {
-          that.connnetWebsocket();
+          that.connectWebsocket();
         }, 1000);
       }
       if (message.type && message.type !== 'pong') { // 消息推送
