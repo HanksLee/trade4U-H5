@@ -193,8 +193,6 @@ export default class extends React.Component {
         brokerList: res.data.results,
         searchResult: res.data.results,
       });
-
-      // this.props.message.connnetNotifyWebsocket();
     }
   };
 

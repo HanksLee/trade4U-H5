@@ -25,7 +25,7 @@ export default class extends React.Component {
 
   async componentDidMount() {
     await this.props.market.getSelfSelectSymbolList();
-    this.connnetWebsocket();
+    this.connectWebsocket();
 
     $$('.self-select-tr').on('click', (evt) => {
       const dom = $$(evt.target).parents('.self-select-tr')[0] || $$(evt.target)[0];
@@ -69,7 +69,7 @@ export default class extends React.Component {
 
         // 如果一定时间没有调用clearInterval，则执行重连
         this.interval = setInterval(function () {
-          that.connnetWebsocket();
+          that.connectWebsocket();
         }, 1000);
       }
       if (message.type && message.type !== 'pong') { // 消息推送
