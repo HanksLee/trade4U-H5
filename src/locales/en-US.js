@@ -48,4 +48,5 @@ module.exports = {
   "settings.message": "message center",
   "settings.message.announcement": "announcement",
   "settings.message.notification": "notification",
+  "settings.logout": "logout",
 };

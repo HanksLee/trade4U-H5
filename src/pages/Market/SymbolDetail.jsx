@@ -19,7 +19,7 @@ export default class extends React.Component {
       symbolDisplay: this.$f7route.context.symbol_display,
     }
   }
-  
+
   render() {
     const { symbolDisplay } = this.state;
     return (
@@ -45,9 +45,11 @@ export default class extends React.Component {
           <ListItem title="点差" after={String(symbolDisplay.spread)} />
           <ListItem title="预付款货币" after={symbolDisplay.margin_currency_display} />
           <ListItem title="获利货币" after={symbolDisplay.profit_currency_display} />
-          <ListItem title="最小交易手数" after={String(symbolDisplay.min_trading_volume)} />
-          <ListItem title="最大交易手数" after={String(symbolDisplay.max_trading_volume)} />
+          <ListItem title="最小交易手数" after={String(symbolDisplay.min_lots)} />
+          <ListItem title="最大交易手数" after={String(symbolDisplay.max_lots)} />
           <ListItem title="交易数步长" after={String(symbolDisplay.volume_step)} />
+          <ListItem title="买入库存费" after={String(symbolDisplay.purchase_fee)} />
+          <ListItem title="卖出库存费" after={String(symbolDisplay.selling_fee)} />
         </List>
       </Page>
     );

@@ -111,7 +111,7 @@ export default class extends React.Component {
 
     $$(".time-select").on("click", function (e) {
       let now = new Date();
-      let nowDay = now.getDay();
+      // let nowDay = now.getDay();
       let nowTimestamp = Date.parse(now) / 1000;
       const today = new Date(
         new Date().getFullYear(),
@@ -119,13 +119,15 @@ export default class extends React.Component {
         new Date().getDate()
       );
       let todayTimestamp = Date.parse(today) / 1000;
-      let thisWeek = new Date(today.getTime() - nowDay * 60 * 60 * 24 * 1000);
+      // let thisWeek = new Date(today.getTime() - nowDay * 60 * 60 * 24 * 1000);
+      let thisWeek = new Date(today.getTime() - 7 * 60 * 60 * 24 * 1000);
       let thisWeekTimestamp = Date.parse(thisWeek) / 1000;
-      let thisMonth = new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        1
-      );
+      // let thisMonth = new Date(
+      //   new Date().getFullYear(),
+      //   new Date().getMonth(),
+      //   1
+      // );
+      let thisMonth = new Date(today.getTime() - 30 * 60 * 60 * 24 * 1000);
       const thisMonthTimestamp = Date.parse(thisMonth) / 1000;
       switch ($$(this).index()) {
         case 0:
@@ -397,17 +399,23 @@ export default class extends React.Component {
               ) : (
                   <div className={"history-data-middle"}>
                     <Row className={"align-items-center"}>
-                      <Col width={"30"} className="data-cause">
-                        <strong>{item.cause_name}</strong>
+                      <Col width={"60"}>
+                        <Row>
+                          <Col width={"50"} className="data-cause">
+                            <strong>{item.cause_name}</strong>
+                          </Col>
+                          <Col width={"50"} className="data-amount">
+                            <strong
+                              className={item.in_or_out === 0 ? `p-down` : `p-up`}
+                            >
+                              {item.in_or_out === 0 ? "-" : "+"}
+                              {item.amount}
+                            </strong>
+                          </Col>
+                          {item.remarks && <Col width={"100"}><p class="p-down" style={{ 'margin-top': '5px' }}> 备注：{item.remarks} </p></Col>}
+                        </Row>
                       </Col>
-                      <Col width={"30"} className="data-amount">
-                        <strong
-                          className={item.in_or_out === 0 ? `p-down` : `p-up`}
-                        >
-                          {item.in_or_out === 0 ? "-" : "+"}
-                          {item.amount}
-                        </strong>
-                      </Col>
+
                       <Col width={"40"} className="data-time">
                         <p>
                           {moment(item.create_time * 1000).format("YYYY/MM/DD")}
@@ -571,10 +579,10 @@ export default class extends React.Component {
               <span>本日</span>
             </Button>
             <Button className="time-select select-btn">
-              <span>本周</span>
+              <span>近7天</span>
             </Button>
             <Button className="time-select select-btn">
-              <span>本月</span>
+              <span>近30天</span>
             </Button>
             <Button className="select-btn">
               <span>自定义</span>

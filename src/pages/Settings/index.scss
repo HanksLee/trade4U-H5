@@ -11,9 +11,7 @@
 .list {
   ul {
     .item-content {
-      padding-left: calc(
-        var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left)
-      );
+      padding-left: calc(var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left));
     }
   }
 }
@@ -22,6 +20,7 @@
   .message-icon-container {
     width: 30px;
     position: relative;
+
     > .has-unread-message {
       width: 10px;
       height: 10px;
@@ -30,6 +29,16 @@
       position: absolute;
       right: -3px;
       top: -3px;
+    }
+  }
+}
+
+.logout {
+  ul {
+    background: transparent;
+
+    &::after {
+      display: none;
     }
   }
 }
@@ -55,6 +64,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
     img {
       max-height: 22px;
     }
@@ -110,6 +120,7 @@
     > div {
       color: #8c8c8c;
       text-align: center;
+
       > img {
         max-height: 23px;
       }
@@ -134,6 +145,7 @@
   .message-icon-container {
     width: 44px;
     position: relative;
+
     > .has-unread-message {
       width: 10px;
       height: 10px;
@@ -185,6 +197,7 @@
     justify-content: center;
     width: 20px;
     color: #8c8c8c;
+
     .icon {
       &::after {
         color: var(--f7-list-chevron-icon-color);

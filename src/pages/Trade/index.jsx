@@ -182,9 +182,9 @@ export default class extends BaseReact {
 
     };
 
-    this.wsConnect.onclose = (evt) => {
-      setInterval(function () { that.connectWebsocket() }, 3000)
-    }
+    //this.wsConnect.onclose = (evt) => {
+    //setInterval(function () { that.connectWebsocket() }, 3000)
+    //}
   };
 
   componentWillUnmount = () => {

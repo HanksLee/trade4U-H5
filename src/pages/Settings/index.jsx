@@ -1,6 +1,7 @@
 import intl from "react-intl-universal";
 import React from "react";
 import utils from "utils";
+import { f7 } from "framework7-react";
 import { Page, Navbar, List, ListItem, ListInput } from "framework7-react";
 import { inject, observer } from "mobx-react";
 import "./index.scss";
@@ -19,6 +20,14 @@ export default class extends React.Component {
     });
     utils.setLStorage("MOON_H5_LANG", value);
   };
+
+  logout = () => {
+    localStorage.removeItem("MOON_H5_TOKEN");
+    f7.router.app.views.main.router.navigate("/login", {
+      reloadCurrent: true,
+      ignoreCache: true,
+    });
+  }
 
   render() {
     const { currentLang } = this.state;
@@ -83,6 +92,22 @@ export default class extends React.Component {
             </div>
           </ListItem>
         </List>
+        {/* <List
+          className="logout">
+          <ListItem
+            title={intl.get("settings.logout")}
+            onClick={this.logout}
+          >
+            <div slot="media" className="message-icon-container">
+              {hasAnnouncement ||
+                (hasNotify && <span className="has-unread-message"></span>)}
+              <img
+                src="../../../assets/img/logout.svg"
+                width="30"
+              />
+            </div>
+          </ListItem>
+        </List> */}
       </Page>
     );
   }

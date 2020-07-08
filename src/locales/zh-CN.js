@@ -46,4 +46,5 @@ module.exports = {
   "settings.message": "信息中心",
   "settings.message.announcement": "站內公告",
   "settings.message.notification": "服务消息",
+  "settings.logout": "登出",
 };

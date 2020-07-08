@@ -35,13 +35,31 @@ export default class API {
           const {
             response: { data, status },
           } = err;
-          if (status == 400) {
+
+          // if (status == 400) {
+          //   f7.toast.show({
+          //     text: data.message,
+          //     position: "center",
+          //     closeTimeout: 2000,
+          //   });
+          // } else if (status == 401) {
+          //   localStorage.removeItem("MOON_H5_TOKEN");
+          //   f7.router.app.views.main.router.navigate("/login");
+          // }
+
+          if (status.toString().indexOf('40') > -1 && status !== 401) {
             f7.toast.show({
               text: data.message,
               position: "center",
               closeTimeout: 2000,
             });
-          } else if (status == 401) {
+          }
+          if (status == 401) {
+            // f7.toast.show({
+            //   text: data.message,
+            //   position: "center",
+            //   closeTimeout: 2000,
+            // });
             localStorage.removeItem("MOON_H5_TOKEN");
             f7.router.app.views.main.router.navigate("/login");
           }

@@ -52,9 +52,9 @@ class MessageStore extends BaseStore {
 
     };
 
-    this.wsConnect.onclose = (evt) => {
-      setInterval(function () { that.connectNotifyWebsocket() }, 3000)
-    }
+    //this.wsConnect.onclose = (evt) => {
+    //setInterval(function () { that.connectNotifyWebsocket() }, 3000)
+    //}
   };
 }
 

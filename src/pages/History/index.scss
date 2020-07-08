@@ -23,15 +23,14 @@
     color: #fff;
     --f7-button-border-width: 0px;
   }
+
   .button:first-child {
-    border-radius: var(--f7-button-border-radius) 0 0
-      var(--f7-button-border-radius);
+    border-radius: var(--f7-button-border-radius) 0 0 var(--f7-button-border-radius);
     border-left: 1px solid #fff;
   }
 
   .button:last-child {
-    border-radius: 0 var(--f7-button-border-radius)
-      var(--f7-button-border-radius) 0;
+    border-radius: 0 var(--f7-button-border-radius) var(--f7-button-border-radius) 0;
   }
 
   .button.button-active {
@@ -60,6 +59,7 @@
 
   .date-picker-bar {
     margin-bottom: 5px;
+
     > * {
       background-color: #fff;
       color: #333;
@@ -120,10 +120,9 @@
 
 .history-data {
   border-bottom: 10px solid #efeff4;
+
   .item-content {
-    padding-right: calc(
-      var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left)
-    );
+    padding-right: calc(var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left));
   }
 
   .history-data-top {
@@ -139,6 +138,7 @@
   .history-data-middle {
     font-size: r(11);
     color: $grey;
+
     .history-data-middle-current {
       font-size: 0.07rem;
       font-weight: bold;
@@ -187,13 +187,13 @@
       background-color: transparent;
     }
   }
+
   .item-content {
     padding-left: 0;
 
     .item-inner {
-      padding-left: calc(
-        var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left)
-      );
+      padding-left: calc(var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left));
+
       &::after {
         background-color: transparent;
       }
@@ -216,7 +216,9 @@ p {
 
 .history-stats {
   padding-bottom: r(8);
-  margin-bottom: r(70);
+  // margin-bottom: r(70);
+  margin-bottom: 80px;
+
   &::before {
     background-color: transparent;
   }
@@ -227,6 +229,7 @@ p {
     .history-stats-col {
       p {
         margin-bottom: r(4);
+
         &:first-child {
           font-size: r(13);
           color: $grey;
