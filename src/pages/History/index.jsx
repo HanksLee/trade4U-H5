@@ -391,7 +391,7 @@ export default class extends React.Component {
                       <p className="value-text">{item.order.open_price}</p>
                     </Col>
                     <Col width={"20"} style={{ textAlign: "right" }}>
-                      <p>目前</p>
+                      <p>平仓</p>
                       <p className="value-text">{item.order.close_price}</p>
                     </Col>
                   </Row>

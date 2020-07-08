@@ -47,7 +47,7 @@ export default class extends React.Component {
           <ListItem title="获利货币" after={symbolDisplay.profit_currency_display} />
           <ListItem title="最小交易手数" after={String(symbolDisplay.min_lots)} />
           <ListItem title="最大交易手数" after={String(symbolDisplay.max_lots)} />
-          <ListItem title="交易数步长" after={String(symbolDisplay.volume_step)} />
+          <ListItem title="交易数步长" after={String(symbolDisplay.lots_step)} />
           <ListItem title="买入库存费" after={String(symbolDisplay.purchase_fee)} />
           <ListItem title="卖出库存费" after={String(symbolDisplay.selling_fee)} />
         </List>
