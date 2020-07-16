@@ -35,14 +35,16 @@
 
     & > div {
       flex: 1;
-      text-align: center;
+      // text-align: center;
       padding: 0 r(5);
       overflow: hidden;
     }
 
+    & > div:nth-child(1),
     & > div:nth-child(2) {
       width: r(60);
       flex: none;
+      padding: 0 r(7);
     }
   }
 
@@ -88,7 +90,7 @@
     }
 
     .self-select-buy-sell-block {
-      width: r(75);
+      // width: r(75);
       height: r(42);
       line-height: r(42);
       border-radius: 4px;
@@ -112,13 +114,13 @@
     .self-select-low {
       color: #8c8c8c;
       font-size: r(11);
-      text-align: left;
+      // text-align: left;
     }
 
     .self-select-high {
       color: #8c8c8c;
       font-size: r(11);
-      text-align: left;
+      // text-align: left;
     }
   }
 
