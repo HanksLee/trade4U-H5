@@ -1,6 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
-    <g fill="none" fill-rule="evenodd">
-        <rect width="44" height="44" fill="#325497" rx="6"/>
-        <path fill="#FFF" fill-rule="nonzero" d="M12.377 35.397l2.916-7.674h12.586l2.916 7.674h3.415L23.428 8h-3.646L9 35.397h3.377zM26.88 25.075h-10.59l5.256-13.698h.154l5.18 13.698z"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="18px" viewBox="0 0 16 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Slice 34</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Slice" transform="translate(-104.000000, -180.000000)" fill="#FFFFFF" fill-rule="nonzero">
+            <g id="Slice-34" transform="translate(104.000000, 180.000000)">
+                <path d="M2.14307458,17.3881279 L3.99391172,12.5175038 L11.9817352,12.5175038 L13.8325723,17.3881279 L16,17.3881279 L9.15677321,0 L6.84322679,0 L0,17.3881279 L2.14307458,17.3881279 Z M11.348554,10.8371385 L4.62709285,10.8371385 L7.96347032,2.14307458 L8.0608828,2.14307458 L11.348554,10.8371385 Z" id="A"></path>
+            </g>
+        </g>
     </g>
 </svg>

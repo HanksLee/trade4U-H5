@@ -2,7 +2,7 @@ import intl from "react-intl-universal";
 import React from "react";
 import utils from "utils";
 import { WhiteSpace } from "antd-mobile";
-import { Page, Navbar } from "framework7-react";
+import { Page, Navbar, NavRight } from "framework7-react";
 import api from "services";
 import moment from "moment";
 import "./index.scss";
@@ -61,9 +61,9 @@ export default class extends React.Component {
           backLink="Back"
           class="text-color-white"
         >
-          {/* <NavRight>
-            <div onClick={this.handleSubmit}>確認</div>
-          </NavRight> */}
+          <NavRight>
+            {/* <div onClick={this.handleSubmit}>確認</div> */}
+          </NavRight>
         </Navbar>
         <div className="card-wrap">
           {utils.isEmpty(announcement) === false &&

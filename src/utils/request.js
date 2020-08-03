@@ -47,13 +47,13 @@ export default class API {
           //   f7.router.app.views.main.router.navigate("/login");
           // }
 
-          if (status.toString().indexOf('40') > -1 && status !== 401) {
-            f7.toast.show({
-              text: data.message,
-              position: "center",
-              closeTimeout: 2000,
-            });
-          }
+          // if (status.toString().indexOf('40') > -1 && status !== 401) {
+          //   f7.toast.show({
+          //     text: data.message,
+          //     position: "center",
+          //     closeTimeout: 2000,
+          //   });
+          // }
           if (status == 401) {
             // f7.toast.show({
             //   text: data.message,
@@ -61,12 +61,19 @@ export default class API {
             //   closeTimeout: 2000,
             // });
             localStorage.removeItem("MOON_H5_TOKEN");
-            f7.router.app.views.main.router.navigate("/login");
+            // f7.router.app.views.main.router.navigate("/login");
+            // f7.router.app.views.main.router.navigate("/login", {
+            //   reloadCurrent: true,
+            //   ignoreCache: true,
+            // });
+            window.location.reload();
           }
         }
 
         NProgress.done();
-        return Promise.reject(err);
+        // return Promise.reject(err);
+        Promise.reject(err);
+        return err.response;
       }
     );
   }

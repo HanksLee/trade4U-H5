@@ -1,27 +1,25 @@
 /* Custom color theme properties */
-$primary: #325497;
+$primary: #21212b;
 
 :root {
-  --f7-theme-color: #325497;
+  --f7-theme-color: #21212b;
   --f7-theme-color-rgb: 50, 84, 151;
   --f7-theme-color-shade: #284378;
   --f7-theme-color-tint: #3c65b6;
-
-  --f7-bars-text-color: #FFF;
-  --f7-bars-bg-color: #325497;
+  --f7-bars-text-color: #fff;
+  --f7-bars-bg-color: #21212b;
   --f7-bars-bg-color-rgb: 50, 84, 151;
-
   --f7-list-margin-vertical: 0;
   --f7-navbar-inner-padding-left: 16px;
   --f7-navbar-inner-padding-right: 16px;
 }
 
 .ios-translucent-bars .navbar-bg {
-  background-color: #325497;
+  background-color: #21212b;
 }
 
 .ios-translucent-bars .toolbar {
-  background-color: #325497;
+  background-color: #21212b;
 }
 
 .block {
@@ -34,6 +32,10 @@ $primary: #325497;
 
 .md {
   --f7-swipeout-button-padding: 0 10px;
+}
+
+.page {
+  background-color: #21212b;
 }
 
 /* Your app custom styles here */

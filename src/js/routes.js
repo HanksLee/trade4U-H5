@@ -147,11 +147,59 @@ var routes = [
     },
   },
   {
+    path: "/settings/history",
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () =>
+        import(
+          /* webpackChunkName: 'settings-page' */ "../pages/Settings/History.jsx"
+        );
+      reactComponent().then((rc) => {
+        resolve({ component: rc.default });
+      });
+    },
+  },
+  {
+    path: "/settings/deposit",
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () =>
+        import(
+          /* webpackChunkName: 'settings-page' */ "../pages/Settings/Deposit.jsx"
+        );
+      reactComponent().then((rc) => {
+        resolve({ component: rc.default });
+      });
+    },
+  },
+  {
+    path: "/settings/withdraw",
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () =>
+        import(
+          /* webpackChunkName: 'settings-page' */ "../pages/Settings/Withdraw.jsx"
+        );
+      reactComponent().then((rc) => {
+        resolve({ component: rc.default });
+      });
+    },
+  },
+  {
     path: "/settings/account",
     async(routeTo, routeFrom, resolve, reject) {
       const reactComponent = () =>
         import(
           /* webpackChunkName: 'settings-page' */ "../pages/Settings/Account.jsx"
+        );
+      reactComponent().then((rc) => {
+        resolve({ component: rc.default });
+      });
+    },
+  },
+  {
+    path: "/settings/lang",
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () =>
+        import(
+          /* webpackChunkName: 'settings-page' */ "../pages/Settings/Lang.jsx"
         );
       reactComponent().then((rc) => {
         resolve({ component: rc.default });
@@ -176,6 +224,42 @@ var routes = [
       const reactComponent = () =>
         import(
           /* webpackChunkName: 'settings-page' */ "../pages/Settings/Message.jsx"
+        );
+      reactComponent().then((rc) => {
+        resolve({ component: rc.default });
+      });
+    },
+  },
+  {
+    path: "/settings/chart",
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () =>
+        import(
+          /* webpackChunkName: 'settings-page' */ "../pages/Settings/Chart.jsx"
+        );
+      reactComponent().then((rc) => {
+        resolve({ component: rc.default });
+      });
+    },
+  },
+  {
+    path: "/settings/news",
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () =>
+        import(
+          /* webpackChunkName: 'settings-page' */ "../pages/Settings/News.jsx"
+        );
+      reactComponent().then((rc) => {
+        resolve({ component: rc.default });
+      });
+    },
+  },
+  {
+    path: "/settings/color-prefer",
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () =>
+        import(
+          /* webpackChunkName: 'settings-page' */ "../pages/Settings/ColorPrefer.jsx"
         );
       reactComponent().then((rc) => {
         resolve({ component: rc.default });

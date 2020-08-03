@@ -1,5 +1,6 @@
 import React from 'react';
 import { App, View } from 'framework7-react';
+import utils from "utils";
 import routes from '../js/routes';
 import './index.scss';
 
@@ -44,22 +45,22 @@ export default class extends React.Component {
 
   componentDidMount() {
     this.$f7ready((f7) => {
-        f7.on('connection', (isOnline) => {
-          if (!isOnline) {
-            f7.toast.show({
-              text: '请检查设备当前网络连接状况~',
-              position: 'center',
-              closeTimeout: 2000,
-            });
-          }
-        })
+      f7.on('connection', (isOnline) => {
+        if (!isOnline) {
+          f7.toast.show({
+            text: '请检查设备当前网络连接状况~',
+            position: 'center',
+            closeTimeout: 2000,
+          });
+        }
+      })
     });
   }
 
   render() {
     return (
-      <App params={ this.state.f7params } >
-        <View main url="/" />
+      <App params={this.state.f7params} >
+        <View main url={utils.getLStorage("MOON_H5_TOKEN") ? "/" : "/login"} />
       </App>
     )
   }

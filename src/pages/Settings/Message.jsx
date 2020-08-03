@@ -1,7 +1,7 @@
 import intl from "react-intl-universal";
 import React from "react";
 import utils from "utils";
-import { Page, Navbar } from "framework7-react";
+import { Page, Navbar, NavRight } from "framework7-react";
 import api from "services";
 import moment from "moment";
 // import ws from "utils/ws";
@@ -84,7 +84,10 @@ export default class extends React.Component {
           title={intl.get("settings.message")}
           backLink="Back"
           className="text-color-white"
-        ></Navbar>
+        >
+          <NavRight>
+          </NavRight>
+        </Navbar>
         {announcement && (
           <div
             className="message-wrap announcement"

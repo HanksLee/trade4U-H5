@@ -198,14 +198,16 @@ export default class extends React.Component {
           backLink="Back"
           class="text-color-white"
         >
-          {(userInfo["inspect_status"] === 0 ||
-            userInfo["inspect_status"] === 3) && (
-            <NavRight>
-              <div onClick={this.handleSubmit}>
-                {intl.get("settings.confirm")}
-              </div>
-            </NavRight>
-          )}
+          {(userInfo["inspect_status"] !== 0 &&
+            userInfo["inspect_status"] !== 3)
+            ? <NavRight></NavRight>
+            : (
+              <NavRight>
+                <div onClick={this.handleSubmit}>
+                  {intl.get("settings.confirm")}
+                </div>
+              </NavRight>
+            )}
         </Navbar>
         <div className="info-status-wrap">
           <div className="info-status-line"></div>
@@ -249,25 +251,25 @@ export default class extends React.Component {
           )}
           {(userInfo["inspect_status"] === 2 ||
             userInfo["inspect_status"] === 3) && (
-            <div className="info-status">
-              <img src="../../../assets/img/success.svg" alt="success.svg" />
-              <p className="ant-upload-text" style={{ color: "#4a93f4" }}>
-                {intl.get("settings.account.verifying-form")}
-              </p>
-            </div>
-          )}
+              <div className="info-status">
+                <img src="../../../assets/img/success.svg" alt="success.svg" />
+                <p className="ant-upload-text" style={{ color: "#4a93f4" }}>
+                  {intl.get("settings.account.verifying-form")}
+                </p>
+              </div>
+            )}
           {(userInfo["inspect_status"] === 0 ||
             userInfo["inspect_status"] === 1) && (
-            <div className="info-status">
-              <img
-                src="../../../assets/img/unfinished.svg"
-                alt="unfinished.svg"
-              />
-              <p className="ant-upload-text">
-                {intl.get("settings.account.wait")}
-              </p>
-            </div>
-          )}
+              <div className="info-status">
+                <img
+                  src="../../../assets/img/unfinished.svg"
+                  alt="unfinished.svg"
+                />
+                <p className="ant-upload-text">
+                  {intl.get("settings.account.wait")}
+                </p>
+              </div>
+            )}
           {userInfo["inspect_status"] === 2 && (
             <div className="info-status">
               <img src="../../../assets/img/success.svg" alt="success.svg" />
@@ -316,7 +318,7 @@ export default class extends React.Component {
             extra={intl.get("settings.account.birth.extra")}
             format="YYYY-MM-DD"
           >
-            <List.Item arrow="horizontal">
+            <List.Item arrow="horizontal" className="select-item">
               {intl.get("settings.account.birth")}
             </List.Item>
           </DatePicker>
@@ -334,7 +336,7 @@ export default class extends React.Component {
           </InputItem>
         </List>
 
-        <WhiteSpace size="xl" />
+        {/* <WhiteSpace size="xl" /> */}
 
         <div className="id-card-title">
           {intl.get("settings.account.id-card-photo")}
@@ -351,19 +353,19 @@ export default class extends React.Component {
                 <img
                   src={id_card_front}
                   alt="id-card-front"
-                  style={{ height: "100%" }}
+                // style={{ height: "100%" }}
                 />
               </div>
             ) : (
-              <div className="upload-image-preview">
-                <div>
-                  <img src="../../../assets/img/camera.svg" alt="camera" />
-                  <p className="ant-upload-text">
-                    {intl.get("settings.account.id-card-front.placeholder")}
-                  </p>
+                <div className="upload-image-preview">
+                  <div>
+                    <img src="../../../assets/img/camera.svg" alt="camera" />
+                    <p className="ant-upload-text">
+                      {intl.get("settings.account.id-card-front.placeholder")}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </Upload>
           <Upload
             accept="image/*"
@@ -376,23 +378,23 @@ export default class extends React.Component {
                 <img
                   src={id_card_back}
                   alt="id-card-back"
-                  style={{ height: "100%" }}
+                // style={{ height: "100%" }}
                 />
               </div>
             ) : (
-              <div className="upload-image-preview">
-                <div>
-                  <img src="../../../assets/img/camera.svg" alt="camera" />
-                  <p className="ant-upload-text">
-                    {intl.get("settings.account.id-card-back.placeholder")}
-                  </p>
+                <div className="upload-image-preview">
+                  <div>
+                    <img src="../../../assets/img/camera.svg" alt="camera" />
+                    <p className="ant-upload-text">
+                      {intl.get("settings.account.id-card-back.placeholder")}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </Upload>
         </div>
 
-        <WhiteSpace size="xl" />
+        {/* <WhiteSpace size="xl" /> */}
 
         <List>
           <InputItem
@@ -417,7 +419,7 @@ export default class extends React.Component {
               initialValue: [userInfo["nationality"]] || undefined,
             })}
           >
-            <List.Item arrow="horizontal">
+            <List.Item arrow="horizontal" className="select-item">
               {intl.get("settings.account.nationality")}
             </List.Item>
           </Picker>
@@ -432,7 +434,7 @@ export default class extends React.Component {
               initialValue: [userInfo["country_of_residence"]] || undefined,
             })}
           >
-            <List.Item arrow="horizontal">
+            <List.Item arrow="horizontal" className="select-item">
               {intl.get("settings.account.country-of-residence")}
             </List.Item>
           </Picker>
@@ -446,7 +448,7 @@ export default class extends React.Component {
           </InputItem>
         </List>
 
-        <WhiteSpace size="xl" />
+        {/* <WhiteSpace size="xl" /> */}
 
         <List>
           <InputItem
@@ -472,7 +474,7 @@ export default class extends React.Component {
           </InputItem>
         </List>
 
-        <WhiteSpace size="xl" />
+        {/* <WhiteSpace size="xl" /> */}
 
         <List>
           <InputItem
@@ -489,7 +491,7 @@ export default class extends React.Component {
           </InputItem>
         </List>
 
-        <WhiteSpace size="xl" />
+        {/* <WhiteSpace size="xl" /> */}
       </Page>
     );
   }

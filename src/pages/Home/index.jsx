@@ -46,9 +46,9 @@ export default class extends React.Component {
       <Page name="home">
         <Views tabs className="safe-areas">
           <View id="view-market" name="行情" tabActive tab url="/market/" />
-          <View id="view-chart" name="图表" tab url="/chart/" />
+          {/* <View id="view-chart" name="图表" tab url="/chart/" /> */}
           <View id="view-trade" name="交易" tab url="/trade/" />
-          <View id="view-history" name="历史" tab url="/history/" />
+          {/* <View id="view-history" name="历史" tab url="/history/" /> */}
           <View id="view-settings" name="设置" tab url="/settings/" />
           <Toolbar tabbar labels bottom className="app-tabbar">
             <Link
@@ -57,12 +57,12 @@ export default class extends React.Component {
               icon="market-icon"
               text="行情"
             />
-            <Link
+            {/* <Link
               tabLink="#view-chart"
               icon="chart-icon"
               text="图表"
               onClick={this.updateLastestSymbol}
-            />
+            /> */}
             <Link
               tabLink="#view-trade"
               icon="trade-icon"
@@ -74,7 +74,7 @@ export default class extends React.Component {
                 this.$event.emit("refresh-trade-page");
               }}
             />
-            <Link
+            {/* <Link
               tabLink="#view-history"
               icon="history-icon"
               text="历史"
@@ -84,7 +84,7 @@ export default class extends React.Component {
               onClick={() => {
                 this.$event.emit("refresh-history-page");
               }}
-            />
+            /> */}
             <Link
               tabLink="#view-settings"
               icon="settings-icon"

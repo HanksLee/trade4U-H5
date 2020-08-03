@@ -4,22 +4,23 @@ import utils from "utils";
 import {
   List,
   InputItem,
-  DatePicker,
-  WhiteSpace,
-  Picker,
   Toast,
 } from "antd-mobile";
-import { Upload } from "antd";
 import { createForm } from "rc-form";
-// import { RcFile } from "antd/lib/upload";
 import { Page, Navbar, NavRight } from "framework7-react";
 import api from "services";
-import moment from "moment";
 import "./index.scss";
 
 @createForm()
 export default class extends React.Component {
-  state = {};
+  state = {
+    smsConfirm: false,
+  };
+
+
+  sendSms = () => {
+    this.setState({ smsConfirm: true })
+  }
 
   handleSubmit = async (evt) => {
     this.props.form.validateFields(async (err, values) => {
@@ -47,8 +48,67 @@ export default class extends React.Component {
     });
   };
 
-  render() {
+  resetPwdComponent = () => {
     const { getFieldProps } = this.props.form;
+    return (
+      <List>
+        <InputItem
+          {...getFieldProps("password", {
+            initialValue: "",
+          })}
+          type="password"
+          placeholder={intl.get("settings.password.password.placeholder")}
+        >
+          {intl.get("settings.password.password")}
+        </InputItem>
+        <InputItem
+          {...getFieldProps("checkPassword", {
+            initialValue: "",
+          })}
+          type="password"
+          placeholder={intl.get(
+            "settings.password.check-password.placeholder"
+          )}
+        >
+          {intl.get("settings.password.check-password")}
+        </InputItem>
+      </List>
+    )
+  }
+
+  sendSmsComponent = () => {
+    const { getFieldProps } = this.props.form;
+    return (
+      <List>
+        <InputItem
+          {...getFieldProps("oldPassword", {
+            initialValue: "",
+          })}
+          type="password"
+          placeholder={"输入旧密码"}
+        >
+          {"旧密码"}
+        </InputItem>
+        <InputItem
+          {...getFieldProps("SMS", {
+            initialValue: "",
+          })}
+          type="text"
+          placeholder={"输入简讯验证码"}
+          className="sms-input"
+        >
+          {"简讯验证码"}
+          <div className="sms-btn">发送简讯验证码</div>
+          <div className="sms-prompt">60秒后重新发送</div>
+        </InputItem>
+
+        <div class="sms-error">*验证码已过期</div>
+      </List>
+    )
+  }
+
+  render() {
+    const { smsConfirm } = this.state;
     return (
       <Page>
         <Navbar
@@ -57,31 +117,11 @@ export default class extends React.Component {
           class="text-color-white"
         >
           <NavRight>
-            <div onClick={this.handleSubmit}>確認</div>
+            {!smsConfirm ? <div onClick={this.sendSms}>下一步</div> : <div onClick={this.handleSubmit}></div>}
+
           </NavRight>
         </Navbar>
-        <List>
-          <InputItem
-            {...getFieldProps("password", {
-              initialValue: "",
-            })}
-            type="password"
-            placeholder={intl.get("settings.password.password.placeholder")}
-          >
-            {intl.get("settings.password.password")}
-          </InputItem>
-          <InputItem
-            {...getFieldProps("checkPassword", {
-              initialValue: "",
-            })}
-            type="password"
-            placeholder={intl.get(
-              "settings.password.check-password.placeholder"
-            )}
-          >
-            {intl.get("settings.password.check-password")}
-          </InputItem>
-        </List>
+        {!smsConfirm ? this.sendSmsComponent() : this.resetPwdComponent()}
       </Page>
     );
   }

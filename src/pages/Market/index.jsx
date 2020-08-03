@@ -189,19 +189,25 @@ export default class extends React.Component {
 
     return (
       <Page name="market">
-        <Navbar>
+        <Navbar className="market-navbar">
           <NavLeft>
-            <img className="nav-cion" alt="edit" src={EditIcon} onClick={this.navigateToManagePage} />
+            {/* <img className="nav-icon" alt="edit" src={EditIcon} onClick={this.navigateToManagePage} /> */}
+            <span className="market-navbar-item active">自選</span>
+            <span className="market-navbar-item">港股</span>
+            <span className="market-navbar-item">美股</span>
+            <span className="market-navbar-item">滬深</span>
+            <span className="market-navbar-item">滬深</span>
+            <span className="market-navbar-item">滬深</span>
           </NavLeft>
-          <NavTitle>行情</NavTitle>
+          {/* <NavTitle>行情</NavTitle> */}
           <NavRight>
-            <img className="nav-cion" alt="add" src={AddIcon} onClick={this.navigateToSymbolTypePage} />
+            <img className="nav-icon" alt="edit" src={EditIcon} onClick={this.navigateToManagePage} />
+            <img className="nav-icon" alt="add" src={AddIcon} onClick={this.navigateToSymbolTypePage} />
           </NavRight>
         </Navbar>
         <div className="self-select-table">
           <div className="self-select-table-header">
             <div>品种</div>
-            <div>代码</div>
             <div>卖出价</div>
             <div>买入价</div>
           </div>
@@ -210,19 +216,7 @@ export default class extends React.Component {
               selfSelectSymbolList.map(item => {
                 return (
                   <div className="self-select-tr" key={item.symbol} data-id={item.id}>
-                    <div>
-                      <div className="self-select-time">
-                        {
-                          item.product_details.timestamp ?
-                            moment(Number(item.product_details.timestamp) * 1000).format('HH:mm:ss')
-                            : '--:--:--'
-                        }
-                      </div>
-                      <div className="self-select-name">{item.symbol_display.name}</div>
-                      <div className="self-select-spread">{item.symbol_display.spread}</div>
-                    </div>
-                    <div className="self-select-code">{item.symbol_display.product_display.code}</div>
-                    <div>
+                    {/* <div>
                       <div className="self-select-buy-sell-block self-select-buy-block">
                         {item.product_details.buy ? this.addSpecialStyle(item.product_details.sell) : '--'}
                       </div>
@@ -236,6 +230,21 @@ export default class extends React.Component {
                       </div>
                       <div className="self-select-high">
                         最高:{item.product_details.high ? item.product_details.high : '--'}
+                      </div>
+                    </div> */}
+                    <div className="item-main-info">
+                      <div className="self-select-name">{item.symbol_display.name}</div>
+                      <div className="self-select-buy-sell-block self-select-buy-block p-down">
+                        {item.product_details?.buy}
+                      </div>
+                      <div className="self-select-buy-sell-block self-select-sell-block p-up">
+                        {item.product_details?.sell}
+                      </div>
+                    </div>
+                    <div className="item-sub-info">
+                      <div className="self-select-code">{item.symbol_display.product_display.code}</div>
+                      <div className="self-select-spread">
+                        點差:{item.symbol_display.spread}
                       </div>
                     </div>
                   </div>
