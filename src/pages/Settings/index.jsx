@@ -26,7 +26,7 @@ export default class extends React.Component {
     confirm({
       title: '提示',
       content: '您確定要登出嗎',
-      className: "logout-modal",
+      className: "trade-modal",
       centered: true,
       cancelText: "取消",
       okText: "确认",
@@ -69,14 +69,14 @@ export default class extends React.Component {
             <List>
               <ListItem
                 title={"入金"}
-                link={`/settings/deposit`}
+                link={`/settings/withdraw`}
               >
               </ListItem>
             </List>
             <List className="btn-reverse">
               <ListItem
                 title={"出金"}
-                link={`/settings/withdraw`}
+                link={`/settings/deposit`}
               >
               </ListItem>
             </List>

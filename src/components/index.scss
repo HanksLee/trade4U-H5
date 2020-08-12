@@ -1,4 +1,6 @@
 .app-tabbar {
+  backdrop-filter: unset !important;
+
   .tab-link {
     padding-bottom: 2px !important;
   }
@@ -30,6 +32,14 @@
 
   .settings-icon {
     background-image: url('../static/icons/settings-icon.svg');
+  }
+
+  .self-select-icon {
+    background-image: url('../static/icons/self-select-icon.svg');
+  }
+
+  .self-select-icon-active {
+    background-image: url('../static/icons/self-select-icon-active.svg');
   }
 
   .tab-link-active {

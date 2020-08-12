@@ -1,8 +1,10 @@
+* {
+  // outline: 1px solid red;
+}
+
 .trade-detail {
-
-
   .trade-detail-title {
-    background-color: #FFF;
+    background-color: #fff;
     font-size: r(17);
     text-align: center;
     font-weight: bold;
@@ -41,9 +43,8 @@
     }
   }
 
-
   .trade-detail-type {
-    background-color: #FFF;
+    background-color: #fff;
     height: 0;
     overflow: hidden;
     transition: height .3s;
@@ -74,6 +75,7 @@
     color: white;
     font-size: r(17);
     text-align: center;
+
     .trade-detail-action {
       padding: r(12) 0;
     }
@@ -123,5 +125,280 @@
       }
     }
   }
+}
 
+.trade-detail-stock-container {
+  color: #44d7b6;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  position: relative;
+
+  .now-stock {
+    font-size: 36px;
+  }
+
+  .arrow,
+  .spread-stock {
+    display: flex;
+    align-content: center;
+  }
+
+  .arrow {
+    margin-left: 6px;
+    margin-right: 10px;
+  }
+
+  .spread-stock {
+    font-size: 12px;
+    flex-wrap: wrap;
+
+    p {
+      margin: 0;
+      flex-basis: 100%;
+    }
+  }
+
+  .detail-btn {
+    position: absolute;
+    font-size: 10px;
+    padding: 3px 10px;
+    color: #f2e205;
+    border-radius: 4px;
+    border: 1px solid rgba(242, 226, 5, 1);
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.trade-detail-price {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px;
+  margin-bottom: 20px;
+
+  .price-item {
+    flex-basis: 40%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .price-item-title {
+      font-size: 12px;
+      color: #838d9e;
+    }
+
+    .price-item-content {
+      font-size: 16px;
+    }
+  }
+}
+
+.trade-detail-more-info-container {
+  max-height: 0;
+  overflow: hidden;
+  margin-bottom: 20px;
+  transition: max-height 0.5s;
+
+  &.show {
+    max-height: 100%;
+  }
+
+  .trade-detail-more-info-contract {
+    margin-bottom: 10px;
+    padding: 10px 16px;
+    border-top: 1px solid #2e3b55;
+    border-bottom: 1px solid #2e3b55;
+
+    .trade-detail-more-info-contract-title {
+      font-size: 16px;
+      color: #fff;
+      margin-bottom: 5px;
+    }
+
+    .trade-detail-more-info-contract-content {
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+
+      div {
+        padding: 5px 0;
+        flex-basis: 40%;
+        display: flex;
+        justify-content: space-between;
+
+        span:nth-child(1) {
+          color: #838d9e;
+        }
+
+        span:nth-child(2) {
+          color: #ffffff;
+        }
+      }
+    }
+  }
+
+  .trade-detail-more-info-news {
+    .trade-detail-more-info-news-tabs {
+      padding-left: 16px;
+      font-size: 16px;
+      color: #f2e205;
+
+      p {
+        display: inline-block;
+        margin-bottom: 0;
+        border-bottom: 1px solid #f2e205;
+      }
+    }
+
+    .trade-detail-more-info-news-content {
+      border-top: 1px solid #2e3b55;
+      border-bottom: 1px solid #2e3b55;
+
+      > div + div {
+        border-top: 1px solid #2e3b55;
+      }
+
+      div {
+        padding: 10px 16px;
+        position: relative;
+
+        > p:nth-child(1) {
+          color: #ffffff;
+        }
+
+        > p:nth-child(2) {
+          color: #838d9e;
+          margin-bottom: 0;
+        }
+
+        > span {
+          width: 7px;
+          height: 7px;
+          background: rgba(233, 74, 57, 1);
+          border-radius: 50%;
+          position: absolute;
+          right: 13px;
+          top: 50%;
+          transform: translateX(-50%);
+        }
+      }
+    }
+  }
+}
+
+.trade-detail-input-container {
+  padding: 0 16px;
+  font-size: 14px;
+
+  .trade-detail-input-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+
+    .trade-detail-input-item-title {
+      color: #fff;
+      flex-basis: 24.2%;
+      line-height: 30px;
+    }
+
+    .trade-detail-input-item-btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      flex-basis: 75.8%;
+      justify-content: space-between;
+
+      .trade-detail-input-item-text,
+      .trade-detail-input-item-btn {
+        color: #838d9e;
+        padding: 3px 0;
+      }
+
+      .trade-detail-input-item-btn {
+        width: 120px;
+        border-radius: 4px;
+        border: 1px solid #838d9e;
+        text-align: center;
+      }
+
+      .btn-active {
+        color: #f2e205;
+        border: 1px solid #f2e205;
+      }
+
+      .trade-detail-input-item-btn + .trade-detail-input-item-btn {
+        // margin-left: 20px;
+      }
+
+      .trade-detail-input-item-btn:nth-child(n+3) {
+        margin-top: 20px;
+      }
+
+      .trade-detail-input-item-add-btn,
+      .trade-detail-input-item-less-btn,
+      .trade-detail-input-item-input {
+        line-height: 30px;
+      }
+
+      .trade-detail-input-item-add-btn,
+      .trade-detail-input-item-less-btn {
+        width: 50px;
+        text-align: center;
+        background: rgba(131, 141, 158, 1);
+        color: #fff;
+      }
+
+      .trade-detail-input-item-less-btn {
+        border-radius: 4px 0px 0px 4px;
+      }
+
+      .trade-detail-input-item-add-btn {
+        border-radius: 0px 4px 4px 0px;
+      }
+
+      .trade-detail-input-item-input {
+        color: #f2e205;
+        width: calc(100% - 100px);
+        border-top: 1px solid #838d9e;
+        border-bottom: 1px solid #838d9e;
+        line-height: 28px;
+        text-align: center;
+
+        input {
+          line-height: inherit;
+          text-align: center;
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+.trade-detail-submit-btn {
+  width: 160px;
+  margin: auto;
+  line-height: 30px;
+  // background: rgba(250, 100, 0, 1);
+  background: #f2e205;
+  border-radius: 4px;
+  color: #21212b;
+  text-align: center;
+  font-weight: bold;
+
+  &.add {
+    background: #f2e205;
+  }
+
+  &.modify {
+    background: #fa6400;
+  }
+
+  &.reject {
+    background-color: #6d7278 !important;
+    color: #21212b !important;
+  }
 }

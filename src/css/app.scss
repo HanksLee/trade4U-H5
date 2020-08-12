@@ -38,5 +38,100 @@ $primary: #21212b;
   background-color: #21212b;
 }
 
+.navbar {
+  .navbar-inner {
+    justify-content: space-between;
+
+    a.icon-only {
+      padding: 0;
+      width: auto;
+    }
+
+    .left {
+      min-width: 24px;
+    }
+
+    .right {
+      margin-left: unset;
+      min-width: 30px;
+      justify-content: flex-end;
+    }
+  }
+}
+
+.error-msg {
+  height: var(--f7-input-height);
+  line-height: var(--f7-input-height);
+  text-align: center;
+  font-size: 12px;
+  color: #ff3b30;
+}
+
+.trade-modal.ant-modal-confirm {
+  max-width: calc(100vw - 76px);
+
+  &.success-modal {
+    .ant-modal-confirm-body {
+      .anticon {
+        display: none;
+      }
+
+      .ant-modal-confirm-content {
+        margin-left: unset;
+      }
+    }
+
+    .ant-modal-confirm-btns {
+      justify-content: center;
+    }
+  }
+
+  .ant-modal-content {
+    border-radius: 4px;
+  }
+
+  .ant-modal-body {
+    padding: 26px 16px;
+
+    .ant-modal-confirm-body {
+      text-align: center;
+    }
+
+    .ant-modal-confirm-title,
+    .ant-modal-confirm-content {
+      color: #838d9e;
+    }
+
+    .ant-modal-confirm-content {
+      margin-top: 22px;
+    }
+  }
+
+  .ant-modal-confirm-btns {
+    float: none;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+
+    > button {
+      width: 100px;
+      line-height: 28px;
+      padding: 0;
+
+      &:nth-child(1) {
+        background-color: rgba(242, 226, 5, 1);
+        border: 1px solid rgba(242, 226, 5, 1);
+        color: #21212b;
+      }
+
+      &:nth-child(2) {
+        background-color: transparent;
+        border: 1px solid #838d9e;
+        color: #838d9e;
+      }
+    }
+  }
+}
+
 /* Your app custom styles here */
 @import "./reset", "./font", "./base", "./common";

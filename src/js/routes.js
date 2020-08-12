@@ -115,11 +115,18 @@ var routes = [
         /* webpackChunkName: 'trade-products-page' */ "../pages/TradeProducts/index.jsx"
       ),
   },
+  // {
+  //   path: "/trade/:id/",
+  //   asyncComponent: () =>
+  //     import(
+  //       /* webpackChunkName: 'trade-detail-page' */ "../pages/TradeDetail/index.jsx"
+  //     ),
+  // },
   {
     path: "/trade/:id/",
     asyncComponent: () =>
       import(
-        /* webpackChunkName: 'trade-detail-page' */ "../pages/TradeDetail/index.jsx"
+        /* webpackChunkName: 'trade-detail-page' */ "../pages/TradeDetail/new-index.jsx"
       ),
   },
   {

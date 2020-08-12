@@ -46,6 +46,14 @@
   }
 }
 
+.transistion-text {
+  font-size: 10px;
+  padding: 3px 15px;
+  color: #f2e205;
+  border-radius: 4px;
+  border: 1px solid rgba(242, 226, 5, 1);
+}
+
 .circle-add-icon {
   width: 22px;
   height: 22px;
@@ -154,6 +162,20 @@
     .self-select-code {
       color: #8c8c8c;
       font-size: 10px;
+
+      .symbol-type-code {
+        font-size: 6px;
+        color: #21212b;
+        padding: 1px 3px;
+        background-color: #0091ff;
+        margin-right: 6px;
+        border-radius: 1px;
+      }
+
+      .symbol-code {
+        font-size: 10px;
+        color: #838d9e;
+      }
     }
 
     .self-select-buy-sell-block {
@@ -208,4 +230,108 @@
 
 .nav-icon {
   padding: 10px 5px;
+}
+
+.hot-stock-market {
+  font-size: 14px;
+  color: #eeeeee;
+  padding-left: 16px;
+  // margin-bottom: 10px;
+}
+
+.stock-container {
+  color: #44d7b6;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+  .now-stock {
+    font-size: 36px;
+  }
+
+  .arrow,
+  .spread-stock {
+    display: flex;
+    align-content: center;
+  }
+
+  .arrow {
+    margin-left: 6px;
+    margin-right: 10px;
+  }
+
+  .spread-stock {
+    font-size: 12px;
+    flex-wrap: wrap;
+
+    p {
+      margin: 0;
+      flex-basis: 100%;
+    }
+  }
+}
+
+.switch-chart {
+  line-height: 38px;
+  color: #838d9e;
+  text-align: center;
+
+  span {
+    display: inline-block;
+    padding: 0 10px;
+
+    &.active {
+      color: #f2fd06;
+    }
+  }
+}
+
+.stock-detail {
+  padding: 0 16px;
+  font-size: 10px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  div {
+    padding: 5px 0;
+    flex-basis: 40%;
+    display: flex;
+    justify-content: space-between;
+
+    span:nth-child(1) {
+      color: #838d9e;
+    }
+
+    span:nth-child(2) {
+      color: #ffffff;
+    }
+  }
+}
+
+.stock-tabbar {
+  .toolbar-inner {
+    overflow: unset;
+  }
+
+  .tab-link-active {
+    span {
+      color: rgba(242, 226, 5, 1);
+    }
+  }
+
+  .tabbar-label {
+    display: flex;
+    flex-basis: 40%;
+  }
+
+  .order-btn {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 25px;
+    z-index: 100;
+  }
 }

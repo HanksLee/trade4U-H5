@@ -20,7 +20,7 @@ export default class extends React.Component {
         <Navbar
           title={"资金明细"}
           backLink="Back"
-          class="text-color-white"
+          className="text-color-white"
         >
           <NavRight>
             {/* <div onClick={this.handleSubmit}>確認</div> */}

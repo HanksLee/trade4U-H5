@@ -9,33 +9,99 @@ export const FORMAT_TIME = 'YYYY.MM.DD HH:mm';
 
 export const UPLOAD_URL = "https://upyun.com";
 
+
+
+// export const tradeTypeOptions = [
+//   {
+//     id: '1',
+//     name: '立即执行',
+//     color: '',
+//   },
+//   {
+//     id: '2',
+//     name: 'Buy Limit',
+//     color: 'p-up',
+//   },
+//   {
+//     id: '3',
+//     name: 'Sell Limit',
+//     color: 'p-down',
+//   },
+//   {
+//     id: '4',
+//     name: 'Buy Stop',
+//     color: 'p-up',
+//   },
+//   {
+//     id: '5',
+//     name: 'Sell Stop',
+//     color: 'p-down',
+//   }
+// ];
+
 export const tradeTypeOptions = [
   {
-    id: '1',
+    id: 'instance',
     name: '立即执行',
-    color: '',
   },
   {
-    id: '2',
+    id: 'future',
+    name: '挂单',
+  },
+];
+
+export const executeOptions = [
+  {
+    id: 0,
+    name: '买入',
+  },
+  {
+    id: 1,
+    name: '卖出',
+  },
+];
+
+export const pendingOrderOptions = [
+  {
+    id: 2,
     name: 'Buy Limit',
-    color: 'p-up',
   },
   {
-    id: '3',
+    id: 3,
     name: 'Sell Limit',
-    color: 'p-down',
   },
   {
-    id: '4',
+    id: 4,
     name: 'Buy Stop',
-    color: 'p-up',
   },
   {
-    id: '5',
+    id: 5,
     name: 'Sell Stop',
-    color: 'p-down',
   }
 ];
+
+export const tradeTabOptions = [
+  {
+    name: '持仓',
+  },
+  {
+    name: '挂单',
+  },
+  {
+    name: '历史',
+  }
+];
+
+export const executeMotionMap = [
+  {
+    id: 'delete',
+    name: '平倉',
+  },
+  {
+    id: 'update',
+    name: '修改',
+  },
+]
 
 export const tradeActionMap = {
   0: 'buy',

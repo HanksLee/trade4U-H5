@@ -4,14 +4,17 @@ import utils from "utils";
 import {
   List,
   InputItem,
+  DatePicker,
+  WhiteSpace,
+  Picker,
   Toast,
 } from "antd-mobile";
+import { Select, Form, Input, message, Button } from "antd";
 import { createForm } from "rc-form";
-import { Select } from 'antd';
+// import { RcFile } from "antd/lib/upload";
 import { Page, Navbar, NavRight } from "framework7-react";
 import api from "services";
 import moment from "moment";
-import 'antd/dist/antd.css';
 import "./index.scss";
 
 const country = [
@@ -25,118 +28,166 @@ const country = [
   },
 ];
 
-@createForm()
 export default class extends React.Component {
+  formRef = React.createRef();
   state = {
-    userInfo: [],
-    emailError: false,
-    idCardError: false,
-    mobileError: false,
-    postalError: false,
+    withdrawableBalance: 0
   };
+
+
 
   componentDidMount() {
-    this.getList();
+    this.getWithdrawableBalance();
   }
 
-  getList = async () => {
-    const res = await api.setting.getAccountInfo();
-    if (res.status === 200) {
-      this.setState({
-        userInfo: res.data,
-        id_card_front: res.data.id_card_front,
-        id_card_back: res.data.id_card_back,
-      });
-    }
+  getWithdrawableBalance = async () => {
+    const res = await api.setting.getWithdrawableBalance();
+    this.setState({
+      withdrawableBalance: res.data.withdrawable_balance,
+    });
   };
+
 
   goBack = () => {
     this.props.history.goBack();
   };
 
-
-  handleSubmit = async (evt) => {
-    // const { id_card_back, id_card_front } = this.state;
-    // this.props.form.validateFields(async (err, values) => {
-    //   if (!err) {
-    //     let payload = {
-    //       last_name: values.last_name,
-    //       first_name: values.first_name,
-    //       birth:
-    //         values.birth == "" ? "" : moment(values.birth).format("YYYY-MM-DD"),
-    //       id_card: values.id_card,
-    //       mobile: values.mobile,
-    //       nationality:
-    //         values.nationality == undefined
-    //           ? ""
-    //           : values.nationality.toString(),
-    //       country_of_residence:
-    //         values.country_of_residence == undefined
-    //           ? ""
-    //           : values.country_of_residence.toString(),
-    //       street: values.street,
-    //       city: values.city,
-    //       postal: values.postal,
-    //       email: values.email,
-    //       id_card_back,
-    //       id_card_front,
-    //       inspect_status: 1,
-    //     };
-
-    //     const res = await api.setting.updateAccountInfo(payload);
-
-    //     if (res.status === 200) {
-    //       Toast.success("支付成功", 2);
-    //     }
-    //   } else {
-    //     Toast.fail("格式有误，请再做检查", 2);
-    //   }
-    // });
-    Toast.success("申請成功", 2);
+  withdraw = async values => {
+    const res = await api.setting.withdraw(values);
+    if (res.status == 201) {
+      this.getWithdrawableBalance();
+      Toast.success("申请成功", 2);
+      this.resetForm();
+    }
   };
 
+  resetForm = () => {
+    this.formRef.current.resetFields();
+  };
+
+
   render() {
-    const { getFieldProps } = this.props.form;
-    const { userInfo } = this.state
-    const { Option } = Select;
+    // const { getFieldProps } = this.props.form;
+    const { withdrawableBalance } = this.state
     return (
       <Page>
         <Navbar
-          title={"入金"}
+          title={"出金"}
           backLink="Back"
           class="text-color-white"
         >
           <NavRight></NavRight>
         </Navbar>
-        <div className="withdraw-item-title">淨資產</div>
-        <div className="remain-fund">5000.00</div>
-        <div className="select-title">支付管道</div>
-        <Select className="select-option withdraw-select"
-          placeholder="選擇支付管道"
+        <div className="deposit-item-title">可提馀额</div>
+        <div className="remain-fund">{withdrawableBalance}</div>
+        <Form
+          onFinish={this.withdraw}
+          hideRequiredMark={true}
+          ref={this.formRef}
         >
-          <Option value={"zh-CN"}>
-            <span>{intl.get("settings.lang.chinese")}</span>
-          </Option>
-          <Option value={"en-US"}>
-            <span>{intl.get("settings.lang.english")}</span>
-          </Option>
-        </Select>
-        <List>
-          <InputItem
-            {...getFieldProps("name", {
-              // initialValue: userInfo["name"] || "",
-              initialValue: "",
-            })}
-            placeholder={"必填"}
-          >
-            {"金額 *提示：手續費0%，入金上限 200,000/ 下限 1000"}
-          </InputItem>
-        </List>
-        <div className="withdraw-btn-container">
-          <div className="withdraw-btn">清除資料</div>
-          <div className="withdraw-btn" onClick={this.handleSubmit}>下一步</div>
-        </div>
-      </Page>
+          <List>
+            <Form.Item
+              name="account_name"
+              label="姓名"
+              rules={[{ required: true, message: "请输入姓名", }]}
+            >
+              <Input placeholder="输入姓名" />
+            </Form.Item>
+
+            {/* <div className="select-title withdraw-select-title">{intl.get("settings.account.nationality")}</div>
+            <Select className="select-option withdraw-select-option"
+              defaultValue={userInfo.nationality || undefined}
+              onChange={this.handleNationalityChange}
+              placeholder="选择国籍"
+            >
+              {country.map((item) => {
+                return (
+                  <Option value={item.value}>
+                    <span>{item.label}</span>
+                  </Option>
+                )
+              })}
+            </Select> */}
+            {/* <div className="select-title withdraw-select-title">{intl.get("settings.account.country-of-residence")}</div>
+            <Select className="select-option deposit-select-option"
+              defaultValue={userInfo.country_of_residence || undefined}
+              onChange={this.handleCountryOfResidenceChange}
+              placeholder="选择居住国"
+            >
+              {country.map((item) => {
+                return (
+                  <Option value={item.value}>
+                    <span>{item.label}</span>
+                  </Option>
+                )
+              })}
+            </Select> */}
+            <Form.Item
+              name="province"
+              label="省份"
+              rules={[{ required: true, message: "请输入省份", }]}
+            >
+              <Input placeholder="输入省份" />
+            </Form.Item>
+            <Form.Item
+              name="city"
+              label="城市"
+              rules={[{ required: true, message: "请输入城市", }]}
+            >
+              <Input placeholder="输入城市" />
+            </Form.Item>
+            <Form.Item
+              name="bank"
+              label="开户行"
+              rules={[{ required: true, message: "请输入开户行", }]}
+            >
+              <Input placeholder="输入开户行" />
+            </Form.Item>
+            <Form.Item
+              name="sub_branch"
+              label="支行"
+              rules={[{ required: true, message: "请输入支行", }]}
+            >
+              <Input placeholder="输入支行" />
+            </Form.Item>
+            <Form.Item
+              name="card_number"
+              label="银行卡号"
+              rules={[{ required: true, message: "请输入银行卡号", }]}
+            >
+              <Input placeholder="输入银行卡号" />
+            </Form.Item>
+            <Form.Item
+              name="expect_amount"
+              label="提取金额"
+              rules={[{ required: true, message: "请输入提取金额", }]}
+            >
+              <Input placeholder="输入提取金额" />
+            </Form.Item>
+            {/* <InputItem
+              {...getFieldProps("remark", {
+                initialValue: userInfo["remark"] || "",
+              })}
+              placeholder={"請输入备注"}
+            >
+              {"备注"}
+            </InputItem> */}
+
+
+          </List >
+          <div className="deposit-remind">
+            <p>溫馨提示:</p>
+            <p>1.出金審核時間為：週一至週五 09:00-17:00</p>
+            <p>2.提款T+1到帳，法定節假日或銀行特殊原因除外</p>
+            <p>3.禁止洗錢，信用卡套現，虛假交易等行為，一經發現並確認將終止該帳戶的使用</p>
+          </div>
+          <div className="deposit-btn-container">
+            <Button className="deposit-btn" onClick={this.resetForm}>清除資料</Button>
+            {/* <Button className="deposit-btn" htmlType="submit">下一步</Button> */}
+            <Button className="deposit-btn" htmlType="submit">提取</Button>
+          </div>
+        </Form>
+      </Page >
     );
   }
 }

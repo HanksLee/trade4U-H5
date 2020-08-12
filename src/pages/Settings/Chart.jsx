@@ -35,7 +35,7 @@ export default class extends React.Component {
         <Navbar
           title={intl.get("settings.lang")}
           backLink="Back"
-          class="text-color-white"
+          className="text-color-white"
         >
           <NavRight>
             {/* <div onClick={this.handleSubmit}>确认</div> */}

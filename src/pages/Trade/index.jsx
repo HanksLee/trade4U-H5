@@ -27,10 +27,11 @@ import moment from "moment";
 import { inject, observer } from "mobx-react";
 import "./index.scss";
 import ws from "utils/ws";
-import { tradeActionMap } from "constant";
+import { tradeActionMap, tradeTabOptions } from "constant";
 import utils from "utils";
 import cloneDeep from "lodash/cloneDeep";
 import Dom7 from "dom7";
+import TradeList from "./TradeList";
 
 const $$ = Dom7;
 
@@ -40,11 +41,13 @@ export default class extends BaseReact {
   wsConnect = null;
   $event = null;
   state = {
-    title: "交易",
+    title: "持仓盈亏",
     tapIndex: -1,
     // currentTrade: null,
     loading: false,
     effect: null,
+    activeItem: false,
+    currentTradeTab: tradeTabOptions[0].name,
     items: [
       {
         title: "Yellow Submarine",
@@ -78,8 +81,8 @@ export default class extends BaseReact {
 
   componentDidMount() {
     this.initEvents();
-    this.initData();
-    this.connectWebsocket();
+    // this.initData();
+    // this.connectWebsocket();
   }
 
   initEvents = () => {
@@ -222,7 +225,7 @@ export default class extends BaseReact {
     });
     this.$f7.$(".trade-list-in-transaction").on("taphold", (evt) => {
       const { tradeList, futureTradeList } = this.props.trade;
-      console.log('evt', evt.target);
+      // console.log('evt', evt.target);
       const dom = this.$f7.$(evt.target).parents(".media-item")[0];
       if (dom != null) {
         const currentTrade =
@@ -245,7 +248,7 @@ export default class extends BaseReact {
 
     this.$f7.$(".trade-list-pending").on("taphold", (evt) => {
       const { tradeList, futureTradeList } = this.props.trade;
-      console.log('evt', evt.target);
+      // console.log('evt', evt.target);
 
       const dom = this.$f7.$(evt.target).parents(".media-item")[0];
       if (dom != null) {
@@ -284,25 +287,28 @@ export default class extends BaseReact {
             // free_margin: 1014399.22, // 可用预付款
             // margin_level: 18017848.22, // 预付款比例
           };
-          const res2 = await Promise.all([
-            this.$api.trade.getTradeList({
-              params: {
-                status: "in_transaction",
-              },
-            }),
-            this.$api.trade.getTradeList({
-              params: {
-                status: "pending",
-              },
-            }),
-          ]);
+          // const res2 = await Promise.all([
+          //   this.$api.trade.getTradeList({
+          //     params: {
+          //       status: "in_transaction",
+          //     },
+          //   }),
+          //   this.$api.trade.getTradeList({
+          //     params: {
+          //       status: "pending",
+          //     },
+          //   }),
+          // ]);
 
-          const list = res2.map((item) => item.data);
-          this.props.trade.setTradeList(list[0]);
-          this.props.trade.setTradeList(list[1], "future");
+          // const list = res2.map((item) => item.data);
+          // this.props.trade.setTradeList(list[0]);
+          // this.props.trade.setTradeList(list[1], "future");
 
           this.updateTradeInfo(tradeInfo);
           this.bindEvents();
+
+          const resFinish = await this.$api.trade.getFinishTradeList({});
+          this.props.trade.setFinishTradeInfo(resFinish.data.total_data);
           // console.log('list', $$('.trade-data'));
           //
           // $$('.trade-data').forEach(dom => {
@@ -325,6 +331,20 @@ export default class extends BaseReact {
     );
   };
 
+  switchTradeTabs = (name) => {
+    this.setState({ currentTradeTab: name })
+    if (name === '历史') {
+      this.setState({ title: '净盈亏' })
+    } else {
+      this.setState({ title: '持仓盈亏' })
+    }
+  }
+
+  switchActiveItem = () => {
+    const { activeItem } = this.state
+    this.setState({ activeItem: !activeItem })
+  }
+
   renderTradeList = (tradeList, type) => {
     const { tapIndex, loading } = this.state;
 
@@ -338,12 +358,12 @@ export default class extends BaseReact {
           paddingBottom: type == "order" ? 0 : 80,
         }}
       >
-        {tradeList.length > 0 &&
+        {/* {tradeList.length > 0 &&
           (type == "order" ? (
             <div className={"trade-data-title"}>持仓</div>
           ) : (
               <div className={"trade-data-title"}>挂单</div>
-            ))}
+            ))} */}
         {tradeList.map((item, index) => (
           <ListItem
             // dataItem={item}
@@ -509,85 +529,123 @@ export default class extends BaseReact {
   };
 
   render() {
-    const { title, tapIndex, loading } = this.state;
+    const { title, tapIndex, loading, currentTradeTab, activeItem } = this.state;
     const {
       tradeInfo,
       tradeList,
       futureTradeList,
       computedTradeList,
       currentTrade,
+      finishTradeInfo
     } = this.props.trade;
     const initSymbol = utils.isEmpty(tradeList) ? 0 : tradeList[0]?.symbol;
-
     return (
       <Page
         name="trade"
         className="trade-page"
-        ptr
-        onPtrRefresh={this.onRefresh}
+      // ptr
+      // onPtrRefresh={this.onRefresh}
       >
-        <Navbar title={title}>
+
+        <Navbar
+          title={title}
+          className="trade-navbar"
+        >
           <NavRight>
-            {/*<img alt="add" src={AddIcon} onClick={() => this.goToPage(`/trade/${initSymbol}/`, {*/}
-            {/*props: {*/}
-            {/*mode: 'add'*/}
-            {/*}*/}
-            {/*})}/>*/}
-            <Link
-              iconF7={"plus"}
-              color={"white"}
-              onClick={() => {
-                this.goToPage(`/trade/${initSymbol}/`, {
-                  props: {
-                    mode: "add",
-                  },
-                });
-              }}
-            ></Link>
+            {/* <div onClick={this.handleSubmit}>確認</div> */}
           </NavRight>
         </Navbar>
-        <Block
-          strong
-          className={`trade-stats ${
-            loading ? "skeleton-text skeleton-effect-blink" : ""
-            }`}
-        >
-          <Row className={"trade-stats-row"}>
-            <Col width="33" className={"trade-stats-col"}>
-              <p>结余</p>
-              <p>{tradeInfo?.balance?.toFixed(2)}</p>
-            </Col>
-            <Col width="33" className={"trade-stats-col"}>
-              <p>净值</p>
-              <p>{tradeInfo?.equity?.toFixed(2)}</p>
-            </Col>
-            <Col width="33" className={'trade-stats-col'}>
-              <p>持仓盈亏</p>
-              <p>{tradeInfo?.profit?.toFixed(2)}</p>
-            </Col>
-          </Row>
-          <Row className={"trade-stats-row"}>
-            <Col width="33" className={"trade-stats-col"}>
-              <p>预付款</p>
-              <p>{+tradeInfo?.margin?.toFixed(2)}</p>
-            </Col>
-            <Col width="33" className={"trade-stats-col"}>
-              <p>可用预付款</p>
-              <p>{tradeInfo?.free_margin?.toFixed(2)}</p>
-            </Col>
-            <Col width="33" className={"trade-stats-col"}>
-              <p>预付款比率(%)</p>
-              <p>
-                {tradeInfo.margin == 0
-                  ? "-"
-                  : tradeInfo?.margin_level?.toFixed(2)}
-              </p>
-            </Col>
-          </Row>
-        </Block>
-        {this.renderTradeList(tradeList, "order")}
-        {this.renderTradeList(futureTradeList, "future")}
-        <Actions
+        {currentTradeTab !== "历史" &&
+          // <Block
+          //   strong
+          //   className={`trade-stats ${
+          //     loading ? "skeleton-text skeleton-effect-blink" : ""
+          //     }`}
+          // >
+          <Block
+            strong
+            className={`trade-stats `}
+          >
+            {/* <div className="trade-title">持仓盈亏</div> */}
+            <Row className={"trade-stats-row"}>
+              <Col width="25" className={"trade-stats-col"}>
+                <p>结余</p>
+                <p>{tradeInfo?.balance?.toFixed(2)}</p>
+              </Col>
+              <Col width="50" className={'trade-stats-col'}>
+                <p className={`trade-total-number ${tradeInfo?.profit?.toFixed(2) > 0 ? "p-up" : "p-down"}`}>{tradeInfo?.profit?.toFixed(2)}</p>
+              </Col>
+              <Col width="25" className={"trade-stats-col"}>
+                <p>净值</p>
+                <p>{tradeInfo?.equity?.toFixed(2)}</p>
+              </Col>
+
+            </Row>
+            <Row className={"trade-stats-row"}>
+              <Col width="25" className={"trade-stats-col"}>
+                <p>预付款</p>
+                <p>{+tradeInfo?.margin?.toFixed(2)}</p>
+              </Col>
+              <Col width="50" className={"trade-stats-col"}>
+                <p>可用预付款</p>
+                <p>{tradeInfo?.free_margin?.toFixed(2)}</p>
+              </Col>
+              <Col width="25" className={"trade-stats-col"}>
+                <p>预付款比率</p>
+                <p>
+                  {tradeInfo.margin == 0
+                    ? "-"
+                    : tradeInfo?.margin_level?.toFixed(2)}
+                </p>
+              </Col>
+            </Row>
+          </Block>}
+        {currentTradeTab === "历史" &&
+          // <Block
+          //   strong
+          //   className={`trade-stats 
+          //   ${loading ? "skeleton-text skeleton-effect-blink" : ""}
+          //     `}
+          // >
+          <Block
+            strong
+            className={`trade-stats 
+              `}
+          >
+            <Row className={"trade-stats-row"}>
+              <Col width="25" className={"trade-stats-col"}>
+                <p>盈利</p>
+                <p>{finishTradeInfo?.profit?.toFixed(2)}</p>
+              </Col>
+              <Col width="50" className={'trade-stats-col'}>
+                <p className={`trade-total-number ${finishTradeInfo?.balance?.toFixed(2) > 0 ? "p-up" : "p-down"}`}>{finishTradeInfo?.balance?.toFixed(2)}</p>
+              </Col>
+              <Col width="25" className={"trade-stats-col"}>
+                <p>亏损</p>
+                <p>{finishTradeInfo?.loss?.toFixed(2)}</p>
+              </Col>
+            </Row>
+          </Block>}
+        <div className="trade-tabs">
+          {
+            tradeTabOptions.map((item) => {
+              return (
+                <div
+                  onClick={() => { this.switchTradeTabs(item.name) }}
+                  className={`market-navbar-item ${currentTradeTab === item.name && 'active'}`}>
+                  {item.name}
+                </div>)
+            })
+          }
+        </div>
+        <div className="trade-content-title">
+          <div>品种｜代码</div>
+          <div>现价</div>
+          <div>方向｜手数</div>
+          <div>盈亏</div>
+        </div>
+        <TradeList currentTradeTab={currentTradeTab} thisRouter={this.$f7router}></TradeList>
+        {/* <Actions
           ref="actionsGroup"
           onActionsClose={() => {
             this.props.trade.setCurrentTrade(currentTrade);
@@ -646,8 +704,8 @@ export default class extends BaseReact {
           <ActionsGroup>
             <ActionsButton>取消</ActionsButton>
           </ActionsGroup>
-        </Actions>
-      </Page>
+        </Actions> */}
+      </Page >
     );
   }
 }

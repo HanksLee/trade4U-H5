@@ -412,7 +412,7 @@ export default class extends React.Component {
                               {item.amount}
                             </strong>
                           </Col>
-                          {item.remarks && <Col width={"100"}><p class="p-down" style={{ 'margin-top': '5px' }}> 备注：{item.remarks} </p></Col>}
+                          {item.remarks && <Col width={"100"}><p className="p-down" style={{ 'margin-top': '5px' }}> 备注：{item.remarks} </p></Col>}
                         </Row>
                       </Col>
 

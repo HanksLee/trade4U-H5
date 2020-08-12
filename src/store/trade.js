@@ -9,6 +9,10 @@ class TradeStore extends BaseStore {
   tradeList = []; // 持仓订单
   @observable
   futureTradeList = []; // 挂单订单
+  @observable
+  finishTradeList = []; // 歷史订单
+  @observable
+  finishTradeInfo = []; // 歷史订单
   @computed
   get computedTradeList() {
     let list = [];
@@ -38,6 +42,18 @@ class TradeStore extends BaseStore {
   }
 
   @action
+  setFinishTradeInfo = (info, overwrite = true) => {
+    if (overwrite) {
+      this.finishTradeInfo = info;
+    } else {
+      this.finishTradeInfo = {
+        ...this.finishTradeInfo,
+        ...info,
+      }
+    }
+  }
+
+  @action
   getTradeList = (config) => {
     const res = this.$api.trade.getTradeList(config);
 
@@ -48,8 +64,10 @@ class TradeStore extends BaseStore {
   setTradeList = (list, type = 'order') => {
     if (type == 'order') {
       this.tradeList = list;
-    } else {
+    } else if (type == "future") {
       this.futureTradeList = list;
+    } else if (type == "finish") {
+      this.finishTradeList = list
     }
   }
 

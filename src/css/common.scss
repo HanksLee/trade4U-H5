@@ -1,10 +1,10 @@
 // placeholder
 .p-up {
-  color: $up;
+  color: $up !important;
 }
 
 .p-down {
-  color: $down;
+  color: $down !important;
 }
 
 .p-grey {
@@ -20,7 +20,7 @@
 }
 
 .bg-down {
-   background-color: $down;
+  background-color: $down;
 }
 
 .bg-grey {
@@ -28,7 +28,7 @@
 }
 
 .bg-deep-grey {
-  background-color: #CCC;
+  background-color: #ccc;
 }
 
 .bg-orange {

@@ -12,10 +12,30 @@ const getMessage = (config) => API.get("/trader/message", config);
 const getNotificationmessage = (config) =>
   API.get("/trader/notificationmessage", config);
 
+const getWithdrawableBalance = (config) =>
+  API.get('/trader/withdrawable_balance', config);
+
+const withdraw = (config) =>
+  API.post('/trader/withdraw', config);
+
+const getPaymentMethods = () =>
+  API.get("/trader/payment");
+
+const deposit = (config) =>
+  API.post('/trader/deposit', config);
+
+const checkDepositStatus = (config) =>
+  API.get('/trader/deposit', config);
+
 export default {
   getAccountInfo,
   updateAccountInfo,
   resetPassword,
   getMessage,
   getNotificationmessage,
+  getWithdrawableBalance,
+  withdraw,
+  getPaymentMethods,
+  deposit,
+  checkDepositStatus
 };
