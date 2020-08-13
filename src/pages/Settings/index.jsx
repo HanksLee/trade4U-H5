@@ -3,6 +3,7 @@ import React from "react";
 import utils from "utils";
 import { Modal } from 'antd';
 import { f7 } from "framework7-react";
+import api from "services";
 import { Page, Navbar, List, ListItem, ListInput, NavRight, NavLeft, NavTitle } from "framework7-react";
 import { inject, observer } from "mobx-react";
 import 'antd/dist/antd.css';
@@ -11,7 +12,19 @@ import "./index.scss";
 @inject("message")
 @observer
 export default class extends React.Component {
-  state = {};
+  state = { withdrawableBalance: 0 };
+
+  componentDidMount() {
+    this.getWithdrawableBalance();
+  }
+
+
+  getWithdrawableBalance = async () => {
+    const res = await api.setting.getWithdrawableBalance();
+    this.setState({
+      withdrawableBalance: res.data.withdrawable_balance,
+    });
+  };
 
   logout = () => {
     localStorage.removeItem("MOON_H5_TOKEN");
@@ -40,6 +53,7 @@ export default class extends React.Component {
 
   render() {
     const { hasNotify, hasAnnouncement } = this.props.message;
+    const { withdrawableBalance } = this.state
     return (
       <Page name="settings">
 
@@ -63,7 +77,7 @@ export default class extends React.Component {
           </NavRight>
         </Navbar>
         <div className="withdraw-item-title">可提馀额</div>
-        <div className="remain-fund">5000.00</div>
+        <div className="remain-fund">{withdrawableBalance}</div>
         <div className="fund-btn-container">
           <div className="fund-btn">
             <List>
