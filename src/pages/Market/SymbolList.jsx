@@ -21,7 +21,7 @@ export default class extends React.Component {
       isLoading: true,
     }
   }
-  
+
   componentDidMount() {
     this.getSymbolList({
       type__name: this.symbolTypeName,
@@ -67,7 +67,7 @@ export default class extends React.Component {
       }, false)
     }
   }
-  
+
   confirm = async () => {
     const res = await api.market.addSelfSelectSymbolList({
       symbol: this.state.selectedSymbols,
@@ -151,8 +151,8 @@ export default class extends React.Component {
                     selectedSymbols.indexOf(item.id) === -1 ? (
                       <div onClick={() => this.handleItemSelected(item.id)} slot="media" className="circle-add-icon" />
                     ) : (
-                      <div onClick={() => this.handleItemUnselected(item.id)} slot="media" className="circle-add-selected-icon" />
-                    )
+                        <div onClick={() => this.handleItemUnselected(item.id)} slot="media" className="circle-add-selected-icon" />
+                      )
                   }
                   <span onClick={() => this.handleItemOpened(item)}>
                     <Icon slot="after" color="#c8c7cc" f7="chevron_right" size={r(18)}></Icon>

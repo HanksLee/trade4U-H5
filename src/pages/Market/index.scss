@@ -4,7 +4,7 @@
 
 .market-navbar {
   .left {
-    width: calc(100% - 60px);
+    width: calc(100% - 70px);
     overflow-y: scroll;
     position: relative;
 
@@ -43,6 +43,84 @@
 
   .market-navbar-item + .market-navbar-item {
     margin-left: 20px;
+  }
+}
+
+.sortable-self-select-list {
+  .item-content {
+    padding: 0 16px;
+  }
+
+  .sortable-handler {
+    width: unset;
+    right: 16px;
+
+    &::after {
+      color: #fff;
+    }
+  }
+
+  label.item-checkbox input[type=checkbox]:checked ~ .icon-checkbox {
+    position: relative;
+    background: #ff3b30;
+
+    &::after {
+      content: "－";
+      opacity: 1;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 14px;
+      font-weight: bold;
+      font-family: unset;
+      width: unset;
+      height: unset;
+    }
+  }
+}
+
+#view-market {
+  .list {
+    ul::before {
+      content: unset;
+    }
+  }
+}
+
+.symbol-searchbar {
+  padding: 0 16px;
+
+  .searchbar {
+    background-color: unset;
+
+    &::after {
+      content: unset;
+    }
+
+    .searchbar-inner {
+      padding: 0;
+
+      .searchbar-input-wrap {
+        border-radius: 10px;
+        overflow: hidden;
+
+        input {
+          background-color: #17283e !important;
+          color: #838d9e;
+          font-size: 12px;
+
+          &::placeholder {
+            color: inherit;
+            font-size: inherit;
+          }
+        }
+
+        .searchbar-icon:after {
+          color: #838d9e;
+        }
+      }
+    }
   }
 }
 
@@ -230,6 +308,10 @@
 
 .nav-icon {
   padding: 10px 5px;
+}
+
+.nav-icon + .nav-icon {
+  margin-left: 10px;
 }
 
 .hot-stock-market {

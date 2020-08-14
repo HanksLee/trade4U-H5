@@ -5,6 +5,7 @@ import {
 } from 'framework7-react';
 import EditIcon from "assets/img/edit2.svg";
 import AddIcon from "assets/img/add.svg";
+import SearchIcon from "assets/img/search.svg";
 import { inject, observer } from "mobx-react";
 import moment from 'moment';
 import ws from 'utils/ws'
@@ -228,8 +229,8 @@ export default class extends React.Component {
           </NavLeft>
           {/* <NavTitle>行情</NavTitle> */}
           <NavRight>
+            <img className="nav-icon" alt="search" src={SearchIcon} onClick={this.navigateToSymbolTypePage} />
             <img className="nav-icon" alt="edit" src={EditIcon} onClick={this.navigateToManagePage} />
-            <img className="nav-icon" alt="add" src={AddIcon} onClick={this.navigateToSymbolTypePage} />
           </NavRight>
         </Navbar>
         <div className="self-select-table">
