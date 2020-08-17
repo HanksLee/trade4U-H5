@@ -23,7 +23,10 @@ export default class extends React.Component {
   state = {
     currentSymbol: null,
     symbolTypeList: [],
-    currentSymbolType: "自选"
+    subSymbolTypeList: [],
+    subCurrentSymbolType: "全部",
+    currentSymbolType: "自选",
+    showSubSymbolType: false,
   }
 
   async componentDidMount() {
@@ -61,6 +64,24 @@ export default class extends React.Component {
     this.setState({ currentSymbolType: name })
   }
 
+  switchShowSubSymbolType = () => {
+    const { showSubSymbolType } = this.state;
+    this.setState({ showSubSymbolType: !showSubSymbolType })
+  }
+
+  switchSubSelfSelctList = (name) => {
+    this.setState({ subCurrentSymbolType: name, showSubSymbolType: false }, async () => {
+      const { subCurrentSymbolType } = this.state;
+      if (subCurrentSymbolType === "全部") {
+        await this.props.market.getSelfSelectSymbolList();
+      } else {
+        let queryString = `type__name=${subCurrentSymbolType}`;
+        await this.props.market.getSelfSelectSymbolList(queryString, {});
+      }
+
+    })
+  }
+
   getSymbolTypeList = async () => {
     const res = await this.props.common.$api.market.getSymbolTypeList();
 
@@ -73,6 +94,12 @@ export default class extends React.Component {
           },
           ...res.data.results
         ],
+        subSymbolTypeList: [
+          {
+            symbol_type_name: "全部",
+          },
+          ...res.data.results
+        ]
       });
     }
   };
@@ -209,7 +236,7 @@ export default class extends React.Component {
 
   render() {
     const { selfSelectSymbolList, } = this.props.market;
-    const { currentSymbol, symbolTypeList, currentSymbolType } = this.state;
+    const { currentSymbol, symbolTypeList, currentSymbolType, subSymbolTypeList, subCurrentSymbolType, showSubSymbolType } = this.state;
 
     return (
       <Page name="market">
@@ -237,7 +264,19 @@ export default class extends React.Component {
           {
             (currentSymbolType === "自选" || currentSymbolType === "外汇") &&
             <div className="self-select-table-header">
-              <div>品种</div>
+              <div className="market-type">
+                <p onClick={this.switchShowSubSymbolType}>{subCurrentSymbolType}</p>
+                {showSubSymbolType &&
+                  <ul>
+                    {subSymbolTypeList.map((item, index) => (
+                      <li
+                        className={subCurrentSymbolType === item.symbol_type_name && "active"}
+                        onClick={() => { this.switchSubSelfSelctList(item.symbol_type_name) }}>
+                        {item.symbol_type_name}
+                      </li>
+                    ))}
+                  </ul>}
+              </div>
               <div>卖出价</div>
               <div>买入价</div>
             </div>

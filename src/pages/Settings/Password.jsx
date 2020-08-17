@@ -15,14 +15,68 @@ import "./index.scss";
 export default class extends React.Component {
   state = {
     smsConfirm: false,
+    smskey: undefined,
+    errMsg: "",
+    waitTime: 60,
+    canSendSMS: true
+  };
+
+  sendSMS = () => {
+    const { waitTime, canSendSMS } = this.state;
+    if (canSendSMS !== true) {
+      return false
+    } else {
+      this.setState({ canSendSMS: false }, async () => {
+        let payload = {
+          type: "reset_pwd_sms",
+        };
+        const res = await api.setting.sendSMS(payload);
+
+        if (res.status === 201) {
+          this.setState({ smsKey: res.data.key, });
+        } else {
+          this.setState({ errMsg: res.data.message })
+        }
+        let time = waitTime;
+        let timeID = setInterval(
+          async () => {
+            time--;
+            if (time === 0) {
+              clearInterval(timeID)
+              this.setState({ waitTime: 60 })
+            } else {
+              this.setState({ waitTime: time })
+            }
+          }, 1000);
+      })
+    }
+
+
   };
 
 
-  sendSms = () => {
-    this.setState({ smsConfirm: true })
-  }
+  handleVerifySubmit = async (evt) => {
+    const { smsKey, } = this.state;
 
-  handleSubmit = async (evt) => {
+    this.props.form.validateFields(async (err, values) => {
+      if (!err) {
+        let payload = {
+          code: values.SMS,
+          key: smsKey,
+        };
+
+        const res = await api.setting.verifySMS(payload);
+
+        if (res.status === 201) {
+          this.setState({ verifyPass: true, smsKey: res.data.key, });
+        } else {
+          this.setState({ errMsg: res.data.message })
+        }
+      }
+    })
+  };
+
+  handleResetPwdSubmit = async (evt) => {
     this.props.form.validateFields(async (err, values) => {
       if (!err) {
         if (utils.isEmpty(values.password)) {
@@ -78,9 +132,10 @@ export default class extends React.Component {
 
   sendSmsComponent = () => {
     const { getFieldProps } = this.props.form;
+    const { waitTime, errMsg, canSendSMS } = this.state;
     return (
       <List>
-        <InputItem
+        {/* <InputItem
           {...getFieldProps("oldPassword", {
             initialValue: "",
           })}
@@ -88,7 +143,7 @@ export default class extends React.Component {
           placeholder={"输入旧密码"}
         >
           {"旧密码"}
-        </InputItem>
+        </InputItem> */}
         <InputItem
           {...getFieldProps("SMS", {
             initialValue: "",
@@ -98,11 +153,11 @@ export default class extends React.Component {
           className="sms-input"
         >
           {"简讯验证码"}
-          <div className="sms-btn">发送简讯验证码</div>
-          <div className="sms-prompt">60秒后重新发送</div>
+          <div className={`sms-btn ${!canSendSMS && "reject"}`} onClick={this.sendSMS}>发送简讯验证码</div>
+          {waitTime !== 60 && <div className="sms-prompt">{waitTime}秒后可重新发送</div>}
         </InputItem>
 
-        <div class="sms-error">*验证码已过期</div>
+        {!utils.isEmpty(errMsg) && <div class="sms-error">{errMsg}</div>}
       </List>
     )
   }
@@ -117,7 +172,7 @@ export default class extends React.Component {
           class="text-color-white"
         >
           <NavRight>
-            {!smsConfirm ? <div onClick={this.sendSms}>下一步</div> : <div onClick={this.handleSubmit}></div>}
+            {!smsConfirm ? <div onClick={this.handleVerifySubmit}>下一步</div> : <div onClick={this.handleResetPwdSubmit}></div>}
 
           </NavRight>
         </Navbar>

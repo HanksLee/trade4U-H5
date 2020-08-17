@@ -1,8 +1,9 @@
 import { AxiosRequestConfig } from "axios";
 import { moonAPI as API } from "utils/request";
 
-const getSelfSelectSymbolList = (config) =>
-  API.get("/trader/self_select_symbol", config);
+const getSelfSelectSymbolList = (queryString, config) => {
+  return API.get(`/trader/self_select_symbol?${queryString}`, config);
+}
 
 const addSelfSelectSymbolList = (config) =>
   API.post("/trader/self_select_symbol", config);

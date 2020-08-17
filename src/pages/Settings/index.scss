@@ -300,6 +300,11 @@
     right: 0;
     bottom: 31px;
     font-size: 12px;
+
+    &.reject {
+      background-color: #6d7278 !important;
+      color: #21212b !important;
+    }
   }
 
   .am-input-control {

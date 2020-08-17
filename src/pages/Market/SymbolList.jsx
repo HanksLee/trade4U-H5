@@ -3,6 +3,8 @@ import React from 'react';
 import { Page, Navbar, List, ListItem, NavTitle, NavRight, NavLeft, Icon, Link, Searchbar } from 'framework7-react';
 import './index.scss';
 import { inject, observer } from "mobx-react";
+import selectSVG from '../../static/icons/self-select-icon.svg';
+import activeSelectSVG from '../../static/icons/self-select-icon-active.svg';
 
 const pageSize = 60
 
@@ -78,20 +80,34 @@ export default class extends React.Component {
 
   handleItemOpened = (item) => {
     this.$f7router.navigate(`/market/symbol/${item.id}`, {
-      context: item,
+      props: {
+        currentSymbol: item,
+      }
     })
   }
 
-  handleItemSelected = (id) => {
-    this.setState(prevState => ({
-      selectedSymbols: [...prevState.selectedSymbols, id],
-    }))
+  handleItemSelected = async (id) => {
+    const res = await api.market.addSelfSelectSymbolList({
+      symbol: [id],
+    });
+    if (res.status === 201) {
+      this.setState(prevState => ({
+        selectedSymbols: [...prevState.selectedSymbols, id],
+      }))
+    }
   }
 
-  handleItemUnselected = (id) => {
-    this.setState(prevState => ({
-      selectedSymbols: prevState.selectedSymbols.filter(item => item !== id),
-    }))
+  handleItemUnselected = async (id) => {
+    const res = await api.market.deleteSelfSelectSymbolList({
+      data: {
+        symbol: [id],
+      }
+    });
+    if (res.status === 204) {
+      this.setState(prevState => ({
+        selectedSymbols: prevState.selectedSymbols.filter(item => item !== id),
+      }))
+    }
   }
 
   handleSearch = (e) => {
@@ -124,7 +140,7 @@ export default class extends React.Component {
           </NavLeft>
           <NavTitle>{this.symbolTypeName}</NavTitle>
           <NavRight>
-            <span onClick={this.confirm}>完成</span>
+            {/* <span onClick={this.confirm}>完成</span> */}
           </NavRight>
         </Navbar>
         <div className="symbol-searchbar">
@@ -146,17 +162,35 @@ export default class extends React.Component {
           {
             symbolList.map(item => {
               return (
-                <ListItem title={item.symbol_display.name}>
-                  {
-                    selectedSymbols.indexOf(item.id) === -1 ? (
-                      <div onClick={() => this.handleItemSelected(item.id)} slot="media" className="circle-add-icon" />
-                    ) : (
-                        <div onClick={() => this.handleItemUnselected(item.id)} slot="media" className="circle-add-selected-icon" />
-                      )
-                  }
-                  <span onClick={() => this.handleItemOpened(item)}>
-                    <Icon slot="after" color="#c8c7cc" f7="chevron_right" size={r(18)}></Icon>
-                  </span>
+                // <ListItem title={item.symbol_display.name}>
+                //   {
+                //     selectedSymbols.indexOf(item.id) === -1 ? (
+                //       <div onClick={() => this.handleItemSelected(item.id)} slot="media" className="circle-add-icon" />
+                //     ) : (
+                //         <div onClick={() => this.handleItemUnselected(item.id)} slot="media" className="circle-add-selected-icon" />
+                //       )
+                //   }
+                //   <span onClick={() => this.handleItemOpened(item)}>
+                //     <Icon slot="after" color="#c8c7cc" f7="chevron_right" size={r(18)}></Icon>
+                //   </span>
+                // </ListItem>
+                <ListItem className="search-result-container">
+                  <div className="search-result" onClick={() => { this.handleItemOpened(item) }}>
+                    <p className="search-result-name">{item?.symbol_display?.name}</p>
+                    <p>
+                      {/* <span className="symbol-type-code">US</span> */}
+                      <span className="symbol-code">{item?.symbol_display?.product_display?.code}</span>
+                    </p>
+                  </div>
+                  <div className="switch-self-select">
+                    {
+                      selectedSymbols.indexOf(item.id) === -1 ? (
+                        <img src={selectSVG} alt="add-select" onClick={(e) => { this.handleItemSelected(item.id) }} />
+                      ) : (
+                          <img src={activeSelectSVG} alt="active-select" onClick={(e) => { this.handleItemUnselected(item.id) }} />
+                        )
+                    }
+                  </div>
                 </ListItem>
               )
             })

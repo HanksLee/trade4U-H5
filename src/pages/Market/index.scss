@@ -132,17 +132,17 @@
   border: 1px solid rgba(242, 226, 5, 1);
 }
 
-.circle-add-icon {
+.add-icon {
   width: 22px;
   height: 22px;
-  background: url('../../assets/img/circle-add.svg');
+  background: url('../../static/icons/self-select-icon.svg');
   background-repeat: no-repeat;
 }
 
-.circle-add-selected-icon {
+.add-selected-icon {
   width: 22px;
   height: 22px;
-  background: url('../../assets/img/circle-add-selected.svg');
+  background: url('../../static/icons/self-select-icon-active.svg');
   background-repeat: no-repeat;
 }
 
@@ -205,6 +205,45 @@
     & > div:nth-child(3) {
       flex: 0 0 25%;
       text-align: right;
+    }
+
+    .market-type {
+      position: relative;
+      overflow: visible;
+
+      p {
+        padding: 1px 10px;
+      }
+
+      p,
+      ul {
+        margin-bottom: 0;
+        display: inline-block;
+        border: 1px solid #838d9e;
+        border-radius: 10px;
+      }
+
+      ul {
+        position: absolute;
+        list-style-type: none;
+        left: 0;
+        top: 120%;
+        background-color: #21212b;
+        overflow: hidden;
+        padding: 0;
+
+        li {
+          padding: 5px 10px;
+
+          &.active {
+            background-color: #244968;
+          }
+        }
+
+        li + li {
+          border-top: 1px solid #838d9e;
+        }
+      }
     }
   }
 
@@ -415,5 +454,46 @@
     transform: translateX(-50%);
     bottom: 25px;
     z-index: 100;
+  }
+}
+
+.search-result-container {
+  .item-inner {
+    align-items: stretch;
+  }
+
+  .search-result {
+    flex: 1 1 0;
+
+    > p {
+      &.search-result-name {
+        color: #ffffff;
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .symbol-type-code {
+      font-size: 6px;
+      color: #21212b;
+      padding: 1px 3px;
+      background-color: #0091ff;
+      margin-right: 6px;
+      border-radius: 1px;
+    }
+
+    .symbol-code {
+      font-size: 10px;
+      color: #838d9e;
+    }
+  }
+
+  .switch-self-select {
+    display: flex;
+    align-items: center;
   }
 }

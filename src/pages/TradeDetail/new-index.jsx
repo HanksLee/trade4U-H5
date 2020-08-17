@@ -122,6 +122,8 @@ export default class extends React.Component {
   onLotsChanged = (val) => {
     const { params } = this.state;
 
+    console.log(val)
+
     const {
       market: {
         currentShowSymbol,
