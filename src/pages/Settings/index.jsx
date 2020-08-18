@@ -157,7 +157,7 @@ export default class extends React.Component {
             </div>
           </ListItem>
         </List>
-        <List>
+        {/* <List>
           <ListItem
             title={"图表"}
             link={`/settings/chart`}
@@ -170,8 +170,8 @@ export default class extends React.Component {
               />
             </div>
           </ListItem>
-        </List>
-        <List>
+        </List> */}
+        {/* <List>
           <ListItem
             title={"新闻"}
             link={`/settings/news`}
@@ -184,8 +184,8 @@ export default class extends React.Component {
               />
             </div>
           </ListItem>
-        </List>
-        <List>
+        </List> */}
+        {/* <List>
           <ListItem
             title={"涨跌偏好"}
             link={`/settings/color-prefer`}
@@ -198,8 +198,8 @@ export default class extends React.Component {
               />
             </div>
           </ListItem>
-        </List>
-        <List>
+        </List> */}
+        {/* <List>
           <ListItem
             title={"客服"}
             link={`/`}
@@ -212,7 +212,7 @@ export default class extends React.Component {
               />
             </div>
           </ListItem>
-        </List>
+        </List> */}
         {/* <List>
           <ListItem
             title={intl.get("settings.message")}

@@ -7,6 +7,8 @@ import EditIcon from "assets/img/edit2.svg";
 import AddIcon from "assets/img/add.svg";
 import SearchIcon from "assets/img/search.svg";
 import { inject, observer } from "mobx-react";
+import { Spin } from 'antd';
+import { LoadingOutlined } from "@ant-design/icons";
 import moment from 'moment';
 import ws from 'utils/ws'
 import Dom7 from 'dom7';
@@ -27,12 +29,18 @@ export default class extends React.Component {
     subCurrentSymbolType: "全部",
     currentSymbolType: "自选",
     showSubSymbolType: false,
+    error: false,
+    hasMore: true,
+    dataLoading: false,
+    page_size: 20,
+    page: 1,
   }
 
   async componentDidMount() {
     await this.props.market.getSelfSelectSymbolList();
     // this.connectWebsocket();
     this.getSymbolTypeList();
+    window.addEventListener("scroll", this.handleScroll, true);
 
     // $$('.self-select-tr').on('click', (evt) => {
     //   const dom = $$(evt.target).parents('.self-select-tr')[0] || $$(evt.target)[0];
@@ -60,8 +68,61 @@ export default class extends React.Component {
     }
   }
 
-  switchSymbolType = (name) => {
-    this.setState({ currentSymbolType: name })
+  handleScroll = () => {
+    const { error, hasMore, dataLoading } = this.state;
+
+    // Bails early if:
+    // * there's an error
+    // * it's already loading
+    // * there's nothing left to load
+    if (error || dataLoading || !hasMore) return;
+    let scrollTop = $$("#view-market .page-content")[0].scrollTop;
+    let scrollHeight = $$("#view-market .page-content")[0].scrollHeight;
+
+    // Checks that the page has scrolled to the bottom
+    if (window.innerHeight + scrollTop >= scrollHeight) {
+      this.getList();
+    }
+  };
+
+  getList = async () => {
+    const { currentSymbolType, subCurrentSymbolType, page, page_size } = this.state;
+    if (currentSymbolType === "自选") {
+      if (subCurrentSymbolType === "全部") {
+        this.setState({ dataLoading: true }, async () => {
+          let queryString = `page=${page}&page_size=${page_size}`
+          await this.props.market.getSelfSelectSymbolList(queryString, page === 1 ? true : false);
+          this.setState({ dataLoading: false, page: page + 1 }, () => {
+            const { selfSelectSymbolList, selfSelectSymbolListCount } = this.props.market;
+            this.setState({ hasMore: selfSelectSymbolList.length < selfSelectSymbolListCount })
+          })
+        })
+      } else {
+        this.setState({ dataLoading: true }, async () => {
+          let queryString = `type__name=${subCurrentSymbolType}&page=${page}&page_size=${page_size}`;
+          await this.props.market.getSelfSelectSymbolList(queryString, page === 1 ? true : false);
+          this.setState({ dataLoading: false, page: page + 1 }, () => {
+            const { selfSelectSymbolList, selfSelectSymbolListCount } = this.props.market;
+            this.setState({ hasMore: selfSelectSymbolList.length < selfSelectSymbolListCount })
+          })
+        })
+      }
+    } else {
+      this.setState({ dataLoading: true }, async () => {
+        let queryString = `type__name=${currentSymbolType}&page=${page}&page_size=${page_size}`;
+        await this.props.market.getSymbolList(queryString, page === 1 ? true : false)
+        this.setState({ dataLoading: false, page: page + 1 }, () => {
+          const { symbolList, symbolListCount } = this.props.market;
+          this.setState({ hasMore: symbolList.length < symbolListCount })
+        })
+      })
+    }
+  }
+
+  switchSymbolType = async (name) => {
+    this.setState({ currentSymbolType: name, page: 1, page_size: 20 }, () => {
+      this.getList();
+    })
   }
 
   switchShowSubSymbolType = () => {
@@ -70,15 +131,8 @@ export default class extends React.Component {
   }
 
   switchSubSelfSelctList = (name) => {
-    this.setState({ subCurrentSymbolType: name, showSubSymbolType: false }, async () => {
-      const { subCurrentSymbolType } = this.state;
-      if (subCurrentSymbolType === "全部") {
-        await this.props.market.getSelfSelectSymbolList();
-      } else {
-        let queryString = `type__name=${subCurrentSymbolType}`;
-        await this.props.market.getSelfSelectSymbolList(queryString, {});
-      }
-
+    this.setState({ subCurrentSymbolType: name, showSubSymbolType: false, name, page: 1, page_size: 20 }, () => {
+      this.getList();
     })
   }
 
@@ -235,9 +289,9 @@ export default class extends React.Component {
   }
 
   render() {
-    const { selfSelectSymbolList, } = this.props.market;
-    const { currentSymbol, symbolTypeList, currentSymbolType, subSymbolTypeList, subCurrentSymbolType, showSubSymbolType } = this.state;
-
+    const { selfSelectSymbolList, symbolList } = this.props.market;
+    const { currentSymbol, symbolTypeList, currentSymbolType, subSymbolTypeList, subCurrentSymbolType, showSubSymbolType, dataLoading } = this.state;
+    const currentList = currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
     return (
       <Page name="market">
         <Navbar className="market-navbar">
@@ -262,28 +316,29 @@ export default class extends React.Component {
         </Navbar>
         <div className="self-select-table">
           {
-            (currentSymbolType === "自选" || currentSymbolType === "外汇") &&
             <div className="self-select-table-header">
-              <div className="market-type">
-                <p onClick={this.switchShowSubSymbolType}>{subCurrentSymbolType}</p>
-                {showSubSymbolType &&
-                  <ul>
-                    {subSymbolTypeList.map((item, index) => (
-                      <li
-                        className={subCurrentSymbolType === item.symbol_type_name && "active"}
-                        onClick={() => { this.switchSubSelfSelctList(item.symbol_type_name) }}>
-                        {item.symbol_type_name}
-                      </li>
-                    ))}
-                  </ul>}
-              </div>
+              {currentSymbolType === "自选" ?
+                <div className="market-type">
+                  <p onClick={this.switchShowSubSymbolType}>{subCurrentSymbolType}</p>
+                  {showSubSymbolType &&
+                    <ul>
+                      {subSymbolTypeList.map((item, index) => (
+                        <li
+                          className={subCurrentSymbolType === item.symbol_type_name && "active"}
+                          onClick={() => { this.switchSubSelfSelctList(item.symbol_type_name) }}>
+                          {item.symbol_type_name}
+                        </li>
+                      ))}
+                    </ul>}
+                </div>
+                : <div></div>}
               <div>卖出价</div>
               <div>买入价</div>
             </div>
           }
           <>
-            {(currentSymbolType === "自选" || currentSymbolType === "外汇") &&
-              selfSelectSymbolList.map(item => {
+            {
+              currentList.map(item => {
                 return (
                   <div className="self-select-tr" key={item.symbol} data-id={item.id}
                     onClick={() => {
@@ -329,7 +384,7 @@ export default class extends React.Component {
                 )
               })
             }
-            {
+            {/* {
               currentSymbolType !== "自选" && currentSymbolType !== "外汇" &&
               <>
                 <div className="hot-stock-market">热门股票</div>
@@ -351,30 +406,15 @@ export default class extends React.Component {
                   </div>
                 </div>
               </>
-            }
+            } */}
           </>
+          {(
+            dataLoading && <Spin
+              className="spin-icon"
+              indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+            />
+          )}
         </div>
-        {/* <Actions ref="actionsGroup">
-          <ActionsGroup>
-            {
-              currentSymbol && currentSymbol.symbol_display.description && (
-                <ActionsLabel>{currentSymbol.symbol_display.description}</ActionsLabel>
-              )
-            }
-            <ActionsButton onClick={() => {
-              this.$f7router.navigate(`/trade/${currentSymbol.symbol}/`, {
-                props: {
-                  mode: 'add',
-                }
-              })
-            }}>交易</ActionsButton>
-            <ActionsButton onClick={this.navigateToChart}>图表</ActionsButton>
-            <ActionsButton onClick={this.navigateToSymbolDetail}>详细情况</ActionsButton>
-          </ActionsGroup>
-          <ActionsGroup>
-            <ActionsButton>取消</ActionsButton>
-          </ActionsGroup>
-        </Actions> */}
       </Page>
     );
   }

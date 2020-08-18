@@ -10,7 +10,8 @@ import {
   SwipeoutButton,
 
 } from "framework7-react";
-import { Modal } from 'antd';
+import { Modal, Spin } from 'antd';
+import { LoadingOutlined } from "@ant-design/icons";
 import { Toast } from 'antd-mobile';
 import moment from "moment";
 import { inject, observer } from "mobx-react";
@@ -32,7 +33,13 @@ export default class extends BaseReact {
     effect: null,
     activeItem: undefined,
     currentTradeTab: this.props.currentTradeTab,
-    tapIndex: -1
+    tapIndex: -1,
+    error: false,
+    hasMore: true,
+    dataLoading: false,
+    page_size: 20,
+    page: 1,
+    historyList: [],
   };
 
   // constructor() {
@@ -44,8 +51,17 @@ export default class extends BaseReact {
     if (nextProps.currentTradeTab !== this.state.currentTradeTab) {
       this.setState({
         currentTradeTab: nextProps.currentTradeTab,
+        page: 1
+      }, () => {
+        this.onRefresh(nextProps.currentTradeTab)
       })
-      this.onRefresh(nextProps.currentTradeTab)
+
+
+      if (nextProps.currentTradeTab === '历史') {
+        window.addEventListener("scroll", this.handleScroll, true);
+      } else {
+        window.removeEventListener("scroll", this.handleScroll, true);
+      }
     }
   }
 
@@ -66,6 +82,23 @@ export default class extends BaseReact {
     if (this.state.loading) return;
 
     this.onRefresh(currentTradeTab);
+  };
+
+  handleScroll = () => {
+    const { error, hasMore, dataLoading, currentTradeTab } = this.state;
+
+    // Bails early if:
+    // * there's an error
+    // * it's already loading
+    // * there's nothing left to load
+    if (error || dataLoading || !hasMore) return;
+    let scrollTop = $$(".trade-content-content")[0].scrollTop;
+    let scrollHeight = $$(".trade-content-content")[0].scrollHeight;
+
+    // Checks that the page has scrolled to the bottom
+    if (window.innerHeight + scrollTop >= scrollHeight) {
+      this.initData(currentTradeTab);
+    }
   };
 
   // updateTradeInfo = (tradeInfo) => {
@@ -244,6 +277,29 @@ export default class extends BaseReact {
   //   });
   // };
 
+  updateTradeInfo = (tradeInfo) => {
+    let payload = {};
+    const { tradeList, setTradeInfo } = this.props.trade;
+    if (utils.isEmpty(tradeInfo)) {
+      payload = {
+        balance: this.props.trade.tradeInfo.balance,
+        margin: this.props.trade.tradeInfo.margin,
+      };
+    } else {
+      payload = {
+        balance: tradeInfo.balance,
+        margin: tradeInfo.margin,
+      };
+    }
+    payload.profit = tradeList.reduce((acc, cur) => acc + cur.profit, 0);
+    payload.equity =
+      tradeList.reduce((acc, cur) => acc + cur.profit, 0) + payload.balance;
+    payload.free_margin = payload.equity - payload.margin;
+    payload.margin_level = (payload.equity / payload.margin) * 100;
+
+    setTradeInfo(payload);
+  };
+
   onRefresh = async (currentTradeTab) => {
     this.setState(
       {
@@ -251,15 +307,15 @@ export default class extends BaseReact {
       },
       async () => {
         try {
-          // await this.props.trade.getTradeInfo();
-          // const res = await this.$api.trade.getTradeInfo();
-          // let tradeInfo = {
-          //   balance: res.data.balance,
-          //   // equity: 1014404.86, // 净值
-          //   margin: res.data.margin, // 预付款
-          //   // free_margin: 1014399.22, // 可用预付款
-          //   // margin_level: 18017848.22, // 预付款比例
-          // };
+          const { page, page_size, historyList, dataLoading } = this.state;
+          const res = await this.$api.trade.getTradeInfo();
+          let tradeInfo = {
+            balance: res.data.balance,
+            // equity: 1014404.86, // 净值
+            margin: res.data.margin, // 预付款
+            // free_margin: 1014399.22, // 可用预付款
+            // margin_level: 18017848.22, // 预付款比例
+          };
           // const res2 = await Promise.all([
           //   this.$api.trade.getTradeList({
           //     params: {
@@ -281,6 +337,7 @@ export default class extends BaseReact {
             })
 
             this.props.trade.setTradeList(res.data);
+            this.updateTradeInfo(tradeInfo);
           }
 
           if (currentTradeTab === '挂单') {
@@ -291,12 +348,27 @@ export default class extends BaseReact {
             })
 
             this.props.trade.setTradeList(res.data, "future");
+            this.updateTradeInfo(tradeInfo);
           }
 
           if (currentTradeTab === '历史') {
-            const res = await this.$api.trade.getFinishTradeList({});
-            this.props.trade.setTradeList(res.data.results, "finish");
-            this.props.trade.setFinishTradeInfo(resTradeList.data.total_data);
+            this.setState({ dataLoading: true }, async () => {
+              let queryString = `page_size=${page_size}&page=${page}`
+              const res = await this.$api.trade.getFinishTradeList(queryString, {});
+              if (res.status === 200) {
+                this.setState({
+                  dataLoading: false,
+                  historyList: [...historyList, ...res.data.results],
+                  page: page + 1,
+                }, () => {
+                  const { historyList } = this.state;
+                  this.setState({ hasMore: this.state.historyList.length < res.data.count, })
+                  this.props.trade.setTradeList(historyList, "finish");
+                  this.props.trade.setFinishTradeInfo(res.data.total_data);
+                });
+              }
+            })
+
           }
 
 
@@ -502,7 +574,7 @@ export default class extends BaseReact {
 
   render() {
 
-    const { tapIndex, currentTradeTab } = this.state;
+    const { tapIndex, currentTradeTab, dataLoading } = this.state;
     const { tradeList, futureTradeList, finishTradeList } = this.props.trade;
     const initSymbol = utils.isEmpty(tradeList) ? 0 : tradeList[0]?.symbol;
     const currentTradeList = currentTradeTab === '持仓'
@@ -649,6 +721,12 @@ export default class extends BaseReact {
           </div>
         </div>
         ))}
+        {currentTradeTab === '历史' && dataLoading && (
+          <Spin
+            className="spin-icon"
+            indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+          />
+        )}
       </div>
     );
   }

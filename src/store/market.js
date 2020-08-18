@@ -9,17 +9,25 @@ class MarketStore extends BaseStore {
   @observable
   selfSelectSymbolList = [];
   @observable
+  selfSelectSymbolListCount = [];
+  @observable
   currentSelfSelectSymbol = {};
 
   @action
-  getSelfSelectSymbolList = async config => {
+  getSelfSelectSymbolList = async (config, overwrite) => {
     const res = await api.market.getSelfSelectSymbolList(config);
-    this.setSelfSelectSymbolList(res.data.results);
+    this.setSelfSelectSymbolList(res.data.results, overwrite);
+    this.selfSelectSymbolListCount = res.data.count
   };
 
   @action
-  setSelfSelectSymbolList = data => {
-    this.selfSelectSymbolList = data;
+  setSelfSelectSymbolList = (data, overwrite) => {
+    if (overwrite) {
+      this.selfSelectSymbolList = data;
+    } else {
+      this.selfSelectSymbolList = [...this.selfSelectSymbolList, ...data]
+    }
+
   }
 
   @action
@@ -45,17 +53,26 @@ class MarketStore extends BaseStore {
   @observable
   symbolList = [];
   @observable
+  symbolListCount = 0
+  @observable
   currentSymbol = {};
 
   @action
-  getSymbolList = async config => {
+  getSymbolList = async (config, overwrite) => {
+    console.log(config)
     const res = await this.$api.market.getSymbolList(config);
-    this.setSymbolList(res.data.results);
+    this.setSymbolList(res.data.results, overwrite);
+    this.symbolListCount = res.data.count
   };
 
   @action
-  setSymbolList = data => {
-    this.symbolList = data;
+  setSymbolList = (data, overwrite) => {
+    if (overwrite) {
+      this.symbolList = data;
+    } else {
+      this.symbolList = [...this.symbolList, ...data]
+    }
+
   }
 
   @action

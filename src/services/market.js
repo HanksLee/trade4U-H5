@@ -17,8 +17,8 @@ const sortSelfSelectSymbolList = (config) =>
 const getSymbolTypeList = (config) =>
   API.get("/trader/symbol_type", config);
 
-const getSymbolList = (config) =>
-  API.get("/trader/symbol", config);
+const getSymbolList = (queryString, config) =>
+  API.get(`/trader/symbol?${queryString}`, config);
 
 const getCurrentSymbol = (id, config = {}) => API.get(`/trader/symbol/${id}`, config);
 

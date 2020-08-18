@@ -279,14 +279,14 @@ export default class extends BaseReact {
       async () => {
         try {
           // await this.props.trade.getTradeInfo();
-          const res = await this.$api.trade.getTradeInfo();
-          let tradeInfo = {
-            balance: res.data.balance,
-            // equity: 1014404.86, // 净值
-            margin: res.data.margin, // 预付款
-            // free_margin: 1014399.22, // 可用预付款
-            // margin_level: 18017848.22, // 预付款比例
-          };
+          // const res = await this.$api.trade.getTradeInfo();
+          // let tradeInfo = {
+          //   balance: res.data.balance,
+          //   // equity: 1014404.86, // 净值
+          //   margin: res.data.margin, // 预付款
+          //   // free_margin: 1014399.22, // 可用预付款
+          //   // margin_level: 18017848.22, // 预付款比例
+          // };
           // const res2 = await Promise.all([
           //   this.$api.trade.getTradeList({
           //     params: {
@@ -304,11 +304,11 @@ export default class extends BaseReact {
           // this.props.trade.setTradeList(list[0]);
           // this.props.trade.setTradeList(list[1], "future");
 
-          this.updateTradeInfo(tradeInfo);
-          this.bindEvents();
+          // this.updateTradeInfo(tradeInfo);
+          // this.bindEvents();
 
-          const resFinish = await this.$api.trade.getFinishTradeList({});
-          this.props.trade.setFinishTradeInfo(resFinish.data.total_data);
+          // const resFinish = await this.$api.trade.getFinishTradeList({});
+          // this.props.trade.setFinishTradeInfo(resFinish.data.total_data);
           // console.log('list', $$('.trade-data'));
           //
           // $$('.trade-data').forEach(dom => {
@@ -638,6 +638,7 @@ export default class extends BaseReact {
             })
           }
         </div>
+
         <div className="trade-content-title">
           <div>品种｜代码</div>
           <div>现价</div>

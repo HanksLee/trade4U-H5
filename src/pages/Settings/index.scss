@@ -81,7 +81,6 @@
 }
 
 .history-total,
-.history-time-filter,
 .history-detail .detail-title,
 .history-detail .detail-content .content-item {
   display: flex;
@@ -104,84 +103,6 @@
 
   .item-content {
     color: rgba(242, 226, 5, 1);
-  }
-}
-
-.history-time-filter {
-  padding-top: 0;
-  line-height: 28px;
-  border-radius: 10px;
-  color: #ffffff;
-  margin-top: 20px;
-  margin-bottom: 10px;
-
-  .ant-picker {
-    background-color: #17283e !important;
-
-    input {
-      color: #ffffff;
-    }
-
-    .ant-picker-suffix {
-      display: none;
-    }
-  }
-
-  > div {
-    background: rgba(23, 40, 62, 1);
-    flex-basis: 33.333%;
-    text-align: center;
-  }
-}
-
-.ant-picker-panel-container {
-  background-color: #2b3542;
-
-  .ant-picker-panel {
-    border: unset;
-  }
-
-  .ant-picker-header {
-    border-bottom: unset;
-
-    button {
-      width: unset;
-      color: #ffffff;
-    }
-  }
-
-  .ant-picker-body {
-    .ant-picker-content {
-      th,
-      .ant-picker-cell-in-view {
-        color: #ffffff;
-      }
-
-      .ant-picker-cell-disabled {
-        &::before {
-          background: unset;
-        }
-
-        .ant-picker-cell-inner {
-          color: rgba(0, 0, 0, 0.5);
-        }
-      }
-
-      .ant-picker-cell-selected {
-        .ant-picker-cell-inner {
-          background: unset;
-          color: unset;
-          border: 1px solid #f2e205;
-          border-radius: 50%;
-        }
-      }
-
-      .ant-picker-cell-today {
-        .ant-picker-cell-inner::before {
-          content: unset;
-        }
-      }
-    }
   }
 }
 
