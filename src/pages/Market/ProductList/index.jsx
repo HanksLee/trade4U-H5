@@ -59,6 +59,7 @@ export default class extends React.Component {
                   thisRouter.navigate(`/market/symbol/${item.id}`, {
                     props: {
                       currentSymbol: item,
+                      currentSymbolType
                     }
                   })
                 }}

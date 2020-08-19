@@ -72,7 +72,6 @@ export default class extends React.Component {
           },
         })
         .then((res) => {
-          console.log(res)
           if (res.status === 200) {
             this.setState({
               historyList: res.data.results,
@@ -82,14 +81,13 @@ export default class extends React.Component {
           }
         })
         .catch((error) => {
-          console.log(error);
+          // console.log(error);
         });
     });
   };
 
   render() {
     const { historyList, dataLoading, totalData, total_count, page, create_time_end, create_time_start } = this.state;
-    console.log(totalData)
     return (
       <Page>
         <Navbar

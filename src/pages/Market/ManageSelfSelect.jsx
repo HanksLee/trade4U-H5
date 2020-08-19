@@ -112,7 +112,6 @@ export default class extends React.Component {
         <List sortable className="sortable-self-select-list sortable-enabled" onSortableSort={this.handleSort}>
           {
             selfSelectSymbolList.map(item => {
-              console.log(item)
               return (
                 <ListItem
                   key={item.symbol}

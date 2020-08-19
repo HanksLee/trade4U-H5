@@ -25,18 +25,16 @@ export default class extends React.Component {
   }
 
   componentDidMount() {
-    this.getSymbolList({
-      type__name: this.symbolTypeName,
-      page: 1,
-      page_size: pageSize,
-    })
+    this.getSymbolList(
+      `type__name=${this.symbolTypeName}&page=1&page_size=${pageSize}`
+    )
   }
 
   getSymbolList = async (query, init = true) => {
     this.setState({
       isLoading: true,
     })
-    const res = await api.market.getSymbolList({ params: query, })
+    const res = await api.market.getSymbolList(query)
     const { selfSelectSymbolList, } = this.props.market
     const ids = selfSelectSymbolList.map(item => item.symbol_display.id)
 

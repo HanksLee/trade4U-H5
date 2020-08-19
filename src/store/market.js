@@ -37,7 +37,6 @@ class MarketStore extends BaseStore {
 
   @action
   updateSelfSelectSymbolList = async config => {
-    console.log(config)
     const res = await api.market.getSelfSelectSymbolList(config);
     const results = res.data.results;
     const newResults = results.map(item => {
@@ -60,7 +59,6 @@ class MarketStore extends BaseStore {
 
   @action
   getSymbolList = async (config, overwrite) => {
-    console.log(config)
     const res = await this.$api.market.getSymbolList(config);
     this.setSymbolList(res.data.results, overwrite);
     this.symbolListCount = res.data.count

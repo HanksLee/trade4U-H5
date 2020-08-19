@@ -12,7 +12,7 @@ import './index.scss';
 export default class extends React.Component {
   constructor(props) {
     super(props)
-  
+
     this.state = {
       symbolTypeList: [],
     }
@@ -24,7 +24,7 @@ export default class extends React.Component {
       symbolTypeList: res.data.results,
     })
   }
-  
+
   render() {
     const { symbolTypeList } = this.state;
     return (

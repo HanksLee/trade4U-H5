@@ -71,6 +71,7 @@ export default class extends React.Component {
   }
 
   render() {
+    const { currentSymbolType } = this.props;
     const { currentSymbol, isAddSelfSelect } = this.state;
     return (
       <Page noToolbar>
@@ -139,7 +140,7 @@ export default class extends React.Component {
           />
           <div className="order-btn"><img src={OrderIcon} alt="OrderIcon"
             onClick={() => {
-              this.$f7router.navigate(`/trade/${currentSymbol.symbol}/`, {
+              this.$f7router.navigate(`/trade/${currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id}/`, {
                 props: {
                   mode: 'add',
                 }

@@ -122,7 +122,6 @@ export default class extends React.Component {
   }
 
   switchSymbolType = async (item) => {
-    console.log(item)
     this.setState({ currentSymbolType: item, page: 1, page_size: 20 }, () => {
       this.getList();
     })
@@ -300,8 +299,6 @@ export default class extends React.Component {
     // const { selfSelectSymbolList, symbolList } = this.props.market;
     const { currentSymbol, symbolTypeList, currentSymbolType, subSymbolTypeList, subCurrentSymbolType, showSubSymbolType, dataLoading } = this.state;
     // const currentList = currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
-    console.log(currentSymbolType)
-    console.log(symbolTypeList)
     return (
       <Page name="market">
         <Navbar className="market-navbar">
