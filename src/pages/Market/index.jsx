@@ -13,13 +13,15 @@ import moment from 'moment';
 import ws from 'utils/ws'
 import Dom7 from 'dom7';
 import './index.scss';
+import channelConfig from "./config/channelConfig"
+import WSConnect from "components/HOC/WSConnect";
+import ProductList from './ProductList';
 
 const $$ = Dom7;
-
+const WS_ProductList = WSConnect(channelConfig[0], channelConfig, ProductList);
 @inject("common", "market")
 @observer
 export default class extends React.Component {
-  wsConnect = null
   buyTimers = []
   sellTimers = []
   state = {
@@ -27,7 +29,7 @@ export default class extends React.Component {
     symbolTypeList: [],
     subSymbolTypeList: [],
     subCurrentSymbolType: "全部",
-    currentSymbolType: "自选",
+    currentSymbolType: {},
     showSubSymbolType: false,
     error: false,
     hasMore: true,
@@ -37,11 +39,11 @@ export default class extends React.Component {
   }
 
   async componentDidMount() {
-    await this.props.market.getSelfSelectSymbolList();
     // this.connectWebsocket();
     this.getSymbolTypeList();
     window.addEventListener("scroll", this.handleScroll, true);
 
+    // this.setState({ currentSymbolType: this.state.symbolTypeList[0] })
     // $$('.self-select-tr').on('click', (evt) => {
     //   const dom = $$(evt.target).parents('.self-select-tr')[0] || $$(evt.target)[0];
     //   console.log('dom', dom);
@@ -87,7 +89,7 @@ export default class extends React.Component {
 
   getList = async () => {
     const { currentSymbolType, subCurrentSymbolType, page, page_size } = this.state;
-    if (currentSymbolType === "自选") {
+    if (currentSymbolType.symbol_type_name === "自选") {
       if (subCurrentSymbolType === "全部") {
         this.setState({ dataLoading: true }, async () => {
           let queryString = `page=${page}&page_size=${page_size}`
@@ -109,7 +111,7 @@ export default class extends React.Component {
       }
     } else {
       this.setState({ dataLoading: true }, async () => {
-        let queryString = `type__name=${currentSymbolType}&page=${page}&page_size=${page_size}`;
+        let queryString = `type__name=${currentSymbolType.symbol_type_name}&page=${page}&page_size=${page_size}`;
         await this.props.market.getSymbolList(queryString, page === 1 ? true : false)
         this.setState({ dataLoading: false, page: page + 1 }, () => {
           const { symbolList, symbolListCount } = this.props.market;
@@ -119,8 +121,9 @@ export default class extends React.Component {
     }
   }
 
-  switchSymbolType = async (name) => {
-    this.setState({ currentSymbolType: name, page: 1, page_size: 20 }, () => {
+  switchSymbolType = async (item) => {
+    console.log(item)
+    this.setState({ currentSymbolType: item, page: 1, page_size: 20 }, () => {
       this.getList();
     })
   }
@@ -145,6 +148,7 @@ export default class extends React.Component {
           {
             id: 0,
             symbol_type_name: "自选",
+            symbol_type_code: "self"
           },
           ...res.data.results
         ],
@@ -154,6 +158,10 @@ export default class extends React.Component {
           },
           ...res.data.results
         ]
+      }, () => {
+        this.setState({ currentSymbolType: this.state.symbolTypeList[0] }, () => {
+          this.getList()
+        })
       });
     }
   };
@@ -289,9 +297,11 @@ export default class extends React.Component {
   }
 
   render() {
-    const { selfSelectSymbolList, symbolList } = this.props.market;
+    // const { selfSelectSymbolList, symbolList } = this.props.market;
     const { currentSymbol, symbolTypeList, currentSymbolType, subSymbolTypeList, subCurrentSymbolType, showSubSymbolType, dataLoading } = this.state;
-    const currentList = currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
+    // const currentList = currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
+    console.log(currentSymbolType)
+    console.log(symbolTypeList)
     return (
       <Page name="market">
         <Navbar className="market-navbar">
@@ -301,8 +311,8 @@ export default class extends React.Component {
               symbolTypeList.map((item) => {
                 return (
                   <div
-                    onClick={() => { this.switchSymbolType(item.symbol_type_name) }}
-                    className={`market-navbar-item ${currentSymbolType === item.symbol_type_name && 'active'}`}>
+                    onClick={() => { this.switchSymbolType(item) }}
+                    className={`market-navbar-item ${currentSymbolType.symbol_type_name === item.symbol_type_name && 'active'}`}>
                     {item.symbol_type_name}
                   </div>)
               })
@@ -311,13 +321,13 @@ export default class extends React.Component {
           {/* <NavTitle>行情</NavTitle> */}
           <NavRight>
             <img className="nav-icon" alt="search" src={SearchIcon} onClick={this.navigateToSymbolTypePage} />
-            <img className="nav-icon" alt="edit" src={EditIcon} onClick={this.navigateToManagePage} />
+            {currentSymbolType.symbol_type_name === "自选" && <img className="nav-icon" alt="edit" src={EditIcon} onClick={this.navigateToManagePage} />}
           </NavRight>
         </Navbar>
         <div className="self-select-table">
           {
             <div className="self-select-table-header">
-              {currentSymbolType === "自选" ?
+              {currentSymbolType.symbol_type_name === "自选" ?
                 <div className="market-type">
                   <p onClick={this.switchShowSubSymbolType}>{subCurrentSymbolType}</p>
                   {showSubSymbolType &&
@@ -336,84 +346,15 @@ export default class extends React.Component {
               <div>买入价</div>
             </div>
           }
-          <>
-            {
-              currentList.map(item => {
-                return (
-                  <div className="self-select-tr" key={item.symbol} data-id={item.id}
-                    onClick={() => {
-                      this.$f7router.navigate(`/market/symbol/${item.id}`, {
-                        props: {
-                          currentSymbol: item,
-                        }
-                      })
-                    }}
-                  >
-                    {/* <div>
-                      <div className="self-select-buy-sell-block self-select-buy-block">
-                        {item.product_details.buy ? this.addSpecialStyle(item.product_details.sell) : '--'}
-                      </div>
-                      <div className="self-select-low">
-                        最低:{item.product_details.low ? item.product_details.low : '--'}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="self-select-buy-sell-block self-select-sell-block">
-                        {item.product_details.sell ? this.addSpecialStyle(item.product_details.buy) : '--'}
-                      </div>
-                      <div className="self-select-high">
-                        最高:{item.product_details.high ? item.product_details.high : '--'}
-                      </div>
-                    </div> */}
-                    <div className="item-main-info">
-                      <div className="self-select-name">{item.symbol_display.name}</div>
-                      <div className="self-select-buy-sell-block self-select-buy-block p-down">
-                        {item.product_details?.buy}
-                      </div>
-                      <div className="self-select-buy-sell-block self-select-sell-block p-up">
-                        {item.product_details?.sell}
-                      </div>
-                    </div>
-                    <div className="item-sub-info">
-                      <div className="self-select-code">{item.symbol_display.product_display.code}</div>
-                      <div className="self-select-spread">
-                        點差:{item.symbol_display.spread}
-                      </div>
-                    </div>
-                  </div>
-                )
-              })
-            }
-            {/* {
-              currentSymbolType !== "自选" && currentSymbolType !== "外汇" &&
-              <>
-                <div className="hot-stock-market">热门股票</div>
-                <div className="self-select-tr">
-                  <div className="item-main-info">
-                    <div className="self-select-name">新创建集团</div>
-                    <div className="self-select-buy-sell-block self-select-buy-block p-down">
-                      6.15
-                      </div>
-                    <div className="self-select-buy-sell-block self-select-sell-block p-up">
-                      6.15
-                      </div>
-                  </div>
-                  <div className="item-sub-info">
-                    <div className="self-select-code">
-                      <span className="symbol-type-code">US</span>
-                      <span className="symbol-code">BILI</span>
-                    </div>
-                  </div>
-                </div>
-              </>
-            } */}
-          </>
-          {(
-            dataLoading && <Spin
-              className="spin-icon"
-              indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
-            />
-          )}
+          <WS_ProductList
+            currentSymbolType={currentSymbolType.symbol_type_name}
+            symbol_type_code={currentSymbolType.symbol_type_code}
+            dataLoading={dataLoading}
+            channelCode={currentSymbolType.symbol_type_code === "self" ? "SELF" : "NONE"}
+            thisRouter={this.$f7router}
+          >
+
+          </WS_ProductList>
         </div>
       </Page>
     );

@@ -37,6 +37,7 @@ class MarketStore extends BaseStore {
 
   @action
   updateSelfSelectSymbolList = async config => {
+    console.log(config)
     const res = await api.market.getSelfSelectSymbolList(config);
     const results = res.data.results;
     const newResults = results.map(item => {
@@ -47,7 +48,7 @@ class MarketStore extends BaseStore {
       }
       return item;
     })
-    this.setSelfSelectSymbolList(newResults);
+    this.setSelfSelectSymbolList(newResults, true);
   };
 
   @observable

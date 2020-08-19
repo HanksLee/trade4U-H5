@@ -59,6 +59,8 @@ export default class extends React.Component {
           if (res.status === 204) {
             that.setState({ isAddSelfSelect: 0 })
             Toast.success("刪除自选成功", 2);
+            let queryString = `page=${1}&page_size=${20}`
+            await that.props.market.getSelfSelectSymbolList(queryString, true);
           }
         },
         onCancel() {
@@ -124,6 +126,9 @@ export default class extends React.Component {
             icon="market-icon"
             text="行情"
             className="tabbar-label"
+            onClick={() => {
+              this.$f7router.back();
+            }}
           />
           <Link
             icon={`${isAddSelfSelect === 0 ? 'self-select-icon' : 'self-select-icon-active'}`}

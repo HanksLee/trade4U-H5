@@ -36,6 +36,7 @@ export default class extends React.Component {
 
   showLogoutModal = () => {
     const { confirm } = Modal;
+    const that = this;
     confirm({
       title: '提示',
       content: '您確定要登出嗎',
@@ -44,7 +45,7 @@ export default class extends React.Component {
       cancelText: "取消",
       okText: "确认",
       onOk() {
-        this.logout();
+        that.logout();
       },
       onCancel() {
       },

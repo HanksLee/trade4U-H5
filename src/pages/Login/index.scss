@@ -10,15 +10,17 @@
 }
 
 .login-list {
-  .item-content {
-    width: 90%;
-    margin: auto;
-    padding-left: unset;
-    border-bottom: 1px solid #c8c7cc;
-  }
-
   ul {
     background-color: #21212b;
+
+    li {
+      .item-content {
+        width: 90%;
+        margin: auto;
+        padding-left: unset;
+        border-bottom: 1px solid #c8c7cc;
+      }
+    }
   }
 
   .item-inner {

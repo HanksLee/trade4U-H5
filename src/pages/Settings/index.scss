@@ -414,6 +414,23 @@
     position: relative;
     height: 44px;
 
+    .message-icon {
+      width: inherit;
+      height: inherit;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &.announcement-icon {
+        background-color: #0091ff;
+      }
+
+      &.notice-icon {
+        background-color: #6236ff;
+      }
+    }
+
     > .has-unread-message {
       width: 10px;
       height: 10px;

@@ -32,12 +32,8 @@ export default class extends React.Component {
       create_time_start: Date.parse(`${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`) / 1000,
       create_time_end: Date.parse(`${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`) / 1000 + 86399
     }, () => {
-      console.log(this.state)
-      console.log(moment(this.state.create_time_end * 1000))
-      console.log(moment().add('days'))
       this.getList()
     })
-    // this.getList()
   }
 
   onCreateTimeStartChange = (date, dateString) => {

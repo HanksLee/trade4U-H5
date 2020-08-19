@@ -95,10 +95,13 @@ export default class extends React.Component {
           >
             <div className="message-icon-container">
               {hasAnnouncement && <span className="has-unread-message"></span>}
-              <img
-                src="../../../assets/img/announcement-icon.svg"
-                alt="announcement-icon.svg"
-              />
+              <div className="message-icon announcement-icon">
+                <img
+                  src="../../../assets/img/announcement-icon.svg"
+                  alt="announcement-icon.svg"
+                />
+              </div>
+
             </div>
             <div className="message-content-container">
               <p className="message-content-title">站內公告</p>
@@ -134,10 +137,12 @@ export default class extends React.Component {
           <div className="message-wrap" onClick={this.goNotification}>
             <div className="message-icon-container">
               {hasNotify && <span className="has-unread-message"></span>}
-              <img
-                src="../../../assets/img/notice-icon.svg"
-                alt="notice-icon.svg"
-              />
+              <div className="message-icon notice-icon">
+                <img
+                  src="../../../assets/img/notice-icon.svg"
+                  alt="notice-icon.svg"
+                />
+              </div>
             </div>
             <div className="message-content-container">
               <p className="message-content-title">服务消息</p>

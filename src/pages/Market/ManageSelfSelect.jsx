@@ -49,7 +49,11 @@ export default class extends React.Component {
         symbol: this.state.checkedItems,
       },
     })
-    await this.props.market.updateSelfSelectSymbolList();
+    await api.market.sortSelfSelectSymbolList({
+      symbol: this.state.selfSelectSymbolList.map(item => item.symbol),
+    })
+    let queryString = `page=${1}&page_size=${20}`;
+    await this.props.market.updateSelfSelectSymbolList(queryString);
     this.setState((preState) => ({
       selfSelectSymbolList: preState.selfSelectSymbolList.filter(item => {
         return preState.checkedItems.indexOf(item.symbol) === -1
@@ -58,10 +62,11 @@ export default class extends React.Component {
   }
 
   handleConfirm = async () => {
-    await api.market.sortSelfSelectSymbolList({
-      symbol: this.state.selfSelectSymbolList.map(item => item.symbol),
-    })
-    await this.props.market.updateSelfSelectSymbolList();
+    // await api.market.sortSelfSelectSymbolList({
+    //   symbol: this.state.selfSelectSymbolList.map(item => item.symbol),
+    // })
+    // let queryString = `page=${1}&page_size=${20}`;
+    // await this.props.market.updateSelfSelectSymbolList(queryString);
     this.$f7router.back();
   }
 
