@@ -50,6 +50,17 @@ export const tradeTypeOptions = [
   },
 ];
 
+export const stockTypeOptions = [
+  {
+    id: 0,
+    name: '做多',
+  },
+  {
+    id: 1,
+    name: '做空',
+  },
+];
+
 export const executeOptions = [
   {
     id: 0,

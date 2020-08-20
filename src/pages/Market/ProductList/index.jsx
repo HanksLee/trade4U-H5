@@ -3,10 +3,16 @@ import { inject, observer } from "mobx-react";
 import { Spin } from 'antd';
 import { LoadingOutlined } from "@ant-design/icons";
 import moment from 'moment';
-import ws from 'utils/ws'
 import Dom7 from 'dom7';
 import '../index.scss';
-import WSConnect from "components/HOC/WSConnect";
+import {
+  STANDBY, //啟動ws之前
+  CONNECTING, //已開通通路，未接收到訊息
+  CONNECTED, //已接收到訊息
+  DISCONNECTED, //斷線
+  RECONNECT, //斷線重新連線
+  ERROR //
+} from "utils/WebSocketControl/status";
 
 const $$ = Dom7;
 
@@ -19,11 +25,14 @@ export default class extends React.Component {
     currentSymbolType: this.props.currentSymbolType
   }
 
+  buffer = {};
+
   constructor(props) {
     super(props)
+    this.buffer = this.initBuffer();
   }
   componentDidMount() {
-    // this.props.setReceviceMsgLinter(this.receviceMsgLinter)
+    this.props.setReceviceMsgLinter(this.receviceMsgLinter)
 
   }
 
@@ -37,14 +46,100 @@ export default class extends React.Component {
   }
 
   receviceMsgLinter = d => {
+    const { data, } = d;
 
-    console.log(d)
+    const { buffer, } = this;
+    const { timeId, BUFFER_TIME, list, } = buffer;
+    const receviceTime = moment().valueOf();
+    buffer.list = [
+      ...list,
+      ...data
+    ];
 
+    if (timeId) window.clearTimeout(timeId);
+    if (!this.checkBuffer(buffer, receviceTime)) {
+      buffer.timeId = window.setTimeout(() => {
+        this.updateContent(buffer);
+      }, BUFFER_TIME);
+      return;
+    }
+
+    this.updateContent(buffer);
+  };
+
+  checkBuffer(buffer, receviceTime) {
+    const { list, lastCheckUpdateTime, BUFFER_MAXCOUNT, BUFFER_TIME, } = buffer;
+    let maxCount = list.length;
+
+    if (
+      receviceTime - lastCheckUpdateTime >= BUFFER_TIME ||
+      maxCount >= BUFFER_MAXCOUNT
+    )
+      return true;
+    else return false;
+  }
+
+  updateContent = buffer => {
+    const { currentSymbolType } = this.state;
+    const { selfSelectSymbolList, symbolList, updateCurrentSymbolList } = this.props.market;
+    const currentList = currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
+    const { list, } = buffer;
+    const newList = this.sortList(list);
+    buffer.list = this.filterBufferlList(newList);
+
+    updateCurrentSymbolList(buffer.list, currentList, currentSymbolType);
+
+    this.buffer = this.initBuffer();
+  };
+
+  filterBufferlList(list) {
+    return list.filter((item, i, all) => {
+      return (
+        all.findIndex(fItem => {
+          return fItem.symbol === item.symbol;
+        }) === i
+      );
+    });
+  }
+
+  sortList = list => {
+    const tmp = Object.assign([], list);
+
+    tmp.sort((a, b) => {
+      if (a.symbol !== b.symbol) {
+        return -1;
+      }
+
+      if (a.timestamp > b.timestamp) {
+        return -1;
+      }
+
+      if (a.timestamp < b.timestamp) {
+        return 1;
+      }
+
+      if (a.timestamp === b.timestamp) {
+        return 0;
+      }
+    });
+
+    return tmp;
+  };
+
+  initBuffer() {
+    return {
+      BUFFER_MAXCOUNT: 50,
+      BUFFER_TIME: 2000,
+      timeId: 0,
+      lastCheckUpdateTime: moment().valueOf(),
+      list: [],
+    };
   }
 
   render() {
-    console.log(this)
-    console.log(this.props)
+    console.log(this.props.market.selfSelectSymbolList)
+    // console.log(this)
+    // console.log(this.props)
     const { thisRouter } = this.props
     const { selfSelectSymbolList, symbolList } = this.props.market;
     const { currentSymbolType, dataLoading } = this.state;
@@ -81,18 +176,18 @@ export default class extends React.Component {
               </div>
             </div> */}
                 <div className="item-main-info">
-                  <div className="self-select-name">{item.symbol_display.name}</div>
+                  <div className="self-select-name">{item?.symbol_display?.name}</div>
                   <div className="self-select-buy-sell-block self-select-buy-block p-down">
-                    {item.product_details?.buy}
+                    {item?.product_details?.buy}
                   </div>
                   <div className="self-select-buy-sell-block self-select-sell-block p-up">
-                    {item.product_details?.sell}
+                    {item?.product_details?.sell}
                   </div>
                 </div>
                 <div className="item-sub-info">
-                  <div className="self-select-code">{item.symbol_display.product_display.code}</div>
+                  <div className="self-select-code">{item?.symbol_display?.product_display?.code}</div>
                   <div className="self-select-spread">
-                    點差:{item.symbol_display.spread}
+                    點差:{item?.symbol_display?.spread}
                   </div>
                 </div>
               </div>

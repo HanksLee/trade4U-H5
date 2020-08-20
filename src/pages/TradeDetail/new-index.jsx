@@ -17,7 +17,8 @@ import {
   tradeActionMap,
   pendingOrderOptions,
   executeOptions,
-  executeMotionMap
+  executeMotionMap,
+  stockTypeOptions
 } from 'constant';
 import { inject, observer } from "mobx-react";
 import utils from 'utils';
@@ -44,6 +45,13 @@ export default class extends React.Component {
         action: 0,
         take_profit: undefined,
         stop_loss: undefined
+      },
+      stockParams: {
+        holdDays: "T+0",
+        action: 0,
+        funds: 10000,
+        unitFunds: 100,
+        lever: 5
       },
       executeMotion: this.props.mode
     }
@@ -239,6 +247,56 @@ export default class extends React.Component {
     });
   }
 
+  onFundsChanged = (change, field) => {
+    const { stockParams } = this.state;
+
+    let fieldValue = stockParams[field];
+
+    if (!utils.isEmpty(fieldValue)) {
+      fieldValue += change;
+    } else {
+      fieldValue = 10000
+    }
+
+    this.setState({
+      stockParams: {
+        ...stockParams,
+        [field]: fieldValue,
+      }
+
+    });
+  }
+
+  switchLever = (lever) => {
+    const { stockParams } = this.state;
+    this.setState({
+      stockParams: {
+        ...stockParams,
+        lever: lever
+      }
+    })
+  }
+
+  switchHoldDays = (days) => {
+    const { stockParams } = this.state;
+    this.setState({
+      stockParams: {
+        ...stockParams,
+        holdDays: days
+      }
+    })
+  }
+
+  switchStockType = (id) => {
+    const { stockParams } = this.state;
+    this.setState({
+      stockParams: {
+        ...stockParams,
+        action: id
+      }
+    })
+  }
+
   switchTradeOptions = (id) => {
     const { params } = this.state;
     const {
@@ -425,81 +483,210 @@ export default class extends React.Component {
     }
   };
 
-  render() {
+  renderStockInput = () => {
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
     const { currentSymbol, currentShowSymbol } = this.props.market;
-    const { moreInfo, tradeType, params, executeMotion } = this.state;
+    const { tradeType, params, executeMotion, stockParams } = this.state;
+    return (
+      <>
+        <div className="trade-detail-input-container">
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">类型</div>
+            <div className="trade-detail-input-item-btn-group">
+              {mode === 'add' &&
+                <>
+                  {<div
+                    onClick={() => { this.switchHoldDays("T+0") }}
+                    className={`trade-detail-input-item-btn ${stockParams.holdDays === "T+0" && 'btn-active'}`}>
+                    {"T+0"}
+                  </div>}
+                  <div
+                    onClick={() => { this.switchHoldDays("T+1") }}
+                    className={`trade-detail-input-item-btn ${stockParams.holdDays === "T+1" && 'btn-active'}`}>
+                    {"T+1"}
+                  </div>
+                </>
+              }
+              {
+                (mode === 'update' || mode === 'delete') &&
+                <div className={`trade-detail-input-item-text`}>
+                  {stockParams.holdDays}
+                </div>
+              }
+            </div>
+          </div>
+
+          {mode === 'add' &&
+            <div className="trade-detail-input-item">
+              <div className="trade-detail-input-item-title">类型</div>
+              <div className="trade-detail-input-item-btn-group">
+
+                {
+                  stockTypeOptions.map((item) => {
+                    return (
+                      <div
+                        onClick={() => { this.switchStockType(item.id) }}
+                        className={`trade-detail-input-item-btn ${stockParams.action === item.id && 'btn-active'}`}>
+                        {item.name}
+                      </div>)
+                  })
+                }
+              </div>
+            </div>}
+
+          {
+            mode !== "add" &&
+            <div className="trade-detail-input-item">
+              <div className="trade-detail-input-item-title">方向</div>
+              <div className="trade-detail-input-item-btn-group">
+                <div className={`trade-detail-input-item-text`}>
+                  {(tradeActions[Number(stockParams.action)])}
+                </div>
+              </div>
+            </div>
+          }
+
+          {mode !== 'add' && <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">类型</div>
+            <div className="trade-detail-input-item-btn-group">
+              {currentTradeTab === '持仓' && <div
+                onClick={() => { this.switchExecuteMotion("delete") }}
+                className={`trade-detail-input-item-btn ${executeMotion === "delete" && 'btn-active'}`}>
+                {"平仓"}
+              </div>}
+              <div
+                onClick={() => { this.switchExecuteMotion("update") }}
+                className={`trade-detail-input-item-btn ${executeMotion === "update" && 'btn-active'}`}>
+                {"修改"}
+              </div>
+            </div>
+          </div>}
+
+
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">价格</div>
+            <div className="trade-detail-input-item-btn-group">
+              <div className="trade-detail-input-item-less-btn"
+                onClick={() => {
+                  this.onFundsChanged(-stockParams.unitFunds, 'funds');
+                }}>－</div>
+              <div className="trade-detail-input-item-input">
+                <Input
+                  type="number"
+                  min={100}
+                  value={stockParams.funds}
+                  onChange={(evt) => {
+                    this.setState({
+                      stockParams: {
+                        ...stockParams,
+                        funds: evt.target.value,
+                      }
+
+                    });
+                  }}
+                />
+              </div>
+              <div className="trade-detail-input-item-add-btn"
+                onClick={() => {
+                  this.onFundsChanged(stockParams.unitFunds, 'funds');
+                }}>＋</div>
+            </div>
+          </div>
+
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">槓桿倍數</div>
+            <div className="trade-detail-input-item-btn-group">
+              {mode === 'add' &&
+                <>
+                  {<div
+                    onClick={() => { this.switchLever(5) }}
+                    className={`trade-detail-input-item-btn-small ${stockParams.lever === 5 && 'btn-active'}`}>
+                    {"5"}
+                  </div>}
+                  <div
+                    onClick={() => { this.switchLever(8) }}
+                    className={`trade-detail-input-item-btn-small ${stockParams.lever === 8 && 'btn-active'}`}>
+                    {"8"}
+                  </div>
+                  <div
+                    onClick={() => { this.switchLever(10) }}
+                    className={`trade-detail-input-item-btn-small ${stockParams.lever === 10 && 'btn-active'}`}>
+                    {"10"}
+                  </div>
+                </>
+              }
+              {
+                (mode === 'update' || mode === 'delete') &&
+                <div className={`trade-detail-input-item-text`}>
+                  {stockParams.lever}
+                </div>
+              }
+            </div>
+          </div>
+
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">操盤資金</div>
+            <div className="trade-detail-input-item-btn-group">
+              <div className={`trade-detail-input-item-text`}>
+                {"50000"}
+              </div>
+            </div>
+          </div>
+
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">買入數量</div>
+            <div className="trade-detail-input-item-btn-group">
+              <div className={`trade-detail-input-item-text`}>
+                {"10300"}
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div className={`trade-detail-submit-btn 
+                        ${(tradeType !== "instance" && utils.isEmpty(params.open_price) || utils.isEmpty(params.lots)) ? 'reject' : ""}
+                        ${mode === 'add' ? 'add' : 'modify'}`}
+          style={{ marginBottom: '30px' }}
+          onClick={this.onSubmit}>
+          {mode === 'add' ? '下单' : '确认'}
+        </div>
+
+        <div className="trade-detail-remarks-container">
+          <div className="trade-detail-remarks-item">
+            <div className="trade-detail-remarks-item-title">服務費</div>
+            <div className="trade-detail-remarks-item-content">HK$100.00(手續費)</div>
+          </div>
+          <div className="trade-detail-remarks-item">
+            <div className="trade-detail-remarks-item-title">遞延費</div>
+            <div className="trade-detail-remarks-item-content">$100.00(港元/交易日)</div>
+          </div>
+          <div className="trade-detail-remarks-item">
+            <div className="trade-detail-remarks-item-title">參考匯率</div>
+            <div className="trade-detail-remarks-item-content">$100.00</div>
+          </div>
+          <div className="trade-detail-remarks-item">
+            <div className="trade-detail-remarks-item-title">總計</div>
+            <div className="trade-detail-remarks-item-content">￥100.00元</div>
+          </div>
+          <div className="trade-detail-remarks-placeholder">
+            *總計=操作資金+服務費
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  renderForexInput = () => {
+    const { mode, currentTradeTab } = this.props;
+    const { currentTrade } = this.props.trade;
+    const { currentSymbol, currentShowSymbol } = this.props.market;
+    const { tradeType, params, executeMotion } = this.state;
     const stepLevel = currentSymbol?.symbol_display?.decimals_place ? (
       1 / 10 ** (currentSymbol?.symbol_display?.decimals_place)
     ) : 0.001;
     return (
-      <Page noToolbar>
-        <Navbar>
-          <NavLeft>
-            <Link back>
-              <Icon color={'white'} f7={'chevron_left'} size={r(18)}></Icon>
-            </Link>
-          </NavLeft>
-          <NavTitle>{currentSymbol?.symbol_display?.name}</NavTitle>
-          <NavRight></NavRight>
-
-        </Navbar>
-        <div className="trade-detail-stock-container">
-          <div className="now-stock">{currentSymbol?.product_details?.sell}</div>
-          <div className="spread-stock">
-            <div>
-              <p>{currentSymbol?.product_details?.change}</p>
-              <p>{`${((currentSymbol?.product_details?.change) / (currentSymbol?.product_details?.sell) * 100).toFixed(2)}%`}</p>
-            </div>
-          </div>
-          <div className="detail-btn" onClick={this.switchTradeDetail}>{moreInfo ? "收起" : "查看详情"}</div>
-        </div>
-        <div className="trade-detail-price">
-          <div className="price-item">
-            <span className="price-item-title">卖出</span>
-            <span className="price-item-content p-down">{currentSymbol?.sell}</span>
-          </div>
-          <div className="price-item">
-            <span className="price-item-title">买入</span>
-            <span className="price-item-content p-up">{currentSymbol?.buy}</span>
-          </div>
-        </div>
-
-        <div className={`trade-detail-more-info-container ${moreInfo ? "show" : ""}`}>
-          <div className="trade-detail-more-info-contract">
-            <div className="trade-detail-more-info-contract-title">合约资讯</div>
-            <div className="trade-detail-more-info-contract-content">
-              <div><span>小数点位</span><span>{String(currentSymbol?.symbol_display?.decimals_place)}</span></div>
-              <div><span>合约大小</span><span>{String(currentSymbol?.symbol_display?.contract_size)}</span></div>
-              <div><span>点差</span><span>{String(currentSymbol?.symbol_display?.spread)}</span></div>
-              <div><span>预付款货币</span><span>{currentSymbol?.symbol_display?.margin_currency_display}</span></div>
-              <div><span>获利货币</span><span>{currentSymbol?.symbol_display?.profit_currency_display}</span></div>
-              <div><span>最小交易手数</span><span>{String(currentSymbol?.symbol_display?.min_lots)}</span></div>
-              <div><span>最大交易手数</span><span>{String(currentSymbol?.symbol_display?.max_lots)}</span></div>
-              <div><span>交易数步长</span><span>{String(currentSymbol?.symbol_display?.lots_step)}</span></div>
-              <div><span>买入库存费</span><span>{String(currentSymbol?.symbol_display?.purchase_fee)}</span></div>
-              <div><span>卖出库存费</span><span>{String(currentSymbol?.symbol_display?.selling_fee)}</span></div>
-            </div>
-          </div>
-          <div className="trade-detail-more-info-news">
-            <div className="trade-detail-more-info-news-tabs">
-              <p>資訊</p>
-            </div>
-            <div className="trade-detail-more-info-news-content">
-              <div>
-                <p>气温回暖 深夜变天！一张图揭清明连假天气</p>
-                <p>2020 03/31 13:00</p>
-                <span></span>
-              </div>
-              <div>
-                <p>气温回暖 深夜变天！一张图揭清明连假天气</p>
-                <p>2020 03/31 13:00</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
+      <>
         <div className="trade-detail-input-container">
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">类型</div>
@@ -522,7 +709,7 @@ export default class extends React.Component {
                 </div>
               }
               {/* <div className="trade-detail-input-item-btn">立即执行</div>
-              <div className="trade-detail-input-item-btn">挂单</div> */}
+          <div className="trade-detail-input-item-btn">挂单</div> */}
             </div>
           </div>
 
@@ -720,13 +907,88 @@ export default class extends React.Component {
             </div>
           </div>
         </div>
-
         <div className={`trade-detail-submit-btn 
                         ${(tradeType !== "instance" && utils.isEmpty(params.open_price) || utils.isEmpty(params.lots)) ? 'reject' : ""}
                         ${mode === 'add' ? 'add' : 'modify'}`}
           style={{ marginBottom: '30px' }}
           onClick={this.onSubmit}>
           {mode === 'add' ? '下单' : '确认'}</div>
+      </>
+    )
+  }
+
+  render() {
+    const { mode, } = this.props;
+    const { currentSymbol } = this.props.market;
+    const { moreInfo, tradeType, params } = this.state;
+    return (
+      <Page noToolbar>
+        <Navbar>
+          <NavLeft>
+            <Link back>
+              <Icon color={'white'} f7={'chevron_left'} size={r(18)}></Icon>
+            </Link>
+          </NavLeft>
+          <NavTitle>{currentSymbol?.symbol_display?.name}</NavTitle>
+          <NavRight></NavRight>
+
+        </Navbar>
+        <div className="trade-detail-stock-container">
+          <div className="now-stock">{currentSymbol?.product_details?.sell}</div>
+          <div className="spread-stock">
+            <div>
+              <p>{currentSymbol?.product_details?.change}</p>
+              <p>{`${((currentSymbol?.product_details?.change) / (currentSymbol?.product_details?.sell) * 100).toFixed(2)}%`}</p>
+            </div>
+          </div>
+          <div className="detail-btn" onClick={this.switchTradeDetail}>{moreInfo ? "收起" : "查看详情"}</div>
+        </div>
+        <div className="trade-detail-price">
+          <div className="price-item">
+            <span className="price-item-title">卖出</span>
+            <span className="price-item-content p-down">{currentSymbol?.sell}</span>
+          </div>
+          <div className="price-item">
+            <span className="price-item-title">买入</span>
+            <span className="price-item-content p-up">{currentSymbol?.buy}</span>
+          </div>
+        </div>
+
+        <div className={`trade-detail-more-info-container ${moreInfo ? "show" : ""}`}>
+          <div className="trade-detail-more-info-contract">
+            <div className="trade-detail-more-info-contract-title">合约资讯</div>
+            <div className="trade-detail-more-info-contract-content">
+              <div><span>小数点位</span><span>{String(currentSymbol?.symbol_display?.decimals_place)}</span></div>
+              <div><span>合约大小</span><span>{String(currentSymbol?.symbol_display?.contract_size)}</span></div>
+              <div><span>点差</span><span>{String(currentSymbol?.symbol_display?.spread)}</span></div>
+              <div><span>预付款货币</span><span>{currentSymbol?.symbol_display?.margin_currency_display}</span></div>
+              <div><span>获利货币</span><span>{currentSymbol?.symbol_display?.profit_currency_display}</span></div>
+              <div><span>最小交易手数</span><span>{String(currentSymbol?.symbol_display?.min_lots)}</span></div>
+              <div><span>最大交易手数</span><span>{String(currentSymbol?.symbol_display?.max_lots)}</span></div>
+              <div><span>交易数步长</span><span>{String(currentSymbol?.symbol_display?.lots_step)}</span></div>
+              <div><span>买入库存费</span><span>{String(currentSymbol?.symbol_display?.purchase_fee)}</span></div>
+              <div><span>卖出库存费</span><span>{String(currentSymbol?.symbol_display?.selling_fee)}</span></div>
+            </div>
+          </div>
+          <div className="trade-detail-more-info-news">
+            <div className="trade-detail-more-info-news-tabs">
+              <p>資訊</p>
+            </div>
+            <div className="trade-detail-more-info-news-content">
+              <div>
+                <p>气温回暖 深夜变天！一张图揭清明连假天气</p>
+                <p>2020 03/31 13:00</p>
+                <span></span>
+              </div>
+              <div>
+                <p>气温回暖 深夜变天！一张图揭清明连假天气</p>
+                <p>2020 03/31 13:00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {currentSymbol?.symbol_display?.type_display === "外汇" ? this.renderForexInput() : this.renderStockInput()}
       </Page>
     );
   }
