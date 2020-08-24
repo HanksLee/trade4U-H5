@@ -53,7 +53,11 @@ class MarketStore extends BaseStore {
   @observable
   symbolList = [];
   @observable
-  symbolListCount = 0
+  prevSymbolIDList = [];
+  @observable
+  nextSymbolIDList = [];
+  @observable
+  symbolListCount = 0;
   @observable
   currentSymbol = {};
 
@@ -61,17 +65,25 @@ class MarketStore extends BaseStore {
   getSymbolList = async (config, overwrite) => {
     const res = await this.$api.market.getSymbolList(config);
     this.setSymbolList(res.data.results, overwrite);
-    this.symbolListCount = res.data.count
+    this.symbolListCount = res.data.count;
   };
 
   @action
   setSymbolList = (data, overwrite) => {
     if (overwrite) {
       this.symbolList = data;
+      this.symbolList.map((item) => {
+        this.nextSymbolIDList.push(item.id)
+      })
     } else {
       this.symbolList = [...this.symbolList, ...data]
     }
+  }
 
+  @action
+  moveSymbolIDList = (array) => {
+    this.prevSymbolIDList = array;
+    this.nextSymbolIDList = [];
   }
 
   @action

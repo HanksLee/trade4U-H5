@@ -84,14 +84,14 @@ export default class extends React.Component {
             <List>
               <ListItem
                 title={"入金"}
-                link={`/settings/withdraw`}
+                link={`/settings/deposit`}
               >
               </ListItem>
             </List>
             <List className="btn-reverse">
               <ListItem
                 title={"出金"}
-                link={`/settings/deposit`}
+                link={`/settings/withdraw`}
               >
               </ListItem>
             </List>

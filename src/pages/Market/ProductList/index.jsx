@@ -13,6 +13,7 @@ import {
   RECONNECT, //斷線重新連線
   ERROR //
 } from "utils/WebSocketControl/status";
+import utils from 'utils';
 
 const $$ = Dom7;
 
@@ -35,6 +36,28 @@ export default class extends React.Component {
     this.props.setReceviceMsgLinter(this.receviceMsgLinter)
 
   }
+
+  componentDidUpdate() {
+    const { nextSymbolIDList, prevSymbolIDList } = this.props.market;
+    if (this.state.currentSymbolType !== "自选") {
+      if (!utils.isEmpty(prevSymbolIDList)) {
+        // this.trackSymbol(prevSymbolIDList, "unsubscribe");
+      }
+      // this.trackSymbol(nextSymbolIDList, "subscribe");
+    }
+  }
+
+  trackSymbol = (currentList, type) => {
+    const o = {
+      type: type,
+      data: {
+        symbol_ids: currentList,
+      },
+    };
+
+    console.log(o)
+    this.props.sendMsg(o);
+  };
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.dataLoading !== this.state.dataLoading) {
@@ -137,7 +160,7 @@ export default class extends React.Component {
   }
 
   render() {
-    console.log(this.props.market.selfSelectSymbolList)
+    // console.log(this.props.market.selfSelectSymbolList)
     // console.log(this)
     // console.log(this.props)
     const { thisRouter } = this.props
@@ -177,18 +200,18 @@ export default class extends React.Component {
             </div> */}
                 <div className="item-main-info">
                   <div className="self-select-name">{item?.symbol_display?.name}</div>
-                  <div className="self-select-buy-sell-block self-select-buy-block p-down">
+                  <div className={`self-select-buy-sell-block ${item?.product_details?.change > 0 && "p-up stock-green-gif"} ${item?.product_details?.change < 0 && "p-down stock-red-gif"}`}>
                     {item?.product_details?.buy}
                   </div>
-                  <div className="self-select-buy-sell-block self-select-sell-block p-up">
+                  <div className={`self-select-buy-sell-block ${item?.product_details?.change > 0 && "p-up stock-green-gif"} ${item?.product_details?.change < 0 && "p-down stock-red-gif"}`}>
                     {item?.product_details?.sell}
                   </div>
                 </div>
                 <div className="item-sub-info">
                   <div className="self-select-code">{item?.symbol_display?.product_display?.code}</div>
-                  <div className="self-select-spread">
+                  {item?.symbol_display?.type_display === '外汇' && <div className="self-select-spread">
                     點差:{item?.symbol_display?.spread}
-                  </div>
+                  </div>}
                 </div>
               </div>
             )

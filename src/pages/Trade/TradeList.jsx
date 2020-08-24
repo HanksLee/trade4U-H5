@@ -658,19 +658,35 @@ export default class extends BaseReact {
               <p>订单号</p>
               <p className="order-number">{item.order_number}</p>
             </div>
-            {currentTradeTab === "持仓" && <div className="trade-content-content-bottom-btn"
-              onClick={() => {
-                this.props.trade.setCurrentTrade(item);
-                this.goToPage(`/trade/${item?.symbol}/`, {
-                  props: {
-                    mode: "update",
-                    currentTradeTab
-                  },
-                })
-              }
-              }>
-              平仓/修改
-            </div>}
+            {currentTradeTab === "持仓" &&
+              <div className="trade-content-content-bottom-btn-group">
+                <div className="trade-content-content-bottom-btn"
+                  onClick={() => {
+                    this.props.trade.setCurrentTrade(item);
+                    this.goToPage(`/trade/${item?.symbol}/`, {
+                      props: {
+                        mode: "update",
+                        currentTradeTab
+                      },
+                    })
+                  }
+                  }>
+                  修改
+            </div>
+                <div className="trade-content-content-bottom-btn"
+                  onClick={() => {
+                    this.props.trade.setCurrentTrade(item);
+                    this.goToPage(`/trade/${item?.symbol}/`, {
+                      props: {
+                        mode: "delete",
+                        currentTradeTab
+                      },
+                    })
+                  }
+                  }>
+                  平仓
+            </div>
+              </div>}
             {currentTradeTab === "挂单" &&
               <div className="trade-content-content-bottom-btn-group">
                 <div className="trade-content-content-bottom-btn"

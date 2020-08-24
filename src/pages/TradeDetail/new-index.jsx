@@ -11,7 +11,8 @@ import {
   Input
 } from 'framework7-react';
 import { Toast } from "antd-mobile";
-import { Modal } from 'antd';
+import { Modal, Spin } from 'antd';
+import { LoadingOutlined } from "@ant-design/icons";
 import {
   tradeTypeOptions,
   tradeActionMap,
@@ -53,13 +54,13 @@ export default class extends React.Component {
         unitFunds: 100,
         lever: 5
       },
-      executeMotion: this.props.mode
     }
   }
 
   componentDidMount() {
     const { mode, currentTradeTab } = this.props;
-    const { currentTrade } = this.props.trade
+    const { currentTrade } = this.props.trade;
+    console.log(currentTrade)
     this.initSymbolList();
     if (mode === 'add') {
       this.setState({
@@ -359,12 +360,9 @@ export default class extends React.Component {
     this.setState({ moreInfo: !moreInfo })
   }
 
-  switchExecuteMotion = (motion) => {
-    this.setState({ executeMotion: motion })
-  }
 
   onSubmit = async () => {
-    const { params, executeMotion } = this.state;
+    const { params } = this.state;
     const {
       mode,
       market: {
@@ -378,7 +376,7 @@ export default class extends React.Component {
     const lots = params.lots;
 
     try {
-      if (executeMotion == "add") {
+      if (mode == "add") {
 
         const decimals_place = currentSymbol?.symbol_display?.decimals_place;
 
@@ -429,7 +427,7 @@ export default class extends React.Component {
             // },
           });
         }
-      } else if (executeMotion === "update") {
+      } else if (mode === "update") {
         const payload = params;
         const res = await this.props.common.$api.trade.updateTrade(currentTrade.order_number, payload);
         const that = this;
@@ -453,7 +451,7 @@ export default class extends React.Component {
             // },
           });
         }
-      } else if (executeMotion === "delete") {
+      } else if (mode === "delete") {
         const res = await this.props.common.$api.trade.closeTrade(currentTrade.order_number);
         const that = this;
 
@@ -487,7 +485,7 @@ export default class extends React.Component {
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
     const { currentSymbol, currentShowSymbol } = this.props.market;
-    const { tradeType, params, executeMotion, stockParams } = this.state;
+    const { tradeType, params, stockParams } = this.state;
     return (
       <>
         <div className="trade-detail-input-container">
@@ -547,7 +545,7 @@ export default class extends React.Component {
             </div>
           }
 
-          {mode !== 'add' && <div className="trade-detail-input-item">
+          {/* {mode !== 'add' && <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">类型</div>
             <div className="trade-detail-input-item-btn-group">
               {currentTradeTab === '持仓' && <div
@@ -561,7 +559,7 @@ export default class extends React.Component {
                 {"修改"}
               </div>
             </div>
-          </div>}
+          </div>} */}
 
 
           <div className="trade-detail-input-item">
@@ -647,9 +645,9 @@ export default class extends React.Component {
         <div className={`trade-detail-submit-btn 
                         ${(tradeType !== "instance" && utils.isEmpty(params.open_price) || utils.isEmpty(params.lots)) ? 'reject' : ""}
                         ${mode === 'add' ? 'add' : 'modify'}`}
-          style={{ marginBottom: '30px' }}
+          style={{ marginBottom: '20px' }}
           onClick={this.onSubmit}>
-          {mode === 'add' ? '下单' : '确认'}
+          {mode === 'add' ? '下单' : mode === 'update' ? '修改' : '平仓'}
         </div>
 
         <div className="trade-detail-remarks-container">
@@ -681,7 +679,7 @@ export default class extends React.Component {
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
     const { currentSymbol, currentShowSymbol } = this.props.market;
-    const { tradeType, params, executeMotion } = this.state;
+    const { tradeType, params } = this.state;
     const stepLevel = currentSymbol?.symbol_display?.decimals_place ? (
       1 / 10 ** (currentSymbol?.symbol_display?.decimals_place)
     ) : 0.001;
@@ -725,49 +723,36 @@ export default class extends React.Component {
             </div>
           }
 
-          <div className="trade-detail-input-item">
-            <div className="trade-detail-input-item-title">类型</div>
-            <div className="trade-detail-input-item-btn-group">
-              {mode === 'add'
-                ?
-                <>
-                  {
-                    tradeType === 'future' && pendingOrderOptions.map((item) => {
-                      return (
-                        <div
-                          onClick={() => { this.switchTradeOptions(item.id) }}
-                          className={`trade-detail-input-item-btn ${params.action === item.id && 'btn-active'}`}>
-                          {item.name}
-                        </div>)
-                    })
-                  }
-                  {
-                    tradeType === 'instance' && executeOptions.map((item) => {
-                      return (
-                        <div
-                          onClick={() => { this.switchTradeOptions(item.id) }}
-                          className={`trade-detail-input-item-btn ${params.action === item.id && 'btn-active'}`}>
-                          {item.name}
-                        </div>
-                      )
-                    })
-                  }
-                </>
-                : <>
-                  {currentTradeTab === '持仓' && <div
-                    onClick={() => { this.switchExecuteMotion("delete") }}
-                    className={`trade-detail-input-item-btn ${executeMotion === "delete" && 'btn-active'}`}>
-                    {"平仓"}
-                  </div>}
-                  <div
-                    onClick={() => { this.switchExecuteMotion("update") }}
-                    className={`trade-detail-input-item-btn ${executeMotion === "update" && 'btn-active'}`}>
-                    {"修改"}
-                  </div>
-                </>
-              }
+          {mode === 'add'
+            && <div className="trade-detail-input-item">
+              <div className="trade-detail-input-item-title">类型</div>
+              <div className="trade-detail-input-item-btn-group">
+
+                {
+                  tradeType === 'future' && pendingOrderOptions.map((item) => {
+                    return (
+                      <div
+                        onClick={() => { this.switchTradeOptions(item.id) }}
+                        className={`trade-detail-input-item-btn ${params.action === item.id && 'btn-active'}`}>
+                        {item.name}
+                      </div>)
+                  })
+                }
+                {
+                  tradeType === 'instance' && executeOptions.map((item) => {
+                    return (
+                      <div
+                        onClick={() => { this.switchTradeOptions(item.id) }}
+                        className={`trade-detail-input-item-btn ${params.action === item.id && 'btn-active'}`}>
+                        {item.name}
+                      </div>
+                    )
+                  })
+                }
+
+              </div>
             </div>
-          </div>
+          }
 
           {(currentTradeTab === '挂单' || tradeType === 'future') &&
             <div className="trade-detail-input-item">
@@ -802,41 +787,46 @@ export default class extends React.Component {
 
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">数量</div>
-            <div className="trade-detail-input-item-btn-group">
-              <div className="trade-detail-input-item-less-btn"
-                onClick={() => {
-                  this.onLotsChanged(0 - currentShowSymbol?.symbol_display?.lots_step);
-                }}
-              >－</div>
-              <div className="trade-detail-input-item-input">
-                <Input
-                  type="number"
-                  min={0.01}
-                  placeholder={'未设置'}
-                  value={params.lots || undefined}
-                  onChange={(evt) => {
-
-                    if (evt.target.value < currentShowSymbol?.symbol_display?.min_lots) return;
-                    this.setState({
-                      params: {
-                        ...params,
-                        lots: evt.target.value,
-                      }
-                    });
+            {(mode !== 'delete' && currentTradeTab !== '持仓')
+              ? <div className="trade-detail-input-item-btn-group">
+                <div className="trade-detail-input-item-less-btn"
+                  onClick={() => {
+                    this.onLotsChanged(0 - currentShowSymbol?.symbol_display?.lots_step);
                   }}
-                />
+                >－</div>
+                <div className="trade-detail-input-item-input">
+                  <Input
+                    type="number"
+                    min={0.01}
+                    placeholder={'未设置'}
+                    value={params.lots || undefined}
+                    onChange={(evt) => {
+
+                      if (evt.target.value < currentShowSymbol?.symbol_display?.min_lots) return;
+                      this.setState({
+                        params: {
+                          ...params,
+                          lots: evt.target.value,
+                        }
+                      });
+                    }}
+                  />
+                </div>
+                <div className="trade-detail-input-item-add-btn"
+                  onClick={() => {
+                    this.onLotsChanged(currentShowSymbol?.symbol_display?.lots_step);
+                  }}>＋</div>
               </div>
-              <div className="trade-detail-input-item-add-btn"
-                onClick={() => {
-                  this.onLotsChanged(currentShowSymbol?.symbol_display?.lots_step);
-                }}>＋</div>
-            </div>
+              : <div className="trade-detail-input-item-btn-group">
+                <div className={`trade-detail-input-item-text`}>{params.lots}</div>
+              </div>
+            }
           </div>
 
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">止盈</div>
             <div className="trade-detail-input-item-btn-group">
-              {executeMotion !== "delete" ?
+              {mode !== "delete" ?
                 <>
                   <div className="trade-detail-input-item-less-btn"
                     onClick={() => {
@@ -873,7 +863,7 @@ export default class extends React.Component {
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">止损</div>
             <div className="trade-detail-input-item-btn-group">
-              {executeMotion !== "delete" ?
+              {mode !== "delete" ?
                 <>
                   <div className="trade-detail-input-item-less-btn"
                     onClick={() => {
@@ -912,7 +902,8 @@ export default class extends React.Component {
                         ${mode === 'add' ? 'add' : 'modify'}`}
           style={{ marginBottom: '30px' }}
           onClick={this.onSubmit}>
-          {mode === 'add' ? '下单' : '确认'}</div>
+          {mode === 'add' ? '下单' : mode === 'update' ? '修改' : '平仓'}
+        </div>
       </>
     )
   }
@@ -987,8 +978,13 @@ export default class extends React.Component {
             </div>
           </div>
         </div>
-
-        {currentSymbol?.symbol_display?.type_display === "外汇" ? this.renderForexInput() : this.renderStockInput()}
+        {utils.isEmpty(currentSymbol)
+          ?
+          <Spin
+            className="spin-icon"
+            indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+          />
+          : currentSymbol?.symbol_display?.type_display === "外汇" ? this.renderForexInput() : this.renderStockInput()}
       </Page>
     );
   }

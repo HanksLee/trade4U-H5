@@ -306,6 +306,7 @@
       text-align: right;
       transition: background-color 1s;
       margin: r(5) 0;
+      color: #ffffff;
     }
 
     .self-select-buy-sell-block.increase {
@@ -328,6 +329,16 @@
       color: #8c8c8c;
       font-size: r(11);
       // text-align: left;
+    }
+
+    .stock-green-gif {
+      background-image: url('../../assets/img/stock-green.gif');
+      background-size: 100% 100%;
+    }
+
+    .stock-red-gif {
+      background-image: url('../../assets/img/stock-red.gif');
+      background-size: 100% 100%;
     }
   }
 

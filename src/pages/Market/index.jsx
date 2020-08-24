@@ -16,6 +16,7 @@ import './index.scss';
 import channelConfig from "./config/channelConfig"
 import WSConnect from "components/HOC/WSConnect";
 import ProductList from './ProductList';
+import utils from 'utils';
 
 const $$ = Dom7;
 const WS_ProductList = WSConnect(channelConfig[0], channelConfig, ProductList);
@@ -89,6 +90,7 @@ export default class extends React.Component {
 
   getList = async () => {
     const { currentSymbolType, subCurrentSymbolType, page, page_size } = this.state;
+    const { moveSymbolIDList, nextSymbolIDList } = this.props.market;
     if (currentSymbolType.symbol_type_name === "自选") {
       if (subCurrentSymbolType === "全部") {
         this.setState({ dataLoading: true }, async () => {
@@ -111,12 +113,18 @@ export default class extends React.Component {
       }
     } else {
       this.setState({ dataLoading: true }, async () => {
+
         let queryString = `type__name=${currentSymbolType.symbol_type_name}&page=${page}&page_size=${page_size}`;
         await this.props.market.getSymbolList(queryString, page === 1 ? true : false)
         this.setState({ dataLoading: false, page: page + 1 }, () => {
           const { symbolList, symbolListCount } = this.props.market;
           this.setState({ hasMore: symbolList.length < symbolListCount })
         })
+
+        if (!utils.isEmpty(nextSymbolIDList)) {
+          moveSymbolIDList(nextSymbolIDList)
+        }
+
       })
     }
   }
