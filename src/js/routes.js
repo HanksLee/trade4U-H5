@@ -99,6 +99,26 @@ var routes = [
       import(/* webpackChunkName: 'chart-page' */ "../pages/Chart/index.jsx"),
   },
   {
+    path: "/subscribe/",
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () =>
+        import(/* webpackChunkName: 'trade-page' */ "../pages/Subscribe/index.jsx");
+      reactComponent().then((rc) => {
+        resolve({ component: rc.default });
+      });
+    },
+  },
+  {
+    path: "/subscribe/detail",
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () =>
+        import(/* webpackChunkName: 'trade-page' */ "../pages/Subscribe/Detail.jsx");
+      reactComponent().then((rc) => {
+        resolve({ component: rc.default });
+      });
+    },
+  },
+  {
     path: "/trade/",
     async(routeTo, routeFrom, resolve, reject) {
       const reactComponent = () =>

@@ -117,8 +117,6 @@ class TradeStore extends BaseStore {
 
     newMeta = this.calcTradeInfo(newMeta, transList);
 
-    console.log(transList)
-
     this.setTradeInfo(newMeta, false);
     this.setTradeList(transList, "order");
     this.setTradeList(pendingList, "future");

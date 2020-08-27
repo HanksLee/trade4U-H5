@@ -13,7 +13,7 @@ import moment from 'moment';
 import ws from 'utils/ws'
 import Dom7 from 'dom7';
 import './index.scss';
-import channelConfig from "./config/channelConfig"
+import channelConfig from "./config/channelConfig";
 import WSConnect from "components/HOC/WSConnect";
 import ProductList from './ProductList';
 import utils from 'utils';

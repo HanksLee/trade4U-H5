@@ -12,12 +12,21 @@ import {
 import { Toast } from "antd-mobile";
 import { Modal } from 'antd';
 import { inject, observer } from "mobx-react";
+import WSConnect from "components/HOC/WSConnect";
+import channelConfig from "./config/trendChannelConfig"
+import Trend from "./Trend";
 import 'antd/dist/antd.css';
 import './index.scss';
 import UpArrowIcon from "assets/img/up-arrow-icon.svg";
 import OrderIcon from "assets/img/order-icon.svg";
 
-@inject("market")
+const WS_TrendContainer = WSConnect(
+  channelConfig[0],
+  channelConfig,
+  Trend
+);
+
+@inject("market", "trend")
 @observer
 export default class extends React.Component {
   constructor(props) {
@@ -102,13 +111,14 @@ export default class extends React.Component {
             </div>
           </div>
         </div>
-        <div className="switch-chart">
+        {/* <div className="switch-chart">
           <span>分時</span>
           <span className="active">5日</span>
           <span>日K</span>
           <span>週K</span>
           <span>月K</span>
-        </div>
+        </div> */}
+        <WS_TrendContainer nowRealID={currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id} unit={"1m"} />
         <div className="stock-detail">
           <div><span>小数点位</span><span>{String(currentSymbol?.symbol_display?.decimals_place)}</span></div>
           <div><span>合约大小</span><span>{String(currentSymbol?.symbol_display?.contract_size)}</span></div>

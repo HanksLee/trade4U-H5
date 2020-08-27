@@ -47,6 +47,7 @@ export default class extends React.Component {
         <Views tabs className="safe-areas">
           <View id="view-market" name="行情" tabActive tab url="/market/" />
           {/* <View id="view-chart" name="图表" tab url="/chart/" /> */}
+          <View id="view-subscribe" name="交易" tab url="/subscribe/" />
           <View id="view-trade" name="交易" tab url="/trade/" />
           {/* <View id="view-history" name="历史" tab url="/history/" /> */}
           <View id="view-settings" name="设置" tab url="/settings/" />
@@ -64,6 +65,17 @@ export default class extends React.Component {
               onClick={this.updateLastestSymbol}
             /> */}
             <Link
+              tabLink="#view-subscribe"
+              icon="subscribe-icon"
+              text="申购"
+              force={true}
+              reloadCurrent={true}
+              reloadCurrent={true}
+            // onClick={() => {
+            //   this.$event.emit("refresh-history-page");
+            // }}
+            />
+            <Link
               tabLink="#view-trade"
               icon="trade-icon"
               text="交易"
@@ -74,17 +86,6 @@ export default class extends React.Component {
                 this.$event.emit("refresh-trade-page");
               }}
             />
-            {/* <Link
-              tabLink="#view-history"
-              icon="history-icon"
-              text="历史"
-              force={true}
-              reloadCurrent={true}
-              reloadCurrent={true}
-              onClick={() => {
-                this.$event.emit("refresh-history-page");
-              }}
-            /> */}
             <Link
               tabLink="#view-settings"
               icon="settings-icon"
