@@ -200,10 +200,10 @@ export default class extends React.Component {
             </div> */}
                 <div className="item-main-info">
                   <div className="self-select-name">{item?.symbol_display?.name}</div>
-                  <div className={`self-select-buy-sell-block ${item?.product_details?.change > 0 && "p-up stock-green-gif"} ${item?.product_details?.change < 0 && "p-down stock-red-gif"}`}>
+                  <div className={`self-select-buy-sell-block ${item?.product_details?.change > 0 && "p-up stock-green"} ${item?.product_details?.change < 0 && "p-down stock-red-gif"}`}>
                     {item?.product_details?.buy}
                   </div>
-                  <div className={`self-select-buy-sell-block ${item?.product_details?.change > 0 && "p-up stock-green-gif"} ${item?.product_details?.change < 0 && "p-down stock-red-gif"}`}>
+                  <div className={`self-select-buy-sell-block ${item?.product_details?.change > 0 && "p-up stock-green"} ${item?.product_details?.change < 0 && "p-down stock-red-gif"}`}>
                     {item?.product_details?.sell}
                   </div>
                 </div>

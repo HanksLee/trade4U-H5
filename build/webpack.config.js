@@ -69,7 +69,8 @@ module.exports = {
     },
     proxy: {
       "/api/moon": {
-        target: "http://api.cangshu360.com",
+        // target: "http://api.cangshu360.com",
+        target: "https://api.trading8a.com",
         pathRewrite: { "^/api/moon": "" },
         secure: false,
         changeOrigin: true,
@@ -106,11 +107,11 @@ module.exports = {
           env === "development"
             ? "style-loader"
             : {
-                loader: MiniCssExtractPlugin.loader,
-                options: {
-                  publicPath: "../",
-                },
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                publicPath: "../",
               },
+            },
           "css-loader",
           "postcss-loader",
         ],
@@ -121,11 +122,11 @@ module.exports = {
           env === "development"
             ? "style-loader"
             : {
-                loader: MiniCssExtractPlugin.loader,
-                options: {
-                  publicPath: "../",
-                },
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                publicPath: "../",
               },
+            },
           "css-loader",
           "postcss-loader",
           "stylus-loader",
@@ -137,11 +138,11 @@ module.exports = {
           env === "development"
             ? "style-loader"
             : {
-                loader: MiniCssExtractPlugin.loader,
-                options: {
-                  publicPath: "../",
-                },
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                publicPath: "../",
               },
+            },
           "css-loader",
           "postcss-loader",
           "less-loader",
@@ -153,11 +154,11 @@ module.exports = {
           env === "development"
             ? "style-loader"
             : {
-                loader: MiniCssExtractPlugin.loader,
-                options: {
-                  publicPath: "../",
-                },
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                publicPath: "../",
               },
+            },
           "css-loader",
           "postcss-loader",
           // 'sass-loader',
@@ -225,19 +226,19 @@ module.exports = {
 
     ...(env === "production"
       ? [
-          new OptimizeCSSPlugin({
-            cssProcessorOptions: {
-              safe: true,
-              map: { inline: false },
-            },
-          }),
-          new webpack.optimize.ModuleConcatenationPlugin(),
-        ]
+        new OptimizeCSSPlugin({
+          cssProcessorOptions: {
+            safe: true,
+            map: { inline: false },
+          },
+        }),
+        new webpack.optimize.ModuleConcatenationPlugin(),
+      ]
       : [
-          // Development only plugins
-          new webpack.HotModuleReplacementPlugin(),
-          new webpack.NamedModulesPlugin(),
-        ]),
+        // Development only plugins
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NamedModulesPlugin(),
+      ]),
     new HtmlWebpackPlugin({
       filename: "./index.html",
       template: "./src/index.html",
@@ -245,13 +246,13 @@ module.exports = {
       minify:
         env === "production"
           ? {
-              collapseWhitespace: true,
-              removeComments: true,
-              removeRedundantAttributes: true,
-              removeScriptTypeAttributes: true,
-              removeStyleLinkTypeAttributes: true,
-              useShortDoctype: true,
-            }
+            collapseWhitespace: true,
+            removeComments: true,
+            removeRedundantAttributes: true,
+            removeScriptTypeAttributes: true,
+            removeStyleLinkTypeAttributes: true,
+            useShortDoctype: true,
+          }
           : false,
     }),
     new MiniCssExtractPlugin({

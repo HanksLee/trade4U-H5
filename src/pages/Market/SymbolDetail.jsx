@@ -37,6 +37,11 @@ export default class extends React.Component {
     }
   }
 
+  static getDerivedStateFromProps(props, state) {
+    console.log(props)
+  }
+
+
   showSelfSelectModal = async () => {
     const { confirm } = Modal;
     const { isAddSelfSelect, currentSymbol } = this.state;

@@ -331,9 +331,25 @@
       // text-align: left;
     }
 
-    .stock-green-gif {
-      background-image: url('../../assets/img/stock-green.gif');
-      background-size: 100% 100%;
+    .stock-green {
+      // background-image: url('../../assets/img/stock-green.gif');
+      // background-size: 100% 100%;
+      animation-name: green-ani;
+      animation-duration: 3s;
+    }
+
+    @keyframes green-ani {
+      0% {
+        background: linear-gradient(270deg, rgba(0, 249, 185, 0), transparent);
+      }
+
+      50% {
+        background: linear-gradient(270deg, rgba(0, 249, 185, 0.5), transparent);
+      }
+
+      100% {
+        background: linear-gradient(270deg, rgba(0, 249, 185, 0), transparent);
+      }
     }
 
     .stock-red-gif {

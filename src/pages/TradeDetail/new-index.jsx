@@ -48,26 +48,37 @@ export default class extends React.Component {
         stop_loss: undefined
       },
       stockParams: {
-        holdDays: "T+0",
+        holdDays: "",
         action: 0,
         funds: 10000,
         unitFunds: 100,
-        lever: 5
+        leverage: 5
       },
+      positionTypeMap: [],
+      leverageMap: []
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+
+    await this.initSymbolList();
+
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
-    console.log(currentTrade)
-    this.initSymbolList();
+    const { currentSymbol } = this.props.market;
     if (mode === 'add') {
       this.setState({
         params: {
           ...this.state.params,
-          open_price: this.props.market.currentSymbol?.sell,
-        }
+          open_price: currentSymbol?.sell,
+        },
+        positionTypeMap: currentSymbol?.symbol_display?.position_type[0].split(", "),
+        leverageMap: currentSymbol?.symbol_display?.leverage.split(","),
+        stockParams: {
+          ...this.state.stockParams,
+          holdDays: currentSymbol?.symbol_display?.position_type[0].split(", ")[0],
+          leverage: currentSymbol?.symbol_display?.leverage.split(",")[0],
+        },
       });
     } else {
       this.setState({
@@ -79,6 +90,10 @@ export default class extends React.Component {
         }
       });
     }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+
   }
 
   initSymbolList = async () => {
@@ -268,12 +283,12 @@ export default class extends React.Component {
     });
   }
 
-  switchLever = (lever) => {
+  switchLever = (leverage) => {
     const { stockParams } = this.state;
     this.setState({
       stockParams: {
         ...stockParams,
-        lever: lever
+        leverage: leverage
       }
     })
   }
@@ -482,10 +497,13 @@ export default class extends React.Component {
   };
 
   renderStockInput = () => {
+
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
     const { currentSymbol, currentShowSymbol } = this.props.market;
-    const { tradeType, params, stockParams } = this.state;
+    console.log(this.state)
+    const { tradeType, params, stockParams, positionTypeMap, leverageMap } = this.state;
+    console.log(positionTypeMap)
     return (
       <>
         <div className="trade-detail-input-container">
@@ -494,7 +512,18 @@ export default class extends React.Component {
             <div className="trade-detail-input-item-btn-group">
               {mode === 'add' &&
                 <>
-                  {<div
+                  {
+                    positionTypeMap.map(item => {
+                      return (
+                        <div
+                          onClick={() => { this.switchHoldDays(item) }}
+                          className={`trade-detail-input-item-btn ${stockParams.holdDays === item && 'btn-active'}`}>
+                          {item}
+                        </div>
+                      )
+                    })
+                  }
+                  {/* {<div
                     onClick={() => { this.switchHoldDays("T+0") }}
                     className={`trade-detail-input-item-btn ${stockParams.holdDays === "T+0" && 'btn-active'}`}>
                     {"T+0"}
@@ -503,7 +532,7 @@ export default class extends React.Component {
                     onClick={() => { this.switchHoldDays("T+1") }}
                     className={`trade-detail-input-item-btn ${stockParams.holdDays === "T+1" && 'btn-active'}`}>
                     {"T+1"}
-                  </div>
+                  </div> */}
                 </>
               }
               {
@@ -597,27 +626,23 @@ export default class extends React.Component {
             <div className="trade-detail-input-item-btn-group">
               {mode === 'add' &&
                 <>
-                  {<div
-                    onClick={() => { this.switchLever(5) }}
-                    className={`trade-detail-input-item-btn-small ${stockParams.lever === 5 && 'btn-active'}`}>
-                    {"5"}
-                  </div>}
-                  <div
-                    onClick={() => { this.switchLever(8) }}
-                    className={`trade-detail-input-item-btn-small ${stockParams.lever === 8 && 'btn-active'}`}>
-                    {"8"}
-                  </div>
-                  <div
-                    onClick={() => { this.switchLever(10) }}
-                    className={`trade-detail-input-item-btn-small ${stockParams.lever === 10 && 'btn-active'}`}>
-                    {"10"}
-                  </div>
+                  {
+                    leverageMap.map(item => {
+                      return (
+                        <div
+                          onClick={() => { this.switchLever(item) }}
+                          className={`trade-detail-input-item-btn-small ${stockParams.leverage === item && 'btn-active'}`}>
+                          {item}
+                        </div>
+                      )
+                    })
+                  }
                 </>
               }
               {
                 (mode === 'update' || mode === 'delete') &&
                 <div className={`trade-detail-input-item-text`}>
-                  {stockParams.lever}
+                  {stockParams.leverage}
                 </div>
               }
             </div>
@@ -963,7 +988,8 @@ export default class extends React.Component {
           </div>
           <div className="trade-detail-more-info-news">
             <div className="trade-detail-more-info-news-tabs">
-              <p>資訊</p>
+              <p>盘口</p>
+              <p>资讯</p>
             </div>
             <div className="trade-detail-more-info-news-content">
               <div>

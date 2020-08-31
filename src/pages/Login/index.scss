@@ -102,7 +102,6 @@ a.login-btn {
   width: 100px;
 }
 
-.select-title,
 .select-option {
   width: 90%;
   color: #ffffff;
@@ -110,7 +109,9 @@ a.login-btn {
 }
 
 .select-title {
-  line-height: var(--f7-input-height);
+  color: #ffffff;
+  margin: 0;
+  padding: 0 16px;
 }
 
 .ant-select.select-option {

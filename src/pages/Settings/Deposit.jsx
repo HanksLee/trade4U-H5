@@ -172,13 +172,14 @@ export default class extends React.Component {
               </Select>
             </Form.Item>
             {currentPayment && <Form.Item
+              className="expect-amount-text"
               name="expect_amount"
               label={
                 <>
-                  金额{" "}
-                  <span className="expect-amount-tips">
+                  <p>金额</p>
+                  <p className="expect-amount-tips">
                     ＊提示：手续费{currentPayment.fee}%，入金上限 {currentPayment.max_deposit} / 下限 {currentPayment.min_deposit} ＊
-                </span>
+                </p>
                 </>
               }
               rules={[{ required: true, message: "请输入金额", }]}

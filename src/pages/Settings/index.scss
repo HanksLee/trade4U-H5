@@ -598,7 +598,7 @@
           font-size: 12px;
         }
 
-        .axnt-input-number {
+        .ant-input-number {
           width: 100%;
           background-color: transparent;
           border: unset;
@@ -691,7 +691,6 @@
   }
 }
 
-.select-title,
 .ant-select.select-option {
   width: 90%;
   color: #ffffff;
@@ -699,13 +698,29 @@
 }
 
 .select-title {
-  line-height: var(--f7-input-height);
+  color: #ffffff;
+  margin: 0;
+  padding: 0 16px;
 }
 
 .withdraw-select-title {
   width: 100%;
   padding: 15px 15px 0;
   line-height: unset;
+}
+
+.expect-amount-text {
+  // label {
+  //   display: block;
+  // }
+
+  p {
+    margin: 0;
+  }
+
+  .expect-amount-tips {
+    font-size: 12px;
+  }
 }
 
 .ant-select.select-option.ant-select-single {
