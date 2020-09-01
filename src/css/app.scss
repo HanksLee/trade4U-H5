@@ -162,51 +162,53 @@ $primary: #21212b;
   }
 }
 
-.ant-picker-panel-container {
-  background-color: #2b3542;
+.ant-picker-dropdown {
+  .ant-picker-panel-container {
+    background-color: #2b3542;
 
-  .ant-picker-panel {
-    border: unset;
-  }
-
-  .ant-picker-header {
-    border-bottom: unset;
-
-    button {
-      width: unset;
-      color: #ffffff;
+    .ant-picker-panel {
+      border: unset;
     }
-  }
 
-  .ant-picker-body {
-    .ant-picker-content {
-      th,
-      .ant-picker-cell-in-view {
+    .ant-picker-header {
+      border-bottom: unset;
+
+      button {
+        width: unset;
         color: #ffffff;
       }
+    }
 
-      .ant-picker-cell-disabled {
-        &::before {
-          background: unset;
+    .ant-picker-body {
+      .ant-picker-content {
+        th,
+        .ant-picker-cell-in-view {
+          color: #ffffff;
         }
 
-        .ant-picker-cell-inner {
-          color: rgba(0, 0, 0, 0.5);
-        }
-      }
+        .ant-picker-cell-disabled {
+          &::before {
+            background: unset;
+          }
 
-      .ant-picker-cell-selected {
-        .ant-picker-cell-inner {
-          background: unset;
-          color: unset;
-          border: 1px solid #f2e205;
-          border-radius: 50%;
+          .ant-picker-cell-inner {
+            color: rgba(0, 0, 0, 0.5);
+          }
         }
-      }
 
-      .ant-picker-cell-today {
-        .ant-picker-cell-inner::before {
-          content: unset;
+        .ant-picker-cell-selected {
+          .ant-picker-cell-inner {
+            background: unset;
+            color: unset;
+            border: 1px solid #f2e205;
+            border-radius: 50%;
+          }
+        }
+
+        .ant-picker-cell-today {
+          .ant-picker-cell-inner::before {
+            content: unset;
+          }
         }
       }
     }
