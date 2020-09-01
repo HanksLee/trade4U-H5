@@ -49,6 +49,7 @@ export default class extends React.Component {
           {/* <View id="view-chart" name="图表" tab url="/chart/" /> */}
           <View id="view-subscribe" name="交易" tab url="/subscribe/" />
           <View id="view-trade" name="交易" tab url="/trade/" />
+          <View id="view-news" name="新闻" tab url="/news/" />
           {/* <View id="view-history" name="历史" tab url="/history/" /> */}
           <View id="view-settings" name="设置" tab url="/settings/" />
           <Toolbar tabbar labels bottom className="app-tabbar">
@@ -70,7 +71,6 @@ export default class extends React.Component {
               text="申购"
               force={true}
               reloadCurrent={true}
-              reloadCurrent={true}
             // onClick={() => {
             //   this.$event.emit("refresh-history-page");
             // }}
@@ -81,10 +81,19 @@ export default class extends React.Component {
               text="交易"
               force={true}
               reloadCurrent={true}
-              reloadCurrent={true}
               onClick={() => {
                 this.$event.emit("refresh-trade-page");
               }}
+            />
+            <Link
+              tabLink="#view-news"
+              icon="news-icon"
+              text="新闻"
+              force={true}
+              reloadCurrent={true}
+            // onClick={() => {
+            //   this.$event.emit("refresh-trade-page");
+            // }}
             />
             <Link
               tabLink="#view-settings"

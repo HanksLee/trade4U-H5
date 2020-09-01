@@ -10,6 +10,7 @@ const updateTrade = async (id, config) => API.patch(`/trader/order/${id}`, confi
 const closeTrade = async (id, config) => API.put(`/trader/order/${id}/close`, config);
 const deleteTrade = async (id, config) => API.delete(`/trader/order/${id}/delete`, config);
 const getFinishTradeList = async (queryString, config) => API.get(`/trader/finish-order?${queryString}`, config);
+const getFunds = async (id, config) => API.get(`/trader/symbol/${id}/funds`, config);
 
 export default {
   getTradeInfo,
@@ -19,5 +20,6 @@ export default {
   updateTrade,
   closeTrade,
   deleteTrade,
-  getFinishTradeList
+  getFinishTradeList,
+  getFunds
 };

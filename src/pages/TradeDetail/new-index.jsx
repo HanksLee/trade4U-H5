@@ -66,6 +66,9 @@ export default class extends React.Component {
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
     const { currentSymbol } = this.props.market;
+
+    await this.getFunds(currentSymbol.id);
+
     if (mode === 'add') {
       this.setState({
         params: {
@@ -94,6 +97,14 @@ export default class extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
 
+  }
+
+  getFunds = async (id) => {
+    console.log(this)
+    const res = await api.trade.getFunds(id, {});
+    if (res.status === 200) {
+      console.log(res)
+    }
   }
 
   initSymbolList = async () => {
@@ -501,9 +512,9 @@ export default class extends React.Component {
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
     const { currentSymbol, currentShowSymbol } = this.props.market;
-    console.log(this.state)
+    // console.log(this.state)
     const { tradeType, params, stockParams, positionTypeMap, leverageMap } = this.state;
-    console.log(positionTypeMap)
+    // console.log(positionTypeMap)
     return (
       <>
         <div className="trade-detail-input-container">
@@ -988,7 +999,7 @@ export default class extends React.Component {
           </div>
           <div className="trade-detail-more-info-news">
             <div className="trade-detail-more-info-news-tabs">
-              <p>盘口</p>
+              <p className="active">盘口</p>
               <p>资讯</p>
             </div>
             <div className="trade-detail-more-info-news-content">

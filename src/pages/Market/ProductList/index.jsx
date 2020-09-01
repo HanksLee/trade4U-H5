@@ -55,7 +55,7 @@ export default class extends React.Component {
       },
     };
 
-    console.log(o)
+    // console.log(o)
     this.props.sendMsg(o);
   };
 

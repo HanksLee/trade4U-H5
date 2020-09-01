@@ -38,7 +38,7 @@ export default class extends React.Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    console.log(props)
+    // console.log(props)
   }
 
 
