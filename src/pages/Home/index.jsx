@@ -21,8 +21,8 @@ export default class extends React.Component {
       const token = utils.getLStorage("MOON_H5_TOKEN");
       this.$event = new Framework7.Events();
       this.props.common.setGlobalEvent(this.$event);
-
-
+      this.props.common.getSystemConfig();
+ 
       // if (token) {
       //   this.props.message.connectNotifyWebsocket();
       // }
