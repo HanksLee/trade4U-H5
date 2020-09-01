@@ -49,6 +49,10 @@ export default class extends React.Component {
         symbol: this.state.checkedItems,
       },
     })
+    await this.handSort();
+  }
+
+  handSort = async () => {
     await api.market.sortSelfSelectSymbolList({
       symbol: this.state.selfSelectSymbolList.map(item => item.symbol),
     })
@@ -67,6 +71,7 @@ export default class extends React.Component {
     // })
     // let queryString = `page=${1}&page_size=${20}`;
     // await this.props.market.updateSelfSelectSymbolList(queryString);
+    await this.handSort();
     this.$f7router.back();
   }
 
@@ -83,7 +88,7 @@ export default class extends React.Component {
     }
   }
 
-  handleSort = ({ from, to }) => {
+  sortSelfSelectList = ({ from, to }) => {
     const sortedSelfSelectSymbolList = [...this.state.selfSelectSymbolList]
     const temp = sortedSelfSelectSymbolList[from]
     sortedSelfSelectSymbolList[from] = sortedSelfSelectSymbolList[to]
@@ -109,7 +114,7 @@ export default class extends React.Component {
             <span onClick={this.showDeleteModal}>删除</span>
           </NavRight>
         </Navbar>
-        <List sortable className="sortable-self-select-list sortable-enabled" onSortableSort={this.handleSort}>
+        <List sortable className="sortable-self-select-list sortable-enabled" onSortableSort={this.sortSelfSelectList}>
           {
             selfSelectSymbolList.map(item => {
               return (

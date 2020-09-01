@@ -45,10 +45,13 @@ export default class extends React.Component {
   showSelfSelectModal = async () => {
     const { confirm } = Modal;
     const { isAddSelfSelect, currentSymbol } = this.state;
+    const { currentSymbolType } = this.props;
+
+    let symbolID = currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id;
 
     if (isAddSelfSelect === 0) {
       const res = await api.market.addSelfSelectSymbolList({
-        symbol: [currentSymbol.symbol],
+        symbol: [symbolID],
       });
       if (res.status === 201) {
         this.setState({ isAddSelfSelect: 1 })
@@ -67,7 +70,7 @@ export default class extends React.Component {
         async onOk() {
           const res = await api.market.deleteSelfSelectSymbolList({
             data: {
-              symbol: [currentSymbol.symbol],
+              symbol: [symbolID],
             }
           });
           if (res.status === 204) {
