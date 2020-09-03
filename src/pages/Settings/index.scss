@@ -686,6 +686,9 @@
             font-size: 12px;
           }
         }
+        input:disabled{
+          background-color: inherit;
+        }
       }
     }
   }

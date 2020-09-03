@@ -1,4 +1,4 @@
-import logo from "../../assets/img/logo.svg";
+import logo from "../../assets/img/Trade4U Logo.svg";
 import refreshSVG from "../../assets/img/refresh-icon.svg";
 import React from "react";
 import { f7 } from "framework7-react";

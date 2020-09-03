@@ -38,6 +38,7 @@ export default class extends React.Component {
     idCardError: false,
     mobileError: false,
     postalError: false,
+    isDiasble: true
   };
 
   componentDidMount() {
@@ -51,6 +52,7 @@ export default class extends React.Component {
         userInfo: res.data,
         id_card_front: res.data.id_card_front,
         id_card_back: res.data.id_card_back,
+        isDiasble: (res.data.inspect_status === 1 || res.data.inspect_status === 2) ? true : false
       });
     }
   };
@@ -189,7 +191,7 @@ export default class extends React.Component {
   };
 
   render() {
-    const { userInfo, id_card_back, id_card_front } = this.state;
+    const { userInfo, id_card_back, id_card_front, isDiasble } = this.state;
     const { getFieldProps } = this.props.form;
     return (
       <Page>
@@ -292,7 +294,7 @@ export default class extends React.Component {
             <div className="error-msg">{`未通过信息：${userInfo["reason"]}`}</div>
           )}
         <List>
-          <InputItem
+          <InputItem disabled={isDiasble}
             {...getFieldProps("first_name", {
               initialValue: userInfo["first_name"] || "",
             })}
@@ -300,7 +302,7 @@ export default class extends React.Component {
           >
             {intl.get("settings.account.firstname")}
           </InputItem>
-          <InputItem
+          <InputItem disabled={isDiasble}
             {...getFieldProps("last_name", {
               initialValue: userInfo["last_name"] || "",
             })}
@@ -308,7 +310,7 @@ export default class extends React.Component {
           >
             {intl.get("settings.account.lastname")}
           </InputItem>
-          <DatePicker
+          <DatePicker disabled={isDiasble}
             {...getFieldProps("birth", {
               initialValue: new Date(userInfo["birth"]) || undefined,
             })}
@@ -322,7 +324,7 @@ export default class extends React.Component {
               {intl.get("settings.account.birth")}
             </List.Item>
           </DatePicker>
-          <InputItem
+          <InputItem disabled={isDiasble}
             {...getFieldProps("id_card", {
               initialValue: userInfo["id_card"] || "",
               validateTrigger: "onBlur",
@@ -342,7 +344,7 @@ export default class extends React.Component {
           {intl.get("settings.account.id-card-photo")}
         </div>
         <div className="id-card-form">
-          <Upload
+          <Upload disabled={isDiasble}
             accept="image/*"
             listType="picture-card"
             showUploadList={false}
@@ -367,7 +369,7 @@ export default class extends React.Component {
                 </div>
               )}
           </Upload>
-          <Upload
+          <Upload disabled={isDiasble}
             accept="image/*"
             listType="picture-card"
             showUploadList={false}
@@ -397,7 +399,7 @@ export default class extends React.Component {
         {/* <WhiteSpace size="xl" /> */}
 
         <List>
-          <InputItem
+          <InputItem disabled={isDiasble}
             {...getFieldProps("mobile", {
               initialValue: userInfo["mobile"] || "",
               validateTrigger: "onBlur",
@@ -410,7 +412,7 @@ export default class extends React.Component {
           >
             {intl.get("settings.account.mobile")}
           </InputItem>
-          <Picker
+          <Picker disabled={isDiasble}
             cols={1}
             extra={intl.get("settings.account.nationality.placeholder")}
             data={country}
@@ -423,7 +425,7 @@ export default class extends React.Component {
               {intl.get("settings.account.nationality")}
             </List.Item>
           </Picker>
-          <Picker
+          <Picker disabled={isDiasble}
             cols={1}
             extra={intl.get(
               "settings.account.country-of-residence.placeholder"
@@ -438,7 +440,7 @@ export default class extends React.Component {
               {intl.get("settings.account.country-of-residence")}
             </List.Item>
           </Picker>
-          <InputItem
+          <InputItem disabled={isDiasble}
             {...getFieldProps("street", {
               initialValue: userInfo["street"] || "",
             })}
@@ -451,7 +453,7 @@ export default class extends React.Component {
         {/* <WhiteSpace size="xl" /> */}
 
         <List>
-          <InputItem
+          <InputItem disabled={isDiasble}
             {...getFieldProps("city", {
               initialValue: userInfo["city"] || "",
             })}
@@ -459,7 +461,7 @@ export default class extends React.Component {
           >
             {intl.get("settings.account.city")}
           </InputItem>
-          <InputItem
+          <InputItem disabled={isDiasble}
             {...getFieldProps("postal", {
               initialValue: userInfo["postal"] || "",
               validateTrigger: "onBlur",
@@ -477,7 +479,7 @@ export default class extends React.Component {
         {/* <WhiteSpace size="xl" /> */}
 
         <List>
-          <InputItem
+          <InputItem disabled={isDiasble}
             {...getFieldProps("email", {
               initialValue: userInfo["email"] || "",
               validateTrigger: "onBlur",

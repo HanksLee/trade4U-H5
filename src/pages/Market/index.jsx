@@ -44,6 +44,7 @@ export default class extends React.Component {
     dataLoading: false,
     page_size: 20,
     page: 1,
+    hasData: true,
   };
 
   async componentDidMount() {
@@ -101,6 +102,7 @@ export default class extends React.Component {
       subCurrentSymbolType,
       page,
       page_size,
+
     } = this.state;
     const { moveSymbolIDList, nextSymbolIDList } = this.props.market;
     if (currentSymbolType.symbol_type_name === "自选") {
@@ -118,6 +120,7 @@ export default class extends React.Component {
             } = this.props.market;
             this.setState({
               hasMore: selfSelectSymbolList.length < selfSelectSymbolListCount,
+              hasData: selfSelectSymbolList.length > 0 ? true : false
             });
           });
         });
@@ -135,6 +138,7 @@ export default class extends React.Component {
             } = this.props.market;
             this.setState({
               hasMore: selfSelectSymbolList.length < selfSelectSymbolListCount,
+              hasData: selfSelectSymbolList.length > 0 ? true : false
             });
           });
         });
@@ -148,7 +152,10 @@ export default class extends React.Component {
         );
         this.setState({ dataLoading: false, page: page + 1 }, () => {
           const { symbolList, symbolListCount } = this.props.market;
-          this.setState({ hasMore: symbolList.length < symbolListCount });
+          this.setState({
+            hasMore: symbolList.length < symbolListCount,
+            hasData: symbolList.length > 0 ? true : false
+          });
         });
 
         if (!utils.isEmpty(nextSymbolIDList)) {
@@ -363,6 +370,7 @@ export default class extends React.Component {
       subCurrentSymbolType,
       showSubSymbolType,
       dataLoading,
+      hasData
     } = this.state;
     const { common } = this.props;
     const quoted_price = common.getKeyConfig("quoted_price");
@@ -382,8 +390,8 @@ export default class extends React.Component {
                   }}
                   className={`market-navbar-item ${
                     currentSymbolType.symbol_type_name ===
-                      item.symbol_type_name && "active"
-                  }`}
+                    item.symbol_type_name && "active"
+                    }`}
                 >
                   {item.symbol_type_name}
                 </div>
@@ -435,22 +443,24 @@ export default class extends React.Component {
                   )}
                 </div>
               ) : (
-                <div></div>
-              )}
-             {price_title}
+                  <div></div>
+                )}
+              {price_title}
             </div>
-          }
-          <WS_ProductList
-            currentSymbolType={currentSymbolType.symbol_type_name}
-            symbol_type_code={currentSymbolType.symbol_type_code}
-            dataLoading={dataLoading}
 
-            channelCode={
-              currentSymbolType.symbol_type_code === "self" ? "SELF" : "NONE"
-            }
-            quoted_price={quoted_price}
-            thisRouter={this.$f7router}
-          ></WS_ProductList>
+          }
+          {hasData
+            ? <WS_ProductList
+              currentSymbolType={currentSymbolType.symbol_type_name}
+              symbol_type_code={currentSymbolType.symbol_type_code}
+              dataLoading={dataLoading}
+              channelCode={currentSymbolType.symbol_type_code === "self" ? "SELF" : "NONE"}
+              quoted_price={quoted_price}
+              thisRouter={this.$f7router}
+            ></WS_ProductList>
+            : <div className="self-select-tr" style={{ color: "#fff" }}>無此分類自選</div>
+          }
+
         </div>
       </Page>
     );
