@@ -170,7 +170,7 @@ export default class extends React.Component {
     return math.chain(countRounding).multiply(contract_size).done();
   };
 
-  calculateForValue = (formulaName, obj) => {
+  calculateForValue = (formulaName, obj , decimals_place) => {
     let formula = this.profitRule[formulaName];
     if (!formula) return 0;
 
@@ -183,7 +183,7 @@ export default class extends React.Component {
     }
 
     try {
-      return math.evaluate(formula);
+      return math.evaluate(formula).toFixed(decimals_place);
     } catch (e) {
       return 0;
     }
@@ -676,6 +676,7 @@ export default class extends React.Component {
       hands_fee_for_buy,
       contract_size,
       decimals_place,
+      purchase_fee,
     } = currentSymbol.symbol_display;
 
     const { sell } = currentSymbol.product_details
@@ -717,15 +718,17 @@ export default class extends React.Component {
       hands_fee_for_sell,
       hands_fee_for_buy,
       open_price: sell,
+      purchase_fee
     };
     const handFee = this.calculateForValue(
       calculate_for_buy_hands_fee,
-      calcObj
+      calcObj,
+      decimals_place
     );
 
     const calculate_stock_fee =
       action === 0 ? calculate_for_buy_stock_fee : calculate_for_sell_stock_fee;
-    const stockFee = this.calculateForValue(calculate_stock_fee, calcObj);
+    const stockFee = this.calculateForValue(calculate_stock_fee, calcObj ,decimals_place);
 
     const stockTypes = this.getNowStockTypeOptions(stockParams.holdDays);
 
