@@ -130,6 +130,14 @@ export default class extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {}
 
+  getFunds = async (id) => {
+    console.log(this)
+    const res = await api.trade.getFunds(id, {});
+    if (res.status === 200) {
+      console.log(res)
+    }
+  }
+
   initSymbolList = async () => {
     const {
       symbolList,
@@ -1451,7 +1459,7 @@ export default class extends React.Component {
           </div>
           <div className="trade-detail-more-info-news">
             <div className="trade-detail-more-info-news-tabs">
-              <p>盘口</p>
+              <p className="active">盘口</p>
               <p>资讯</p>
             </div>
             <div className="trade-detail-more-info-news-content">

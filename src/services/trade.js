@@ -11,6 +11,8 @@ const closeTrade = async (id, config) => API.put(`/trader/order/${id}/close`, co
 const deleteTrade = async (id, config) => API.delete(`/trader/order/${id}/delete`, config);
 const getFinishTradeList = async (queryString, config) => API.get(`/trader/finish-order?${queryString}`, config);
 const getProfitrule = async () => API.get(`/trader/profitrule`, {});
+const getFunds = async (id, config) => API.get(`/trader/symbol/${id}/funds`, config);
+
 export default {
   getTradeInfo,
   getTradeList,
@@ -20,5 +22,6 @@ export default {
   closeTrade,
   deleteTrade,
   getFinishTradeList,
-  getProfitrule
+  getProfitrule,
+  getFunds
 };

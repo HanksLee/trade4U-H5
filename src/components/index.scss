@@ -31,6 +31,10 @@
     background-image: url('../static/icons/subscribe-icon.svg');
   }
 
+  .news-icon {
+    background-image: url('../static/icons/news-icon.svg');
+  }
+
   .history-icon {
     background-image: url('../static/icons/history-icon.png');
   }
@@ -66,6 +70,10 @@
 
     .subscribe-icon {
       background-image: url('../static/icons/subscribe-icon-selected.svg');
+    }
+
+    .news-icon {
+      background-image: url('../static/icons/news-icon-selected.svg');
     }
 
     .history-icon {

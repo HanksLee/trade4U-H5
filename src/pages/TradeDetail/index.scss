@@ -247,11 +247,19 @@
       padding-left: 16px;
       font-size: 16px;
       color: #f2e205;
+      display: flex;
 
-      p.active {
+      p {
         display: inline-block;
         margin-bottom: 0;
-        border-bottom: 1px solid #f2e205;
+
+        &.active {
+          border-bottom: 1px solid #f2e205;
+        }
+      }
+
+      p + p {
+        margin-left: 30px;
       }
     }
 

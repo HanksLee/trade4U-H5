@@ -92,7 +92,7 @@ export default class extends BaseReact {
   //function
 
   receviceMsgLinter = d => {
-    console.log(d)
+    // console.log(d)
     const { nowRealID } = this.state;
     const { data, } = d;
 

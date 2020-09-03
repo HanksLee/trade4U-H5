@@ -270,7 +270,7 @@ class ProductStore extends BaseStore {
   updateCurrentSymbolList(updateList, originList) {
     updateList.forEach(uItem => {
       const selectedItem = originList.results.filter(cItem => {
-        console.log(cItem)
+        // console.log(cItem)
         const { product_details, } = cItem;
         return (
           product_details &&
