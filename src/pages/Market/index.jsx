@@ -50,6 +50,7 @@ export default class extends React.Component {
   async componentDidMount() {
     // this.connectWebsocket();
     this.getSymbolTypeList();
+    this.props.common.getProfitRule();
     window.addEventListener("scroll", this.handleScroll, true);
 
     // this.setState({ currentSymbolType: this.state.symbolTypeList[0] })

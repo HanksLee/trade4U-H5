@@ -28,6 +28,7 @@ export default class extends React.Component {
   };
 
   componentDidMount() {
+    // console.log(moment.format('YYYY/MM/DD'))
     this.setState({
       create_time_start: Date.parse(`${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`) / 1000,
       create_time_end: Date.parse(`${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`) / 1000 + 86399

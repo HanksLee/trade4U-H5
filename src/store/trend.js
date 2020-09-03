@@ -15,7 +15,7 @@ class TrendStore extends BaseStore {
         unit: unit
       }
     });
-    console.log(res)
+    // console.log(res)
     if (res.status === 200) {
       this.setTrendList(res.data.trend);
     }

@@ -20,7 +20,7 @@ class MessageStore extends BaseStore {
 
   @action connectNotifyWebsocket = () => {
     this.wsConnect = ws("notify");
-    console.log(this.wsConnect)
+    // console.log(this.wsConnect)
     const that = this;
 
     setTimeout(function () {
