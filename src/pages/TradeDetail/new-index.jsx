@@ -95,7 +95,7 @@ export default class extends React.Component {
       calculate_for_sell_stock_fee,
       calculate_for_sell_tax,
     } = currentSymbol.symbol_display;
-
+   // this.getFunds(currentSymbol.id);
     if (mode === "add") {
       this.setState({
         params: {
