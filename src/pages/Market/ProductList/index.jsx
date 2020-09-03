@@ -42,9 +42,9 @@ export default class extends React.Component {
     const { nextSymbolIDList, prevSymbolIDList } = this.props.market;
     if (this.state.currentSymbolType !== "自选") {
       if (!utils.isEmpty(prevSymbolIDList)) {
-        // this.trackSymbol(prevSymbolIDList, "unsubscribe");
+        this.trackSymbol(prevSymbolIDList, "unsubscribe");
       }
-      // this.trackSymbol(nextSymbolIDList, "subscribe");
+      this.trackSymbol(nextSymbolIDList, "subscribe");
     }
   }
 

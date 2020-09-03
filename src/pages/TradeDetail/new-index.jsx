@@ -67,7 +67,9 @@ export default class extends React.Component {
     const { currentTrade } = this.props.trade;
     const { currentSymbol } = this.props.market;
 
-    await this.getFunds(currentSymbol.id);
+
+
+    this.getFunds(currentSymbol.id);
 
     if (mode === 'add') {
       this.setState({

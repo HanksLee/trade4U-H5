@@ -7,6 +7,10 @@
     position: relative;
   }
 
+  .am-tabs-content-wrap {
+    padding-bottom: 80px;
+  }
+
   .am-tabs-default-bar-tab:after {
     content: unset !important;
   }
@@ -60,11 +64,21 @@
       }
 
       .news-content-item-img {
-        width: 80px;
-        height: 66px;
+        max-width: 80px;
+        max-height: 66px;
         margin-left: 10px;
-        background-color: #fff;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
       }
     }
+  }
+
+  .spin-container {
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
   }
 }
