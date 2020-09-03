@@ -7,7 +7,7 @@ export default ({ thisRouter , item , currentSymbolType}) => {
       key={item.symbol}
       data-id={item.id}
       onClick={() => {
-        thisRouter.navigate(`/market/symbol/${id}`, {
+        thisRouter.navigate(`/market/symbol/${item.id}`, {
           props: {
             currentSymbol: item,
             currentSymbolType,

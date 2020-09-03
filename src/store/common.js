@@ -41,7 +41,34 @@ class CommonStore extends BaseStore {
       return item.key === key;
     })[0].value;
   }
-  
+
+
+  @observable
+  profitRule = {
+
+  }
+
+  @action
+  async getProfitRule(){
+    const res = await this.$api.trade.getProfitrule();
+    if (res.status === 200) {
+      const d = res.data;
+      this.setProfitRule(d);
+    }
+  }
+
+  @action
+  setProfitRule(d){
+    this.profitRule = {
+      ...d
+    }
+  }
+
+  @computed
+  get nowProfitRule(){
+    return this.profitRule;
+  }
+
 }
 
 export default new CommonStore();
