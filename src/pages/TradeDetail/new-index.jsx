@@ -684,7 +684,7 @@ export default class extends React.Component {
       sell: 0,
     };
     const {getKeyConfig} = this.props.common;
-    const refCurrency = getKeyConfig("platform_currency");
+    const refCurrency =getKeyConfig("platform_currency");
     const {
       tradeType,
       params,
@@ -1045,7 +1045,7 @@ export default class extends React.Component {
           <div className="trade-detail-remarks-item">
             <div className="trade-detail-remarks-item-title">總計</div>
             <div className="trade-detail-remarks-item-content">
-              {refCurrency}${`${totalPlatformCurrency}`}元
+                      {refCurrency}${`${totalPlatformCurrency}`}元
             </div>
           </div>
           <div className="trade-detail-remarks-placeholder">

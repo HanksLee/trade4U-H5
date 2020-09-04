@@ -33,7 +33,7 @@ class CommonStore extends BaseStore {
   }
 
   @action
-  getKeyConfig = (key)=> {
+  getKeyConfig= (key)=>{
     if(this.systemConfig.length === 0)
       return null;
      
