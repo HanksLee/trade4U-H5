@@ -170,7 +170,7 @@ export default class extends React.Component {
     return math.chain(countRounding).multiply(contract_size).done();
   };
 
-  calculateForValue = (formulaName, obj) => {
+  calculateForValue = (formulaName, obj , decimals_place) => {
     let formula = this.profitRule[formulaName];
     if (!formula) return 0;
 
@@ -183,7 +183,7 @@ export default class extends React.Component {
     }
 
     try {
-      return math.evaluate(formula);
+      return math.evaluate(formula).toFixed(decimals_place);
     } catch (e) {
       return 0;
     }
@@ -521,7 +521,7 @@ export default class extends React.Component {
     this.setState({ moreInfo: !moreInfo });
   };
 
-  onSubmit = async () => {
+  onSubmit = async (totalPlatformCurrency) => {
     const { params ,stockParams } = this.state;
     const {
       mode,
@@ -544,16 +544,17 @@ export default class extends React.Component {
           action: params.action,
         };
 
+        if(tradeInfo.free_margin - totalPlatformCurrency <0 ){
+          error({
+            title: '提示',
+            className: "trade-modal success-modal",
+            content: "可用预付款不足",
+          });
+          return;
+        }
+
         if(stockParams.margin_value){
           payload.margin_value = stockParams.margin_value;
-          if(tradeInfo.free_margin - stockParams.margin_value <0 ){
-            error({
-              title: '提示',
-              className: "trade-modal success-modal",
-              content: "可用预付款不足",
-            });
-            return;
-          }
         }
         if(stockParams.leverage){
           payload.leverage = stockParams.leverage;
@@ -676,14 +677,14 @@ export default class extends React.Component {
       hands_fee_for_buy,
       contract_size,
       decimals_place,
+      purchase_fee,
     } = currentSymbol.symbol_display;
 
-    const { sell } = currentSymbol.product_details
-      ? currentSymbol.product_details
-      : {
-          sell: 0,
-        };
-
+    const { sell } = currentSymbol.product_details??{
+      sell: 0,
+    };
+    const {getKeyConfig} = this.props.common;
+    const refCurrency = getKeyConfig("platform_currency");
     const {
       tradeType,
       params,
@@ -717,21 +718,29 @@ export default class extends React.Component {
       hands_fee_for_sell,
       hands_fee_for_buy,
       open_price: sell,
+      purchase_fee
     };
     const handFee = this.calculateForValue(
       calculate_for_buy_hands_fee,
-      calcObj
+      calcObj,
+      decimals_place
     );
 
     const calculate_stock_fee =
       action === 0 ? calculate_for_buy_stock_fee : calculate_for_sell_stock_fee;
-    const stockFee = this.calculateForValue(calculate_stock_fee, calcObj);
+    const stockFee = this.calculateForValue(calculate_stock_fee, calcObj ,decimals_place);
 
     const stockTypes = this.getNowStockTypeOptions(stockParams.holdDays);
 
     const stepLevel = currentSymbol?.symbol_display
       ? (1 / 10) * decimals_place
       : 0.001;
+
+    const totalPlatformCurrency = math.chain(totalFunds)
+                                      .add(handFee)
+                                      .multiply(open_currency_rate) 
+                                      .done();
+
     return (
       <>
         <div className="trade-detail-input-container">
@@ -1009,7 +1018,7 @@ export default class extends React.Component {
                         }
                         ${mode === "add" ? "add" : "modify"}`}
           style={{ marginBottom: "20px" }}
-          onClick={this.onSubmit}
+          onClick={()=>{this.onSubmit(totalPlatformCurrency)}}
         >
           {mode === "add" ? "下单" : mode === "update" ? "修改" : "平仓"}
         </div>
@@ -1030,13 +1039,13 @@ export default class extends React.Component {
           <div className="trade-detail-remarks-item">
             <div className="trade-detail-remarks-item-title">參考匯率</div>
             <div className="trade-detail-remarks-item-content">
-              ${currentSymbol?.product_details?.sell}
+              ${open_currency_rate}
             </div>
           </div>
           <div className="trade-detail-remarks-item">
             <div className="trade-detail-remarks-item-title">總計</div>
             <div className="trade-detail-remarks-item-content">
-              ￥{handFee + totalFunds }元
+              {refCurrency}${`${totalPlatformCurrency}`}元
             </div>
           </div>
           <div className="trade-detail-remarks-placeholder">
