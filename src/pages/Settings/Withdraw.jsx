@@ -74,7 +74,7 @@ export default class extends React.Component {
         <Navbar
           title={"出金"}
           backLink="Back"
-          class="text-color-white"
+          className="text-color-white"
         >
           <NavRight></NavRight>
         </Navbar>

@@ -178,7 +178,13 @@ export default class extends React.Component {
             {!utils.isEmpty(newsList) &&
               newsList.map(item => {
                 return (
-                  <div class="news-content-item">
+                  <div className="news-content-item" onClick={() => {
+                    this.$f7router.navigate('/news/detail', {
+                      props: {
+                        newsDetail: item
+                      }
+                    });
+                  }}>
                     <div className="news-content-item-text">
                       <p>{item.title}</p>
                       <p>{moment(item.pub_time * 1000).format(
