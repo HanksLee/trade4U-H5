@@ -196,7 +196,7 @@ export default class extends React.Component {
         <Navbar
           title={intl.get("settings.account")}
           backLink="Back"
-          class="text-color-white"
+          className="text-color-white"
         >
           {(userInfo["inspect_status"] !== 0 &&
             userInfo["inspect_status"] !== 3)
