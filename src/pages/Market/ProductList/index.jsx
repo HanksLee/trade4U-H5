@@ -163,9 +163,13 @@ export default class extends React.Component {
   }
 
   render() {
+<<<<<<< HEAD
+=======
     // console.log(this.props.market.selfSelectSymbolList)
     // console.log(this)
     // console.log(this.props)
+    console.log("this.$f7router :>> ", this.$f7router);
+>>>>>>> develop
     const { thisRouter, quoted_price } = this.props;
     const { selfSelectSymbolList, symbolList } = this.props.market;
     const { currentSymbolType, dataLoading } = this.state;
@@ -180,9 +184,11 @@ export default class extends React.Component {
               thisRouter={thisRouter}
               currentSymbolType={currentSymbolType}
               item={item}
+
             />
           );
         })}
+
         {/* {
       currentSymbolType !== "自选" && currentSymbolType !== "外汇" &&
       <>
@@ -215,7 +221,6 @@ export default class extends React.Component {
       </>
     );
   }
-
   getProductItem = (priceType) => {
     if (priceType === "one_price") {
       return OnePriceItem;
@@ -223,4 +228,5 @@ export default class extends React.Component {
       return TwoPriceItem;
     }
   };
+
 }

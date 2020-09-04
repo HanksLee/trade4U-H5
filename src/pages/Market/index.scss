@@ -27,7 +27,7 @@
       color: #f2e205;
 
       &::after {
-        content: '';
+        content: "";
         display: block;
         width: 8px;
         height: 8px;
@@ -56,11 +56,11 @@
     right: 16px;
 
     &::after {
-      color: #fff;
+      color: #838D9E;
     }
   }
 
-  label.item-checkbox input[type=checkbox]:checked ~ .icon-checkbox {
+  label.item-checkbox input[type="checkbox"]:checked ~ .icon-checkbox {
     position: relative;
     background: #ff3b30;
 
@@ -135,14 +135,14 @@
 .add-icon {
   width: 22px;
   height: 22px;
-  background: url('../../static/icons/self-select-icon.svg');
+  background: url("../../static/icons/self-select-icon.svg");
   background-repeat: no-repeat;
 }
 
 .add-selected-icon {
   width: 22px;
   height: 22px;
-  background: url('../../static/icons/self-select-icon-active.svg');
+  background: url("../../static/icons/self-select-icon-active.svg");
   background-repeat: no-repeat;
 }
 
@@ -154,6 +154,7 @@
 
 .self-select-table {
   margin-bottom: 80px;
+  height: 100%;
 
   * {
     user-select: none;
@@ -187,7 +188,7 @@
   .self-select-table-header {
     height: r(44);
     background-color: #21212b;
-    font-size: 12px;
+    font-size: 14px;
     color: #838d9e;
     padding: 0 var(--f7-navbar-inner-padding-left);
     display: flex;
@@ -264,11 +265,12 @@
 
     .self-select-name {
       color: #eeeeee;
-      font-size: 12px;
+      font-size: 18px;
       // padding: r(5) 0 r(10);
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+      padding:7px;
     }
 
     .self-select-spread {
@@ -300,7 +302,7 @@
       // height: r(42);
       // line-height: r(42);
       border-radius: 4px;
-      font-size: 12px;
+      font-size: 16px;
       // background-color: #fff;
       // color: #325497;
       text-align: right;
@@ -335,31 +337,192 @@
       // background-image: url('../../assets/img/stock-green.gif');
       // background-size: 100% 100%;
       animation-name: green-ani;
-      animation-duration: 3s;
+      animation-duration: 2s;
+      animation-iteration-count:infinite;
+      padding-right: 5px;
     }
 
     @keyframes green-ani {
+      // 0% {
+      //   background: linear-gradient(270deg, rgba(0, 249, 185, 0), transparent);
+      // }
+
+      // 50% {
+      //   background: linear-gradient(270deg, rgba(0, 249, 185, 0.5), transparent);
+      // }
+
+      // 100% {
+      //   background: linear-gradient(270deg, rgba(0, 249, 185, 0), transparent);
+      // }
+
+
       0% {
-        background: linear-gradient(270deg, rgba(0, 249, 185, 0), transparent);
+        background-image:linear-gradient(270deg, #166856 100%, #0C372E 0%),linear-gradient(90deg, #166856 90%, #0C372E 0%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
       }
-
+      10% {
+        background-image:linear-gradient(270deg, #166856 90%, #0C372E 100%),linear-gradient(90deg, #166856 80%, #0C372E 100%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      20% {
+        background-image:linear-gradient(270deg, #166856 80%, #0C372E 100%),linear-gradient(90deg, #166856 70%, #0C372E 100%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      30% {
+        background-image:linear-gradient(270deg, #166856 70%, #0C372E 100%),linear-gradient(90deg, #166856 60%, #0C372E 100%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      40% {
+        background-image:linear-gradient(270deg, #166856 60%, #0C372E 100%),linear-gradient(90deg, #166856 50%, #0C372E 100%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
       50% {
-        background: linear-gradient(270deg, rgba(0, 249, 185, 0.5), transparent);
+          background-image:linear-gradient(270deg, #166856 50%, #0C372E 90%),linear-gradient(90deg, #166856 40%, #0C372E 90%);
+          border-radius: 0px;
+          margin-left: 5px;
+          font-weight: bold;
+          font-size: 17px;
+        }
+      60% {
+        background-image:linear-gradient(270deg, #166856 40%, #0C372E 90%),linear-gradient(90deg, #166856 30%, #0C372E 90%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
       }
-
+      70% {
+        background-image:linear-gradient(270deg, #166856 30%, #0C372E 70%),linear-gradient(90deg, #166856 20%, #0C372E 70%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      80% {
+        background-image:linear-gradient(270deg, #166856 20%, #0C372E 70%),linear-gradient(90deg, #166856 10%, #0C372E 70%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      90% {
+        background-image:linear-gradient(270deg, #166856 10%, #0C372E 70%),linear-gradient(90deg, #166856 0%, #0C372E 70%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
       100% {
-        background: linear-gradient(270deg, rgba(0, 249, 185, 0), transparent);
+        background-image:#0f342d;
+        margin-left: 5px;
       }
     }
 
     .stock-red-gif {
-      background-image: url('../../assets/img/stock-red.gif');
-      background-size: 100% 100%;
+      // background-image: url('../../assets/img/stock-red.gif');
+      // background-size: 100% 100%;
+      animation-name: red-ani;
+      animation-duration: 2s;
+      animation-iteration-count:infinite;
+      padding-right: 5px;
     }
+
+    @keyframes red-ani {
+      
+      0% {
+        background-image:linear-gradient(270deg, #9b1f11  100%, #66140b   0%),linear-gradient(90deg, #9b1f11  90%, #66140b   0%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      10% {
+        background-image:linear-gradient(270deg, #9b1f11  90%, #66140b   100%),linear-gradient(90deg, #9b1f11  80%, #66140b   100%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      20% {
+        background-image:linear-gradient(270deg, #9b1f11  80%, #66140b   100%),linear-gradient(90deg, #9b1f11  70%, #66140b   100%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      30% {
+        background-image:linear-gradient(270deg, #9b1f11  70%, #66140b   100%),linear-gradient(90deg, #9b1f11  60%, #66140b   100%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      40% {
+        background-image:linear-gradient(270deg, #9b1f11  60%, #66140b   100%),linear-gradient(90deg, #9b1f11  50%, #66140b   100%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      50% {
+          background-image:linear-gradient(270deg, #9b1f11  50%, #66140b   90%),linear-gradient(90deg, #9b1f11  40%, #66140b   90%);
+          border-radius: 0px;
+          margin-left: 5px;
+          font-weight: bold;
+          font-size: 17px;
+        }
+      60% {
+        background-image:linear-gradient(270deg, #9b1f11  40%, #66140b   90%),linear-gradient(90deg, #9b1f11  30%, #66140b   90%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      70% {
+        background-image:linear-gradient(270deg, #9b1f11  30%, #66140b   70%),linear-gradient(90deg, #9b1f11  20%, #66140b   70%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      80% {
+        background-image:linear-gradient(270deg, #9b1f11  20%, #66140b   70%),linear-gradient(90deg, #9b1f11  10%, #66140b   70%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      90% {
+        background-image:linear-gradient(270deg, #9b1f11  10%, #66140b   70%),linear-gradient(90deg, #9b1f11  0%, #66140b   70%);
+        border-radius: 0px;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 17px;
+      }
+      100% {
+        background-image:#310a05;
+        margin-left: 5px;
+      }
+    }
+
   }
 
   & .self-select-tr:not(:last-child) {
-    border-bottom: r(1) solid rgba(0, 0, 0, .1);
+    border-bottom: r(1) solid rgba(0, 0, 0, 0.1);
   }
 
   .large-number {
@@ -438,7 +601,7 @@
 
 .stock-detail {
   padding: 0 16px;
-  font-size: 10px;
+  font-size: 14px;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;

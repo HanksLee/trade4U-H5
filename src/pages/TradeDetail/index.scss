@@ -187,7 +187,7 @@
     align-items: center;
 
     .price-item-title {
-      font-size: 12px;
+      font-size: 16px;
       color: #838d9e;
     }
 
@@ -294,6 +294,7 @@
         > p:nth-child(2) {
           color: #838d9e;
           margin-bottom: 0;
+          font-size: 12px;
         }
 
         // > span {
@@ -363,16 +364,17 @@
 .trade-detail-input-container {
   padding: 0 16px;
   font-size: 14px;
-
+  font-size: 16px;
   .trade-detail-input-item {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
-
+   
     .trade-detail-input-item-title {
-      color: #fff;
+      color: #ffffff;
       flex-basis: 24.2%;
       line-height: 30px;
+      font-size: 16px;
     }
 
     .trade-detail-input-item-btn-group {
@@ -381,34 +383,33 @@
       flex-basis: 75.8%;
       justify-content: space-between;
 
-      .trade-detail-input-item-text,
-      .trade-detail-input-item-btn,
-      .trade-detail-input-item-btn-small {
-        color: #838d9e;
+      .trade-detail-input-item-text{
+        color: #ffffff;
         padding: 3px 0;
       }
 
       .trade-detail-input-item-btn,
       .trade-detail-input-item-btn-small {
+        color: #838d9e;
+        padding: 3px 0;
         border-radius: 4px;
         border: 1px solid #838d9e;
         text-align: center;
+        font-size: 16px;
       }
 
       .trade-detail-input-item-btn {
         width: 120px;
+
       }
 
       .trade-detail-input-item-btn-small {
         width: 78px;
-        border-radius: 4px;
-        border: 1px solid #838d9e;
-        text-align: center;
       }
 
       .btn-active {
         color: #f2e205;
-        border: 1px solid #f2e205;
+        //border: 1px solid #f2e205;
       }
 
       .trade-detail-input-item-btn + .trade-detail-input-item-btn {
@@ -469,6 +470,7 @@
   color: #21212b;
   text-align: center;
   font-weight: bold;
+  font-size: 16px;
 
   &.add {
     background: #f2e205;
@@ -488,26 +490,29 @@
   padding: 0 16px;
   font-size: 12px;
   border-top: 1px solid rgba(46, 59, 85, 1);
-
+  font-size: 14px;
   .trade-detail-remarks-item {
     display: flex;
     justify-content: space-between;
-
+    
     .trade-detail-remarks-item-title {
       color: #838d9e;
       flex-basis: 24.2%;
       line-height: 27px;
+      //font-size: 14px;
     }
 
     .trade-detail-remarks-item-content {
       color: #fff;
       flex-basis: 75.8%;
       line-height: 27px;
+      //font-size: 14px;
     }
   }
 
   .trade-detail-remarks-placeholder {
     color: #838d9e;
     line-height: 27px;
+  
   }
 }
