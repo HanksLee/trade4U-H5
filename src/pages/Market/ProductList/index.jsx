@@ -166,6 +166,7 @@ export default class extends React.Component {
     // console.log(this.props.market.selfSelectSymbolList)
     // console.log(this)
     // console.log(this.props)
+    console.log("this.$f7router :>> ", this.$f7router);
     const { thisRouter, quoted_price } = this.props;
     const { selfSelectSymbolList, symbolList } = this.props.market;
     const { currentSymbolType, dataLoading } = this.state;
