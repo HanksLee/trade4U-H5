@@ -22,6 +22,7 @@
     line-height: 44px;
     white-space: nowrap;
     position: relative;
+   
 
     &.active {
       color: #f2e205;
@@ -43,6 +44,7 @@
 
   .market-navbar-item + .market-navbar-item {
     margin-left: 20px;
+    font-size: 20px;
   }
 }
 
@@ -56,7 +58,7 @@
     right: 16px;
 
     &::after {
-      color: #fff;
+      color: #838D9E;
     }
   }
 
@@ -187,7 +189,7 @@
   .self-select-table-header {
     height: r(44);
     background-color: #21212b;
-    font-size: 12px;
+    font-size: 14px;
     color: #838d9e;
     padding: 0 var(--f7-navbar-inner-padding-left);
     display: flex;
@@ -264,7 +266,7 @@
 
     .self-select-name {
       color: #eeeeee;
-      font-size: 12px;
+      font-size: 18px;
       // padding: r(5) 0 r(10);
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -301,7 +303,7 @@
       // height: r(42);
       // line-height: r(42);
       border-radius: 4px;
-      font-size: 12px;
+      font-size: 16px;
       // background-color: #fff;
       // color: #325497;
       text-align: right;
@@ -360,70 +362,70 @@
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       10% {
         background-image:linear-gradient(270deg, #166856 90%, #0C372E 100%),linear-gradient(90deg, #166856 80%, #0C372E 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       20% {
         background-image:linear-gradient(270deg, #166856 80%, #0C372E 100%),linear-gradient(90deg, #166856 70%, #0C372E 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       30% {
         background-image:linear-gradient(270deg, #166856 70%, #0C372E 100%),linear-gradient(90deg, #166856 60%, #0C372E 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       40% {
         background-image:linear-gradient(270deg, #166856 60%, #0C372E 100%),linear-gradient(90deg, #166856 50%, #0C372E 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       50% {
           background-image:linear-gradient(270deg, #166856 50%, #0C372E 90%),linear-gradient(90deg, #166856 40%, #0C372E 90%);
           border-radius: 0px;
           margin-left: 5px;
           font-weight: bold;
-          font-size: 13px;
+          font-size: 17px;
         }
       60% {
         background-image:linear-gradient(270deg, #166856 40%, #0C372E 90%),linear-gradient(90deg, #166856 30%, #0C372E 90%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       70% {
         background-image:linear-gradient(270deg, #166856 30%, #0C372E 70%),linear-gradient(90deg, #166856 20%, #0C372E 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       80% {
         background-image:linear-gradient(270deg, #166856 20%, #0C372E 70%),linear-gradient(90deg, #166856 10%, #0C372E 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       90% {
         background-image:linear-gradient(270deg, #166856 10%, #0C372E 70%),linear-gradient(90deg, #166856 0%, #0C372E 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       100% {
         background-image:#0f342d;
@@ -447,70 +449,70 @@
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       10% {
         background-image:linear-gradient(270deg, #9b1f11  90%, #66140b   100%),linear-gradient(90deg, #9b1f11  80%, #66140b   100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       20% {
         background-image:linear-gradient(270deg, #9b1f11  80%, #66140b   100%),linear-gradient(90deg, #9b1f11  70%, #66140b   100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       30% {
         background-image:linear-gradient(270deg, #9b1f11  70%, #66140b   100%),linear-gradient(90deg, #9b1f11  60%, #66140b   100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       40% {
         background-image:linear-gradient(270deg, #9b1f11  60%, #66140b   100%),linear-gradient(90deg, #9b1f11  50%, #66140b   100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       50% {
           background-image:linear-gradient(270deg, #9b1f11  50%, #66140b   90%),linear-gradient(90deg, #9b1f11  40%, #66140b   90%);
           border-radius: 0px;
           margin-left: 5px;
           font-weight: bold;
-          font-size: 13px;
+          font-size: 17px;
         }
       60% {
         background-image:linear-gradient(270deg, #9b1f11  40%, #66140b   90%),linear-gradient(90deg, #9b1f11  30%, #66140b   90%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       70% {
         background-image:linear-gradient(270deg, #9b1f11  30%, #66140b   70%),linear-gradient(90deg, #9b1f11  20%, #66140b   70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       80% {
         background-image:linear-gradient(270deg, #9b1f11  20%, #66140b   70%),linear-gradient(90deg, #9b1f11  10%, #66140b   70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       90% {
         background-image:linear-gradient(270deg, #9b1f11  10%, #66140b   70%),linear-gradient(90deg, #9b1f11  0%, #66140b   70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 17px;
       }
       100% {
         background-image:#310a05;
@@ -600,7 +602,7 @@
 
 .stock-detail {
   padding: 0 16px;
-  font-size: 10px;
+  font-size: 14px;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;

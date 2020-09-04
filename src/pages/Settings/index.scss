@@ -176,10 +176,13 @@
 .list {
   ul {
     background-color: transparent;
-
+    
     .item-content {
       padding-left: calc(var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left));
-
+      i{
+        width: 12px;
+        height: 12px;
+      }
       .item-media {
         > div {
           width: 30px;
@@ -192,7 +195,7 @@
       }
 
       .item-title {
-        font-size: 14px;
+        font-size: 18px;
         color: #ffffff;
       }
 
