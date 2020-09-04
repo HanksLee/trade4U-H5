@@ -27,7 +27,7 @@
       color: #f2e205;
 
       &::after {
-        content: '';
+        content: "";
         display: block;
         width: 8px;
         height: 8px;
@@ -60,7 +60,7 @@
     }
   }
 
-  label.item-checkbox input[type=checkbox]:checked ~ .icon-checkbox {
+  label.item-checkbox input[type="checkbox"]:checked ~ .icon-checkbox {
     position: relative;
     background: #ff3b30;
 
@@ -135,14 +135,14 @@
 .add-icon {
   width: 22px;
   height: 22px;
-  background: url('../../static/icons/self-select-icon.svg');
+  background: url("../../static/icons/self-select-icon.svg");
   background-repeat: no-repeat;
 }
 
 .add-selected-icon {
   width: 22px;
   height: 22px;
-  background: url('../../static/icons/self-select-icon-active.svg');
+  background: url("../../static/icons/self-select-icon-active.svg");
   background-repeat: no-repeat;
 }
 
@@ -154,6 +154,7 @@
 
 .self-select-table {
   margin-bottom: 80px;
+  height: 100%;
 
   * {
     user-select: none;
@@ -344,7 +345,11 @@
       }
 
       50% {
-        background: linear-gradient(270deg, rgba(0, 249, 185, 0.5), transparent);
+        background: linear-gradient(
+          270deg,
+          rgba(0, 249, 185, 0.5),
+          transparent
+        );
       }
 
       100% {
@@ -353,13 +358,13 @@
     }
 
     .stock-red-gif {
-      background-image: url('../../assets/img/stock-red.gif');
+      background-image: url("../../assets/img/stock-red.gif");
       background-size: 100% 100%;
     }
   }
 
   & .self-select-tr:not(:last-child) {
-    border-bottom: r(1) solid rgba(0, 0, 0, .1);
+    border-bottom: r(1) solid rgba(0, 0, 0, 0.1);
   }
 
   .large-number {
