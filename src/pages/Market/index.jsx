@@ -15,6 +15,7 @@ import AddIcon from "assets/img/add.svg";
 import SearchIcon from "assets/img/search.svg";
 import { inject, observer } from "mobx-react";
 import { Spin } from "antd";
+import { Tabs } from "antd-mobile";
 import { LoadingOutlined } from "@ant-design/icons";
 import moment from "moment";
 import ws from "utils/ws";
@@ -167,6 +168,7 @@ export default class extends React.Component {
   };
 
   switchSymbolType = async (item) => {
+    console.log("item :>> ", item);
     this.setState({ currentSymbolType: item, page: 1, page_size: 20 }, () => {
       this.getList();
     });
@@ -374,21 +376,22 @@ export default class extends React.Component {
       hasData
     } = this.state;
     const { common } = this.props;
+    // console.log("symbolTypeList :>> ", symbolTypeList);
+    // console.log("currentSymbolType :>> ", currentSymbolType);
     const quoted_price = common.getKeyConfig("quoted_price");
 
     const price_title = this.getPriceTitle(quoted_price);
     // const currentList = currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
-    return (
-      <Page name="market">
+    const renderNavBar = (tabBar) => {
+      // console.log("tabBar :>> ", tabBar);
+      return (
         <Navbar className="market-navbar">
           <NavLeft>
             {/* <img className="nav-icon" alt="edit" src={EditIcon} onClick={this.navigateToManagePage} /> */}
-            {symbolTypeList.map((item) => {
+            {symbolTypeList.map((item, idx) => {
               return (
                 <div
-                  onClick={() => {
-                    this.switchSymbolType(item);
-                  }}
+                  onClick={() => tabBar.goToTab(idx)}
                   className={`market-navbar-item ${
                     currentSymbolType.symbol_type_name ===
                     item.symbol_type_name && "active"
@@ -417,51 +420,72 @@ export default class extends React.Component {
             )}
           </NavRight>
         </Navbar>
+      );
+    };
+    return (
+      <Page style={{ paddingTop: 0 }}>
         <div className="self-select-table">
-          {
-            <div className="self-select-table-header">
-              {currentSymbolType.symbol_type_name === "自选" ? (
-                <div className="market-type">
-                  <p onClick={this.switchShowSubSymbolType}>
-                    {subCurrentSymbolType}
-                  </p>
-                  {showSubSymbolType && (
-                    <ul>
-                      {subSymbolTypeList.map((item, index) => (
-                        <li
-                          className={
-                            subCurrentSymbolType === item.symbol_type_name &&
-                            "active"
-                          }
-                          onClick={() => {
-                            this.switchSubSelfSelctList(item.symbol_type_name);
-                          }}
-                        >
-                          {item.symbol_type_name}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+          <Tabs
+            initialPage={0}
+            tabs={symbolTypeList}
+            renderTabBar={renderNavBar}
+            // renderTab={(tab) => <span>{tab.symbol_type_name}</span>}
+            onChange={this.switchSymbolType}
+            tabBarBackgroundColor="transparent"
+            tabBarActiveTextColor="#F2E205"
+            tabBarInactiveTextColor="#838D9E"
+            tabBarUnderlineStyle={{
+              display: "none",
+            }}
+          >
+            {symbolTypeList.map((symbolType, idx) => {
+              return (
+                <div>
+                  <div className="self-select-table-header">
+                    {symbolType.symbol_type_name === "自选" ? (
+                      <div className="market-type">
+                        <p onClick={this.switchShowSubSymbolType}>
+                          {subCurrentSymbolType}
+                        </p>
+                        {showSubSymbolType && (
+                          <ul>
+                            {subSymbolTypeList.map((item, index) => (
+                              <li
+                                className={
+                                  subCurrentSymbolType ===
+                                    item.symbol_type_name && "active"
+                                }
+                                onClick={() => {
+                                  this.switchSubSelfSelctList(
+                                    item.symbol_type_name
+                                  );
+                                }}
+                              >
+                                {item.symbol_type_name}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
+                    {price_title}
+                  </div>
+                  <WS_ProductList
+                    currentSymbolType={symbolType.symbol_type_name}
+                    symbol_type_code={symbolType.symbol_type_code}
+                    dataLoading={dataLoading}
+                    channelCode={
+                      symbolType.symbol_type_code === "self" ? "SELF" : "NONE"
+                    }
+                    quoted_price={quoted_price}
+                    thisRouter={this.$f7router}
+                  ></WS_ProductList>
                 </div>
-              ) : (
-                  <div></div>
-                )}
-              {price_title}
-            </div>
-
-          }
-          {hasData
-            ? <WS_ProductList
-              currentSymbolType={currentSymbolType.symbol_type_name}
-              symbol_type_code={currentSymbolType.symbol_type_code}
-              dataLoading={dataLoading}
-              channelCode={currentSymbolType.symbol_type_code === "self" ? "SELF" : "NONE"}
-              quoted_price={quoted_price}
-              thisRouter={this.$f7router}
-            ></WS_ProductList>
-            : <div className="self-select-tr" style={{ color: "#fff" }}>無此分類自選</div>
-          }
-
+              );
+            })}
+          </Tabs>
         </div>
       </Page>
     );
@@ -470,10 +494,12 @@ export default class extends React.Component {
   getPriceTitle = (priceType) => {
     let ret = null;
     if (priceType === "one_price") {
-      return <>
-        <div>成交价</div>
-        <div>涨跌幅</div>
-      </>;
+      return (
+        <>
+          <div>成交价</div>
+          <div>涨跌幅</div>
+        </>
+      );
     } else {
       return (
         <>

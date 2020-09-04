@@ -684,7 +684,7 @@ export default class extends React.Component {
       sell: 0,
     };
     const {getKeyConfig} = this.props.common;
-    const refCurrency = getKeyConfig("platform_currency");
+    const refCurrency =getKeyConfig("platform_currency");
     const {
       tradeType,
       params,
@@ -736,9 +736,9 @@ export default class extends React.Component {
       ? (1 / 10) * decimals_place
       : 0.001;
 
-    const totalPlatformCurrency = math.chain(totalFunds)
-                                      .add(handFee)
+    const totalPlatformCurrency = math.chain(margin_value)
                                       .multiply(open_currency_rate) 
+                                      .add(handFee)
                                       .done();
 
     return (
@@ -1027,7 +1027,7 @@ export default class extends React.Component {
           <div className="trade-detail-remarks-item">
             <div className="trade-detail-remarks-item-title">服務費</div>
             <div className="trade-detail-remarks-item-content">
-              HK${handFee}(手續費)
+              {refCurrency}${handFee}(手續費)
             </div>
           </div>
           <div className="trade-detail-remarks-item">
@@ -1045,7 +1045,7 @@ export default class extends React.Component {
           <div className="trade-detail-remarks-item">
             <div className="trade-detail-remarks-item-title">總計</div>
             <div className="trade-detail-remarks-item-content">
-              {refCurrency}${`${totalPlatformCurrency}`}元
+                      {refCurrency}${`${totalPlatformCurrency}`}元
             </div>
           </div>
           <div className="trade-detail-remarks-placeholder">
