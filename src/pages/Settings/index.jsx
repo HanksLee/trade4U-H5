@@ -1,12 +1,21 @@
 import intl from "react-intl-universal";
 import React from "react";
 import utils from "utils";
-import { Modal } from 'antd';
+import { Modal } from "antd";
 import { f7 } from "framework7-react";
 import api from "services";
-import { Page, Navbar, List, ListItem, ListInput, NavRight, NavLeft, NavTitle } from "framework7-react";
+import {
+  Page,
+  Navbar,
+  List,
+  ListItem,
+  ListInput,
+  NavRight,
+  NavLeft,
+  NavTitle,
+} from "framework7-react";
 import { inject, observer } from "mobx-react";
-import 'antd/dist/antd.css';
+import "antd/dist/antd.css";
 import "./index.scss";
 
 @inject("message")
@@ -17,7 +26,6 @@ export default class extends React.Component {
   componentDidMount() {
     this.getWithdrawableBalance();
   }
-
 
   getWithdrawableBalance = async () => {
     const res = await api.setting.getWithdrawableBalance();
@@ -32,14 +40,14 @@ export default class extends React.Component {
       reloadCurrent: true,
       ignoreCache: true,
     });
-  }
+  };
 
   showLogoutModal = () => {
     const { confirm } = Modal;
     const that = this;
     confirm({
-      title: '提示',
-      content: '您確定要登出嗎',
+      title: "提示",
+      content: "您確定要登出嗎",
       className: "trade-modal",
       centered: true,
       cancelText: "取消",
@@ -47,17 +55,15 @@ export default class extends React.Component {
       onOk() {
         that.logout();
       },
-      onCancel() {
-      },
+      onCancel() {},
     });
-  }
+  };
 
   render() {
     const { hasNotify, hasAnnouncement } = this.props.message;
-    const { withdrawableBalance } = this.state
+    const { withdrawableBalance } = this.state;
     return (
       <Page name="settings">
-
         <Navbar>
           <NavLeft></NavLeft>
           <NavTitle>{intl.get("settings.setting")} </NavTitle>
@@ -65,16 +71,13 @@ export default class extends React.Component {
             <List className="message-entry">
               <ListItem link={`/settings/message`}>
                 <div>
-                  {(hasAnnouncement || hasNotify) &&
+                  {(hasAnnouncement || hasNotify) && (
                     <span className="has-unread-message"></span>
-                  }
-                  <img
-                    src="../../../assets/img/message-center-icon.svg"
-                  />
+                  )}
+                  <img src="../../../assets/img/message-center-icon.svg" />
                 </div>
               </ListItem>
             </List>
-
           </NavRight>
         </Navbar>
         <div className="withdraw-item-title">可提馀额</div>
@@ -82,35 +85,19 @@ export default class extends React.Component {
         <div className="fund-btn-container">
           <div className="fund-btn">
             <List>
-              <ListItem
-                title={"入金"}
-                link={`/settings/deposit`}
-              >
-              </ListItem>
+              <ListItem title={"入金"} link={`/settings/deposit`}></ListItem>
             </List>
             <List className="btn-reverse">
-              <ListItem
-                title={"出金"}
-                link={`/settings/withdraw`}
-              >
-              </ListItem>
+              <ListItem title={"出金"} link={`/settings/withdraw`}></ListItem>
             </List>
           </div>
         </div>
         <div className="setting-item-title">资金明细</div>
         <List>
-          <ListItem
-            title={"资金明细"}
-            link={`/settings/history`}
-          >
-            <div
-              slot="media"
-              style={{ backgroundColor: "#E02020" }}>
-              <img
-                src="../../../assets/img/funds-icon.svg"
-              />
+          <ListItem title={"资金明细"} link={`/settings/history`}>
+            <div slot="media" style={{ backgroundColor: "#E02020" }}>
+              <img src="../../../assets/img/funds-icon.svg" />
             </div>
-
           </ListItem>
         </List>
 
@@ -120,14 +107,9 @@ export default class extends React.Component {
             title={intl.get("settings.account")}
             link={`/settings/account`}
           >
-            <div
-              slot="media"
-              style={{ backgroundColor: "#FA6400" }}>
-              <img
-                src="../../../assets/img/account-manage-icon.svg"
-              />
+            <div slot="media" style={{ backgroundColor: "#FA6400" }}>
+              <img src="../../../assets/img/account-manage-icon.svg" />
             </div>
-
           </ListItem>
         </List>
         <List>
@@ -135,26 +117,15 @@ export default class extends React.Component {
             title={intl.get("settings.password")}
             link={`/settings/password`}
           >
-            <div
-              slot="media"
-              style={{ backgroundColor: "#F7B500" }}>
-              <img
-                src="../../../assets/img/setting-password-icon.svg"
-              />
+            <div slot="media" style={{ backgroundColor: "#F7B500" }}>
+              <img src="../../../assets/img/setting-password-icon.svg" />
             </div>
           </ListItem>
         </List>
         <List>
-          <ListItem
-            title={intl.get("settings.lang")}
-            link={`/settings/lang`}
-          >
-            <div
-              slot="media"
-              style={{ backgroundColor: "#6DD400" }}>
-              <img
-                src="../../../assets/img/language-icon.svg"
-              />
+          <ListItem title={intl.get("settings.lang")} link={`/settings/lang`}>
+            <div slot="media" style={{ backgroundColor: "#6DD400" }}>
+              <img src="../../../assets/img/language-icon.svg" />
             </div>
           </ListItem>
         </List>
@@ -230,18 +201,14 @@ export default class extends React.Component {
             </div>
           </ListItem>
         </List> */}
-        <List
-          className="logout">
+        <List className="logout">
           <ListItem
             title={intl.get("settings.logout")}
             onClick={this.showLogoutModal}
             className="logout-item"
           >
-            <div
-              slot="media">
-              <img
-                src="../../../assets/img/logout.svg"
-              />
+            <div slot="media">
+              <img src="../../../assets/img/logout.svg" />
             </div>
           </ListItem>
         </List>
