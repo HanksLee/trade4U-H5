@@ -9,7 +9,7 @@
   margin: 21px auto;
 }
 
-.login-list {
+form.login-list {
   ul {
     background-color: #21212b;
 
@@ -72,6 +72,7 @@
 
     .item-inner {
       width: calc(100% - 92px);
+     
     }
 
     .code-info {

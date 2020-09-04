@@ -115,11 +115,14 @@ $primary: #21212b;
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
+    
 
     > button {
       width: 100px;
       line-height: 28px;
       padding: 0;
+      font-size: 16px;
+      border-radius: 4px;
 
       &:nth-child(1) {
         background-color: rgba(242, 226, 5, 1);
@@ -187,6 +190,7 @@ $primary: #21212b;
         th,
         .ant-picker-cell-in-view {
           color: #ffffff;
+          font-size: 16px;
         }
 
         .ant-picker-cell-disabled {

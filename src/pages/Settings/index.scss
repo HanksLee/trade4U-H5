@@ -45,6 +45,7 @@
 
       .item-title {
         color: rgba(242, 226, 5, 1) !important;
+       
       }
     }
 
@@ -75,10 +76,11 @@
 .withdraw-item-title,
 .deposit-item-title {
   color: #ffffff;
-  font-size: 14px;
+  font-size: 18px;
   padding-left: 16px;
   margin-top: 20px;
 }
+
 
 .history-total,
 .history-detail .detail-title,
@@ -99,10 +101,12 @@
 
   .item-title {
     color: #ffffff;
+    font-size: 18px;
   }
 
   .item-content {
     color: rgba(242, 226, 5, 1);
+    font-size: 20px;
   }
 }
 
@@ -116,7 +120,7 @@
   }
 
   .detail-title {
-    color: #ffffff;
+    color: #838D9E;
     margin-bottom: 10px;
   }
 
@@ -134,11 +138,12 @@
 
       p {
         margin: 0;
+        color: #ffffff;
       }
     }
 
     * {
-      font-size: 12px;
+      font-size: 14px;
     }
   }
 }
@@ -195,7 +200,7 @@
       }
 
       .item-title {
-        font-size: 18px;
+        font-size: 14px;
         color: #ffffff;
       }
 
@@ -222,8 +227,9 @@
     padding: 7px 8px;
     border-radius: 4px;
     right: 0;
-    bottom: 31px;
-    font-size: 12px;
+    //bottom: 31px;
+    bottom: 20px;
+    font-size: 16px;
 
     &.reject {
       background-color: #6d7278 !important;
@@ -233,7 +239,8 @@
 
   .am-input-control {
     input {
-      margin-bottom: 15px;
+      margin-bottom: 5px;
+      font-size: 16px;
     }
   }
 
@@ -454,7 +461,7 @@
 
     .message-content-title {
       flex-basis: 35%;
-      font-size: 14px;
+      font-size: 16px;
       color: #ffffff;
 
       &.news-title {
@@ -462,29 +469,27 @@
       }
     }
 
-    .message-content-time {
-      flex-basis: 65%;
-      text-align: right;
-    }
-
-    .message-content-content {
-      flex-basis: 100%;
-      margin-top: 7px;
-    }
-
     .message-content-time,
     .message-content-content {
       color: #8c8c8c;
     }
 
-    .message-date {
-      margin-right: 5px;
-      font-size: 14px;
+    .message-content-time {
+      flex-basis: 65%;
+      text-align: right;
+      font-size: 12px;
+      .message-date {
+        margin-right: 5px;
+        //font-size: 14px;
+      }
     }
 
     .message-content-content {
-      font-size: 12px;
+      flex-basis: 100%;
+      margin-top: 7px;
+      font-size: 14px;
     }
+
   }
 
   .message-goto-container {
@@ -517,11 +522,13 @@
     margin-bottom: 20px;
     background-color: #262732;
     border-radius: 20px;
+    font-size: 14px;
 
     .card-title-container {
       position: relative;
       display: flex;
       padding: 10px 0;
+      border-bottom:solid 1px #C8C7CC;
 
       &::after {
         content: "";
@@ -538,23 +545,24 @@
     .card-title,
     .card-time {
       flex: 1 1 0;
-      font-size: 14px;
     }
 
     .card-title {
       color: white;
+      font-size: 16px;
     }
 
     .card-time {
       color: #838d9e;
       text-align: right;
+      
     }
 
     .card-content-container {
       padding: 10px 0;
 
       .card-content {
-        font-size: 12px;
+        //font-size: 14px;
         color: #838d9e;
       }
     }
@@ -584,6 +592,7 @@
 
         > label {
           height: unset;
+          font-size: 18px;
         }
       }
 
@@ -598,7 +607,7 @@
         border-bottom: 1px solid white;
 
         input {
-          font-size: 12px;
+          font-size: 16px;
         }
 
         .ant-input-number {
@@ -641,10 +650,11 @@
       .am-list-extra {
         flex-basis: 100%;
         text-align: left;
-        font-size: 12px;
+        font-size: 16px;
         border-bottom: 1px solid #ffffff;
+        color:#ffffff;
       }
-
+      
       .am-list-arrow {
         // display: none;
         // width: 32px;
@@ -661,7 +671,7 @@
     .am-list-line {
       flex-wrap: wrap;
       padding: 8px 0;
-
+      
       &::after {
         content: unset !important;
       }
@@ -673,23 +683,26 @@
 
       .am-input-label {
         color: #ffffff;
-        font-size: 14px;
+        font-size: 18px;
         padding-top: 7px;
+        line-height: 18px;
       }
 
       .am-input-control {
         border-bottom: 1px solid white;
-
+        margin-top: 10px;
         input {
-          font-size: 12px;
-          color: #6d7278;
+          font-size: 16px;
+          //color: #6d7278;
+          color: #ffffff;
           line-height: 26px;
 
           &::placeholder {
-            font-size: 12px;
+            font-size: 16px;
           }
         }
         input:disabled{
+          font-size: inherit;
           background-color: inherit;
         }
       }
@@ -707,6 +720,7 @@
   color: #ffffff;
   margin: 0;
   padding: 0 16px;
+  font-size: 18px;
 }
 
 .withdraw-select-title {
@@ -756,6 +770,7 @@
 
     .ant-select-selection-search-input {
       height: 26px;
+    
     }
   }
 
@@ -764,7 +779,8 @@
     border: unset;
     padding: 0;
     box-shadow: unset !important;
-
+    font-size: 16px;
+    border-bottom: solid 1px #C8C7CC;
     &:hover {
       border-color: unset;
     }
