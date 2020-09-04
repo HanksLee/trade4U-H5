@@ -52,6 +52,8 @@ export default class extends React.Component {
     let scrollTop = $$("#view-news .page-content .am-tabs-pane-wrap ")[tabIndex].scrollTop;
     let scrollHeight = $$("#view-news .page-content .am-tabs-pane-wrap ")[tabIndex].scrollHeight;
 
+    if (scrollTop === 0 && scrollHeight === 0) return;
+
     // Checks that the page has scrolled to the bottom
     if (window.innerHeight + scrollTop >= scrollHeight) {
       this.getList();
@@ -80,8 +82,6 @@ export default class extends React.Component {
           this.setState({ hasMore: newsList.length < newsListCount })
         })
       }
-
-
     })
   }
 

@@ -243,29 +243,41 @@
   }
 
   .trade-detail-more-info-news {
-    .trade-detail-more-info-news-tabs {
-      padding-left: 16px;
-      font-size: 16px;
-      color: #f2e205;
-      display: flex;
+    // .trade-detail-more-info-news-tabs {
+    //   padding-left: 16px;
+    //   font-size: 16px;
+    //   color: #f2e205;
+    //   display: flex;
 
-      p {
-        display: inline-block;
-        margin-bottom: 0;
+    //   p {
+    //     display: inline-block;
+    //     margin-bottom: 0;
 
-        &.active {
-          border-bottom: 1px solid #f2e205;
-        }
-      }
+    //     &.active {
+    //       border-bottom: 1px solid #f2e205;
+    //     }
+    //   }
 
-      p + p {
-        margin-left: 30px;
+    //   p + p {
+    //     margin-left: 30px;
+    //   }
+    // }
+
+    .am-tabs-default-bar-tab {
+      &::after {
+        content: unset !important;
       }
     }
 
-    .trade-detail-more-info-news-content {
+    .news-content,
+    .fund-content {
       border-top: 1px solid #2e3b55;
       border-bottom: 1px solid #2e3b55;
+    }
+
+    .news-content {
+      max-height: 300px;
+      overflow: scroll;
 
       > div + div {
         border-top: 1px solid #2e3b55;
@@ -284,16 +296,65 @@
           margin-bottom: 0;
         }
 
-        > span {
-          width: 7px;
-          height: 7px;
-          background: rgba(233, 74, 57, 1);
-          border-radius: 50%;
-          position: absolute;
-          right: 13px;
-          top: 50%;
-          transform: translateX(-50%);
+        // > span {
+        //   width: 7px;
+        //   height: 7px;
+        //   background: rgba(233, 74, 57, 1);
+        //   border-radius: 50%;
+        //   position: absolute;
+        //   right: 13px;
+        //   top: 50%;
+        //   transform: translateX(-50%);
+        // }
+      }
+    }
+
+    .fund-content {
+      padding: 16px 14px;
+      border-bottom: 1px solid #2e3b55;
+
+      > div + div {
+        border-top: unset;
+      }
+
+      > div {
+        font-size: 14px;
+        color: #ffffff;
+        text-align: center;
+        border: 1px solid #2e3b55;
+
+        &:nth-child(1) {
+          background-color: #2e3b55;
+          line-height: 28px;
         }
+
+        &:nth-child(n+2) {
+          display: flex;
+
+          > span {
+            flex: 1 1 0;
+            line-height: 26px;
+            border-top: 1px solid #2e3b55;
+          }
+
+          > span + span {
+            border-left: 1px solid #2e3b55;
+          }
+        }
+
+        &:first-child {
+          border-radius: 4px 4px 0px 0px;
+        }
+
+        &:last-child {
+          border-radius: 0px 0px 4px 4px;
+        }
+      }
+
+      .spin-container {
+        padding: 10px 0;
+        display: flex;
+        justify-content: center;
       }
     }
   }

@@ -60,11 +60,12 @@ export default class extends React.Component {
 
   loadMoreSymbol = async () => {
     if (this.state.next && !this.state.isLoading) {
-      this.getSymbolList({
-        type__name: this.symbolTypeName,
-        page: this.state.page + 1,
-        page_size: pageSize,
-      }, false)
+      // this.getSymbolList({
+      //   type__name: this.symbolTypeName,
+      //   page: this.state.page + 1,
+      //   page_size: pageSize,
+      // }, false)
+      this.getSymbolList(`type__name=${this.symbolTypeName}&page=${this.state.page}&page_size=${pageSize}&search=${e.target.value}`, false);
     }
   }
 
@@ -109,20 +110,22 @@ export default class extends React.Component {
   }
 
   handleSearch = (e) => {
-    this.getSymbolList({
-      type__name: this.symbolTypeName,
-      search: e.target.value,
-      page: 1,
-      page_size: pageSize,
-    })
+    this.getSymbolList(`type__name=${this.symbolTypeName}&page=1&page_size=${pageSize}&search=${e.target.value}`);
+    // this.getSymbolList({
+    //   type__name: this.symbolTypeName,
+    //   search: e.target.value,
+    //   page: 1,
+    //   page_size: pageSize,
+    // })
   }
 
   handleClearSearch = () => {
-    this.getSymbolList({
-      type__name: this.symbolTypeName,
-      page: 1,
-      page_size: pageSize,
-    })
+    this.getSymbolList(`type__name=${this.symbolTypeName}&page=1&page_size=${pageSize}`);
+    // this.getSymbolList({
+    //   type__name: this.symbolTypeName,
+    //   page: 1,
+    //   page_size: pageSize,
+    // })
   }
 
   render() {

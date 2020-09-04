@@ -102,13 +102,13 @@ export default class extends React.Component {
           <NavRight className="transistion-text">交易中</NavRight>
 
         </Navbar>
-        {
+        {/* {
           currentSymbol?.symbol_display?.description && (
             <Block className="symbol-display-block">
               <p>{currentSymbol?.symbol_display?.description}</p>
             </Block>
           )
-        }
+        } */}
         <div className="stock-container">
           <div className="now-stock">{currentSymbol?.product_details?.sell}</div>
           <div className="arrow"><img src={UpArrowIcon} alt="UpArrowIcon" /></div>
