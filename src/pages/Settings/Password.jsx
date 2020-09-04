@@ -157,7 +157,7 @@ export default class extends React.Component {
           {waitTime !== 60 && <div className="sms-prompt">{waitTime}秒后可重新发送</div>}
         </InputItem>
 
-        {!utils.isEmpty(errMsg) && <div class="sms-error">{errMsg}</div>}
+        {!utils.isEmpty(errMsg) && <div className="sms-error">{errMsg}</div>}
       </List>
     )
   }
@@ -169,7 +169,7 @@ export default class extends React.Component {
         <Navbar
           title={intl.get("settings.password")}
           backLink="Back"
-          class="text-color-white"
+          className="text-color-white"
         >
           <NavRight>
             {!smsConfirm ? <div onClick={this.handleVerifySubmit}>下一步</div> : <div onClick={this.handleResetPwdSubmit}></div>}

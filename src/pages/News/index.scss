@@ -11,8 +11,16 @@
     padding-bottom: 80px;
   }
 
-  .am-tabs-default-bar-tab:after {
-    content: unset !important;
+  .am-tabs-default-bar-tab {
+    font-size: 18px;
+
+    &::after {
+      content: unset !important;
+    }
+  }
+
+  .am-tabs-default-bar-tab-active {
+    font-size: 20px;
   }
 
   .tab-active-bar {
@@ -42,7 +50,6 @@
 
       .news-content-item-text {
         flex: 1 1 0;
-        font-size: 14px;
         display: flex;
         align-items: stretch;
         align-content: space-between;
@@ -55,11 +62,13 @@
 
         p:nth-child(1) {
           color: #ffffff;
+          font-size: 16px;
         }
 
         P:nth-child(2) {
           color: #838d9e;
           vertical-align: bottom;
+          font-size: 14px;
         }
       }
 

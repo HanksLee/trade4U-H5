@@ -139,6 +139,16 @@ var routes = [
     },
   },
   {
+    path: "/news/detail",
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () =>
+        import(/* webpackChunkName: 'trade-page' */ "../pages/NewsDetail/index.jsx");
+      reactComponent().then((rc) => {
+        resolve({ component: rc.default });
+      });
+    },
+  },
+  {
     path: "/products/",
     asyncComponent: () =>
       import(
