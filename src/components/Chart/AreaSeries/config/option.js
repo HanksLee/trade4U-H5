@@ -12,8 +12,8 @@ export default {
     top: 0.6,
     bottom: 0.05,
 },
-  topColor: "#00000000",//上層顏色，靠近線條
-  lineColor: "#009de4",//線條顏色
-  bottomColor: "#00000000",//下層顏色，靠近x軸
+  topColor: "#585C21",//上層顏色，靠近線條
+  lineColor: "#ECF70A",//線條顏色
+  bottomColor: "#3A3C27",//下層顏色，靠近x軸
   lineWidth: 2,//線條粗細
 };
