@@ -1,17 +1,21 @@
-import api from 'services';
-import React from 'react';
+import api from "services";
+import React from "react";
 import {
-  Page, Navbar, List, ListItem, Block,
+  Page,
+  Navbar,
+  List,
+  ListItem,
+  Block,
   NavTitle,
   NavLeft,
   NavRight,
   Icon,
   Link,
   Toolbar,
-  Input
-} from 'framework7-react';
+  Input,
+} from "framework7-react";
 import { Toast } from "antd-mobile";
-import { Modal, Spin } from 'antd';
+import { Modal, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import {
   tradeTypeOptions,
@@ -19,23 +23,33 @@ import {
   pendingOrderOptions,
   executeOptions,
   executeMotionMap,
-  stockTypeOptions
-} from 'constant';
+  stockTypeOptions,
+} from "constant";
 import { inject, observer } from "mobx-react";
-import utils from 'utils';
-import 'antd/dist/antd.css';
-import './index.scss';
+import utils from "utils";
+import "antd/dist/antd.css";
+import "./index.scss";
 
+import { create, all } from "mathjs";
+const config = {
+  number: "BigNumber",
+};
+const math = create(all, config);
 
 const tradeActions = [
-  '买入', '卖出', 'Buy Limit', 'Sell Limit', 'Buy Stop', 'Sell Stop'
-]
+  "买入",
+  "卖出",
+  "Buy Limit",
+  "Sell Limit",
+  "Buy Stop",
+  "Sell Stop",
+];
 
-@inject("common", 'trade', 'market')
+@inject("common", "trade", "market")
 @observer
 export default class extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       // symbolDisplay: this.$f7route.context.symbol_display,
       moreInfo: false,
@@ -45,44 +59,61 @@ export default class extends React.Component {
         open_price: undefined,
         action: 0,
         take_profit: undefined,
-        stop_loss: undefined
+        stop_loss: undefined,
       },
       stockParams: {
         holdDays: "",
         action: 0,
-        funds: 10000,
+        margin_value: 10000,
         unitFunds: 100,
-        leverage: 5
+        leverage: 5,
+        rules: {
+          calculate_for_buy_hands_fee: "",
+          calculate_for_buy_stock_fee: "",
+          calculate_for_sell_hands_fee: "",
+          calculate_for_sell_stock_fee: "",
+        },
       },
       positionTypeMap: [],
-      leverageMap: []
-    }
+      leverageMap: [],
+    };
   }
+  profitRule = this.props.common.nowProfitRule;
 
   async componentDidMount() {
-
     await this.initSymbolList();
 
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
     const { currentSymbol } = this.props.market;
-
-
-
-    this.getFunds(currentSymbol.id);
-
-    if (mode === 'add') {
+    const {
+      calculate_for_buy_hands_fee,
+      calculate_for_buy_stock_fee,
+      calculate_for_buy_tax,
+      calculate_for_cash_deposit,
+      calculate_for_sell_hands_fee,
+      calculate_for_sell_stock_fee,
+      calculate_for_sell_tax,
+    } = currentSymbol.symbol_display;
+   // this.getFunds(currentSymbol.id);
+    if (mode === "add") {
       this.setState({
         params: {
           ...this.state.params,
           open_price: currentSymbol?.sell,
         },
-        positionTypeMap: currentSymbol?.symbol_display?.position_type[0].split(", "),
+        positionTypeMap: currentSymbol?.symbol_display?.position_type,
         leverageMap: currentSymbol?.symbol_display?.leverage.split(","),
         stockParams: {
           ...this.state.stockParams,
-          holdDays: currentSymbol?.symbol_display?.position_type[0].split(", ")[0],
+          holdDays: currentSymbol?.symbol_display?.position_type[0],
           leverage: currentSymbol?.symbol_display?.leverage.split(",")[0],
+          rules: {
+            calculate_for_buy_hands_fee,
+            calculate_for_buy_stock_fee,
+            calculate_for_sell_hands_fee,
+            calculate_for_sell_stock_fee,
+          },
         },
       });
     } else {
@@ -91,15 +122,13 @@ export default class extends React.Component {
           lots: currentTrade.lots,
           open_price: currentTrade.open_price,
           take_profit: currentTrade.take_profit,
-          stop_loss: currentTrade.stop_loss
-        }
+          stop_loss: currentTrade.stop_loss,
+        },
       });
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-
-  }
+  componentDidUpdate(prevProps, prevState) {}
 
   getFunds = async (id) => {
     console.log(this)
@@ -124,12 +153,105 @@ export default class extends React.Component {
     }
 
     await getCurrentSymbol(
-      mode == 'add' && (id == null || id == 0)
+      mode == "add" && (id == null || id == 0)
         ? this.props.market.symbolList[0]?.id
-        : id,
+        : id
     );
-  }
+  };
 
+  getStockBuyCount = (totalFunds, sell, contract_size) => {
+    const buyCount = math
+      .chain(totalFunds)
+      .divide(sell)
+      .divide(contract_size)
+      .done();
+    const countRounding = math.fix(buyCount);
+
+    return math.chain(countRounding).multiply(contract_size).done();
+  };
+
+  calculateForValue = (formulaName, obj) => {
+    let formula = this.profitRule[formulaName];
+    if (!formula) return 0;
+
+    for (let key in obj) {
+      if (formula.indexOf(key) === -1) {
+        continue;
+      }
+
+      formula = formula.replace(key, obj[key]);
+    }
+
+    try {
+      return math.evaluate(formula);
+    } catch (e) {
+      return 0;
+    }
+  };
+
+  setStopLess = (value, stop_less, action) => {
+    let retV = 0;
+    switch (action) {
+      case 0:
+        retV = value - stop_less;
+        break;
+      case 1:
+        retV = value + stop_less;
+        break;
+    }
+    return retV;
+  };
+
+  setTakeProfit = (value, take_profit, change, action) => {
+    let retV = 0;
+    let basic = 0;
+    switch (action) {
+      case 0:
+        basic = value + take_profit;
+        retV = basic + change;
+        if (basic > retV) {
+          retV = basic;
+        }
+        break;
+      case 1:
+        basic = value - take_profit;
+        retV = basic + change;
+        if (basic < retV) {
+          retV = basic;
+        }
+        break;
+    }
+
+    return retV;
+  };
+
+  setPointLimit = (type, origin, profit) => {
+    let retV = 0;
+    switch (type) {
+      case "high":
+        retV = origin + profit;
+        break;
+      case "low":
+        retV = origin - profit;
+        break;
+    }
+
+    return retV;
+  };
+
+  checkPointLimit = (type, origin, changeValue) => {
+    let isOver = false;
+    switch (type) {
+      case "high":
+        isOver = origin < changeValue;
+        break;
+      case "low":
+        isOver = origin > changeValue;
+        break;
+    }
+    const retV = isOver ? origin : changeValue < 0 ? origin : changeValue;
+    return retV;
+  };
   // initTrade = async () => {
   //   const {
   //     id, mode, trade: {
@@ -160,27 +282,24 @@ export default class extends React.Component {
     const { params } = this.state;
 
     const {
-      market: {
-        currentShowSymbol,
-      }
+      market: { currentShowSymbol },
     } = this.props;
 
     val = Number(val);
-    val = Number(this.state.params.lots || 0) + (val);
+    val = Number(this.state.params.lots || 0) + val;
     val = Number(val.toFixed(2));
 
-
     if (val < currentShowSymbol?.symbol_display?.min_lots) {
-      return
+      return;
     }
 
     this.setState({
       params: {
         ...params,
         lots: val,
-      }
-    })
-  }
+      },
+    });
+  };
 
   onTradeListPageRefresh = async () => {
     const { currentTradeTab } = this.props;
@@ -193,27 +312,27 @@ export default class extends React.Component {
       // free_margin: 1014399.22, // 可用预付款
       // margin_level: 18017848.22, // 预付款比例
     };
-    if (currentTradeTab === '持仓') {
+    if (currentTradeTab === "持仓") {
       resTradeList = await this.props.common.$api.trade.getTradeList({
         params: {
-          status: "in_transaction"
-        }
-      })
+          status: "in_transaction",
+        },
+      });
 
       this.props.trade.setTradeList(resTradeList.data);
     }
 
-    if (currentTradeTab === '挂单') {
+    if (currentTradeTab === "挂单") {
       resTradeList = await this.props.common.$api.trade.getTradeList({
         params: {
-          status: "pending"
-        }
-      })
+          status: "pending",
+        },
+      });
 
       this.props.trade.setTradeList(resTradeList.data, "future");
     }
 
-    if (currentTradeTab === '历史') {
+    if (currentTradeTab === "历史") {
       resTradeList = await this.$api.trade.getFinishTradeList({});
 
       this.props.trade.setTradeList(resTradeList.data.results, "finish");
@@ -221,7 +340,7 @@ export default class extends React.Component {
     }
 
     this.updateTradeInfo(tradeInfo);
-  }
+  };
 
   updateTradeInfo = (tradeInfo) => {
     let payload = {};
@@ -247,34 +366,52 @@ export default class extends React.Component {
   };
 
   onFieldChanged = (change, field) => {
-    const {
-      currentSymbol
-    } = this.props.market;
-    const { params } = this.state;
+    const { currentSymbol } = this.props.market;
+    const { params, stockParams } = this.state;
+    const { action } = stockParams;
     const limit = currentSymbol?.symbol_display?.decimals_place ?? 1;
+    const {
+      take_profit_point,
+      stop_loss_point,
+    } = currentSymbol?.symbol_display ?? {
+      take_profit_point: 0,
+      stop_loss_point: 0,
+    };
 
     let fieldValue = this.state.params[field];
+    let type = "";
+    let originValue = 0;
+    let valueStep = 0;
+
+    if (field == "stop_loss") {
+      type = action === 1 ? "low" : "high";
+      valueStep = +currentSymbol.sell * stop_loss_point * 0.001;
+      originValue = currentSymbol.buy;
+    } else if (field == "take_profit") {
+      type = action === 0 ? "low" : "high";
+      valueStep = currentSymbol.buy * take_profit_point * 0.001;
+      originValue = currentSymbol.buy;
+    } else {
+      fieldValue = +currentSymbol.buy + change;
+    }
 
     if (!fieldValue) {
-      if (field == 'stop_loss') {
-        fieldValue = +currentSymbol.sell + change;
-      } else {
-        fieldValue = +currentSymbol.buy + change;
-      }
+      fieldValue = this.setPointLimit(type, originValue, valueStep);
     } else {
       fieldValue += change;
     }
 
-    fieldValue = +(fieldValue).toFixed(limit);
+    fieldValue = +this.checkPointLimit(type, originValue, fieldValue).toFixed(
+      limit
+    ); //  +fieldValue;
 
     this.setState({
       params: {
         ...params,
         [field]: fieldValue,
-      }
-
+      },
     });
-  }
+  };
 
   onFundsChanged = (change, field) => {
     const { stockParams } = this.state;
@@ -284,136 +421,144 @@ export default class extends React.Component {
     if (!utils.isEmpty(fieldValue)) {
       fieldValue += change;
     } else {
-      fieldValue = 10000
+      fieldValue = 10000;
     }
 
     this.setState({
       stockParams: {
         ...stockParams,
         [field]: fieldValue,
-      }
-
+      },
     });
-  }
+  };
 
   switchLever = (leverage) => {
     const { stockParams } = this.state;
     this.setState({
       stockParams: {
         ...stockParams,
-        leverage: leverage
-      }
-    })
-  }
+        leverage: leverage,
+      },
+    });
+  };
 
   switchHoldDays = (days) => {
     const { stockParams } = this.state;
     this.setState({
       stockParams: {
         ...stockParams,
-        holdDays: days
-      }
-    })
-  }
+        holdDays: days,
+      },
+    });
+  };
 
   switchStockType = (id) => {
     const { stockParams } = this.state;
     this.setState({
       stockParams: {
         ...stockParams,
-        action: id
-      }
-    })
-  }
+        action: id,
+      },
+    });
+  };
 
   switchTradeOptions = (id) => {
     const { params } = this.state;
-    const {
-      currentSymbol
-    } = this.props.market;
+    const { currentSymbol } = this.props.market;
 
     if (id === 2 || id === 4) {
       this.setState({
         params: {
           ...params,
           open_price: currentSymbol?.buy,
-          action: id
-        }
-      })
+          action: id,
+        },
+      });
     } else if (id === 3 || id === 5) {
       this.setState({
         params: {
           ...params,
           open_price: currentSymbol?.sell,
-          action: id
-        }
-      })
+          action: id,
+        },
+      });
     } else {
       this.setState({
         params: {
           ...params,
           open_price: undefined,
-          action: id
-        }
-      })
+          action: id,
+        },
+      });
     }
-
-  }
+  };
 
   switchTradeType = (name) => {
     const { params } = this.state;
-    if (name === 'instance') {
+    if (name === "instance") {
       // this.setState({
       //   params: {
       //     ...params,
       //     action: executeOptions[0].id
       //   }
       // })
-      this.switchTradeOptions(executeOptions[0].id)
+      this.switchTradeOptions(executeOptions[0].id);
     }
-    if (name === 'future') {
+    if (name === "future") {
       // this.setState({
       //   params: {
       //     ...params,
       //     action: pendingOrderOptions[0].id
       //   }
       // })
-      this.switchTradeOptions(pendingOrderOptions[0].id)
+      this.switchTradeOptions(pendingOrderOptions[0].id);
     }
-    this.setState({ tradeType: name })
-  }
+    this.setState({ tradeType: name });
+  };
 
   switchTradeDetail = () => {
-    const { moreInfo } = this.state
-    this.setState({ moreInfo: !moreInfo })
-  }
-
+    const { moreInfo } = this.state;
+    this.setState({ moreInfo: !moreInfo });
+  };
 
   onSubmit = async () => {
-    const { params } = this.state;
+    const { params ,stockParams } = this.state;
     const {
       mode,
-      market: {
-        currentSymbol,
-      },
-      trade: {
-        currentTrade
-      }
+      market: { currentSymbol },
+      trade: { currentTrade , tradeInfo},
     } = this.props;
-
+    const { success ,error } = Modal;
     const lots = params.lots;
 
     try {
       if (mode == "add") {
-
         const decimals_place = currentSymbol?.symbol_display?.decimals_place;
 
         const payload = {
-          trading_volume: (Number(lots) * Number(currentSymbol?.symbol_display?.contract_size)).toFixed(decimals_place),
-          lots,
+          trading_volume: (
+            Number(lots) * Number(currentSymbol?.symbol_display?.contract_size)
+          ).toFixed(decimals_place),
+          lots:lots.toString(),
           symbol: currentSymbol.id,
           action: params.action,
         };
+
+        if(stockParams.margin_value){
+          payload.margin_value = stockParams.margin_value;
+          if(tradeInfo.free_margin - stockParams.margin_value <0 ){
+            error({
+              title: '提示',
+              className: "trade-modal success-modal",
+              content: "可用预付款不足",
+            });
+            return;
+          }
+        }
+        if(stockParams.leverage){
+          payload.leverage = stockParams.leverage;
+        }
+
         if (params.take_profit !== undefined) {
           payload.take_profit = params.take_profit;
         }
@@ -431,47 +576,57 @@ export default class extends React.Component {
         }
 
         if (utils.isEmpty(payload.open_price) || utils.isEmpty(payload.lots)) {
-          return false
+          return false;
         }
 
         const res = await this.props.common.$api.trade.createTrade(payload);
         const that = this;
 
+
         if (res.status == 201) {
-          const { success } = Modal;
+         
           success({
-            title: '提示',
-            content: '下单成功',
+            title: "提示",
+            content: "下单成功",
             className: "trade-modal success-modal",
             centered: true,
             // cancelText: "取消",
             okText: "确认",
             onOk() {
-              that.$f7router.back('/trade/', {
+              that.$f7router.back("/trade/", {
                 force: false,
               });
             },
             // onCancel() {
             // },
           });
+        }else{
+          error({
+            title: '提示',
+            className: "trade-modal success-modal",
+            content: res.data.message,
+          })
         }
       } else if (mode === "update") {
         const payload = params;
-        const res = await this.props.common.$api.trade.updateTrade(currentTrade.order_number, payload);
+        const res = await this.props.common.$api.trade.updateTrade(
+          currentTrade.order_number,
+          payload
+        );
         const that = this;
 
         if (res.status == 200) {
           const { success } = Modal;
           success({
-            title: '提示',
-            content: '修改成功',
+            title: "提示",
+            content: "修改成功",
             className: "trade-modal success-modal",
             centered: true,
             // cancelText: "取消",
             okText: "确认",
             onOk() {
               that.onTradeListPageRefresh();
-              that.$f7router.back('/trade/', {
+              that.$f7router.back("/trade/", {
                 force: false,
               });
             },
@@ -480,21 +635,23 @@ export default class extends React.Component {
           });
         }
       } else if (mode === "delete") {
-        const res = await this.props.common.$api.trade.closeTrade(currentTrade.order_number);
+        const res = await this.props.common.$api.trade.closeTrade(
+          currentTrade.order_number
+        );
         const that = this;
 
         if (res.status == 200) {
           const { success } = Modal;
           success({
-            title: '提示',
-            content: '平倉成功',
+            title: "提示",
+            content: "平倉成功",
             className: "trade-modal success-modal",
             centered: true,
             // cancelText: "取消",
             okText: "确认",
             onOk() {
               that.onTradeListPageRefresh();
-              that.$f7router.back('/trade/', {
+              that.$f7router.back("/trade/", {
                 force: false,
               });
             },
@@ -504,38 +661,99 @@ export default class extends React.Component {
         }
       }
     } catch (err) {
-
       // this.$msg.error(err?.response?.data?.message);
     }
   };
 
   renderStockInput = () => {
-
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
     const { currentSymbol, currentShowSymbol } = this.props.market;
-    // console.log(this.state)
-    const { tradeType, params, stockParams, positionTypeMap, leverageMap } = this.state;
-    // console.log(positionTypeMap)
+    const {
+      open_currency_rate,
+      close_currency_rate,
+      hands_fee_for_sell,
+      hands_fee_for_buy,
+      contract_size,
+      decimals_place,
+    } = currentSymbol.symbol_display;
+
+    const { sell } = currentSymbol.product_details
+      ? currentSymbol.product_details
+      : {
+          sell: 0,
+        };
+
+    const {
+      tradeType,
+      params,
+      stockParams,
+      positionTypeMap,
+      leverageMap,
+    } = this.state;
+    const { leverage, margin_value, rules, action } = stockParams;
+
+    const totalFunds = math
+      .chain(margin_value)
+      .multiply(leverage ? leverage : 0)
+      .done();
+    const trading_volume = this.getStockBuyCount(
+      totalFunds,
+      sell,
+      contract_size
+    );
+
+    const {
+      calculate_for_buy_hands_fee,
+      calculate_for_buy_stock_fee,
+      calculate_for_sell_hands_fee,
+      calculate_for_sell_stock_fee,
+    } = rules;
+    const calcObj = {
+      trading_volume,
+      margin_value,
+      open_currency_rate,
+      close_currency_rate,
+      hands_fee_for_sell,
+      hands_fee_for_buy,
+      open_price: sell,
+    };
+    const handFee = this.calculateForValue(
+      calculate_for_buy_hands_fee,
+      calcObj
+    );
+
+    const calculate_stock_fee =
+      action === 0 ? calculate_for_buy_stock_fee : calculate_for_sell_stock_fee;
+    const stockFee = this.calculateForValue(calculate_stock_fee, calcObj);
+
+    const stockTypes = this.getNowStockTypeOptions(stockParams.holdDays);
+
+    const stepLevel = currentSymbol?.symbol_display
+      ? (1 / 10) * decimals_place
+      : 0.001;
     return (
       <>
         <div className="trade-detail-input-container">
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">类型</div>
             <div className="trade-detail-input-item-btn-group">
-              {mode === 'add' &&
+              {mode === "add" && (
                 <>
-                  {
-                    positionTypeMap.map(item => {
-                      return (
-                        <div
-                          onClick={() => { this.switchHoldDays(item) }}
-                          className={`trade-detail-input-item-btn ${stockParams.holdDays === item && 'btn-active'}`}>
-                          {item}
-                        </div>
-                      )
-                    })
-                  }
+                  {positionTypeMap.map((item) => {
+                    return (
+                      <div
+                        onClick={() => {
+                          this.switchHoldDays(item);
+                        }}
+                        className={`trade-detail-input-item-btn ${
+                          stockParams.holdDays === item && "btn-active"
+                        }`}
+                      >
+                        {item}
+                      </div>
+                    );
+                  })}
                   {/* {<div
                     onClick={() => { this.switchHoldDays("T+0") }}
                     className={`trade-detail-input-item-btn ${stockParams.holdDays === "T+0" && 'btn-active'}`}>
@@ -547,45 +765,49 @@ export default class extends React.Component {
                     {"T+1"}
                   </div> */}
                 </>
-              }
-              {
-                (mode === 'update' || mode === 'delete') &&
+              )}
+              {(mode === "update" || mode === "delete") && (
                 <div className={`trade-detail-input-item-text`}>
                   {stockParams.holdDays}
                 </div>
-              }
+              )}
             </div>
           </div>
 
-          {mode === 'add' &&
+          {mode === "add" && (
             <div className="trade-detail-input-item">
               <div className="trade-detail-input-item-title">类型</div>
               <div className="trade-detail-input-item-btn-group">
-
-                {
-                  stockTypeOptions.map((item) => {
-                    return (
-                      <div
-                        onClick={() => { this.switchStockType(item.id) }}
-                        className={`trade-detail-input-item-btn ${stockParams.action === item.id && 'btn-active'}`}>
-                        {item.name}
-                      </div>)
-                  })
-                }
+                {stockTypes.map((item) => {
+                  return (
+                    <div
+                      onClick={() => {
+                        this.switchStockType(item.id);
+                      }}
+                      className={`trade-detail-input-item-btn ${
+                        (stockParams.action === item.id ||
+                          stockTypes.length === 1) &&
+                        "btn-active"
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  );
+                })}
               </div>
-            </div>}
+            </div>
+          )}
 
-          {
-            mode !== "add" &&
+          {mode !== "add" && (
             <div className="trade-detail-input-item">
               <div className="trade-detail-input-item-title">方向</div>
               <div className="trade-detail-input-item-btn-group">
                 <div className={`trade-detail-input-item-text`}>
-                  {(tradeActions[Number(stockParams.action)])}
+                  {tradeActions[Number(stockParams.action)]}
                 </div>
               </div>
             </div>
-          }
+          )}
 
           {/* {mode !== 'add' && <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">类型</div>
@@ -603,70 +825,76 @@ export default class extends React.Component {
             </div>
           </div>} */}
 
-
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">价格</div>
             <div className="trade-detail-input-item-btn-group">
-              <div className="trade-detail-input-item-less-btn"
+              <div
+                className="trade-detail-input-item-less-btn"
                 onClick={() => {
-                  this.onFundsChanged(-stockParams.unitFunds, 'funds');
-                }}>－</div>
+                  this.onFundsChanged(-stockParams.unitFunds, "margin_value");
+                }}
+              >
+                －
+              </div>
               <div className="trade-detail-input-item-input">
                 <Input
                   type="number"
                   min={100}
-                  value={stockParams.funds}
+                  value={stockParams.margin_value}
                   onChange={(evt) => {
                     this.setState({
                       stockParams: {
                         ...stockParams,
-                        funds: evt.target.value,
-                      }
-
+                        margin_value: Number(evt.target.value),
+                      },
                     });
                   }}
                 />
               </div>
-              <div className="trade-detail-input-item-add-btn"
+              <div
+                className="trade-detail-input-item-add-btn"
                 onClick={() => {
-                  this.onFundsChanged(stockParams.unitFunds, 'funds');
-                }}>＋</div>
+                  this.onFundsChanged(stockParams.unitFunds, "margin_value");
+                }}
+              >
+                ＋
+              </div>
             </div>
           </div>
 
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">槓桿倍數</div>
             <div className="trade-detail-input-item-btn-group">
-              {mode === 'add' &&
+              {mode === "add" && (
                 <>
-                  {
-                    leverageMap.map(item => {
-                      return (
-                        <div
-                          onClick={() => { this.switchLever(item) }}
-                          className={`trade-detail-input-item-btn-small ${stockParams.leverage === item && 'btn-active'}`}>
-                          {item}
-                        </div>
-                      )
-                    })
-                  }
+                  {leverageMap.map((item) => {
+                    return (
+                      <div
+                        onClick={() => {
+                          this.switchLever(item);
+                        }}
+                        className={`trade-detail-input-item-btn-small ${
+                          stockParams.leverage === item && "btn-active"
+                        }`}
+                      >
+                        {item}
+                      </div>
+                    );
+                  })}
                 </>
-              }
-              {
-                (mode === 'update' || mode === 'delete') &&
+              )}
+              {(mode === "update" || mode === "delete") && (
                 <div className={`trade-detail-input-item-text`}>
                   {stockParams.leverage}
                 </div>
-              }
+              )}
             </div>
           </div>
 
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">操盤資金</div>
             <div className="trade-detail-input-item-btn-group">
-              <div className={`trade-detail-input-item-text`}>
-                {"50000"}
-              </div>
+              <div className={`trade-detail-input-item-text`}>{totalFunds}</div>
             </div>
           </div>
 
@@ -674,132 +902,254 @@ export default class extends React.Component {
             <div className="trade-detail-input-item-title">買入數量</div>
             <div className="trade-detail-input-item-btn-group">
               <div className={`trade-detail-input-item-text`}>
-                {"10300"}
+                {trading_volume}
               </div>
             </div>
           </div>
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">止盈</div>
+            <div className="trade-detail-input-item-btn-group">
+              {mode !== "delete" ? (
+                <>
+                  <div
+                    className="trade-detail-input-item-less-btn"
+                    onClick={() => {
+                      this.onFieldChanged(-stepLevel, "take_profit");
+                    }}
+                  >
+                    －
+                  </div>
+                  <div className="trade-detail-input-item-input">
+                    <Input
+                      type="number"
+                      min={0.01}
+                      placeholder={"未设置"}
+                      value={params.take_profit || undefined}
+                      onChange={(evt) => {
+                        this.setState({
+                          params: {
+                            ...params,
+                            take_profit: Number(evt.target.value),
+                          },
+                        });
+                      }}
+                    />
+                  </div>
+                  <div
+                    className="trade-detail-input-item-add-btn"
+                    onClick={() => {
+                      this.onFieldChanged(stepLevel, "take_profit");
+                    }}
+                  >
+                    ＋
+                  </div>
+                </>
+              ) : (
+                <div className={`trade-detail-input-item-text`}>
+                  {params.stop_loss}
+                </div>
+              )}
+            </div>
+          </div>
 
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">止损</div>
+            <div className="trade-detail-input-item-btn-group">
+              {mode !== "delete" ? (
+                <>
+                  <div
+                    className="trade-detail-input-item-less-btn"
+                    onClick={() => {
+                      this.onFieldChanged(-stepLevel, "stop_loss");
+                    }}
+                  >
+                    －
+                  </div>
+                  <div className="trade-detail-input-item-input">
+                    <Input
+                      type="number"
+                      min={0.01}
+                      placeholder={"未设置"}
+                      value={params.stop_loss || undefined}
+                      onChange={(evt) => {
+                        this.setState({
+                          params: {
+                            ...params,
+                            stop_loss: Number(evt.target.value),
+                          },
+                        });
+                      }}
+                    />
+                  </div>
+                  <div
+                    className="trade-detail-input-item-add-btn"
+                    onClick={() => {
+                      this.onFieldChanged(stepLevel, "stop_loss");
+                    }}
+                  >
+                    ＋
+                  </div>
+                </>
+              ) : (
+                <div className={`trade-detail-input-item-text`}>
+                  {params.stop_loss}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-        <div className={`trade-detail-submit-btn 
-                        ${(tradeType !== "instance" && utils.isEmpty(params.open_price) || utils.isEmpty(params.lots)) ? 'reject' : ""}
-                        ${mode === 'add' ? 'add' : 'modify'}`}
-          style={{ marginBottom: '20px' }}
-          onClick={this.onSubmit}>
-          {mode === 'add' ? '下单' : mode === 'update' ? '修改' : '平仓'}
+        <div
+          className={`trade-detail-submit-btn 
+                        ${
+                          (tradeType !== "instance" &&
+                            utils.isEmpty(params.open_price)) ||
+                          utils.isEmpty(params.lots)
+                            ? "reject"
+                            : ""
+                        }
+                        ${mode === "add" ? "add" : "modify"}`}
+          style={{ marginBottom: "20px" }}
+          onClick={this.onSubmit}
+        >
+          {mode === "add" ? "下单" : mode === "update" ? "修改" : "平仓"}
         </div>
 
         <div className="trade-detail-remarks-container">
           <div className="trade-detail-remarks-item">
             <div className="trade-detail-remarks-item-title">服務費</div>
-            <div className="trade-detail-remarks-item-content">HK$100.00(手續費)</div>
+            <div className="trade-detail-remarks-item-content">
+              HK${handFee}(手續費)
+            </div>
           </div>
           <div className="trade-detail-remarks-item">
             <div className="trade-detail-remarks-item-title">遞延費</div>
-            <div className="trade-detail-remarks-item-content">$100.00(港元/交易日)</div>
+            <div className="trade-detail-remarks-item-content">
+              ${stockFee}(港元/交易日)
+            </div>
           </div>
           <div className="trade-detail-remarks-item">
             <div className="trade-detail-remarks-item-title">參考匯率</div>
-            <div className="trade-detail-remarks-item-content">$100.00</div>
+            <div className="trade-detail-remarks-item-content">
+              ${currentSymbol?.product_details?.sell}
+            </div>
           </div>
           <div className="trade-detail-remarks-item">
             <div className="trade-detail-remarks-item-title">總計</div>
-            <div className="trade-detail-remarks-item-content">￥100.00元</div>
+            <div className="trade-detail-remarks-item-content">
+              ￥{handFee + totalFunds }元
+            </div>
           </div>
           <div className="trade-detail-remarks-placeholder">
             *總計=操作資金+服務費
           </div>
         </div>
       </>
-    )
-  }
+    );
+  };
 
   renderForexInput = () => {
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
     const { currentSymbol, currentShowSymbol } = this.props.market;
     const { tradeType, params } = this.state;
-    const stepLevel = currentSymbol?.symbol_display?.decimals_place ? (
-      1 / 10 ** (currentSymbol?.symbol_display?.decimals_place)
-    ) : 0.001;
+    const stepLevel = currentSymbol?.symbol_display?.decimals_place
+      ? 1 / 10 ** currentSymbol?.symbol_display?.decimals_place
+      : 0.001;
     return (
       <>
         <div className="trade-detail-input-container">
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">类型</div>
             <div className="trade-detail-input-item-btn-group">
-              {mode === 'add' &&
+              {mode === "add" &&
                 tradeTypeOptions.map((item) => {
                   return (
-                    <div className={`trade-detail-input-item-btn ${tradeType === item.id && 'btn-active'}`}
-                      onClick={() => { this.switchTradeType(item.id) }}
+                    <div
+                      className={`trade-detail-input-item-btn ${
+                        tradeType === item.id && "btn-active"
+                      }`}
+                      onClick={() => {
+                        this.switchTradeType(item.id);
+                      }}
                     >
                       {item.name}
                     </div>
-                  )
-                })
-              }
-              {
-                (mode === 'update' || mode === 'delete') &&
+                  );
+                })}
+              {(mode === "update" || mode === "delete") && (
                 <div className={`trade-detail-input-item-text`}>
-                  {(Number(currentTrade.action) === 0 || Number(currentTrade.action) === 1) ? "立即执行" : "挂单"}
+                  {Number(currentTrade.action) === 0 ||
+                  Number(currentTrade.action) === 1
+                    ? "立即执行"
+                    : "挂单"}
                 </div>
-              }
+              )}
               {/* <div className="trade-detail-input-item-btn">立即执行</div>
           <div className="trade-detail-input-item-btn">挂单</div> */}
             </div>
           </div>
 
-          {
-            mode !== "add" &&
+          {mode !== "add" && (
             <div className="trade-detail-input-item">
               <div className="trade-detail-input-item-title">方向</div>
               <div className="trade-detail-input-item-btn-group">
                 <div className={`trade-detail-input-item-text`}>
-                  {(tradeActions[Number(currentTrade.action)])}
+                  {tradeActions[Number(currentTrade.action)]}
                 </div>
               </div>
             </div>
-          }
+          )}
 
-          {mode === 'add'
-            && <div className="trade-detail-input-item">
+          {mode === "add" && (
+            <div className="trade-detail-input-item">
               <div className="trade-detail-input-item-title">类型</div>
               <div className="trade-detail-input-item-btn-group">
-
-                {
-                  tradeType === 'future' && pendingOrderOptions.map((item) => {
+                {tradeType === "future" &&
+                  pendingOrderOptions.map((item) => {
                     return (
                       <div
-                        onClick={() => { this.switchTradeOptions(item.id) }}
-                        className={`trade-detail-input-item-btn ${params.action === item.id && 'btn-active'}`}>
-                        {item.name}
-                      </div>)
-                  })
-                }
-                {
-                  tradeType === 'instance' && executeOptions.map((item) => {
-                    return (
-                      <div
-                        onClick={() => { this.switchTradeOptions(item.id) }}
-                        className={`trade-detail-input-item-btn ${params.action === item.id && 'btn-active'}`}>
+                        onClick={() => {
+                          this.switchTradeOptions(item.id);
+                        }}
+                        className={`trade-detail-input-item-btn ${
+                          params.action === item.id && "btn-active"
+                        }`}
+                      >
                         {item.name}
                       </div>
-                    )
-                  })
-                }
-
+                    );
+                  })}
+                {tradeType === "instance" &&
+                  executeOptions.map((item) => {
+                    return (
+                      <div
+                        onClick={() => {
+                          this.switchTradeOptions(item.id);
+                        }}
+                        className={`trade-detail-input-item-btn ${
+                          params.action === item.id && "btn-active"
+                        }`}
+                      >
+                        {item.name}
+                      </div>
+                    );
+                  })}
               </div>
             </div>
-          }
+          )}
 
-          {(currentTradeTab === '挂单' || tradeType === 'future') &&
+          {(currentTradeTab === "挂单" || tradeType === "future") && (
             <div className="trade-detail-input-item">
               <div className="trade-detail-input-item-title">价格</div>
               <div className="trade-detail-input-item-btn-group">
-                <div className="trade-detail-input-item-less-btn"
+                <div
+                  className="trade-detail-input-item-less-btn"
                   onClick={() => {
-                    this.onFieldChanged(-stepLevel, 'open_price');
-                  }}>－</div>
+                    this.onFieldChanged(-stepLevel, "open_price");
+                  }}
+                >
+                  －
+                </div>
                 <div className="trade-detail-input-item-input">
                   <Input
                     type="number"
@@ -810,144 +1160,193 @@ export default class extends React.Component {
                         params: {
                           ...params,
                           open_price: evt.target.value,
-                        }
-
+                        },
                       });
                     }}
                   />
                 </div>
-                <div className="trade-detail-input-item-add-btn"
+                <div
+                  className="trade-detail-input-item-add-btn"
                   onClick={() => {
-                    this.onFieldChanged(stepLevel, 'open_price');
-                  }}>＋</div>
+                    this.onFieldChanged(stepLevel, "open_price");
+                  }}
+                >
+                  ＋
+                </div>
               </div>
-            </div>}
+            </div>
+          )}
 
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">数量</div>
-            {(mode !== 'delete' && currentTradeTab !== '持仓')
-              ? <div className="trade-detail-input-item-btn-group">
-                <div className="trade-detail-input-item-less-btn"
+            {mode !== "delete" && currentTradeTab !== "持仓" ? (
+              <div className="trade-detail-input-item-btn-group">
+                <div
+                  className="trade-detail-input-item-less-btn"
                   onClick={() => {
-                    this.onLotsChanged(0 - currentShowSymbol?.symbol_display?.lots_step);
+                    this.onLotsChanged(
+                      0 - currentShowSymbol?.symbol_display?.lots_step
+                    );
                   }}
-                >－</div>
+                >
+                  －
+                </div>
                 <div className="trade-detail-input-item-input">
                   <Input
                     type="number"
                     min={0.01}
-                    placeholder={'未设置'}
+                    placeholder={"未设置"}
                     value={params.lots || undefined}
                     onChange={(evt) => {
-
-                      if (evt.target.value < currentShowSymbol?.symbol_display?.min_lots) return;
+                      if (
+                        evt.target.value <
+                        currentShowSymbol?.symbol_display?.min_lots
+                      )
+                        return;
                       this.setState({
                         params: {
                           ...params,
                           lots: evt.target.value,
-                        }
+                        },
                       });
                     }}
                   />
                 </div>
-                <div className="trade-detail-input-item-add-btn"
+                <div
+                  className="trade-detail-input-item-add-btn"
                   onClick={() => {
-                    this.onLotsChanged(currentShowSymbol?.symbol_display?.lots_step);
-                  }}>＋</div>
+                    this.onLotsChanged(
+                      currentShowSymbol?.symbol_display?.lots_step
+                    );
+                  }}
+                >
+                  ＋
+                </div>
               </div>
-              : <div className="trade-detail-input-item-btn-group">
-                <div className={`trade-detail-input-item-text`}>{params.lots}</div>
+            ) : (
+              <div className="trade-detail-input-item-btn-group">
+                <div className={`trade-detail-input-item-text`}>
+                  {params.lots}
+                </div>
               </div>
-            }
+            )}
           </div>
 
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">止盈</div>
             <div className="trade-detail-input-item-btn-group">
-              {mode !== "delete" ?
+              {mode !== "delete" ? (
                 <>
-                  <div className="trade-detail-input-item-less-btn"
+                  <div
+                    className="trade-detail-input-item-less-btn"
                     onClick={() => {
-                      this.onFieldChanged(-stepLevel, 'take_profit');
-                    }}>－</div>
+                      this.onFieldChanged(-stepLevel, "take_profit");
+                    }}
+                  >
+                    －
+                  </div>
                   <div className="trade-detail-input-item-input">
                     <Input
                       type="number"
                       min={0.01}
-                      placeholder={'未设置'}
+                      placeholder={"未设置"}
                       value={params.take_profit || undefined}
                       onChange={(evt) => {
                         this.setState({
                           params: {
                             ...params,
                             take_profit: Number(evt.target.value),
-                          }
+                          },
                         });
                       }}
                     />
                   </div>
-                  <div className="trade-detail-input-item-add-btn"
+                  <div
+                    className="trade-detail-input-item-add-btn"
                     onClick={() => {
-                      this.onFieldChanged(stepLevel, 'take_profit');
-                    }}>＋</div>
+                      this.onFieldChanged(stepLevel, "take_profit");
+                    }}
+                  >
+                    ＋
+                  </div>
                 </>
-                : <div className={`trade-detail-input-item-text`}>
+              ) : (
+                <div className={`trade-detail-input-item-text`}>
                   {params.stop_loss}
                 </div>
-              }
+              )}
             </div>
           </div>
 
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">止损</div>
             <div className="trade-detail-input-item-btn-group">
-              {mode !== "delete" ?
+              {mode !== "delete" ? (
                 <>
-                  <div className="trade-detail-input-item-less-btn"
+                  <div
+                    className="trade-detail-input-item-less-btn"
                     onClick={() => {
-                      this.onFieldChanged(-stepLevel, 'stop_loss');
-                    }}>－</div>
+                      this.onFieldChanged(-stepLevel, "stop_loss");
+                    }}
+                  >
+                    －
+                  </div>
                   <div className="trade-detail-input-item-input">
                     <Input
                       type="number"
                       min={0.01}
-                      placeholder={'未设置'}
+                      placeholder={"未设置"}
                       value={params.stop_loss || undefined}
                       onChange={(evt) => {
                         this.setState({
                           params: {
                             ...params,
                             stop_loss: Number(evt.target.value),
-                          }
+                          },
                         });
                       }}
                     />
                   </div>
-                  <div className="trade-detail-input-item-add-btn"
+                  <div
+                    className="trade-detail-input-item-add-btn"
                     onClick={() => {
-                      this.onFieldChanged(stepLevel, 'stop_loss');
-                    }}>＋</div>
+                      this.onFieldChanged(stepLevel, "stop_loss");
+                    }}
+                  >
+                    ＋
+                  </div>
                 </>
-                :
+              ) : (
                 <div className={`trade-detail-input-item-text`}>
                   {params.stop_loss}
-                </div>}
+                </div>
+              )}
             </div>
           </div>
         </div>
-        <div className={`trade-detail-submit-btn 
-                        ${(tradeType !== "instance" && utils.isEmpty(params.open_price) || utils.isEmpty(params.lots)) ? 'reject' : ""}
-                        ${mode === 'add' ? 'add' : 'modify'}`}
-          style={{ marginBottom: '30px' }}
-          onClick={this.onSubmit}>
-          {mode === 'add' ? '下单' : mode === 'update' ? '修改' : '平仓'}
+        <div
+          className={`trade-detail-submit-btn 
+                        ${
+                          (tradeType !== "instance" &&
+                            utils.isEmpty(params.open_price)) ||
+                          utils.isEmpty(params.lots)
+                            ? "reject"
+                            : ""
+                        }
+                        ${mode === "add" ? "add" : "modify"}`}
+          style={{ marginBottom: "30px" }}
+          onClick={this.onSubmit}
+        >
+          {mode === "add" ? "下单" : mode === "update" ? "修改" : "平仓"}
         </div>
       </>
-    )
-  }
+    );
+  };
 
   render() {
-    const { mode, } = this.props;
+    const { mode, common } = this.props;
+    const quoted_price = common.getKeyConfig("quoted_price");
+
     const { currentSymbol } = this.props.market;
     const { moreInfo, tradeType, params } = this.state;
     return (
@@ -955,48 +1354,107 @@ export default class extends React.Component {
         <Navbar>
           <NavLeft>
             <Link back>
-              <Icon color={'white'} f7={'chevron_left'} size={r(18)}></Icon>
+              <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
             </Link>
           </NavLeft>
           <NavTitle>{currentSymbol?.symbol_display?.name}</NavTitle>
           <NavRight></NavRight>
-
         </Navbar>
         <div className="trade-detail-stock-container">
-          <div className="now-stock">{currentSymbol?.product_details?.sell}</div>
+          <div className="now-stock">
+            {currentSymbol?.product_details?.sell}
+          </div>
           <div className="spread-stock">
             <div>
               <p>{currentSymbol?.product_details?.change}</p>
-              <p>{`${((currentSymbol?.product_details?.change) / (currentSymbol?.product_details?.sell) * 100).toFixed(2)}%`}</p>
+              <p>{`${(
+                (currentSymbol?.product_details?.change /
+                  currentSymbol?.product_details?.sell) *
+                100
+              ).toFixed(2)}%`}</p>
             </div>
           </div>
-          <div className="detail-btn" onClick={this.switchTradeDetail}>{moreInfo ? "收起" : "查看详情"}</div>
+          <div className="detail-btn" onClick={this.switchTradeDetail}>
+            {moreInfo ? "收起" : "查看详情"}
+          </div>
         </div>
         <div className="trade-detail-price">
           <div className="price-item">
             <span className="price-item-title">卖出</span>
-            <span className="price-item-content p-down">{currentSymbol?.sell}</span>
+            <span className="price-item-content p-down">
+              {currentSymbol?.sell}
+            </span>
           </div>
           <div className="price-item">
             <span className="price-item-title">买入</span>
-            <span className="price-item-content p-up">{currentSymbol?.buy}</span>
+            <span className="price-item-content p-up">
+              {currentSymbol?.buy}
+            </span>
           </div>
         </div>
 
-        <div className={`trade-detail-more-info-container ${moreInfo ? "show" : ""}`}>
+        <div
+          className={`trade-detail-more-info-container ${
+            moreInfo ? "show" : ""
+          }`}
+        >
           <div className="trade-detail-more-info-contract">
-            <div className="trade-detail-more-info-contract-title">合约资讯</div>
+            <div className="trade-detail-more-info-contract-title">
+              合约资讯
+            </div>
             <div className="trade-detail-more-info-contract-content">
-              <div><span>小数点位</span><span>{String(currentSymbol?.symbol_display?.decimals_place)}</span></div>
-              <div><span>合约大小</span><span>{String(currentSymbol?.symbol_display?.contract_size)}</span></div>
-              <div><span>点差</span><span>{String(currentSymbol?.symbol_display?.spread)}</span></div>
-              <div><span>预付款货币</span><span>{currentSymbol?.symbol_display?.margin_currency_display}</span></div>
-              <div><span>获利货币</span><span>{currentSymbol?.symbol_display?.profit_currency_display}</span></div>
-              <div><span>最小交易手数</span><span>{String(currentSymbol?.symbol_display?.min_lots)}</span></div>
-              <div><span>最大交易手数</span><span>{String(currentSymbol?.symbol_display?.max_lots)}</span></div>
-              <div><span>交易数步长</span><span>{String(currentSymbol?.symbol_display?.lots_step)}</span></div>
-              <div><span>买入库存费</span><span>{String(currentSymbol?.symbol_display?.purchase_fee)}</span></div>
-              <div><span>卖出库存费</span><span>{String(currentSymbol?.symbol_display?.selling_fee)}</span></div>
+              <div>
+                <span>小数点位</span>
+                <span>
+                  {String(currentSymbol?.symbol_display?.decimals_place)}
+                </span>
+              </div>
+              <div>
+                <span>合约大小</span>
+                <span>
+                  {String(currentSymbol?.symbol_display?.contract_size)}
+                </span>
+              </div>
+              <div>
+                <span>点差</span>
+                <span>{String(currentSymbol?.symbol_display?.spread)}</span>
+              </div>
+              <div>
+                <span>预付款货币</span>
+                <span>
+                  {currentSymbol?.symbol_display?.margin_currency_display}
+                </span>
+              </div>
+              <div>
+                <span>获利货币</span>
+                <span>
+                  {currentSymbol?.symbol_display?.profit_currency_display}
+                </span>
+              </div>
+              <div>
+                <span>最小交易手数</span>
+                <span>{String(currentSymbol?.symbol_display?.min_lots)}</span>
+              </div>
+              <div>
+                <span>最大交易手数</span>
+                <span>{String(currentSymbol?.symbol_display?.max_lots)}</span>
+              </div>
+              <div>
+                <span>交易数步长</span>
+                <span>{String(currentSymbol?.symbol_display?.lots_step)}</span>
+              </div>
+              <div>
+                <span>买入库存费</span>
+                <span>
+                  {String(currentSymbol?.symbol_display?.purchase_fee)}
+                </span>
+              </div>
+              <div>
+                <span>卖出库存费</span>
+                <span>
+                  {String(currentSymbol?.symbol_display?.selling_fee)}
+                </span>
+              </div>
             </div>
           </div>
           <div className="trade-detail-more-info-news">
@@ -1017,14 +1475,26 @@ export default class extends React.Component {
             </div>
           </div>
         </div>
-        {utils.isEmpty(currentSymbol)
-          ?
+        {utils.isEmpty(currentSymbol) ? (
           <Spin
             className="spin-icon"
             indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
           />
-          : currentSymbol?.symbol_display?.type_display === "外汇" ? this.renderForexInput() : this.renderStockInput()}
+        ) : quoted_price !== "one_price" ? (
+          this.renderForexInput()
+        ) : (
+          this.renderStockInput()
+        )}
       </Page>
     );
   }
+
+  getNowStockTypeOptions = (holdDay) => {
+    const list = Object.assign([], stockTypeOptions);
+    if (holdDay === "T+1") {
+      return list.splice(0, 1);
+    }
+
+    return stockTypeOptions;
+  };
 }

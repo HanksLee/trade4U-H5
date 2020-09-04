@@ -13,14 +13,13 @@ const wsMap = {
 };
 
 let wsProtocol = "";
-if (document.domain === 'localhost' || document.domain === '0.0.0.0') {
+if(window.location.hostname.indexOf("localhost") > -1 || window.location.hostname === "0.0.0.0"){
   wsProtocol = "wss";
-} else {
-  if (window.location.protocol === "http:") {
-    wsProtocol = "ws";
-  } else if (window.location.protocol === "https:") {
-    wsProtocol = "wss";
-  }
+}
+else if (window.location.protocol === "http:") {
+  wsProtocol = "ws";
+} else if (window.location.protocol === "https:") {
+  wsProtocol = "wss";
 }
 
 
