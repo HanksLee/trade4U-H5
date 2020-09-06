@@ -28,6 +28,7 @@ import {
 import { inject, observer } from "mobx-react";
 import utils from "utils";
 import moment from 'moment';
+import Dom7 from "dom7";
 import "antd/dist/antd.css";
 import "./index.scss";
 
@@ -50,6 +51,8 @@ const moreInfoTabs = [
   { title: '盘口', code: "fund" },
   { title: '资讯', code: "news" },
 ];
+
+const $$ = Dom7;
 
 @inject("common", "trade", "market")
 @observer
@@ -85,7 +88,10 @@ export default class extends React.Component {
       newsList: [],
       newsListCount: 0,
       fund: {},
-      tabDataLoading: false
+      tabDataLoading: false,
+      page: 1,
+      newsHasMore: true,
+      newsError: false,
     };
   }
   profitRule = this.props.common.nowProfitRule;
@@ -105,8 +111,9 @@ export default class extends React.Component {
       calculate_for_sell_stock_fee,
       calculate_for_sell_tax,
     } = currentSymbol.symbol_display;
-    this.getFunds(currentSymbol?.product_details?.symbol);
-    this.getNewsList(currentSymbol?.product_details?.symbol);
+    this.getFunds();
+    window.addEventListener("scroll", this.newsHandleScroll, true);
+    // this.getNewsList(currentSymbol?.product_details?.symbol);
     if (mode === "add") {
       this.setState({
         params: {
@@ -141,18 +148,45 @@ export default class extends React.Component {
 
   componentDidUpdate(prevProps, prevState) { }
 
+
+  newsHandleScroll = () => {
+    const { newsError, newsHasMore, tabDataLoading } = this.state;
+
+    let newsOuterHeight = $$("#view-market .trade-detail-more-info-news .am-tabs-pane-wrap ")[1].clientHeight;
+    if (newsOuterHeight === 0) return;
+
+    // Bails early if:
+    // * there's an error
+    // * it's already loading
+    // * there's nothing left to load
+    if (newsError || tabDataLoading || !newsHasMore) return;
+
+    let scrollTop = $$("#view-market .trade-detail-more-info-news .news-content ")[0].scrollTop;
+    let scrollHeight = $$("#view-market .trade-detail-more-info-news .news-content ")[0].scrollHeight;
+    let newsInnerHeight = $$("#view-market .trade-detail-more-info-news .news-content ")[0].clientHeight;
+
+    // Checks that the page has scrolled to the bottom
+    if (newsInnerHeight + scrollTop >= scrollHeight) {
+      this.getNewsList();
+    }
+  };
+
   onChangeTabs = (tab, index) => {
-    const { currentSymbol } = this.props.market;
-    console.log('onChange', index, tab);
+    // console.log('onChange', index, tab);
     if (tab.code === "fund") {
-      this.getFunds(currentSymbol?.product_details?.symbol);
+      this.getFunds();
     } else if (tab.code === "news") {
-      this.getNewsList(currentSymbol?.product_details?.symbol);
+      this.setState({ page: 1, newsList: [], newsListCount: 0 }, () => {
+        this.getNewsList();
+      })
+
     }
   }
 
-  getFunds = async (id) => {
+  getFunds = async () => {
+    const { currentSymbol } = this.props.market;
     this.setState({ tabDataLoading: true }, async () => {
+      const id = currentSymbol?.product_details?.symbol;
       const res = await api.trade.getFunds(id, {});
       if (res.status === 200) {
         this.setState({
@@ -163,12 +197,15 @@ export default class extends React.Component {
     })
   }
 
-  getNewsList = async (id) => {
+  getNewsList = async () => {
+    const { currentSymbol } = this.props.market;
     this.setState({ tabDataLoading: true }, async () => {
 
       const res = await api.news.getNewsList({
         params: {
-          symbol_code: id,
+          symbol_code: currentSymbol?.product_details?.symbol,
+          page: this.state.page,
+          // page_size: 1
         }
       });
 
@@ -176,12 +213,12 @@ export default class extends React.Component {
         console.log(res)
         this.setState({
           tabDataLoading: false,
-          // page: this.state.page + 1,
+          page: this.state.page + 1,
           newsList: [...this.state.newsList, ...res.data.results],
           newsListCount: res.data.count
         }, () => {
           const { newsList, newsListCount } = this.state;
-          // this.setState({ hasMore: newsList.length < newsListCount })
+          this.setState({ newsHasMore: newsList.length < newsListCount })
         })
       }
     })

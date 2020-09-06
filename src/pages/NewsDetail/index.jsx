@@ -31,7 +31,9 @@ export default class extends React.Component {
       <Page className="news-detail">
         <Navbar className="news-detail-navbar">
           <NavLeft>
-            <Link onClick={() => this.$f7router.back()}>
+            <Link onClick={() => this.$f7router.back({
+              force: false,
+            })}>
               <Icon color={'white'} f7={'chevron_left'} size={r(18)}></Icon>
             </Link>
           </NavLeft>
@@ -40,8 +42,8 @@ export default class extends React.Component {
           </NavRight>
         </Navbar>
         <div className="news-detail-title">
-          <p class="news-detail-title-text">{newsDetail.title}</p>
-          <p class="news-detail-title-time">{moment(newsDetail.pub_time * 1000).format(
+          <p className="news-detail-title-text">{newsDetail.title}</p>
+          <p className="news-detail-title-time">{moment(newsDetail.pub_time * 1000).format(
             "YYYY/MM/DD HH:mm:ss"
           )}</p>
         </div>
