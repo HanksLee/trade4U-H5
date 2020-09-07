@@ -53,6 +53,8 @@ export default class extends React.Component {
       tabIndex
     ].scrollHeight;
 
+    if (scrollTop === 0 && scrollHeight === 0) return;
+
     // Checks that the page has scrolled to the bottom
     if (window.innerHeight + scrollTop >= scrollHeight) {
       this.getList();
@@ -92,7 +94,7 @@ export default class extends React.Component {
     let tabItemWidth = 100 / symbolTypeList.length;
     let tabActiveLeft = `calc(${
       tabItemWidth * index + tabItemWidth / 2
-    }% - 3px)`;
+      }% - 3px)`;
     if (document.getElementsByClassName("tab-active-dot")[0]) {
       document.getElementsByClassName(
         "tab-active-dot"

@@ -33,7 +33,7 @@ export default class extends React.Component {
     super(props)
     this.state = {
       currentSymbol: this.props.currentSymbol,
-      isAddSelfSelect: this.props.currentSymbol.is_self_select
+      isAddSelfSelect: 0
     }
   }
 
@@ -88,6 +88,7 @@ export default class extends React.Component {
   }
 
   render() {
+    console.log(this.props)
     const { currentSymbolType } = this.props;
     const { currentSymbol, isAddSelfSelect } = this.state;
     return (
@@ -102,13 +103,13 @@ export default class extends React.Component {
           <NavRight className="transistion-text">交易中</NavRight>
 
         </Navbar>
-        {
+        {/* {
           currentSymbol?.symbol_display?.description && (
             <Block className="symbol-display-block">
               <p>{currentSymbol?.symbol_display?.description}</p>
             </Block>
           )
-        }
+        } */}
         <div className="stock-container">
           <div className="now-stock">{currentSymbol?.product_details?.sell}</div>
           <div className="arrow"><img src={UpArrowIcon} alt="UpArrowIcon" /></div>

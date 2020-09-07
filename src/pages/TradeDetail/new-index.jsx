@@ -14,7 +14,7 @@ import {
   Toolbar,
   Input,
 } from "framework7-react";
-import { Toast } from "antd-mobile";
+import { Tabs } from "antd-mobile";
 import { Modal, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import {
@@ -27,6 +27,8 @@ import {
 } from "constant";
 import { inject, observer } from "mobx-react";
 import utils from "utils";
+import moment from 'moment';
+import Dom7 from "dom7";
 import "antd/dist/antd.css";
 import "./index.scss";
 
@@ -44,6 +46,13 @@ const tradeActions = [
   "Buy Stop",
   "Sell Stop",
 ];
+
+const moreInfoTabs = [
+  { title: '盘口', code: "fund" },
+  { title: '资讯', code: "news" },
+];
+
+const $$ = Dom7;
 
 @inject("common", "trade", "market")
 @observer
@@ -76,6 +85,13 @@ export default class extends React.Component {
       },
       positionTypeMap: [],
       leverageMap: [],
+      newsList: [],
+      newsListCount: 0,
+      fund: {},
+      tabDataLoading: false,
+      page: 1,
+      newsHasMore: true,
+      newsError: false,
     };
   }
   profitRule = this.props.common.nowProfitRule;
@@ -95,7 +111,9 @@ export default class extends React.Component {
       calculate_for_sell_stock_fee,
       calculate_for_sell_tax,
     } = currentSymbol.symbol_display;
-   // this.getFunds(currentSymbol.id);
+    this.getFunds();
+    window.addEventListener("scroll", this.newsHandleScroll, true);
+    // this.getNewsList(currentSymbol?.product_details?.symbol);
     if (mode === "add") {
       this.setState({
         params: {
@@ -128,14 +146,82 @@ export default class extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {}
+  componentDidUpdate(prevProps, prevState) { }
 
-  getFunds = async (id) => {
-    console.log(this)
-    const res = await api.trade.getFunds(id, {});
-    if (res.status === 200) {
-      console.log(res)
+
+  newsHandleScroll = () => {
+    const { newsError, newsHasMore, tabDataLoading } = this.state;
+
+    let newsOuterHeight = $$("#view-market .trade-detail-more-info-news .am-tabs-pane-wrap ")[1].clientHeight;
+    if (newsOuterHeight === 0) return;
+
+    // Bails early if:
+    // * there's an error
+    // * it's already loading
+    // * there's nothing left to load
+    if (newsError || tabDataLoading || !newsHasMore) return;
+
+    let scrollTop = $$("#view-market .trade-detail-more-info-news .news-content ")[0].scrollTop;
+    let scrollHeight = $$("#view-market .trade-detail-more-info-news .news-content ")[0].scrollHeight;
+    let newsInnerHeight = $$("#view-market .trade-detail-more-info-news .news-content ")[0].clientHeight;
+
+    // Checks that the page has scrolled to the bottom
+    if (newsInnerHeight + scrollTop >= scrollHeight) {
+      this.getNewsList();
     }
+  };
+
+  onChangeTabs = (tab, index) => {
+    // console.log('onChange', index, tab);
+    if (tab.code === "fund") {
+      this.getFunds();
+    } else if (tab.code === "news") {
+      this.setState({ page: 1, newsList: [], newsListCount: 0 }, () => {
+        this.getNewsList();
+      })
+
+    }
+  }
+
+  getFunds = async () => {
+    const { currentSymbol } = this.props.market;
+    this.setState({ tabDataLoading: true }, async () => {
+      const id = currentSymbol?.product_details?.symbol;
+      const res = await api.trade.getFunds(id, {});
+      if (res.status === 200) {
+        this.setState({
+          tabDataLoading: false,
+          fund: res.data
+        })
+      }
+    })
+  }
+
+  getNewsList = async () => {
+    const { currentSymbol } = this.props.market;
+    this.setState({ tabDataLoading: true }, async () => {
+
+      const res = await api.news.getNewsList({
+        params: {
+          symbol_code: currentSymbol?.product_details?.symbol,
+          page: this.state.page,
+          // page_size: 1
+        }
+      });
+
+      if (res.status === 200) {
+        console.log(res)
+        this.setState({
+          tabDataLoading: false,
+          page: this.state.page + 1,
+          newsList: [...this.state.newsList, ...res.data.results],
+          newsListCount: res.data.count
+        }, () => {
+          const { newsList, newsListCount } = this.state;
+          this.setState({ newsHasMore: newsList.length < newsListCount })
+        })
+      }
+    })
   }
 
   initSymbolList = async () => {
@@ -170,7 +256,7 @@ export default class extends React.Component {
     return math.chain(countRounding).multiply(contract_size).done();
   };
 
-  calculateForValue = (formulaName, obj , decimals_place) => {
+  calculateForValue = (formulaName, obj, decimals_place) => {
     let formula = this.profitRule[formulaName];
     if (!formula) return 0;
 
@@ -522,13 +608,13 @@ export default class extends React.Component {
   };
 
   onSubmit = async (totalPlatformCurrency) => {
-    const { params ,stockParams } = this.state;
+    const { params, stockParams } = this.state;
     const {
       mode,
       market: { currentSymbol },
-      trade: { currentTrade , tradeInfo},
+      trade: { currentTrade, tradeInfo },
     } = this.props;
-    const { success ,error } = Modal;
+    const { success, error } = Modal;
     const lots = params.lots;
 
     try {
@@ -539,12 +625,12 @@ export default class extends React.Component {
           trading_volume: (
             Number(lots) * Number(currentSymbol?.symbol_display?.contract_size)
           ).toFixed(decimals_place),
-          lots:lots.toString(),
+          lots: lots.toString(),
           symbol: currentSymbol.id,
           action: params.action,
         };
 
-        if(tradeInfo.free_margin - totalPlatformCurrency <0 ){
+        if (tradeInfo.free_margin - totalPlatformCurrency < 0) {
           error({
             title: '提示',
             className: "trade-modal success-modal",
@@ -553,10 +639,10 @@ export default class extends React.Component {
           return;
         }
 
-        if(stockParams.margin_value){
+        if (stockParams.margin_value) {
           payload.margin_value = stockParams.margin_value;
         }
-        if(stockParams.leverage){
+        if (stockParams.leverage) {
           payload.leverage = stockParams.leverage;
         }
 
@@ -585,7 +671,7 @@ export default class extends React.Component {
 
 
         if (res.status == 201) {
-         
+
           success({
             title: "提示",
             content: "下单成功",
@@ -601,7 +687,7 @@ export default class extends React.Component {
             // onCancel() {
             // },
           });
-        }else{
+        } else {
           error({
             title: '提示',
             className: "trade-modal success-modal",
@@ -681,11 +767,11 @@ export default class extends React.Component {
       selling_fee
     } = currentSymbol.symbol_display;
 
-    const { sell } = currentSymbol.product_details??{
+    const { sell } = currentSymbol.product_details ?? {
       sell: 0,
     };
-    const {getKeyConfig} = this.props.common;
-    const refCurrency =getKeyConfig("platform_currency");
+    const { getKeyConfig } = this.props.common;
+    const refCurrency = getKeyConfig("platform_currency");
     const {
       tradeType,
       params,
@@ -730,7 +816,7 @@ export default class extends React.Component {
 
     const calculate_stock_fee =
       action === 0 ? calculate_for_buy_stock_fee : calculate_for_sell_stock_fee;
-    const stockFee = this.calculateForValue(calculate_stock_fee, calcObj ,decimals_place);
+    const stockFee = this.calculateForValue(calculate_stock_fee, calcObj, decimals_place);
 
     const stockTypes = this.getNowStockTypeOptions(stockParams.holdDays);
 
@@ -739,9 +825,9 @@ export default class extends React.Component {
       : 0.001;
 
     const totalPlatformCurrency = math.chain(margin_value)
-                                      .multiply(open_currency_rate) 
-                                      .add(handFee)
-                                      .done();
+      .multiply(open_currency_rate)
+      .add(handFee)
+      .done();
 
     return (
       <>
@@ -759,7 +845,7 @@ export default class extends React.Component {
                         }}
                         className={`trade-detail-input-item-btn ${
                           stockParams.holdDays === item && "btn-active"
-                        }`}
+                          }`}
                       >
                         {item}
                       </div>
@@ -799,7 +885,7 @@ export default class extends React.Component {
                         (stockParams.action === item.id ||
                           stockTypes.length === 1) &&
                         "btn-active"
-                      }`}
+                        }`}
                     >
                       {item.name}
                     </div>
@@ -886,7 +972,7 @@ export default class extends React.Component {
                         }}
                         className={`trade-detail-input-item-btn-small ${
                           stockParams.leverage === item && "btn-active"
-                        }`}
+                          }`}
                       >
                         {item}
                       </div>
@@ -956,10 +1042,10 @@ export default class extends React.Component {
                   </div>
                 </>
               ) : (
-                <div className={`trade-detail-input-item-text`}>
-                  {params.stop_loss}
-                </div>
-              )}
+                  <div className={`trade-detail-input-item-text`}>
+                    {params.stop_loss}
+                  </div>
+                )}
             </div>
           </div>
 
@@ -1002,25 +1088,25 @@ export default class extends React.Component {
                   </div>
                 </>
               ) : (
-                <div className={`trade-detail-input-item-text`}>
-                  {params.stop_loss}
-                </div>
-              )}
+                  <div className={`trade-detail-input-item-text`}>
+                    {params.stop_loss}
+                  </div>
+                )}
             </div>
           </div>
         </div>
         <div
           className={`trade-detail-submit-btn 
                         ${
-                          (tradeType !== "instance" &&
-                            utils.isEmpty(params.open_price)) ||
-                          utils.isEmpty(params.lots)
-                            ? "reject"
-                            : ""
-                        }
+            (tradeType !== "instance" &&
+              utils.isEmpty(params.open_price)) ||
+              utils.isEmpty(params.lots)
+              ? "reject"
+              : ""
+            }
                         ${mode === "add" ? "add" : "modify"}`}
           style={{ marginBottom: "20px" }}
-          onClick={()=>{this.onSubmit(totalPlatformCurrency)}}
+          onClick={() => { this.onSubmit(totalPlatformCurrency) }}
         >
           {mode === "add" ? "下单" : mode === "update" ? "修改" : "平仓"}
         </div>
@@ -1047,7 +1133,7 @@ export default class extends React.Component {
           <div className="trade-detail-remarks-item">
             <div className="trade-detail-remarks-item-title">總計</div>
             <div className="trade-detail-remarks-item-content">
-                      {refCurrency}${`${totalPlatformCurrency}`}元
+              {refCurrency}${`${totalPlatformCurrency}`}元
             </div>
           </div>
           <div className="trade-detail-remarks-placeholder">
@@ -1078,7 +1164,7 @@ export default class extends React.Component {
                     <div
                       className={`trade-detail-input-item-btn ${
                         tradeType === item.id && "btn-active"
-                      }`}
+                        }`}
                       onClick={() => {
                         this.switchTradeType(item.id);
                       }}
@@ -1090,7 +1176,7 @@ export default class extends React.Component {
               {(mode === "update" || mode === "delete") && (
                 <div className={`trade-detail-input-item-text`}>
                   {Number(currentTrade.action) === 0 ||
-                  Number(currentTrade.action) === 1
+                    Number(currentTrade.action) === 1
                     ? "立即执行"
                     : "挂单"}
                 </div>
@@ -1124,7 +1210,7 @@ export default class extends React.Component {
                         }}
                         className={`trade-detail-input-item-btn ${
                           params.action === item.id && "btn-active"
-                        }`}
+                          }`}
                       >
                         {item.name}
                       </div>
@@ -1139,7 +1225,7 @@ export default class extends React.Component {
                         }}
                         className={`trade-detail-input-item-btn ${
                           params.action === item.id && "btn-active"
-                        }`}
+                          }`}
                       >
                         {item.name}
                       </div>
@@ -1235,12 +1321,12 @@ export default class extends React.Component {
                 </div>
               </div>
             ) : (
-              <div className="trade-detail-input-item-btn-group">
-                <div className={`trade-detail-input-item-text`}>
-                  {params.lots}
+                <div className="trade-detail-input-item-btn-group">
+                  <div className={`trade-detail-input-item-text`}>
+                    {params.lots}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
 
           <div className="trade-detail-input-item">
@@ -1282,10 +1368,10 @@ export default class extends React.Component {
                   </div>
                 </>
               ) : (
-                <div className={`trade-detail-input-item-text`}>
-                  {params.stop_loss}
-                </div>
-              )}
+                  <div className={`trade-detail-input-item-text`}>
+                    {params.stop_loss}
+                  </div>
+                )}
             </div>
           </div>
 
@@ -1328,22 +1414,22 @@ export default class extends React.Component {
                   </div>
                 </>
               ) : (
-                <div className={`trade-detail-input-item-text`}>
-                  {params.stop_loss}
-                </div>
-              )}
+                  <div className={`trade-detail-input-item-text`}>
+                    {params.stop_loss}
+                  </div>
+                )}
             </div>
           </div>
         </div>
         <div
           className={`trade-detail-submit-btn 
                         ${
-                          (tradeType !== "instance" &&
-                            utils.isEmpty(params.open_price)) ||
-                          utils.isEmpty(params.lots)
-                            ? "reject"
-                            : ""
-                        }
+            (tradeType !== "instance" &&
+              utils.isEmpty(params.open_price)) ||
+              utils.isEmpty(params.lots)
+              ? "reject"
+              : ""
+            }
                         ${mode === "add" ? "add" : "modify"}`}
           style={{ marginBottom: "30px" }}
           onClick={this.onSubmit}
@@ -1359,7 +1445,7 @@ export default class extends React.Component {
     const quoted_price = common.getKeyConfig("quoted_price");
 
     const { currentSymbol } = this.props.market;
-    const { moreInfo, tradeType, params } = this.state;
+    const { moreInfo, tradeType, params, fund, newsList, tabDataLoading } = this.state;
     return (
       <Page noToolbar>
         <Navbar>
@@ -1407,7 +1493,7 @@ export default class extends React.Component {
         <div
           className={`trade-detail-more-info-container ${
             moreInfo ? "show" : ""
-          }`}
+            }`}
         >
           <div className="trade-detail-more-info-contract">
             <div className="trade-detail-more-info-contract-title">
@@ -1469,21 +1555,85 @@ export default class extends React.Component {
             </div>
           </div>
           <div className="trade-detail-more-info-news">
-            <div className="trade-detail-more-info-news-tabs">
-              <p className="active">盘口</p>
-              <p>资讯</p>
-            </div>
-            <div className="trade-detail-more-info-news-content">
-              <div>
-                <p>气温回暖 深夜变天！一张图揭清明连假天气</p>
-                <p>2020 03/31 13:00</p>
-                <span></span>
+            <Tabs tabs={moreInfoTabs}
+              initialPage={0}
+              renderTab={tab => <span>{tab.title}</span>}
+              onChange={this.onChangeTabs}
+              // onTabClick={this.onClickTabs}
+              tabBarBackgroundColor="transparent"
+              tabBarActiveTextColor="#F2E205"
+              tabBarInactiveTextColor="#838D9E"
+              tabBarUnderlineStyle={{
+                border: "1px solid #F2E205"
+              }}
+            >
+              <div className="fund-content">
+                <div>主力、散户资金流向</div>
+                {!tabDataLoading
+                  ? utils.isEmpty(fund)
+                    ?
+                    <div>
+                      <span>此股票暂时无资金流向显示</span>
+                    </div>
+                    :
+                    <>
+                      <div>
+                        <span></span>
+                        <span>主力买入</span>
+                        <span>主力卖出</span>
+                        <span>散户买入</span>
+                        <span>散户卖出</span>
+                      </div>
+                      <div>
+                        <span>金额(元)</span>
+                        <span>{Math.round(Number(fund.major_in_amount) / 10000)}</span>
+                        <span>{Math.round(Number(fund.major_out_amount) / 10000)}</span>
+                        <span>{Math.round(Number(fund.retail_in_amount) / 10000)}</span>
+                        <span>{Math.round(Number(fund.retail_out_amount) / 10000)}</span>
+                      </div>
+                    </>
+                  :
+                  <div className="spin-container">
+                    <Spin
+                      indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+                    />
+                  </div>}
               </div>
-              <div>
-                <p>气温回暖 深夜变天！一张图揭清明连假天气</p>
-                <p>2020 03/31 13:00</p>
+              <div className="news-content">
+                {!utils.isEmpty(newsList) ?
+                  newsList.map(item => {
+                    return (
+                      <div className="news-content-item" onClick={() => {
+                        this.$f7router.navigate('/news/detail', {
+                          props: {
+                            newsDetail: item
+                          }
+                        });
+                      }}>
+                        <div className="news-content-item-text">
+                          <p>{item.title}</p>
+                          <p>{moment(item.pub_time * 1000).format(
+                            "YYYY/MM/DD HH:mm:ss"
+                          )}</p>
+                        </div>
+                        {!utils.isEmpty(item.thumbnail) &&
+                          <div className="news-content-item-img">
+                            <img src={item.thumbnail} alt="thumbmail" />
+                          </div>
+                        }
+                      </div>
+                    )
+                  }) : <div className="no-news">此股票暂时无新聞</div>
+                }
+                {(tabDataLoading &&
+                  <div className="spin-container">
+                    <Spin
+                      indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+                    />
+                  </div>
+                )}
               </div>
-            </div>
+            </Tabs>
           </div>
         </div>
         {utils.isEmpty(currentSymbol) ? (
@@ -1494,8 +1644,8 @@ export default class extends React.Component {
         ) : quoted_price !== "one_price" ? (
           this.renderForexInput()
         ) : (
-          this.renderStockInput()
-        )}
+              this.renderStockInput()
+            )}
       </Page>
     );
   }

@@ -45,6 +45,7 @@ export default class extends React.Component {
     dataLoading: false,
     page_size: 20,
     page: 1,
+    hasData: true,
   };
 
   async componentDidMount() {
@@ -120,6 +121,7 @@ export default class extends React.Component {
             } = this.props.market;
             this.setState({
               hasMore: selfSelectSymbolList.length < selfSelectSymbolListCount,
+              hasData: selfSelectSymbolList.length > 0 ? true : false,
             });
           });
         });
@@ -137,6 +139,7 @@ export default class extends React.Component {
             } = this.props.market;
             this.setState({
               hasMore: selfSelectSymbolList.length < selfSelectSymbolListCount,
+              hasData: selfSelectSymbolList.length > 0 ? true : false,
             });
           });
         });
@@ -150,7 +153,10 @@ export default class extends React.Component {
         );
         this.setState({ dataLoading: false, page: page + 1 }, () => {
           const { symbolList, symbolListCount } = this.props.market;
-          this.setState({ hasMore: symbolList.length < symbolListCount });
+          this.setState({
+            hasMore: symbolList.length < symbolListCount,
+            hasData: symbolList.length > 0 ? true : false,
+          });
         });
 
         if (!utils.isEmpty(nextSymbolIDList)) {
@@ -366,6 +372,7 @@ export default class extends React.Component {
       subCurrentSymbolType,
       showSubSymbolType,
       dataLoading,
+      hasData,
     } = this.state;
     const { common } = this.props;
     // console.log("symbolTypeList :>> ", symbolTypeList);
@@ -415,7 +422,7 @@ export default class extends React.Component {
       );
     };
     return (
-      <Page style={{ paddingTop: 0 }}>
+      <Page noNavbar>
         <div className="self-select-table">
           <Tabs
             initialPage={0}
