@@ -7,10 +7,10 @@ export default {
   leftPriceScale: {//左邊價格軸
     visible: true
   },
-  timeScale: {//時間現
+  timeScale: {//時間線
     timeVisible:true,
     secondsVisible:true,
-    visible: false
+    visible: true
   },
   crosshair: {//十字參考線
     horzLine: {//縱軸
