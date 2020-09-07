@@ -36,19 +36,9 @@ export default class extends React.Component {
 
   componentDidMount() {}
   componentDidUpdate(prevProps, prevState) {
-    // const { updateList } = this.state;
-    // if (!updateList || updateList.length === 0) return;
-
-    // this.refreshSeries();
     const {nowProcess} = this;
     const { symbol, initList, updateList } = this.state;
     const prevSymbol = prevState.symbol;
-
-    //    if(symbol === prevSymbol){
-    //        if(initList.length )
-    //        //this.
-    //    }
-
     if(initList !== prevState.initList && this.nowProcess !== STANDBY){
         this.nowProcess =  INIT;
   
@@ -85,7 +75,7 @@ export default class extends React.Component {
   refreshSeries = () => {
     const { initList } = this.state;
     if (initList.length === 0) return;
-    console.log(toJS(initList))
+
     this.areaSeris.setData([...initList]);
     this.lastSymbolDate = initList[initList.length - 1].time;
     this.nowProcess = REFRESH;
