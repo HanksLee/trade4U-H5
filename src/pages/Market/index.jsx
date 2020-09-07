@@ -104,7 +104,6 @@ export default class extends React.Component {
       subCurrentSymbolType,
       page,
       page_size,
-
     } = this.state;
     const { moveSymbolIDList, nextSymbolIDList } = this.props.market;
     if (currentSymbolType.symbol_type_name === "自选") {
@@ -122,7 +121,7 @@ export default class extends React.Component {
             } = this.props.market;
             this.setState({
               hasMore: selfSelectSymbolList.length < selfSelectSymbolListCount,
-              hasData: selfSelectSymbolList.length > 0 ? true : false
+              hasData: selfSelectSymbolList.length > 0 ? true : false,
             });
           });
         });
@@ -140,7 +139,7 @@ export default class extends React.Component {
             } = this.props.market;
             this.setState({
               hasMore: selfSelectSymbolList.length < selfSelectSymbolListCount,
-              hasData: selfSelectSymbolList.length > 0 ? true : false
+              hasData: selfSelectSymbolList.length > 0 ? true : false,
             });
           });
         });
@@ -156,7 +155,7 @@ export default class extends React.Component {
           const { symbolList, symbolListCount } = this.props.market;
           this.setState({
             hasMore: symbolList.length < symbolListCount,
-            hasData: symbolList.length > 0 ? true : false
+            hasData: symbolList.length > 0 ? true : false,
           });
         });
 
@@ -373,7 +372,7 @@ export default class extends React.Component {
       subCurrentSymbolType,
       showSubSymbolType,
       dataLoading,
-      hasData
+      hasData,
     } = this.state;
     const { common } = this.props;
     // console.log("symbolTypeList :>> ", symbolTypeList);
@@ -394,8 +393,8 @@ export default class extends React.Component {
                   onClick={() => tabBar.goToTab(idx)}
                   className={`market-navbar-item ${
                     currentSymbolType.symbol_type_name ===
-                    item.symbol_type_name && "active"
-                    }`}
+                      item.symbol_type_name && "active"
+                  }`}
                 >
                   {item.symbol_type_name}
                 </div>
@@ -423,7 +422,7 @@ export default class extends React.Component {
       );
     };
     return (
-      <Page style={{ paddingTop: 0 }}>
+      <Page noNavbar>
         <div className="self-select-table">
           <Tabs
             initialPage={0}
