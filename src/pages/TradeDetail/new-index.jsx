@@ -764,6 +764,7 @@ export default class extends React.Component {
       contract_size,
       decimals_place,
       purchase_fee,
+      selling_fee
     } = currentSymbol.symbol_display;
 
     const { sell } = currentSymbol.product_details ?? {
@@ -804,7 +805,8 @@ export default class extends React.Component {
       hands_fee_for_sell,
       hands_fee_for_buy,
       open_price: sell,
-      purchase_fee
+      purchase_fee,
+      selling_fee
     };
     const handFee = this.calculateForValue(
       calculate_for_buy_hands_fee,
@@ -1119,7 +1121,7 @@ export default class extends React.Component {
           <div className="trade-detail-remarks-item">
             <div className="trade-detail-remarks-item-title">遞延費</div>
             <div className="trade-detail-remarks-item-content">
-              ${stockFee}(港元/交易日)
+                      ${stockFee}({refCurrency}/交易日)
             </div>
           </div>
           <div className="trade-detail-remarks-item">
