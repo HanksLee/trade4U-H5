@@ -77,7 +77,8 @@ export default class extends React.Component {
     this.$f7router.back();
   }
 
-  handleItemOpened = (item) => {
+  handleItemOpened = async (item) => {
+    await this.props.market.getCurrentSymbol(item.id)
     this.$f7router.navigate(`/market/symbol/${item.id}`, {
       props: {
         currentSymbol: item,
