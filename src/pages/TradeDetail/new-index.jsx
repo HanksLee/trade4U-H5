@@ -26,6 +26,7 @@ import {
   stockTypeOptions,
 } from "constant";
 import { inject, observer } from "mobx-react";
+import { toJS } from "mobx";
 import utils from "utils";
 import moment from "moment";
 import Dom7 from "dom7";
@@ -227,14 +228,16 @@ export default class extends React.Component {
 
   getFunds = async () => {
     const { currentSymbol } = this.props.market;
+    const { type_display: currentSymbolType } =
+      currentSymbol?.symbol_display ?? {};
     this.setState({ tabDataLoading: true }, async () => {
       const id = currentSymbol?.product_details?.symbol;
       const res = await api.trade.getFunds(id, {});
       if (res.status === 200) {
-        this.setState({
-          tabDataLoading: false,
-          fund: res.data,
-        });
+        this.setState({ tabDataLoading: false, fund: res.data });
+      } else {
+        // 某些产品没有盘口资讯，会回传 404
+        this.setState({ tabDataLoading: false, fund: "" });
       }
     });
   };
@@ -1521,20 +1524,97 @@ export default class extends React.Component {
       </>
     );
   };
-
+  renderFundContent = () => {
+    // 渲染盘口资讯
+    const { fund, tabDataLoading } = this.state;
+    const { currentSymbol } = this.props.market;
+    console.log("this.fund :>> ", this.fund);
+    // console.log("this.props.market :>> ", this.props.market);
+    const { type_display: currentSymbolType } =
+      currentSymbol?.symbol_display ?? {};
+    // console.log("currentSymbolType :>> ", currentSymbolType);
+    return (
+      <div className="fund-content">
+        <div>主力、散户资金流向</div>
+        {utils.isEmpty(fund) && (
+          <div>
+            <span>此产品无资金流向显示</span>
+          </div>
+        )}
+        {!utils.isEmpty(fund) && (
+          <>
+            <div>
+              <span></span>
+              <span>主力买入</span>
+              <span>主力卖出</span>
+              <span>散户买入</span>
+              <span>散户卖出</span>
+            </div>
+            <div>
+              <span>金额(元)</span>
+              <span>{Math.round(Number(fund.major_in_amount) / 10000)}</span>
+              <span>{Math.round(Number(fund.major_out_amount) / 10000)}</span>
+              <span>{Math.round(Number(fund.retail_in_amount) / 10000)}</span>
+              <span>{Math.round(Number(fund.retail_out_amount) / 10000)}</span>
+            </div>
+          </>
+        )}
+        {tabDataLoading && this.renderTabDataLoadingSpinner()}
+      </div>
+    );
+  };
+  renderNewsContent = () => {
+    // 渲染新闻资讯
+    const { newsList, tabDataLoading } = this.state;
+    return (
+      <div className="news-content">
+        {utils.isEmpty(newsList) && (
+          <div className="no-news">此产品无新聞显示</div>
+        )}
+        {!utils.isEmpty(newsList) &&
+          newsList.map((item) => (
+            <div
+              className="news-content-item"
+              onClick={() => {
+                this.$f7router.navigate("/news/detail", {
+                  props: {
+                    newsDetail: item,
+                  },
+                });
+              }}
+            >
+              <div className="news-content-item-text">
+                <p>{item.title}</p>
+                <p>
+                  {moment(item.pub_time * 1000).format("YYYY/MM/DD HH:mm:ss")}
+                </p>
+              </div>
+              {!utils.isEmpty(item.thumbnail) && (
+                <div className="news-content-item-img">
+                  <img src={item.thumbnail} alt="thumbmail" />
+                </div>
+              )}
+            </div>
+          ))}
+        {tabDataLoading && this.renderTabDataLoadingSpinner()}
+      </div>
+    );
+  };
+  renderTabDataLoadingSpinner = () => {
+    return (
+      <div className="spin-container">
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+      </div>
+    );
+  };
   render() {
     const { mode, common } = this.props;
     const quoted_price = common.getKeyConfig("quoted_price");
 
     const { currentSymbol } = this.props.market;
-    const {
-      moreInfo,
-      tradeType,
-      params,
-      fund,
-      newsList,
-      tabDataLoading,
-    } = this.state;
+    console.log("currentSymbol :>> ", toJS(currentSymbol));
+    const { moreInfo, tradeType, params, tabDataLoading } = this.state;
+    console.log("this.state :>> ", this.state);
     return (
       <Page noToolbar>
         <Navbar>
@@ -1657,92 +1737,8 @@ export default class extends React.Component {
                 border: "1px solid #F2E205",
               }}
             >
-              <div className="fund-content">
-                <div>主力、散户资金流向</div>
-                {!tabDataLoading ? (
-                  utils.isEmpty(fund) ? (
-                    <div>
-                      <span>此股票暂时无资金流向显示</span>
-                    </div>
-                  ) : (
-                    <>
-                      <div>
-                        <span></span>
-                        <span>主力买入</span>
-                        <span>主力卖出</span>
-                        <span>散户买入</span>
-                        <span>散户卖出</span>
-                      </div>
-                      <div>
-                        <span>金额(元)</span>
-                        <span>
-                          {Math.round(Number(fund.major_in_amount) / 10000)}
-                        </span>
-                        <span>
-                          {Math.round(Number(fund.major_out_amount) / 10000)}
-                        </span>
-                        <span>
-                          {Math.round(Number(fund.retail_in_amount) / 10000)}
-                        </span>
-                        <span>
-                          {Math.round(Number(fund.retail_out_amount) / 10000)}
-                        </span>
-                      </div>
-                    </>
-                  )
-                ) : (
-                  <div className="spin-container">
-                    <Spin
-                      indicator={
-                        <LoadingOutlined style={{ fontSize: 24 }} spin />
-                      }
-                    />
-                  </div>
-                )}
-              </div>
-              <div className="news-content">
-                {!utils.isEmpty(newsList) ? (
-                  newsList.map((item) => {
-                    return (
-                      <div
-                        className="news-content-item"
-                        onClick={() => {
-                          this.$f7router.navigate("/news/detail", {
-                            props: {
-                              newsDetail: item,
-                            },
-                          });
-                        }}
-                      >
-                        <div className="news-content-item-text">
-                          <p>{item.title}</p>
-                          <p>
-                            {moment(item.pub_time * 1000).format(
-                              "YYYY/MM/DD HH:mm:ss"
-                            )}
-                          </p>
-                        </div>
-                        {!utils.isEmpty(item.thumbnail) && (
-                          <div className="news-content-item-img">
-                            <img src={item.thumbnail} alt="thumbmail" />
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="no-news">此股票暂时无新聞</div>
-                )}
-                {tabDataLoading && (
-                  <div className="spin-container">
-                    <Spin
-                      indicator={
-                        <LoadingOutlined style={{ fontSize: 24 }} spin />
-                      }
-                    />
-                  </div>
-                )}
-              </div>
+              {this.renderFundContent()}
+              {this.renderNewsContent()}
             </Tabs>
           </div>
         </div>
