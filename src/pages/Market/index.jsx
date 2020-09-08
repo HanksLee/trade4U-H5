@@ -168,7 +168,7 @@ export default class extends React.Component {
   };
 
   switchSymbolType = async (item) => {
-    console.log("item :>> ", item);
+    // console.log("item :>> ", item);
     this.tabRefs[item.id].scrollIntoView(); // 将目前选中的 tab 卷动至可见
     this.setState({ currentSymbolType: item, page: 1, page_size: 20 }, () => {
       this.getList();
@@ -379,7 +379,7 @@ export default class extends React.Component {
     const { common } = this.props;
     // console.log("symbolTypeList :>> ", symbolTypeList);
     // console.log("currentSymbolType :>> ", currentSymbolType);
-    console.log("this.tabRefs :>> ", this.tabRefs);
+    // console.log("this.tabRefs :>> ", this.tabRefs);
     const quoted_price = common.getKeyConfig("quoted_price");
     const price_title = this.getPriceTitle(quoted_price);
     // const currentList = currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
