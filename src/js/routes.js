@@ -240,18 +240,18 @@ var routes = [
       });
     },
   },
-  {
-    path: "/settings/lang",
-    async(routeTo, routeFrom, resolve, reject) {
-      const reactComponent = () =>
-        import(
-          /* webpackChunkName: 'settings-page' */ "../pages/Settings/Lang.jsx"
-        );
-      reactComponent().then((rc) => {
-        resolve({ component: rc.default });
-      });
-    },
-  },
+  // {
+  //   path: "/settings/lang",
+  //   async(routeTo, routeFrom, resolve, reject) {
+  //     const reactComponent = () =>
+  //       import(
+  //         /* webpackChunkName: 'settings-page' */ "../pages/Settings/Lang.jsx"
+  //       );
+  //     reactComponent().then((rc) => {
+  //       resolve({ component: rc.default });
+  //     });
+  //   },
+  // },
   {
     path: "/settings/password",
     async(routeTo, routeFrom, resolve, reject) {
