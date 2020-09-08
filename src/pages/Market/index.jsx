@@ -168,7 +168,7 @@ export default class extends React.Component {
   };
 
   switchSymbolType = async (item) => {
-    console.log("item :>> ", item);
+    // console.log("item :>> ", item);
     this.tabRefs[item.id].scrollIntoView(); // 将目前选中的 tab 卷动至可见
     this.setState({ currentSymbolType: item, page: 1, page_size: 20 }, () => {
       this.getList();
