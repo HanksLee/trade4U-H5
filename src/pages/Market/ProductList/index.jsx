@@ -42,9 +42,9 @@ export default class extends React.Component {
     const { nextSymbolIDList, prevSymbolIDList } = this.props.market;
     if (this.state.currentSymbolType !== "自选") {
       if (!utils.isEmpty(prevSymbolIDList)) {
-        this.trackSymbol(prevSymbolIDList, "unsubscribe");
+        // this.trackSymbol(prevSymbolIDList, "unsubscribe");
       }
-      this.trackSymbol(nextSymbolIDList, "subscribe");
+      // this.trackSymbol(nextSymbolIDList, "subscribe");
     }
   }
 
@@ -113,6 +113,8 @@ export default class extends React.Component {
     const newList = this.sortList(list);
     buffer.list = this.filterBufferlList(newList);
 
+    // console.log(currentList[6].product_details.sell)
+
     updateCurrentSymbolList(buffer.list, currentList, currentSymbolType);
 
     this.buffer = this.initBuffer();
@@ -167,7 +169,7 @@ export default class extends React.Component {
     // console.log(this)
     // console.log(this.props)
     // console.log("this.$f7router :>> ", this.$f7router);
-    const { thisRouter, quoted_price } = this.props;
+    const { thisRouter, quoted_price, thisStore } = this.props;
     const { selfSelectSymbolList, symbolList } = this.props.market;
     const { currentSymbolType, dataLoading } = this.state;
     const currentList =
@@ -181,7 +183,7 @@ export default class extends React.Component {
               thisRouter={thisRouter}
               currentSymbolType={currentSymbolType}
               item={item}
-
+              thisStore={thisStore}
             />
           );
         })}

@@ -1,15 +1,17 @@
 import React from "react";
 
-export default ({ thisRouter, item, currentSymbolType }) => {
+export default ({ thisRouter, item, currentSymbolType, thisStore }) => {
   return (
     <div
       className="self-select-tr"
       key={item.symbol}
       data-id={item.id}
-      onClick={() => {
-        thisRouter.navigate(`/market/symbol/${item.id}`, {
+      onClick={async () => {
+        let routeId = currentSymbolType === '自选' ? item.symbol : item.id;
+        await thisStore.getCurrentSymbol(routeId)
+        thisRouter.navigate(`/market/symbol/${routeId}`, {
           props: {
-            currentSymbol: item,
+            // currentSymbol: item,
             currentSymbolType,
           },
         });
@@ -20,14 +22,14 @@ export default ({ thisRouter, item, currentSymbolType }) => {
         <div
           className={`self-select-buy-sell-block ${
             item?.product_details?.change > 0 && "p-up stock-green"
-          } ${item?.product_details?.change < 0 && "p-down stock-red-gif"}`}
+            } ${item?.product_details?.change < 0 && "p-down stock-red-gif"}`}
         >
           {item?.product_details?.buy}
         </div>
         <div
           className={`self-select-buy-sell-block ${
             item?.product_details?.change > 0 && "p-up stock-green"
-          } ${item?.product_details?.change < 0 && "p-down stock-red-gif"}`}
+            } ${item?.product_details?.change < 0 && "p-down stock-red-gif"}`}
         >
           {item?.product_details?.sell}
         </div>

@@ -453,7 +453,7 @@ export default class extends React.Component {
                               <li
                                 className={
                                   subCurrentSymbolType ===
-                                    item.symbol_type_name && "active"
+                                  item.symbol_type_name && "active"
                                 }
                                 onClick={() => {
                                   this.switchSubSelfSelctList(
@@ -468,19 +468,20 @@ export default class extends React.Component {
                         )}
                       </div>
                     ) : (
-                      <div></div>
-                    )}
+                        <div></div>
+                      )}
                     {price_title}
                   </div>
                   <WS_ProductList
-                    currentSymbolType={symbolType.symbol_type_name}
-                    symbol_type_code={symbolType.symbol_type_code}
+                    currentSymbolType={currentSymbolType.symbol_type_name}
+                    symbol_type_code={currentSymbolType.symbol_type_code}
                     dataLoading={dataLoading}
                     channelCode={
-                      symbolType.symbol_type_code === "self" ? "SELF" : "NONE"
+                      currentSymbolType.symbol_type_code === "self" ? "SELF" : "NONE"
                     }
                     quoted_price={quoted_price}
                     thisRouter={this.$f7router}
+                    thisStore={this.props.market}
                   ></WS_ProductList>
                 </div>
               );

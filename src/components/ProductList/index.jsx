@@ -256,7 +256,7 @@ export default class ProductList extends BaseReact {
         // console.log("trackSymbol");
         this.scrollInfo.itemCount = nowItemCount;
 
-        this.trackSymbol(this.subscribList, "unsubscribe");
+        // this.trackSymbol(this.subscribList, "unsubscribe");
 
         this.subscribList = this.createSubscribeList(
           nowItemCount,
@@ -264,7 +264,7 @@ export default class ProductList extends BaseReact {
           MAXCOUNT
         );
 
-        this.trackSymbol(this.subscribList, "subscribe");
+        // this.trackSymbol(this.subscribList, "subscribe");
       }
 
       const scrollingHeight = offsetHeight + scrollTop;

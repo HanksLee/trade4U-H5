@@ -201,25 +201,31 @@ export default class extends React.Component {
     const { currentSymbol } = this.props.market;
     this.setState({ tabDataLoading: true }, async () => {
 
-      const res = await api.news.getNewsList({
-        params: {
-          symbol_code: currentSymbol?.product_details?.symbol,
-          page: this.state.page,
-          // page_size: 1
-        }
-      });
+      try {
+        const res = await api.news.getNewsList({
+          params: {
+            symbol_code: currentSymbol?.product_details?.symbol,
+            page: this.state.page,
+            // page_size: 1
+          }
+        });
 
-      if (res.status === 200) {
         console.log(res)
-        this.setState({
-          tabDataLoading: false,
-          page: this.state.page + 1,
-          newsList: [...this.state.newsList, ...res.data.results],
-          newsListCount: res.data.count
-        }, () => {
-          const { newsList, newsListCount } = this.state;
-          this.setState({ newsHasMore: newsList.length < newsListCount })
-        })
+
+        if (res.status === 200) {
+          this.setState({
+            tabDataLoading: false,
+            page: this.state.page + 1,
+            newsList: [...this.state.newsList, ...res.data.results],
+            newsListCount: res.data.count
+          }, () => {
+            const { newsList, newsListCount } = this.state;
+            this.setState({ newsHasMore: newsList.length < newsListCount })
+          })
+        }
+      }
+      catch (e) {
+        console.log(e)
       }
     })
   }
@@ -238,11 +244,11 @@ export default class extends React.Component {
       await getSymbolList();
     }
 
-    await getCurrentSymbol(
-      mode == "add" && (id == null || id == 0)
-        ? this.props.market.symbolList[0]?.id
-        : id
-    );
+    // await getCurrentSymbol(
+    //   mode == "add" && (id == null || id == 0)
+    //     ? this.props.market.symbolList[0]?.id
+    //     : id
+    // );
   };
 
   getStockBuyCount = (totalFunds, sell, contract_size) => {

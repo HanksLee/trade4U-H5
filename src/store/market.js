@@ -16,6 +16,8 @@ class MarketStore extends BaseStore {
   @action
   getSelfSelectSymbolList = async (config, overwrite) => {
     const res = await api.market.getSelfSelectSymbolList(config);
+    // const selfSelectSymbolList = await this.createSymbolList(res.data.results);
+    // this.setSelfSelectSymbolList(selfSelectSymbolList, overwrite);
     this.setSelfSelectSymbolList(res.data.results, overwrite);
     this.selfSelectSymbolListCount = res.data.count
   };
@@ -148,7 +150,81 @@ class MarketStore extends BaseStore {
   }
 
   @action
-  updateCurrentSymbolList(updateList, originList, currentSymbolType) {
+  createSymbolList = (list) => {
+    // console.log(list)
+    return list.map((item, i) => {
+      const {
+        id,
+        name,
+        spread,
+        decimals_place,
+        spread_mode_display,
+        profit_currency_display,
+        max_lots,
+        purchase_fee,
+        contract_size,
+        margin_currency_display,
+        lots_step,
+        min_lots,
+        selling_fee,
+      } = item.symbol_display;
+      // const { symbol_type_code, } = this.currentSymbolType;
+      const deleteID = item.symbol;
+      const addID = item.id;
+      const { symbol, sell, buy, chg, change } = item.product_details
+        ? item.product_details
+        : {
+          symbol: "-----",
+          sell: 0,
+          buy: 0,
+          chg: 0,
+        };
+
+      return {
+        key: `${id}-${name}`,
+        id: id,
+        rowInfo: {
+          id,
+          name,
+          spread,
+          chg,
+          change,
+          sell,
+          buy,
+          symbol,
+          deleteID,
+          addID,
+          // symbol_type_code,
+        },
+        detailInfo: {
+          decimals_place,
+          spread_mode_display,
+          profit_currency_display,
+          max_lots,
+          purchase_fee,
+          contract_size,
+          margin_currency_display,
+          lots_step,
+          min_lots,
+          selling_fee,
+        },
+      };
+    });
+  }
+
+  @action
+  setCurrentSymbolList = (d, currentSymbolType) => {
+    if (currentSymbolType === '自选') {
+      //       this.currentList = {
+      //   ...this.currentList,
+      //   ...d,
+      // };
+      this.setSelfSelectSymbolList(d, true)
+    }
+  }
+
+  @action
+  updateCurrentSymbolList = (updateList, originList, currentSymbolType) => {
     updateList.forEach(uItem => {
       const selectedItem = originList.filter(cItem => {
         const { product_details, } = cItem;
@@ -169,85 +245,13 @@ class MarketStore extends BaseStore {
         ...product_details,
       };
     });
-    // console.log(this.createSymbolList(originList))
     // const symbolList = this.createSymbolList(originList);
-    // console.log(symbolList)
 
     // this.setCurrentSymbolList(
     //   symbolList, currentSymbolType
     // );
-  }
 
-  createSymbolList(list) {
-    return list.map((item, i) => {
-      const {
-        id,
-        name,
-        spread,
-        decimals_place,
-        spread_mode_display,
-        profit_currency_display,
-        max_lots,
-        purchase_fee,
-        contract_size,
-        margin_currency_display,
-        lots_step,
-        min_lots,
-        selling_fee,
-      } = item.symbol_display;
-      const { symbol_type_code, } = this.currentSymbolType;
-      const deleteID = item.symbol;
-      const addID = item.id;
-      const { symbol, sell, buy, chg, } = item.product_details
-        ? item.product_details
-        : {
-          symbol: "-----",
-          sell: 0,
-          buy: 0,
-          chg: 0,
-        };
-
-      return {
-        key: `${id}-${name}`,
-        id: id,
-        rowInfo: {
-          id,
-          name,
-          spread,
-          chg,
-          sell,
-          buy,
-          symbol,
-          deleteID,
-          addID,
-          symbol_type_code,
-        },
-        detailInfo: {
-          decimals_place,
-          spread_mode_display,
-          profit_currency_display,
-          max_lots,
-          purchase_fee,
-          contract_size,
-          margin_currency_display,
-          lots_step,
-          min_lots,
-          selling_fee,
-        },
-      };
-    });
-  }
-
-  @action
-  setCurrentSymbolList(d, currentSymbolType) {
-    if (currentSymbolType === '自选') {
-      //       this.currentList = {
-      //   ...this.currentList,
-      //   ...d,
-      // };
-      this.setSelfSelectSymbolList(d, false)
-    }
-
+    this.setCurrentSymbolList(originList, currentSymbolType)
   }
 }
 
