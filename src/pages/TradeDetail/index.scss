@@ -313,23 +313,23 @@
     .fund-content {
       padding: 16px 14px;
       border-bottom: 1px solid #2e3b55;
-
+      
       > div + div {
         border-top: unset;
       }
-
+    
       > div {
         font-size: 14px;
         color: #ffffff;
         text-align: center;
         border: 1px solid #2e3b55;
 
-        &:nth-child(1) {
+        &:nth-child(2) {
           background-color: #2e3b55;
           line-height: 28px;
         }
-
-        &:nth-child(n+2) {
+        
+        &:nth-child(n+3) {
           display: flex;
 
           > span {
