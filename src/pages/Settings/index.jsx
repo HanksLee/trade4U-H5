@@ -122,13 +122,13 @@ export default class extends React.Component {
             </div>
           </ListItem>
         </List>
-        <List>
+        {/* <List>
           <ListItem title={intl.get("settings.lang")} link={`/settings/lang`}>
             <div slot="media" style={{ backgroundColor: "#6DD400" }}>
               <img src="../../../assets/img/language-icon.svg" />
             </div>
           </ListItem>
-        </List>
+        </List> */}
         {/* <List>
           <ListItem
             title={"图表"}
