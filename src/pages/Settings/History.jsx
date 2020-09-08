@@ -17,104 +17,59 @@ let cancel;
 
 export default class extends React.Component {
   state = {
-    search: "",
     historyList: [],
     totalData: {},
     page_size: 20,
     page: 1,
-    create_time_start: "",
-    create_time_end: "",
+    create_time_start: moment(),
+    create_time_end: moment(),
     total_count: 0,
   };
 
   componentDidMount() {
-    // console.log(moment.format('YYYY/MM/DD'))
-    this.setState(
-      {
-        create_time_start:
-          Date.parse(
-            `${new Date().getFullYear()}-${
-              new Date().getMonth() + 1
-            }-${new Date().getDate()}`
-          ) / 1000,
-        create_time_end:
-          Date.parse(
-            `${new Date().getFullYear()}-${
-              new Date().getMonth() + 1
-            }-${new Date().getDate()}`
-          ) /
-            1000 +
-          86399,
-      },
-      () => {
-        this.getList();
-      }
-    );
+    this.getList();
   }
 
-  onCreateTimeStartChange = (date, dateString) => {
-    this.setState(
-      {
-        create_time_start: Date.parse(date) / 1000,
-      },
-      () => {
-        this.getList();
-      }
-    );
+  onCreateTimeStartChange = (moment) => {
+    this.setState({ create_time_start: moment }, () => this.getList());
   };
 
-  onCreateTimeEndChange = (date, dateString) => {
-    this.setState(
-      {
-        create_time_end: Date.parse(date) / 1000 + 86399,
-      },
-      () => {
-        this.getList();
-      }
-    );
+  onCreateTimeEndChange = (moment) => {
+    this.setState({ create_time_end: moment }, () => this.getList());
   };
 
   paginationChange = (page) => {
-    this.setState({ page }, () => {
-      this.getList();
-    });
+    this.setState({ page }, () => this.getList());
   };
 
-  getList = () => {
+  getList = async () => {
     if (cancel != undefined) {
       cancel();
     }
     const { page, page_size, create_time_start, create_time_end } = this.state;
-
-    this.setState({ dataLoading: true }, async () => {
-      await api.history
-        .getHistoryList(
-          `page_size=${page_size}&page=${page}&create_time_start=${create_time_start}&create_time_end=${create_time_end}`,
-          {
-            params: {
-              type: "deposit_and_withdraw",
-            },
-          }
-        )
-        .then((res) => {
-          if (res.status === 200) {
-            this.setState({
-              historyList: res.data.results,
-              totalData: res.data.total_data,
-              total_count: res.data.count,
-            });
-          }
-        })
-        .catch((error) => {
-          // console.log(error);
-        });
+    console.log("this.state :>> ", this.state);
+    // 送出 api querystring 前，将 moment 转为 timestamp
+    const res = await api.history.getHistoryList({
+      params: {
+        page,
+        page_size,
+        create_time_start: create_time_start.unix(),
+        create_time_end: create_time_end.unix(),
+        type: "deposit_and_withdraw",
+      },
     });
+    if (res.status === 200) {
+      this.setState({
+        historyList: res.data.results,
+        totalData: res.data.total_data,
+        total_count: res.data.count,
+      });
+    }
   };
 
   render() {
     const {
       historyList,
-      dataLoading,
       totalData,
       total_count,
       page,
@@ -145,29 +100,29 @@ export default class extends React.Component {
         <div className="history-time-filter">
           <DatePicker
             onChange={this.onCreateTimeStartChange}
+            value={this.create_time_start}
             locale={locale}
             showToday={false}
             bordered={false}
             allowClear={false}
             defaultValue={moment()}
-            disabledDate={(current) => {
-              return current && current > moment(create_time_end * 1000);
+            disabledDate={(val) => {
+              // 开始时间晚于结束时间
+              return val.isAfter(create_time_end);
             }}
           ></DatePicker>
           <div>至</div>
           <DatePicker
             onChange={this.onCreateTimeEndChange}
+            value={this.create_time_end}
             locale={locale}
             showToday={false}
             bordered={false}
             allowClear={false}
             defaultValue={moment()}
-            disabledDate={(current) => {
-              return (
-                current &&
-                (current > moment().add("days") ||
-                  current < moment(create_time_start * 1000))
-              );
+            disabledDate={(val) => {
+              // 结束时间大于开始时间 or 结束时间超过今日
+              return val.isBefore(create_time_start) || val.isAfter(moment());
             }}
           ></DatePicker>
         </div>
@@ -180,9 +135,9 @@ export default class extends React.Component {
           </div>
           <div className="detail-content">
             {historyList.map((item, index) => (
-              <div className="content-item">
+              <div className="content-item" key={item.id} data-id={item.id}>
                 <div>
-                  <p>{moment(item.create_time * 1000).format("YYYY/MM/DD")}</p>
+                  <p>{moment(item.create_time * 1000).format("YYYY-MM-DD")}</p>
                   <p>{moment(item.create_time * 1000).format("HH:mm:ss")}</p>
                 </div>
                 <div>
