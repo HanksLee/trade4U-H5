@@ -102,7 +102,9 @@ var routes = [
     path: "/subscribe/",
     async(routeTo, routeFrom, resolve, reject) {
       const reactComponent = () =>
-        import(/* webpackChunkName: 'trade-page' */ "../pages/Subscribe/index.jsx");
+        import(
+          /* webpackChunkName: 'trade-page' */ "../pages/Subscribe/index.jsx"
+        );
       reactComponent().then((rc) => {
         resolve({ component: rc.default });
       });
@@ -112,7 +114,9 @@ var routes = [
     path: "/subscribe/detail",
     async(routeTo, routeFrom, resolve, reject) {
       const reactComponent = () =>
-        import(/* webpackChunkName: 'trade-page' */ "../pages/Subscribe/Detail.jsx");
+        import(
+          /* webpackChunkName: 'trade-page' */ "../pages/Subscribe/Detail.jsx"
+        );
       reactComponent().then((rc) => {
         resolve({ component: rc.default });
       });
@@ -142,7 +146,9 @@ var routes = [
     path: "/news/detail",
     async(routeTo, routeFrom, resolve, reject) {
       const reactComponent = () =>
-        import(/* webpackChunkName: 'trade-page' */ "../pages/NewsDetail/index.jsx");
+        import(
+          /* webpackChunkName: 'trade-page' */ "../pages/NewsDetail/index.jsx"
+        );
       reactComponent().then((rc) => {
         resolve({ component: rc.default });
       });
@@ -155,18 +161,11 @@ var routes = [
         /* webpackChunkName: 'trade-products-page' */ "../pages/TradeProducts/index.jsx"
       ),
   },
-  // {
-  //   path: "/trade/:id/",
-  //   asyncComponent: () =>
-  //     import(
-  //       /* webpackChunkName: 'trade-detail-page' */ "../pages/TradeDetail/index.jsx"
-  //     ),
-  // },
   {
     path: "/trade/:id/",
     asyncComponent: () =>
       import(
-        /* webpackChunkName: 'trade-detail-page' */ "../pages/TradeDetail/new-index.jsx"
+        /* webpackChunkName: 'trade-detail-page' */ "../pages/TradeDetail/index.jsx"
       ),
   },
   {
@@ -241,18 +240,18 @@ var routes = [
       });
     },
   },
-  {
-    path: "/settings/lang",
-    async(routeTo, routeFrom, resolve, reject) {
-      const reactComponent = () =>
-        import(
-          /* webpackChunkName: 'settings-page' */ "../pages/Settings/Lang.jsx"
-        );
-      reactComponent().then((rc) => {
-        resolve({ component: rc.default });
-      });
-    },
-  },
+  // {
+  //   path: "/settings/lang",
+  //   async(routeTo, routeFrom, resolve, reject) {
+  //     const reactComponent = () =>
+  //       import(
+  //         /* webpackChunkName: 'settings-page' */ "../pages/Settings/Lang.jsx"
+  //       );
+  //     reactComponent().then((rc) => {
+  //       resolve({ component: rc.default });
+  //     });
+  //   },
+  // },
   {
     path: "/settings/password",
     async(routeTo, routeFrom, resolve, reject) {

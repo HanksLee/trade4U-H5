@@ -1,132 +1,277 @@
-import React from 'react';
+import api from "services";
+import React from "react";
 import {
-  Page, Navbar, List, ListItem,
+  Page,
+  Navbar,
+  List,
+  ListItem,
+  Block,
   NavTitle,
-  NavRight,
   NavLeft,
+  NavRight,
   Icon,
   Link,
-  Block,
-  AccordionItem,
-  AccordionToggle,
-  AccordionContent,
-  Stepper,
-  Row,
-  Col,
-  Input
-} from 'framework7-react';
-import echarts from 'echarts/lib/echarts';
-import 'echarts/lib/chart/line';
-import 'echarts/lib/component/tooltip';
-import 'echarts/lib/component/title';
-
-import moment from 'moment';
-import { inject, observer } from "mobx-react";
-import utils from 'utils';
-import ws from 'utils/ws';
-import './index.scss';
-import { BaseReact } from "components/baseComponent";
-import { toJS } from 'mobx';
+  Toolbar,
+  Input,
+} from "framework7-react";
+import { Tabs } from "antd-mobile";
+import { Modal, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 import {
   tradeTypeOptions,
-  tradeActionMap
-} from 'constant';
-import cloneDeep from 'lodash/cloneDeep';
-import maxBy from 'lodash/maxBy';
-import minBy from 'lodash/minBy';
+  tradeActionMap,
+  pendingOrderOptions,
+  executeOptions,
+  executeMotionMap,
+  stockTypeOptions,
+} from "constant";
+import { inject, observer } from "mobx-react";
+import { toJS } from "mobx";
+import utils from "utils";
+import moment from "moment";
+import Dom7 from "dom7";
+import "antd/dist/antd.css";
+import "./index.scss";
 
+import { create, all } from "mathjs";
+const config = {
+  number: "BigNumber",
+};
+const math = create(all, config);
 
-function randomData() {
-  now = new Date(+now + oneDay);
-  value = value + Math.random() * 21 - 10;
-  return {
-    name: now.toString(),
-    value: [
-      [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'),
-      Math.round(value)
-    ]
-  };
-}
+const tradeActions = [
+  "买入",
+  "卖出",
+  "Buy Limit",
+  "Sell Limit",
+  "Buy Stop",
+  "Sell Stop",
+];
 
-var data = [];
-var now = +new Date(1997, 9, 3);
-var oneDay = 24 * 3600 * 1000;
-var value = Math.random() * 1000;
-for (var i = 0; i < 10; i++) {
-  data.push(randomData());
-}
+const moreInfoTabs = [
+  { title: "盘口", code: "fund" },
+  { title: "资讯", code: "news" },
+];
 
+const $$ = Dom7;
 
-var data2 = [];
-var now = +new Date(1997, 9, 3);
-var oneDay = 24 * 3600 * 1000;
-var value = Math.random() * 1000;
-for (var i = 0; i < 1000; i++) {
-  data2.push(randomData());
-}
-
-@inject("common", 'trade', 'market')
+@inject("common", "trade", "market")
 @observer
-export default class extends BaseReact {
-  wsConnect = null;
-  $myChart = null;
-  state = {
-    currentTradeType: tradeTypeOptions[0],
-    opened: false,
-    lossValue: undefined,
-    profitValue: undefined,
-    priceValue: undefined,
-    lotsValue: 0,
+export default class extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      // symbolDisplay: this.$f7route.context.symbol_display,
+      moreInfo: false,
+      tradeType: tradeTypeOptions[0].id,
+      params: {
+        lots: 1,
+        open_price: undefined,
+        action: 0,
+        take_profit: undefined,
+        stop_loss: undefined,
+        totalFunds: 0,
+        trading_volume: 0,
+      },
+      stockParams: {
+        holdDays: "",
+        action: 0,
+        margin_value: 10000,
+        unitFunds: 100,
+        leverage: 1,
+        rules: {
+          calculate_for_buy_hands_fee: "",
+          calculate_for_buy_stock_fee: "",
+          calculate_for_sell_hands_fee: "",
+          calculate_for_sell_stock_fee: "",
+        },
+      },
+      positionTypeMap: [],
+      leverageMap: [],
+      newsList: [],
+      newsListCount: 0,
+      fund: {},
+      tabDataLoading: false,
+      page: 1,
+      newsHasMore: true,
+      newsError: false,
+      isSubmit:false
+    };
+  }
+  profitRule = this.props.common.nowProfitRule;
 
-    chartOption: {
-      title: {
-        text: ''
-      },
-      backgroundColor: 'white',
-      grid: {
-        right: '14%',
-      },
-      tooltip: {
-        trigger: 'axis',
-        formatter: function (params) {
-          params = params[0];
-          return moment(params.value[0]).format('HH:mm:ss') + ' / ' + params.value[1];
+  async componentDidMount() {
+    await this.initSymbolList();
+
+    const { stockParams } = this.state;
+    const { margin_value, leverage } = stockParams;
+    const { mode, currentTradeTab } = this.props;
+    const { currentTrade } = this.props.trade;
+    const { currentSymbol } = this.props.market;
+    const {
+      calculate_for_buy_hands_fee,
+      calculate_for_buy_stock_fee,
+      calculate_for_buy_tax,
+      calculate_for_cash_deposit,
+      calculate_for_sell_hands_fee,
+      calculate_for_sell_stock_fee,
+      calculate_for_sell_tax,
+      contract_size,
+    } = currentSymbol.symbol_display;
+    const { sell } = currentSymbol.product_details ?? { sell: 0 };
+    const leverageMap =  currentSymbol?.symbol_display?.leverage.split(",");
+    const { trading_volume, lots, totalFunds } = this.getTradingVolumeInfo(
+      margin_value,
+      leverageMap[0],
+      sell,
+      contract_size
+    );
+
+    this.getFunds();
+    window.addEventListener("scroll", this.newsHandleScroll, true);
+    // this.getNewsList(currentSymbol?.product_details?.symbol);
+    if (mode === "add") {
+ 
+      this.setState({
+        params: {
+          ...this.state.params,
+          open_price: currentSymbol?.sell,
+          trading_volume,
+          lots,
+          totalFunds,
         },
-        axisPointer: {
-          animation: false
-        }
-      },
-      xAxis: {
-        show: false,
-        type: 'category',
-        splitLine: {
-          show: false
+        positionTypeMap: currentSymbol?.symbol_display?.position_type,
+        leverageMap: leverageMap,
+        stockParams: {
+          ...stockParams,
+          holdDays: currentSymbol?.symbol_display?.position_type[0],
+          leverage: currentSymbol?.symbol_display?.leverage.split(",")[0],
+          rules: {
+            calculate_for_buy_hands_fee,
+            calculate_for_buy_stock_fee,
+            calculate_for_sell_hands_fee,
+            calculate_for_sell_stock_fee,
+          },
         },
-      },
-      yAxis: {
-        position: 'right',
-        type: 'value',
-        boundaryGap: [0, '100%'],
-        splitLine: {
-          show: true,
-          lineStyle: {
-            type: 'dashed'
+      });
+    } else {
+      this.setState({
+        params: {
+          lots: currentTrade.lots,
+          open_price: currentTrade.open_price,
+          take_profit: currentTrade.take_profit,
+          stop_loss: currentTrade.stop_loss,
+        },
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {}
+
+  newsHandleScroll = () => {
+    const { newsError, newsHasMore, tabDataLoading } = this.state;
+
+    let newsOuterHeight = $$(
+      "#view-market .trade-detail-more-info-news .am-tabs-pane-wrap "
+    )[1].clientHeight;
+    if (newsOuterHeight === 0) return;
+
+    // Bails early if:
+    // * there's an error
+    // * it's already loading
+    // * there's nothing left to load
+    if (newsError || tabDataLoading || !newsHasMore) return;
+
+    let scrollTop = $$(
+      "#view-market .trade-detail-more-info-news .news-content "
+    )[0].scrollTop;
+    let scrollHeight = $$(
+      "#view-market .trade-detail-more-info-news .news-content "
+    )[0].scrollHeight;
+    let newsInnerHeight = $$(
+      "#view-market .trade-detail-more-info-news .news-content "
+    )[0].clientHeight;
+
+    // Checks that the page has scrolled to the bottom
+    if (newsInnerHeight + scrollTop >= scrollHeight) {
+      this.getNewsList();
+    }
+  };
+  getTradingVolumeInfo = (margin_value, leverage, sell, contract_size) => {
+    const totalFunds = math
+      .chain(margin_value)
+      .multiply(leverage ? leverage : 0)
+      .done();
+
+    const trading_volume = this.getStockBuyCount(
+      totalFunds,
+      sell,
+      contract_size
+    );
+
+    const lots = math.chain(trading_volume).divide(contract_size).done();
+
+    return {
+      totalFunds,
+      trading_volume,
+      lots,
+    };
+  };
+  onChangeTabs = (tab, index) => {
+    // console.log('onChange', index, tab);
+    if (tab.code === "fund") {
+      this.getFunds();
+    } else if (tab.code === "news") {
+      this.setState({ page: 1, newsList: [], newsListCount: 0 }, () => {
+        this.getNewsList();
+      });
+    }
+  };
+
+  getFunds = async () => {
+    const { currentSymbol } = this.props.market;
+    const { type_display: currentSymbolType } =
+      currentSymbol?.symbol_display ?? {};
+    this.setState({ tabDataLoading: true }, async () => {
+      const id = currentSymbol?.product_details?.symbol;
+      const res = await api.trade.getFunds(id, {});
+      if (res.status === 200) {
+        this.setState({ tabDataLoading: false, fund: res.data });
+      } else {
+        // 某些产品没有盘口资讯，会回传 404
+        this.setState({ tabDataLoading: false, fund: "" });
+      }
+    });
+  };
+
+  getNewsList = async () => {
+    const { currentSymbol } = this.props.market;
+    this.setState({ tabDataLoading: true }, async () => {
+      const res = await api.news.getNewsList({
+        params: {
+          symbol_code: currentSymbol?.product_details?.symbol,
+          page: this.state.page,
+          // page_size: 1
+        },
+      });
+
+      if (res.status === 200) {
+        console.log(res);
+        this.setState(
+          {
+            tabDataLoading: false,
+            page: this.state.page + 1,
+            newsList: [...this.state.newsList, ...res.data.results],
+            newsListCount: res.data.count,
+          },
+          () => {
+            const { newsList, newsListCount } = this.state;
+            this.setState({ newsHasMore: newsList.length < newsListCount });
           }
-
-        }
-      },
-    },
-  }
-
-  componentDidMount() {
-    this.initSymbolList();
-    this.initTrade();
-    setTimeout(() => {
-      this.initChart();
-      this.connectWebsocket();
-    }, 600);
-
-  }
+        );
+      }
+    });
+  };
 
   initSymbolList = async () => {
     const {
@@ -143,441 +288,158 @@ export default class extends BaseReact {
     }
 
     await getCurrentSymbol(
-      mode == 'add' && (id == null || id == 0)
+      mode == "add" && (id == null || id == 0)
         ? this.props.market.symbolList[0]?.id
-        : id,
+        : id
     );
+  };
 
-    const { currentShowSymbol } = this.props.market;
-    this.setState({
-      lotsValue: currentShowSymbol?.symbol_display?.min_lots,
-    })
+  getStockBuyCount = (totalFunds, sell, contract_size) => {
+    const buyCount = math
+      .chain(totalFunds)
+      .divide(sell)
+      .divide(contract_size)
+      .done();
+    const countRounding = math.fix(buyCount);
 
-  }
+    return math.chain(countRounding).multiply(contract_size).done();
+  };
 
-  componentWillUnmount() {
+  calculateForValue = (formulaName, obj, decimals_place) => {
+    let formula = this.profitRule[formulaName];
+    if (!formula) return 0;
 
-  }
-
-  initTrade = async () => {
-    const {
-      id, mode, trade: {
-        currentTrade
-      }
-    } = this.props;
-
-    if (mode != 'add') {
-      let action = currentTrade?.action;
-      let ret;
-
-      if (action == 0 || action == 1) {
-        ret = tradeTypeOptions[0];
-      } else {
-        ret = tradeTypeOptions.find(item => item.id == action);
+    for (let key in obj) {
+      if (formula.indexOf(key) === -1) {
+        continue;
       }
 
-      this.setState({
-        currentTradeType: ret,
-        lossValue: currentTrade.stop_loss,
-        profitValue: currentTrade.take_profit,
-        priceValue: currentTrade.open_price,
-      });
+      formula = formula.replace(key, obj[key]);
     }
-  }
 
-  initChart = () => {
-    this.$myChart = echarts.init(document.querySelector('.chart'));
-    window.$echart = echarts;
-    window.$myChart = this.$myChart;
+    try {
+      return math.evaluate(formula).toFixed(decimals_place);
+    } catch (e) {
+      return 0;
+    }
+  };
 
-    // 绘制图表
-    const { chartOption } = this.state;
-    const {
-      currentShowSymbol,
-      currentSymbol,
-    } = this.props.market;
-    const trend = currentSymbol?.trend ?? [];
+  setStopLess = (value, stop_less, action) => {
+    let retV = 0;
+    switch (action) {
+      case 0:
+        retV = value - stop_less;
+        break;
+      case 1:
+        retV = value + stop_less;
+        break;
+    }
+    return retV;
+  };
 
-    const maxBuy = maxBy(trend, item => item[1]);
-    const minBuy = minBy(trend, item => item[1]);
-    const maxSell = maxBy(trend, item => item[2]);
-    const minSell = minBy(trend, item => item[2]);
-    const max = Math.max(maxBuy ? maxBuy[1] : 0, maxSell ? maxSell[1] : 0);
-    const min = Math.min(minBuy ? minBuy[2] : 0, minSell ? minSell[2] : 0);
-    const interval = +(((max - min) / 10).toFixed(currentSymbol?.symbol_display?.decimals_place));
-
-    const options = {
-      ...chartOption,
-      xAxis: {
-        ...chartOption.xAxis,
-        data: currentSymbol?.trendBuy?.value[0],
-      },
-      yAxis: {
-        ...chartOption.yAxis,
-        min,
-        max,
-        interval,
-      },
-      series: [{
-        name: '模拟数据',
-        type: 'line',
-        showSymbol: false,
-        hoverAnimation: false,
-        // data: data ?? [],
-        data: currentShowSymbol?.trendBuy ?? [],
-        lineStyle: {
-          color: '#44d7b6',
+  setTakeProfit = (value, take_profit, change, action) => {
+    let retV = 0;
+    let basic = 0;
+    switch (action) {
+      case 0:
+        basic = value + take_profit;
+        retV = basic + change;
+        if (basic > retV) {
+          retV = basic;
         }
-      }, {
-        name: '模拟数据',
-        type: 'line',
-        showSymbol: false,
-        hoverAnimation: false,
-        data: currentShowSymbol?.trendSell ?? [],
-        lineStyle: {
-          color: '#e94a39',
-        },
-      }
-      ]
-    };
-
-    // console.log(JSON.stringify(options));
-
-    this.$myChart.setOption(options, true);
-  }
-
-  updateTrendData = (data) => {
-    const {
-      currentSymbol,
-      currentShowSymbol,
-      setCurrentSymbol,
-    } = this.props.market;
-
-    let trend = currentSymbol?.trend ?? [];
-    let newTrend = cloneDeep(trend);
-    let lastData = trend[trend.length - 1] ?? [];
-    let firstData = trend[0];
-
-    // 新变化的数据是最新的数据
-    if (data.timestamp > (lastData[0] ?? 0)) {
-      newTrend.push([data.timestamp, data.buy, data.sell]);
-
-    } else if (data.timestamp >= (firstData[0] ?? 0) && data.timestamp <= (lastData[0] ?? 0)) {
-      newTrend = newTrend.map(item => {
-        if (item[0] == data.timestamp) {
-          item = [data.timestamp, data.buy, data.sell];
+        break;
+      case 1:
+        basic = value - take_profit;
+        retV = basic + change;
+        if (basic < retV) {
+          retV = basic;
         }
-
-        return item;
-      });
+        break;
     }
 
-    setCurrentSymbol({
-      ...data,
-      timestamp: data.timestamp >= currentSymbol.timestamp ? data.timestamp : currentSymbol.timestamp,
-      trend: newTrend,
-    });
-  }
+    return retV;
+  };
 
-  connectWebsocket = () => {
-    const {
-      id, prevSelectedId, market: {
-        currentShowSymbol,
-      }
-    } = this.props;
-    const that = this;
-
-    if (!prevSelectedId || +prevSelectedId != id) {
-      if (this.wsConnect) this.wsConnect.close();
-
-      this.wsConnect = ws(`symbol/${id}/trend`);
-
-      // setInterval(function () {
-      //   that.wsConnect.send(`{"type":"ping"}`);
-      // }, 3000)
-
-      this.wsConnect.onmessage = evt => {
-        const msg = JSON.parse(evt.data);
-        const data = msg.data;
-        if (msg.type === 'pong') {
-          clearInterval(this.orderInterval);
-
-          // 如果一定时间没有调用clearInterval，则执行重连
-          this.orderInterval = setInterval(function () {
-            that.connectWebsocket();
-          }, 1000);
-        }
-        if (msg.type && msg.type !== 'pong') { // 消息推送
-          // code ...          
-
-          // console.log('data', data);
-
-          this.updateTrendData(data);
-          this.initChart();
-        }
-
-      }
-
-      this.wsConnect.onclose = (evt) => {
-        setInterval(function () { that.connectWebsocket() }, 3000)
-      }
-
-      // if (this.wsConnect) {
-      //   this.wsConnect.close();
-      //
-      //   this.wsConnect.onclose = evt => {
-      //     this.wsConnect = ws(`symbol/${id}/trend`);
-      //     this.wsConnect.onmessage = evt => {
-      //       const msg = evt.data;
-      //
-      //       const data = JSON.parse(msg).data;
-      //
-      //       this.updateTrendData(data);
-      //       this.initChart();
-      //     }
-      //   }
-      // } else {
-      //   this.wsConnect = ws(`symbol/${id}/trend`);
-      //   this.wsConnect.onmessage = evt => {
-      //     const msg = evt.data;
-      //     const data = JSON.parse(msg).data;
-      //     console.log('data', data);
-      //
-      //
-      //     this.updateTrendData(data);
-      //     this.initChart();
-      //   }
-      // }
-    }
-  }
-
-  componentWillUnmount = () => {
-
-    if (this.wsConnect) {
-      this.wsConnect.close()
-    }
-  }
-
-  onTradeTypeChanged = (currentTradeType) => {
-    this.setState({
-      currentTradeType,
-    });
-    this.toggleTypePanel();
-  }
-
-  toggleTypePanel = () => {
-    this.setState({
-      opened: !this.state.opened,
-    })
-  }
-
-  onTrade = async (mode) => {
-    const {
-      currentTradeType,
-      priceValue,
-      profitValue,
-      lossValue,
-      lotsValue,
-    } = this.state;
-    const {
-      currentSymbol,
-    } = this.props.market;
-    const { currentTrade } = this.props.trade;
-    const actionMode = this.props.mode;
-
-    let payload = {
-      trading_volume: lotsValue * (currentSymbol?.symbol_display?.contract_size),
-      lots: lotsValue,
-      symbol: currentSymbol.id,
-      take_profit: profitValue,
-      stop_loss: lossValue,
-    };
-
-    if (actionMode == 'add') {
-      if (mode == 'buy') {
-        payload.open_price = currentSymbol?.buy;
-      } else if (mode == 'sell') {
-        payload.open_price = currentSymbol?.sell;
-      }
-
-      if (currentTradeType.id == 1) {
-        if (mode == 'buy') {
-          payload.action = '0';
-
-        } else if (mode == 'sell') {
-          payload.action = '1';
-        }
-      } else {
-        payload.action = currentTradeType.id;
-        payload.open_price = priceValue;
-      }
-    } else if (actionMode == 'update') {
-      payload.open_price = priceValue;
+  setPointLimit = (type, origin, profit) => {
+    let retV = 0;
+    switch (type) {
+      case "high":
+        retV = origin + profit;
+        break;
+      case "low":
+        retV = origin - profit;
+        break;
     }
 
-    // console.log('payload', JSON.stringify(payload));
+    return retV;
+  };
 
-    // const errMsg = this.getValidation(payload, mode);
-
-    // if (errMsg) {
-    //   return this.$f7.toast.show({
-    //     text: errMsg,
-    //     position: 'center',
-    //     closeTimeout: 2000,
-    //   });
-    // }
-
-    let res;
-    if (actionMode == 'add') {
-      try {
-        res = await this.$api.trade.createTrade(payload);
-
-        // console.log('res', res);
-        if (res.status == 201) {
-          this.$f7.toast.show({
-            text: '下单成功',
-            position: 'center',
-            closeTimeout: 2000,
-          });
-          this.wsConnect.close();
-          this.onTradeListPageRefresh();
-          this.$f7router.back({
-            force: false,
-          });
-        }
-
-      } catch (e) {
-        this.$f7.toast.show({
-          text: e.response.data.message,
-          position: 'center',
-          closeTimeout: 2000,
-        });
-      }
-    } else if (actionMode == 'update') {
-      payload = {
-        open_price: payload.open_price,
-        take_profit: payload.take_profit,
-        stop_loss: payload.stop_loss,
-      }
-      try {
-        res = await this.$api.trade.updateTrade(currentTrade.order_number, payload);
-
-        if (res.status == 200) {
-          this.$f7.toast.show({
-            text: '修改成功',
-            position: 'center',
-            closeTimeout: 2000,
-          });
-          this.wsConnect.close();
-          this.onTradeListPageRefresh();
-          this.$f7router.back('/trade/', {
-            force: false,
-          });
-        }
-      } catch (e) {
-        this.$f7.toast.show({
-          text: e.response.data.message,
-          position: 'center',
-          closeTimeout: 2000,
-        });
-      }
+  checkPointLimit = (type, origin, changeValue) => {
+    let isOver = false;
+    switch (type) {
+      case "high":
+        isOver = origin < changeValue;
+        break;
+      case "low":
+        isOver = origin > changeValue;
+        break;
     }
-  }
+    const retV = isOver ? origin : changeValue < 0 ? origin : changeValue;
+    return retV;
+  };
+  // initTrade = async () => {
+  //   const {
+  //     id, mode, trade: {
+  //       currentTrade
+  //     }
+  //   } = this.props;
 
-  getValidation = (payload, mode) => {
-    const {
-      currentSymbol,
-    } = this.props.market;
-    const {
-      currentTradeType
-    } = this.state;
-    let errMsg = '';
-    let buy = +currentSymbol?.buy;
-    let sell = +currentSymbol?.sell;
-    let limit = currentSymbol?.symbol_display?.limit_stop_level * 1 / (10 ** currentSymbol?.symbol_display?.decimals_place); // 止盈止损点位
+  //   if (mode != 'add') {
+  //     // let action = currentTrade?.action;
+  //     // let ret;
 
-    if (mode == 'buy') {
-      if (payload.take_profit - buy < limit) {
-        errMsg = `止盈点位不得小于止盈止损点位`;
-      } else if (sell - payload.stop_loss < limit) {
-        errMsg = '止损点位不得小于止盈止损点位';
-      }
-    } else if (mode == 'sell') {
-      if (buy - payload.take_profit < limit) {
-        errMsg = '止盈点位不得小于止盈止损点位';
-      } else if (payload.stop_loss - sell < limit) {
-        errMsg = '止损点位不得小于止盈止损点位';
-      }
-    }
+  //     // if (action == 0 || action == 1) {
+  //     //   ret = tradeTypeOptions[0];
+  //     // } else {
+  //     //   ret = tradeTypeOptions.find(item => item.id == action);
+  //     // }
 
-    if (payload.action != 0 || payload.action != 1) {
-      // 挂单交易校验规则：https://zhidao.baidu.com/question/71819653.html
-      if (payload.action == 2 && payload.open_price >= currentSymbol.buy) {
-        errMsg = '请在当前买入价格下方挂单';
-      } else if (payload.action == 3 && payload.open_price <= currentSymbol.sell) {
-        errMsg = '请在当前卖出价格上方挂单';
-      } else if (payload.action == 4 && payload.open_price <= currentSymbol.buy) {
-        errMsg = '请在当前买入价格上方挂单';
-      } else if (payload.action == 5 && payload.open_price >= currentSymbol.sell) {
-        errMsg = '请在当前卖出价格上方挂单';
-      }
-    }
-
-    if (!payload.take_profit && !payload.stop_loss) {
-      errMsg = '';
-    }
-
-    return errMsg;
-  }
+  //     this.setState({
+  //       // currentTradeType: ret,
+  //       lossValue: currentTrade.stop_loss,
+  //       profitValue: currentTrade.take_profit,
+  //       priceValue: currentTrade.open_price,
+  //     });
+  //   }
+  // }
 
   onLotsChanged = (val) => {
+    const { params } = this.state;
+
     const {
-      market: {
-        currentShowSymbol,
-      }
+      market: { currentShowSymbol },
     } = this.props;
 
     val = Number(val);
-    val = Number(this.state.lotsValue || 0) + (val);
+    val = Number(this.state.params.lots || 0) + val;
     val = Number(val.toFixed(2));
 
-
     if (val < currentShowSymbol?.symbol_display?.min_lots) {
-      return
+      return;
     }
 
     this.setState({
-      lotsValue: val
-    })
-  }
-
-  onFieldChanged = (change, field) => {
-    const {
-      currentSymbol
-    } = this.props.market;
-    const limit = currentSymbol?.symbol_display?.decimals_place ?? 1;
-
-    let fieldValue = this.state[field];
-
-    if (!fieldValue) {
-      if (field == 'lossValue') {
-        fieldValue = +currentSymbol.sell + change;
-      } else {
-        fieldValue = +currentSymbol.buy + change;
-      }
-    } else {
-      fieldValue += change;
-    }
-
-    fieldValue = +(fieldValue).toFixed(limit);
-
-    this.setState({
-      [field]: fieldValue,
+      params: {
+        ...params,
+        lots: val,
+      },
     });
-  }
+  };
 
   onTradeListPageRefresh = async () => {
-    const res = await this.$api.trade.getTradeInfo();
+    const { currentTradeTab } = this.props;
+    let resTradeList;
+    const res = await this.props.common.$api.trade.getTradeInfo();
     let tradeInfo = {
       balance: res.data.balance,
       // equity: 1014404.86, // 净值
@@ -585,25 +447,35 @@ export default class extends BaseReact {
       // free_margin: 1014399.22, // 可用预付款
       // margin_level: 18017848.22, // 预付款比例
     };
-    const res2 = await Promise.all([
-      this.$api.trade.getTradeList({
+    if (currentTradeTab === "持仓") {
+      resTradeList = await this.props.common.$api.trade.getTradeList({
         params: {
           status: "in_transaction",
         },
-      }),
-      this.$api.trade.getTradeList({
+      });
+
+      this.props.trade.setTradeList(resTradeList.data);
+    }
+
+    if (currentTradeTab === "挂单") {
+      resTradeList = await this.props.common.$api.trade.getTradeList({
         params: {
           status: "pending",
         },
-      }),
-    ]);
+      });
 
-    const list = res2.map((item) => item.data);
-    this.props.trade.setTradeList(list[0]);
-    this.props.trade.setTradeList(list[1], "future");
+      this.props.trade.setTradeList(resTradeList.data, "future");
+    }
+
+    if (currentTradeTab === "历史") {
+      resTradeList = await this.$api.trade.getFinishTradeList({});
+
+      this.props.trade.setTradeList(resTradeList.data.results, "finish");
+      this.props.trade.setFinishTradeInfo(resTradeList.data.total_data);
+    }
 
     this.updateTradeInfo(tradeInfo);
-  }
+  };
 
   updateTradeInfo = (tradeInfo) => {
     let payload = {};
@@ -619,6 +491,7 @@ export default class extends BaseReact {
         margin: tradeInfo.margin,
       };
     }
+    payload.profit = tradeList.reduce((acc, cur) => acc + cur.profit, 0);
     payload.equity =
       tradeList.reduce((acc, cur) => acc + cur.profit, 0) + payload.balance;
     payload.free_margin = payload.equity - payload.margin;
@@ -627,395 +500,1295 @@ export default class extends BaseReact {
     setTradeInfo(payload);
   };
 
-
-  render() {
+  onFieldChanged = (change, field) => {
+    const { currentSymbol } = this.props.market;
+    const { params, stockParams } = this.state;
+    const { action } = stockParams;
+    const limit = currentSymbol?.symbol_display?.decimals_place ?? 1;
     const {
-      id,
-      mode,
-      market: {
-        currentSymbol,
-        currentShowSymbol,
+      take_profit_point,
+      stop_loss_point,
+    } = currentSymbol?.symbol_display ?? {
+      take_profit_point: 0,
+      stop_loss_point: 0,
+    };
+
+    let fieldValue = this.state.params[field];
+    let type = "";
+    let originValue = 0;
+    let valueStep = 0;
+
+    if (field == "stop_loss") {
+      type = action === 1 ? "low" : "high";
+      valueStep = +currentSymbol.sell * stop_loss_point * 0.001;
+      originValue = currentSymbol.buy;
+    } else if (field == "take_profit") {
+      type = action === 0 ? "low" : "high";
+      valueStep = currentSymbol.buy * take_profit_point * 0.001;
+      originValue = currentSymbol.buy;
+    } else {
+      fieldValue = +currentSymbol.buy + change;
+    }
+
+    if (!fieldValue) {
+      fieldValue = this.setPointLimit(type, originValue, valueStep);
+    } else {
+      fieldValue += change;
+    }
+
+    fieldValue = +this.checkPointLimit(type, originValue, fieldValue).toFixed(
+      limit
+    ); //  +fieldValue;
+
+    this.setState({
+      params: {
+        ...params,
+        [field]: fieldValue,
       },
-      trade: {
-        currentTrade,
+    });
+  };
+
+  onFundsChanged = (value, change, field) => {
+    const { stockParams, params } = this.state;
+    const { leverage } = stockParams;
+    const { currentSymbol } = this.props.market;
+    const { product_details, symbol_display } = currentSymbol;
+    const { contract_size } = symbol_display;
+    const { sell } = product_details ?? { sell: 0 };
+    let fieldValue = value || stockParams[field];
+
+    if (change !== null) {
+      if (!utils.isEmpty(fieldValue)) {
+        fieldValue += change;
+      } else {
+        fieldValue = 10000;
       }
-    } = this.props;
+    }
+
+    const { lots, trading_volume, totalFunds } = this.getTradingVolumeInfo(
+      fieldValue,
+      leverage,
+      sell,
+      contract_size
+    );
+    this.setState({
+      stockParams: {
+        ...stockParams,
+        [field]: fieldValue,
+      },
+      params: {
+        ...params,
+        lots,
+        trading_volume,
+        totalFunds,
+      },
+    });
+  };
+
+  switchLever = (leverage) => {
+    const { stockParams, params } = this.state;
+    const { currentSymbol } = this.props.market;
+    const { product_details, symbol_display } = currentSymbol;
+    const { contract_size } = symbol_display;
+    const { sell } = product_details ?? { sell: 0 };
+    const { margin_value } = stockParams;
+    const { lots, trading_volume, totalFunds } = this.getTradingVolumeInfo(
+      margin_value,
+      leverage,
+      sell,
+      contract_size
+    );
+    this.setState({
+      stockParams: {
+        ...stockParams,
+        leverage: leverage,
+      },
+      params: {
+        ...params,
+        lots,
+        trading_volume,
+        totalFunds,
+      },
+    });
+  };
+
+  switchHoldDays = (days) => {
+    const { stockParams } = this.state;
+    this.setState({
+      stockParams: {
+        ...stockParams,
+        holdDays: days,
+      },
+    });
+  };
+
+  switchStockType = (id) => {
+    const { stockParams } = this.state;
+    this.setState({
+      stockParams: {
+        ...stockParams,
+        action: id,
+      },
+    });
+  };
+
+  switchTradeOptions = (id) => {
+    const { params } = this.state;
+    const { currentSymbol } = this.props.market;
+
+    if (id === 2 || id === 4) {
+      this.setState({
+        params: {
+          ...params,
+          open_price: currentSymbol?.buy,
+          action: id,
+        },
+      });
+    } else if (id === 3 || id === 5) {
+      this.setState({
+        params: {
+          ...params,
+          open_price: currentSymbol?.sell,
+          action: id,
+        },
+      });
+    } else {
+      this.setState({
+        params: {
+          ...params,
+          open_price: undefined,
+          action: id,
+        },
+      });
+    }
+  };
+
+  switchTradeType = (name) => {
+    const { params } = this.state;
+    if (name === "instance") {
+      // this.setState({
+      //   params: {
+      //     ...params,
+      //     action: executeOptions[0].id
+      //   }
+      // })
+      this.switchTradeOptions(executeOptions[0].id);
+    }
+    if (name === "future") {
+      // this.setState({
+      //   params: {
+      //     ...params,
+      //     action: pendingOrderOptions[0].id
+      //   }
+      // })
+      this.switchTradeOptions(pendingOrderOptions[0].id);
+    }
+    this.setState({ tradeType: name });
+  };
+
+  switchTradeDetail = () => {
+    const { moreInfo } = this.state;
+    this.setState({ moreInfo: !moreInfo });
+  };
+
+  onSubmit = async (totalPlatformCurrency) => {
+    const { params, stockParams ,isSubmit } = this.state;
     const {
-      currentTradeType,
-      opened,
-      priceValue,
-      profitValue,
-      lossValue,
-      lotsValue,
+      mode,
+      market: { currentSymbol },
+      trade: { currentTrade, tradeInfo },
+    } = this.props;
+    const { success, error } = Modal;
+    const lots = params.lots;
+
+    if(!isSubmit){
+      this.setState({
+        isSubmit:true
+      });
+    }else{
+      return;
+    }
+
+    try {
+      if (mode == "add") {
+        const decimals_place = currentSymbol?.symbol_display?.decimals_place;
+
+        const payload = {
+          trading_volume: (
+            Number(lots) * Number(currentSymbol?.symbol_display?.contract_size)
+          ).toFixed(decimals_place),
+          lots: lots.toString(),
+          symbol: currentSymbol.id,
+          action: params.action,
+        };
+
+        if (tradeInfo.free_margin - totalPlatformCurrency < 0) {
+          error({
+            title: "提示",
+            className: "trade-modal success-modal",
+            content: "可用预付款不足",
+          });
+          this.setState({
+            isSubmit:false
+          });
+          return;
+        }
+
+        if (stockParams.margin_value) {
+          payload.margin_value = stockParams.margin_value;
+        }
+        if (stockParams.leverage) {
+          payload.leverage = stockParams.leverage;
+        }
+
+        if (params.take_profit !== undefined) {
+          payload.take_profit = params.take_profit;
+        }
+
+        if (params.stop_loss !== undefined) {
+          payload.stop_loss = params.stop_loss;
+        }
+
+        if (params.action == 0) {
+          payload.open_price = currentSymbol?.buy;
+        } else if (params.action == 1) {
+          payload.open_price = currentSymbol?.sell;
+        } else {
+          payload.open_price = params.open_price;
+        }
+
+        if (utils.isEmpty(payload.open_price) || utils.isEmpty(payload.lots)) {
+          console.log("payload:", payload, params);
+          return false;
+        }
+
+        const res = await this.props.common.$api.trade.createTrade(payload);
+        const that = this;
+
+        if (res.status == 201) {
+          success({
+            title: "提示",
+            content: "下单成功",
+            className: "trade-modal success-modal",
+            centered: true,
+            // cancelText: "取消",
+            okText: "确认",
+            onOk() {
+              that.$f7router.back("/trade/", {
+                force: false,
+              });
+            },
+            // onCancel() {
+            // },
+          });
+        } else {
+    
+          error({
+            title: "提示",
+            className: "trade-modal success-modal",
+            content: res.data.message,
+            okText: "确认",
+            onOk() {
+           
+            },
+          });
+          
+          this.setState({
+            isSubmit:false
+          });
+        }
+      } else if (mode === "update") {
+        const payload = params;
+        const res = await this.props.common.$api.trade.updateTrade(
+          currentTrade.order_number,
+          payload
+        );
+        const that = this;
+
+        if (res.status == 200) {
+          const { success } = Modal;
+          success({
+            title: "提示",
+            content: "修改成功",
+            className: "trade-modal success-modal",
+            centered: true,
+            // cancelText: "取消",
+            okText: "确认",
+            onOk() {
+              that.onTradeListPageRefresh();
+              that.$f7router.back("/trade/", {
+                force: false,
+              });
+            },
+            // onCancel() {
+            // },
+          });
+        }
+      } else if (mode === "delete") {
+        const res = await this.props.common.$api.trade.closeTrade(
+          currentTrade.order_number
+        );
+        const that = this;
+
+        if (res.status == 200) {
+          const { success } = Modal;
+          success({
+            title: "提示",
+            content: "平倉成功",
+            className: "trade-modal success-modal",
+            centered: true,
+            // cancelText: "取消",
+            okText: "确认",
+            onOk() {
+              that.onTradeListPageRefresh();
+              that.$f7router.back("/trade/", {
+                force: false,
+              });
+            },
+            // onCancel() {
+            // },
+          });
+        }
+      }
+    } catch (err) {
+      this.$msg.error(err?.response?.data?.message);
+      this.setState({
+        isSubmit:false
+      });
+    }
+  };
+
+  renderStockInput = () => {
+    const { mode, currentTradeTab } = this.props;
+    const { currentTrade } = this.props.trade;
+    const { currentSymbol, currentShowSymbol } = this.props.market;
+    const {
+      open_currency_rate,
+      close_currency_rate,
+      hands_fee_for_sell,
+      hands_fee_for_buy,
+      contract_size,
+      decimals_place,
+      purchase_fee,
+      selling_fee,
+    } = currentSymbol.symbol_display;
+
+    const { sell } = currentSymbol.product_details ?? {
+      sell: 0,
+    };
+    const { getKeyConfig } = this.props.common;
+    const refCurrency = getKeyConfig("platform_currency");
+    const {
+      tradeType,
+      params,
+      stockParams,
+      positionTypeMap,
+      leverageMap,
+      isSubmit
     } = this.state;
-    const stepLevel = currentSymbol?.symbol_display?.decimals_place ? (
-      1 / 10 ** (currentSymbol?.symbol_display?.decimals_place)
-    ) : 0.001;
-    // debugger;
-    const actionSwitch = currentSymbol?.symbol_display?.action;
-    const useBuyBtn = actionSwitch?.includes('0');
-    const useSellBtn = actionSwitch?.includes('1');
+    const { leverage, margin_value, rules, action } = stockParams;
+    const { totalFunds, trading_volume, lots } = params;
 
+    const {
+      calculate_for_buy_hands_fee,
+      calculate_for_buy_stock_fee,
+      calculate_for_sell_hands_fee,
+      calculate_for_sell_stock_fee,
+    } = rules;
+    const calcObj = {
+      trading_volume,
+      margin_value,
+      open_currency_rate,
+      close_currency_rate,
+      hands_fee_for_sell,
+      hands_fee_for_buy,
+      open_price: sell,
+      purchase_fee,
+      selling_fee,
+    };
+    const handFee = this.calculateForValue(
+      calculate_for_buy_hands_fee,
+      calcObj,
+      decimals_place
+    );
+
+    const calculate_stock_fee =
+      action === 0 ? calculate_for_buy_stock_fee : calculate_for_sell_stock_fee;
+    const stockFee = this.calculateForValue(
+      calculate_stock_fee,
+      calcObj,
+      decimals_place
+    );
+
+    const stockTypes = this.getNowStockTypeOptions(stockParams.holdDays);
+
+    const stepLevel = currentSymbol?.symbol_display
+      ? (1 / 10) * decimals_place
+      : 0.001;
+
+    const totalPlatformCurrency = math
+      .chain(margin_value)
+      .multiply(open_currency_rate)
+      .add(handFee)
+      .done();
+
+      console.log(isSubmit)
     return (
-      <Page noToolbar name="trade-detail" className={'trade-detail'} onPageBeforeIn={pageData => {
-      }}>
-        <Navbar>
-          <NavLeft>
-            <Link onClick={() => {
-              this.wsConnect.close();
-              this.$f7router.back({ force: false })
-            }}>
-              <Icon color={'white'} f7={'chevron_left'} size={r(18)}></Icon>
-            </Link>
-          </NavLeft>
-          <NavTitle>
-            <span style={{ marginRight: r(8) }} onClick={
-              () => {
-                if (mode == 'add') {
-                  // this.wsConnect.close();
-                  this.$f7router.navigate('/products/', {
-                    props: {
-                      selectedId: id,
-                      mode,
-                    }
-                  });
-                }
-
-              }
-            }>
-              {currentSymbol?.symbol_display?.name}
-            </span>
-            {
-              mode == 'add' && <Icon color={'white'} f7={'arrowtriangle_down_fill'} size={r(10)}></Icon>
-            }
-          </NavTitle>
-        </Navbar>
-        {
-          mode == 'add' && (
-            <section>
-              <div className={`trade-detail-title ${currentTradeType.color}`} onClick={this.toggleTypePanel}>
-                {currentTradeType.name}
-              </div>
-              <div className={`trade-detail-type ${opened ? 'active' : ''}`}>
-                {
-                  tradeTypeOptions.map((item) => {
+      <>
+        <div className="trade-detail-input-container">
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">类型</div>
+            <div className="trade-detail-input-item-btn-group">
+              {mode === "add" && (
+                <>
+                  {positionTypeMap.map((item) => {
                     return (
-                      <div className={`
-                      trade-detail-type-item ${item.color}
-                      ${
-                        ((item.id == 2 || item.id == 4) && !useBuyBtn)
-                          ? 'bg-grey'
-                          : ((item.id == 3 || item.id == 5) && !useSellBtn)
-                            ? 'bg-grey'
-                            : ''
+                      <div
+                        onClick={() => {
+                          this.switchHoldDays(item);
+                        }}
+                        className={`trade-detail-input-item-btn ${
+                          stockParams.holdDays === item && "btn-active"
+                        }`}
+                      >
+                        {item}
+                      </div>
+                    );
+                  })}
+                  {/* {<div
+                    onClick={() => { this.switchHoldDays("T+0") }}
+                    className={`trade-detail-input-item-btn ${stockParams.holdDays === "T+0" && 'btn-active'}`}>
+                    {"T+0"}
+                  </div>}
+                  <div
+                    onClick={() => { this.switchHoldDays("T+1") }}
+                    className={`trade-detail-input-item-btn ${stockParams.holdDays === "T+1" && 'btn-active'}`}>
+                    {"T+1"}
+                  </div> */}
+                </>
+              )}
+              {(mode === "update" || mode === "delete") && (
+                <div className={`trade-detail-input-item-text`}>
+                  {stockParams.holdDays}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {mode === "add" && (
+            <div className="trade-detail-input-item">
+              <div className="trade-detail-input-item-title">类型</div>
+              <div className="trade-detail-input-item-btn-group">
+                {stockTypes.map((item) => {
+                  return (
+                    <div
+                      onClick={() => {
+                        this.switchStockType(item.id);
+                      }}
+                      className={`trade-detail-input-item-btn ${
+                        (stockParams.action === item.id ||
+                          stockTypes.length === 1) &&
+                        "btn-active"
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {mode !== "add" && (
+            <div className="trade-detail-input-item">
+              <div className="trade-detail-input-item-title">方向</div>
+              <div className="trade-detail-input-item-btn-group">
+                <div className={`trade-detail-input-item-text`}>
+                  {tradeActions[Number(stockParams.action)]}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* {mode !== 'add' && <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">类型</div>
+            <div className="trade-detail-input-item-btn-group">
+              {currentTradeTab === '持仓' && <div
+                onClick={() => { this.switchExecuteMotion("delete") }}
+                className={`trade-detail-input-item-btn ${executeMotion === "delete" && 'btn-active'}`}>
+                {"平仓"}
+              </div>}
+              <div
+                onClick={() => { this.switchExecuteMotion("update") }}
+                className={`trade-detail-input-item-btn ${executeMotion === "update" && 'btn-active'}`}>
+                {"修改"}
+              </div>
+            </div>
+          </div>} */}
+
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">价格</div>
+            <div className="trade-detail-input-item-btn-group">
+              <div
+                className="trade-detail-input-item-less-btn"
+                onClick={() => {
+                  this.onFundsChanged(
+                    null,
+                    -stockParams.unitFunds,
+                    "margin_value"
+                  );
+                }}
+              >
+                －
+              </div>
+              <div className="trade-detail-input-item-input">
+                <Input
+                  type="number"
+                  min={100}
+                  value={stockParams.margin_value}
+                  onChange={(evt) => {
+                    this.onFundsChanged(
+                      Number(evt.target.value),
+                      null,
+                      "margin_value"
+                    );
+                  }}
+                />
+              </div>
+              <div
+                className="trade-detail-input-item-add-btn"
+                onClick={() => {
+                  this.onFundsChanged(
+                    null,
+                    stockParams.unitFunds,
+                    "margin_value"
+                  );
+                }}
+              >
+                ＋
+              </div>
+            </div>
+          </div>
+
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">槓桿倍數</div>
+            <div className="trade-detail-input-item-btn-group">
+              {mode === "add" && (
+                <>
+                  {leverageMap.map((item) => {
+                    return (
+                      <div
+                        onClick={() => {
+                          this.switchLever(item);
+                        }}
+                        className={`trade-detail-input-item-btn-small ${
+                          stockParams.leverage === item && "btn-active"
+                        }`}
+                      >
+                        {item}
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+              {(mode === "update" || mode === "delete") && (
+                <div className={`trade-detail-input-item-text`}>
+                  {leverage}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">操盤資金</div>
+            <div className="trade-detail-input-item-btn-group">
+              <div className={`trade-detail-input-item-text`}>{totalFunds}</div>
+            </div>
+          </div>
+
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">買入數量</div>
+            <div className="trade-detail-input-item-btn-group">
+              <div className={`trade-detail-input-item-text`}>
+                {trading_volume}
+              </div>
+            </div>
+          </div>
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">止盈</div>
+            <div className="trade-detail-input-item-btn-group">
+              {mode !== "delete" ? (
+                <>
+                  <div
+                    className="trade-detail-input-item-less-btn"
+                    onClick={() => {
+                      this.onFieldChanged(-stepLevel, "take_profit");
+                    }}
+                  >
+                    －
+                  </div>
+                  <div className="trade-detail-input-item-input">
+                    <Input
+                      type="number"
+                      min={0.01}
+                      placeholder={"未设置"}
+                      value={params.take_profit || undefined}
+                      onChange={(evt) => {
+                        this.setState({
+                          params: {
+                            ...params,
+                            take_profit: Number(evt.target.value),
+                          },
+                        });
+                      }}
+                    />
+                  </div>
+                  <div
+                    className="trade-detail-input-item-add-btn"
+                    onClick={() => {
+                      this.onFieldChanged(stepLevel, "take_profit");
+                    }}
+                  >
+                    ＋
+                  </div>
+                </>
+              ) : (
+                <div className={`trade-detail-input-item-text`}>
+                  {params.stop_loss}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">止损</div>
+            <div className="trade-detail-input-item-btn-group">
+              {mode !== "delete" ? (
+                <>
+                  <div
+                    className="trade-detail-input-item-less-btn"
+                    onClick={() => {
+                      this.onFieldChanged(-stepLevel, "stop_loss");
+                    }}
+                  >
+                    －
+                  </div>
+                  <div className="trade-detail-input-item-input">
+                    <Input
+                      type="number"
+                      min={0.01}
+                      placeholder={"未设置"}
+                      value={params.stop_loss || undefined}
+                      onChange={(evt) => {
+                        this.setState({
+                          params: {
+                            ...params,
+                            stop_loss: Number(evt.target.value),
+                          },
+                        });
+                      }}
+                    />
+                  </div>
+                  <div
+                    className="trade-detail-input-item-add-btn"
+                    onClick={() => {
+                      this.onFieldChanged(stepLevel, "stop_loss");
+                    }}
+                  >
+                    ＋
+                  </div>
+                </>
+              ) : (
+                <div className={`trade-detail-input-item-text`}>
+                  {params.stop_loss}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        <div
+          className={`trade-detail-submit-btn 
+                        ${
+                          (tradeType !== "instance" &&
+                            utils.isEmpty(params.open_price)) ||
+                          utils.isEmpty(params.lots) || isSubmit
+                            ? "reject"
+                            : ""
                         }
-                      `} style={{
-                          display: currentTradeType?.id == item.id ? 'none' : 'block',
+                        ${mode === "add" ? "add" : "modify"}`}
+          style={{ marginBottom: "20px" }}
+          onClick={() => {
+            this.onSubmit(totalPlatformCurrency);
+          }}
+        >
+          {mode === "add" ? "下单" : mode === "update" ? "修改" : "平仓"}
+        </div>
 
-                        }} key={item.id} onClick={() => {
-                          if ((item.id == 2 || item.id == 4) && !useBuyBtn) return;
-                          if ((item.id == 3 || item.id == 5) && !useSellBtn) return;
+        <div className="trade-detail-remarks-container">
+          <div className="trade-detail-remarks-item">
+            <div className="trade-detail-remarks-item-title">服務費</div>
+            <div className="trade-detail-remarks-item-content">
+              {refCurrency}${handFee}(手續費)
+            </div>
+          </div>
+          <div className="trade-detail-remarks-item">
+            <div className="trade-detail-remarks-item-title">遞延費</div>
+            <div className="trade-detail-remarks-item-content">
+              ${stockFee}({refCurrency}/交易日)
+            </div>
+          </div>
+          <div className="trade-detail-remarks-item">
+            <div className="trade-detail-remarks-item-title">參考匯率</div>
+            <div className="trade-detail-remarks-item-content">
+              ${open_currency_rate}
+            </div>
+          </div>
+          <div className="trade-detail-remarks-item">
+            <div className="trade-detail-remarks-item-title">總計</div>
+            <div className="trade-detail-remarks-item-content">
+              {refCurrency}${`${totalPlatformCurrency}`}元
+            </div>
+          </div>
+          <div className="trade-detail-remarks-placeholder">
+            *總計=操作資金+服務費
+          </div>
+        </div>
+      </>
+    );
+  };
 
-                          this.onTradeTypeChanged(item);
-                        }}>
+  renderForexInput = () => {
+    const { mode, currentTradeTab } = this.props;
+    const { currentTrade } = this.props.trade;
+    const { currentSymbol, currentShowSymbol } = this.props.market;
+    const { tradeType, params } = this.state;
+    const stepLevel = currentSymbol?.symbol_display?.decimals_place
+      ? 1 / 10 ** currentSymbol?.symbol_display?.decimals_place
+      : 0.001;
+    return (
+      <>
+        <div className="trade-detail-input-container">
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">类型</div>
+            <div className="trade-detail-input-item-btn-group">
+              {mode === "add" &&
+                tradeTypeOptions.map((item) => {
+                  return (
+                    <div
+                      className={`trade-detail-input-item-btn ${
+                        tradeType === item.id && "btn-active"
+                      }`}
+                      onClick={() => {
+                        this.switchTradeType(item.id);
+                      }}
+                    >
+                      {item.name}
+                    </div>
+                  );
+                })}
+              {(mode === "update" || mode === "delete") && (
+                <div className={`trade-detail-input-item-text`}>
+                  {Number(currentTrade.action) === 0 ||
+                  Number(currentTrade.action) === 1
+                    ? "立即执行"
+                    : "挂单"}
+                </div>
+              )}
+              {/* <div className="trade-detail-input-item-btn">立即执行</div>
+          <div className="trade-detail-input-item-btn">挂单</div> */}
+            </div>
+          </div>
+
+          {mode !== "add" && (
+            <div className="trade-detail-input-item">
+              <div className="trade-detail-input-item-title">方向</div>
+              <div className="trade-detail-input-item-btn-group">
+                <div className={`trade-detail-input-item-text`}>
+                  {tradeActions[Number(currentTrade.action)]}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {mode === "add" && (
+            <div className="trade-detail-input-item">
+              <div className="trade-detail-input-item-title">类型</div>
+              <div className="trade-detail-input-item-btn-group">
+                {tradeType === "future" &&
+                  pendingOrderOptions.map((item) => {
+                    return (
+                      <div
+                        onClick={() => {
+                          this.switchTradeOptions(item.id);
+                        }}
+                        className={`trade-detail-input-item-btn ${
+                          params.action === item.id && "btn-active"
+                        }`}
+                      >
                         {item.name}
                       </div>
-                    )
-                  })
-                }
+                    );
+                  })}
+                {tradeType === "instance" &&
+                  executeOptions.map((item) => {
+                    return (
+                      <div
+                        onClick={() => {
+                          this.switchTradeOptions(item.id);
+                        }}
+                        className={`trade-detail-input-item-btn ${
+                          params.action === item.id && "btn-active"
+                        }`}
+                      >
+                        {item.name}
+                      </div>
+                    );
+                  })}
               </div>
-            </section>
-          )
-        }
-        {
-          mode == 'add' && (
-            <Row bgColor={'white'} noGap className={'trade-detail-lots'}>
-              <Col width={'20'}>
-                <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(0 - currentShowSymbol?.symbol_display?.lots_step * 10);
-                }}>{-currentShowSymbol?.symbol_display?.lots_step * 10 || '-'}</span>
-              </Col>
-              <Col width={'20'}>
-                <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(0 - currentShowSymbol?.symbol_display?.lots_step);
-                }}>{-currentShowSymbol?.symbol_display?.lots_step || '-'}</span>
-              </Col>
-              <Col width={'20'}>
-                <Input
-                  type="number"
-                  min={currentShowSymbol?.symbol_display?.min_lots}
-                  value={lotsValue}
-                  color={'black'}
-                  onChange={(evt) => {
+            </div>
+          )}
 
-                    if (evt.target.value < currentShowSymbol?.min_lots) return;
-
-                    this.setState({
-                      lotsValue: evt.target.value,
-                    });
-                  }}
-                />
-              </Col>
-              <Col width={'20'}>
-                <span className={'blue'}
+          {(currentTradeTab === "挂单" || tradeType === "future") && (
+            <div className="trade-detail-input-item">
+              <div className="trade-detail-input-item-title">价格</div>
+              <div className="trade-detail-input-item-btn-group">
+                <div
+                  className="trade-detail-input-item-less-btn"
                   onClick={() => {
-                    this.onLotsChanged(currentShowSymbol?.symbol_display?.lots_step);
+                    this.onFieldChanged(-stepLevel, "open_price");
                   }}
-                >{currentShowSymbol?.symbol_display?.lots_step && '+' + currentShowSymbol?.symbol_display?.lots_step || '-'}</span>
-              </Col>
-              <Col width={'20'}>
-                <span className={'blue'} onClick={() => {
-                  this.onLotsChanged(currentShowSymbol?.symbol_display?.lots_step * 10);
-                }}>{currentShowSymbol?.symbol_display?.lots_step && '+' + currentShowSymbol?.symbol_display?.lots_step * 10 || '-'}</span>
-              </Col>
-            </Row>
-          )
-        }
-        <List simple-list>
-          {
-            (mode == 'update' || mode == 'close') && currentTrade != null && (
-              <ListItem>
-                <div className={'trade-detail-info'}>
-                  <span>
-                    {
-                      mode == 'update' ? '修改'
-                        : mode == 'close'
-                          ? currentTradeType?.id == 1
-                            ? '平仓'
-                            : '删除'
-                          : ''
-                    }：
-                  </span>
-                  <span>
-                    #{currentTrade.order_number}
-                  </span>
-                  <span>
-                    {tradeActionMap[currentTrade.action]}
-                  </span>
-                  <span>
-                    {currentTrade.lots}
-                  </span>
+                >
+                  －
                 </div>
-              </ListItem>
-            )
-          }
-          <ListItem title='价格' style={{
-            display: currentTradeType?.id != 1 ? 'block' : 'none',
-          }}>
-            <Row className={'trade-detail-stepper align-items-center'}>
-              <Col width={'20'} onClick={() => {
-                this.onFieldChanged(-stepLevel, 'priceValue');
-              }}>
-                <Icon f7={'minus'} size={r(22)}></Icon>
-              </Col>
-              <Col width={'60'}>
-                <Input
-                  type="number"
-                  min={0.01}
-                  value={priceValue}
-                  onChange={(evt) => {
-                    this.setState({
-                      priceValue: evt.target.value,
-                    });
+                <div className="trade-detail-input-item-input">
+                  <Input
+                    type="number"
+                    min={0.01}
+                    value={params.open_price}
+                    onChange={(evt) => {
+                      this.setState({
+                        params: {
+                          ...params,
+                          open_price: evt.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+                <div
+                  className="trade-detail-input-item-add-btn"
+                  onClick={() => {
+                    this.onFieldChanged(stepLevel, "open_price");
                   }}
-                />
-              </Col>
-              <Col width={'20'} onClick={() => {
-                this.onFieldChanged(stepLevel, 'priceValue');
-              }}>
-                <Icon f7={'plus'} size={r(22)}></Icon>
-              </Col>
-            </Row>
-          </ListItem>
-          <ListItem title="止损">
-            <Row className={'trade-detail-stepper align-items-center'}>
-              <Col width={'20'} onClick={() => {
-                this.onFieldChanged(-stepLevel, 'lossValue');
-              }}>
-                <Icon f7={'minus'} size={r(22)}></Icon>
-              </Col>
-              <Col width={'60'}>
-                <Input
-                  type="number"
-                  min={0.01}
-                  placeholder={'未设置'}
-                  value={lossValue || undefined}
-                  onChange={(evt) => {
-                    this.setState({
-                      lossValue: evt.target.value,
-                    });
+                >
+                  ＋
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">数量</div>
+            {mode !== "delete" && currentTradeTab !== "持仓" ? (
+              <div className="trade-detail-input-item-btn-group">
+                <div
+                  className="trade-detail-input-item-less-btn"
+                  onClick={() => {
+                    this.onLotsChanged(
+                      0 - currentShowSymbol?.symbol_display?.lots_step
+                    );
                   }}
-                />
-              </Col>
-              <Col width={'20'} onClick={() => {
-                this.onFieldChanged(stepLevel, 'lossValue');
-              }}>
-                <Icon f7={'plus'} size={r(22)}></Icon>
-              </Col>
-            </Row>
-          </ListItem>
-          <ListItem title="止盈">
-            <Row className={'trade-detail-stepper align-items-center'}>
-              <Col width={'20'} onClick={() => {
-                this.onFieldChanged(-stepLevel, 'profitValue');
-              }}>
-                <Icon f7={'minus'} size={r(22)}></Icon>
-              </Col>
-              <Col width={'60'}>
-                <Input
-                  type="number"
-                  min={0.01}
-                  placeholder={'未设置'}
-                  value={profitValue || undefined}
-                  onChange={(evt) => {
-                    this.setState({
-                      profitValue: evt.target.value,
-                    });
+                >
+                  －
+                </div>
+                <div className="trade-detail-input-item-input">
+                  <Input
+                    type="number"
+                    min={0.01}
+                    placeholder={"未设置"}
+                    value={params.lots || undefined}
+                    onChange={(evt) => {
+                      if (
+                        evt.target.value <
+                        currentShowSymbol?.symbol_display?.min_lots
+                      )
+                        return;
+                      this.setState({
+                        params: {
+                          ...params,
+                          lots: evt.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+                <div
+                  className="trade-detail-input-item-add-btn"
+                  onClick={() => {
+                    this.onLotsChanged(
+                      currentShowSymbol?.symbol_display?.lots_step
+                    );
                   }}
-                />
-              </Col>
-              <Col width={'20'} onClick={() => {
-                this.onFieldChanged(stepLevel, 'profitValue');
-              }}>
-                <Icon f7={'plus'} size={r(22)}></Icon>
-              </Col>
-            </Row>
-          </ListItem>
-        </List>
-        <Row noGap className={'trade-detail-price'}>
-          <Col width={'50'} className={'p-down'}>
-            {currentSymbol?.sell}
-            <strong></strong>
+                >
+                  ＋
+                </div>
+              </div>
+            ) : (
+              <div className="trade-detail-input-item-btn-group">
+                <div className={`trade-detail-input-item-text`}>
+                  {params.lots}
+                </div>
+              </div>
+            )}
+          </div>
 
-          </Col>
-          <Col width={'50'} className={`p-up`}>
-            {currentSymbol?.buy}
-            <strong></strong>
-          </Col>
-        </Row>
-        {
-          mode == 'add' && (
-            <Row noGap className={'trade-detail-actions'}>
-              <Col onClick={() => {
-                if (!useSellBtn) return;
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">止盈</div>
+            <div className="trade-detail-input-item-btn-group">
+              {mode !== "delete" ? (
+                <>
+                  <div
+                    className="trade-detail-input-item-less-btn"
+                    onClick={() => {
+                      this.onFieldChanged(-stepLevel, "take_profit");
+                    }}
+                  >
+                    －
+                  </div>
+                  <div className="trade-detail-input-item-input">
+                    <Input
+                      type="number"
+                      min={0.01}
+                      placeholder={"未设置"}
+                      value={params.take_profit || undefined}
+                      onChange={(evt) => {
+                        this.setState({
+                          params: {
+                            ...params,
+                            take_profit: Number(evt.target.value),
+                          },
+                        });
+                      }}
+                    />
+                  </div>
+                  <div
+                    className="trade-detail-input-item-add-btn"
+                    onClick={() => {
+                      this.onFieldChanged(stepLevel, "take_profit");
+                    }}
+                  >
+                    ＋
+                  </div>
+                </>
+              ) : (
+                <div className={`trade-detail-input-item-text`}>
+                  {params.stop_loss}
+                </div>
+              )}
+            </div>
+          </div>
 
-                this.onTrade('sell');
-              }} width={'50'} className={`bg-down trade-detail-action ${!useSellBtn ? 'bg-grey' : ''}`}>
-                <span>
-                  Sell
-              </span>
-              </Col>
-              <Col
-                onClick={() => {
-                  if (!useBuyBtn) return;
-
-                  this.onTrade('buy');
-                }}
-                width={'50'}
-                className={`bg-up trade-detail-action ${!useBuyBtn ? 'bg-grey' : ''}`}>
-                <span>
-                  Buy
-               </span>
-              </Col>
-            </Row>
-          )
-        }
-        {
-          // 非挂单交易的修改
-          mode == 'update' && currentTradeType.id == 1 && (
+          <div className="trade-detail-input-item">
+            <div className="trade-detail-input-item-title">止损</div>
+            <div className="trade-detail-input-item-btn-group">
+              {mode !== "delete" ? (
+                <>
+                  <div
+                    className="trade-detail-input-item-less-btn"
+                    onClick={() => {
+                      this.onFieldChanged(-stepLevel, "stop_loss");
+                    }}
+                  >
+                    －
+                  </div>
+                  <div className="trade-detail-input-item-input">
+                    <Input
+                      type="number"
+                      min={0.01}
+                      placeholder={"未设置"}
+                      value={params.stop_loss || undefined}
+                      onChange={(evt) => {
+                        this.setState({
+                          params: {
+                            ...params,
+                            stop_loss: Number(evt.target.value),
+                          },
+                        });
+                      }}
+                    />
+                  </div>
+                  <div
+                    className="trade-detail-input-item-add-btn"
+                    onClick={() => {
+                      this.onFieldChanged(stepLevel, "stop_loss");
+                    }}
+                  >
+                    ＋
+                  </div>
+                </>
+              ) : (
+                <div className={`trade-detail-input-item-text`}>
+                  {params.stop_loss}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        <div
+          className={`trade-detail-submit-btn 
+                        ${
+                          (tradeType !== "instance" &&
+                            utils.isEmpty(params.open_price)) ||
+                          utils.isEmpty(params.lots)
+                            ? "reject"
+                            : ""
+                        }
+                        ${mode === "add" ? "add" : "modify"}`}
+          style={{ marginBottom: "30px" }}
+          onClick={this.onSubmit}
+        >
+          {mode === "add" ? "下单" : mode === "update" ? "修改" : "平仓"}
+        </div>
+      </>
+    );
+  };
+  renderFundContent = () => {
+    // 渲染盘口资讯
+    const { fund, tabDataLoading } = this.state;
+    const { currentSymbol } = this.props.market;
+    // console.log("this.state.fund :>> ", this.state.fund);
+    // console.log("this.props.market :>> ", this.props.market);
+    const { type_display: currentSymbolType } =
+      currentSymbol?.symbol_display ?? {};
+    // console.log("currentSymbolType :>> ", currentSymbolType);
+    return (
+      <div className="fund-content">
+        <div>主力、散户资金流向</div>
+        {utils.isEmpty(fund) && (
+          <div>
+            <span>此产品无资金流向显示</span>
+          </div>
+        )}
+        {!utils.isEmpty(fund) && (
+          <>
+            <div>
+              <span></span>
+              <span>主力买入</span>
+              <span>主力卖出</span>
+              <span>散户买入</span>
+              <span>散户卖出</span>
+            </div>
+            <div>
+              <span>金额(元)</span>
+              <span>{Math.round(Number(fund.major_in_amount) / 10000)}</span>
+              <span>{Math.round(Number(fund.major_out_amount) / 10000)}</span>
+              <span>{Math.round(Number(fund.retail_in_amount) / 10000)}</span>
+              <span>{Math.round(Number(fund.retail_out_amount) / 10000)}</span>
+            </div>
+          </>
+        )}
+        {tabDataLoading && this.renderTabDataLoadingSpinner()}
+      </div>
+    );
+  };
+  renderNewsContent = () => {
+    // 渲染新闻资讯
+    const { newsList, tabDataLoading } = this.state;
+    return (
+      <div className="news-content">
+        {utils.isEmpty(newsList) && (
+          <div className="no-news">此产品无新聞显示</div>
+        )}
+        {!utils.isEmpty(newsList) &&
+          newsList.map((item) => (
             <div
-              className={'trade-detail-actions update bg-down'}
+              className="news-content-item"
               onClick={() => {
-                this.onTrade(tradeActionMap[currentTrade.action]);
+                this.$f7router.navigate("/news/detail", {
+                  props: {
+                    newsDetail: item,
+                  },
+                });
               }}
             >
-              修改
+              <div className="news-content-item-text">
+                <p>{item.title}</p>
+                <p>
+                  {moment(item.pub_time * 1000).format("YYYY/MM/DD HH:mm:ss")}
+                </p>
+              </div>
+              {!utils.isEmpty(item.thumbnail) && (
+                <div className="news-content-item-img">
+                  <img src={item.thumbnail} alt="thumbmail" />
+                </div>
+              )}
             </div>
-          )
-        }
-        {
-          // 非挂单交易的修改
-          mode == 'update' && currentTradeType.id != 1 && (
-            <Row noGap className={'trade-detail-actions'}>
-              <Col onClick={() => {
-                this.onTrade(tradeActionMap[currentTrade.action]);
-              }} width={'50'} className={'bg-deep-grey trade-detail-action'}>
+          ))}
+        {tabDataLoading && this.renderTabDataLoadingSpinner()}
+      </div>
+    );
+  };
+  renderTabDataLoadingSpinner = () => {
+    return (
+      <div className="spin-container">
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+      </div>
+    );
+  };
+  render() {
+    const { mode, common } = this.props;
+    const quoted_price = common.getKeyConfig("quoted_price");
+
+    const { currentSymbol } = this.props.market;
+
+    const { moreInfo, tradeType, params, tabDataLoading } = this.state;
+    return (
+      <Page noToolbar>
+        <Navbar>
+          <NavLeft>
+            <Link back>
+              <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
+            </Link>
+          </NavLeft>
+          <NavTitle>{currentSymbol?.symbol_display?.name}</NavTitle>
+          <NavRight></NavRight>
+        </Navbar>
+        <div className="trade-detail-stock-container">
+          <div className="now-stock">
+            {currentSymbol?.product_details?.sell}
+          </div>
+          <div className="spread-stock">
+            <div>
+              <p>{currentSymbol?.product_details?.change}</p>
+              <p>{`${(
+                (currentSymbol?.product_details?.change /
+                  currentSymbol?.product_details?.sell) *
+                100
+              ).toFixed(2)}%`}</p>
+            </div>
+          </div>
+          <div className="detail-btn" onClick={this.switchTradeDetail}>
+            {moreInfo ? "收起" : "查看详情"}
+          </div>
+        </div>
+        <div className="trade-detail-price">
+          <div className="price-item">
+            <span className="price-item-title">卖出</span>
+            <span className="price-item-content p-down">
+              {currentSymbol?.sell}
+            </span>
+          </div>
+          <div className="price-item">
+            <span className="price-item-title">买入</span>
+            <span className="price-item-content p-up">
+              {currentSymbol?.buy}
+            </span>
+          </div>
+        </div>
+
+        <div
+          className={`trade-detail-more-info-container ${
+            moreInfo ? "show" : ""
+          }`}
+        >
+          <div className="trade-detail-more-info-contract">
+            <div className="trade-detail-more-info-contract-title">
+              合约资讯
+            </div>
+            <div className="trade-detail-more-info-contract-content">
+              <div>
+                <span>小数点位</span>
                 <span>
-                  修改
-              </span>
-              </Col>
-              <Col
-                onClick={async () => {
-                  try {
-                    const res = await this.$api.trade.closeTrade(currentTrade.order_number);
-
-                    if (res.status == 200) {
-                      this.$f7.toast.show({
-                        text: '删除成功',
-                        position: 'center',
-                        closeTimeout: 2000,
-                      });
-                      this.wsConnect.close();
-                      this.onTradeListPageRefresh();
-                      this.$f7router.back('/trade/', {
-                        force: false,
-                      });
-                    }
-                  } catch (e) {
-                    this.$f7.toast.show({
-                      text: e.response.data.message,
-                      position: 'center',
-                      closeTimeout: 2000,
-                    });
-                  }
-
-
-                }}
-                width={'50'}
-                className={`bg-down trade-detail-action`}>
+                  {String(currentSymbol?.symbol_display?.decimals_place)}
+                </span>
+              </div>
+              <div>
+                <span>合约大小</span>
                 <span>
-                  删除
-               </span>
-              </Col>
-            </Row>
-          )
-        }
-        {
-          // 非挂单交易的修改
-          mode == 'close' && (
-            <div
-              className={'trade-detail-actions update bg-orange'}
-              onClick={async () => {
-                try {
-                  const res = await this.$api.trade.closeTrade(currentTrade.order_number);
-                  if (res.status == 200) {
-                    this.$f7.toast.show({
-                      text: `${currentTradeType.id == 1 ? '平仓' : '删除'}成功`,
-                      position: 'center',
-                      closeTimeout: 2000,
-                    });
-                    this.wsConnect.close();
-                    this.onTradeListPageRefresh();
-                    this.$f7router.back('/trade/', {
-                      force: false,
-                    });
-                  }
-                } catch (e) {
-                  this.$f7.toast.show({
-                    text: e.response.data.message,
-                    position: 'center',
-                    closeTimeout: 2000,
-                  });
-                }
+                  {String(currentSymbol?.symbol_display?.contract_size)}
+                </span>
+              </div>
+              <div>
+                <span>点差</span>
+                <span>{String(currentSymbol?.symbol_display?.spread)}</span>
+              </div>
+              <div>
+                <span>预付款货币</span>
+                <span>
+                  {currentSymbol?.symbol_display?.margin_currency_display}
+                </span>
+              </div>
+              <div>
+                <span>获利货币</span>
+                <span>
+                  {currentSymbol?.symbol_display?.profit_currency_display}
+                </span>
+              </div>
+              <div>
+                <span>最小交易手数</span>
+                <span>{String(currentSymbol?.symbol_display?.min_lots)}</span>
+              </div>
+              <div>
+                <span>最大交易手数</span>
+                <span>{String(currentSymbol?.symbol_display?.max_lots)}</span>
+              </div>
+              <div>
+                <span>交易数步长</span>
+                <span>{String(currentSymbol?.symbol_display?.lots_step)}</span>
+              </div>
+              <div>
+                <span>买入库存费</span>
+                <span>
+                  {String(currentSymbol?.symbol_display?.purchase_fee)}
+                </span>
+              </div>
+              <div>
+                <span>卖出库存费</span>
+                <span>
+                  {String(currentSymbol?.symbol_display?.selling_fee)}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="trade-detail-more-info-news">
+            <Tabs
+              tabs={moreInfoTabs}
+              initialPage={0}
+              renderTab={(tab) => <span>{tab.title}</span>}
+              onChange={this.onChangeTabs}
+              // onTabClick={this.onClickTabs}
+              tabBarBackgroundColor="transparent"
+              tabBarActiveTextColor="#F2E205"
+              tabBarInactiveTextColor="#838D9E"
+              tabBarUnderlineStyle={{
+                border: "1px solid #F2E205",
               }}
             >
-              {currentTradeType.id == 1 ? '平仓' : '删除'}
-            </div>
-          )
-        }
-
-        <div className={'chart'}></div>
+              {this.renderFundContent()}
+              {this.renderNewsContent()}
+            </Tabs>
+          </div>
+        </div>
+        {utils.isEmpty(currentSymbol) ? (
+          <Spin
+            className="spin-icon"
+            indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+          />
+        ) : quoted_price !== "one_price" ? (
+          this.renderForexInput()
+        ) : (
+          this.renderStockInput()
+        )}
       </Page>
     );
   }
+
+  getNowStockTypeOptions = (holdDay) => {
+    const list = Object.assign([], stockTypeOptions);
+    if (holdDay === "T+1") {
+      return list.splice(0, 1);
+    }
+
+    return stockTypeOptions;
+  };
 }

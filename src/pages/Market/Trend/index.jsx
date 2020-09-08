@@ -59,13 +59,13 @@ export default class extends BaseReact {
   }
 
   componentDidMount() {
-    const { nowRealID } = this.state;
-    const { unit } = this.props;
-    this.chartOption = {
-      width: this.chartRef.clientWidth,
-      height: this.chartRef.clientHeight - 50
-    };
-    this.props.trend.fetchTrendList(nowRealID, unit);
+    // const { nowRealID } = this.state;
+    // const { unit } = this.props;
+    // this.chartOption = {
+    //   width: this.chartRef.clientWidth,
+    //   height: this.chartRef.clientHeight - 50
+    // };
+    // this.props.trend.fetchTrendList(nowRealID, unit);
     const { setReceviceMsgLinter, setStatusChangeListener, } = this.props;
     setReceviceMsgLinter(this.receviceMsgLinter);
     setStatusChangeListener(this.statusChangListener);
@@ -73,19 +73,19 @@ export default class extends BaseReact {
 
   componentDidUpdate(prevProps, prevState) {
     // console.log("test")
-    // const { nowRealID } = this.state;
+    const { nowRealID } = this.state;
     // console.log(nowRealID)
     // console.log("new new test")
-    // if (!nowRealID || nowRealID === prevState.nowRealID) return;
-    // this.chartOption = {
-    //   width: this.chartRef.clientWidth,
-    //   height: this.chartRef.clientHeight - 50
-    // };
+    if (!nowRealID || nowRealID === prevState.nowRealID) return;
+    this.chartOption = {
+      width: this.chartRef.clientWidth,
+      height: this.chartRef.clientHeight - 50
+    };
     // console.log("new test")
-    // const { unit } = this.props;
+    const { unit } = this.props;
     this.clearBuffer();
     // console.log("old trend")
-    // this.trend.fetchTrendList(nowRealID, unit);
+    this.trend.fetchTrendList(nowRealID, unit);
     // console.log("trend")
   }
 
