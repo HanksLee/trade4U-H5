@@ -1,6 +1,8 @@
 .news-content {
   .no-news {
     color: #ffffff;
+    display: flex;
+    justify-content: center;
   }
 
   .news-content-item {
