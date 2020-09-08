@@ -1,5 +1,5 @@
 import api from 'services'
-import { action, observable, computed } from "mobx";
+import { action, observable, computed, toJS } from "mobx";
 import BaseStore from "store/base";
 import utils from 'utils';
 import cloneDeep from 'lodash/cloneDeep';
@@ -250,8 +250,7 @@ class MarketStore extends BaseStore {
     // this.setCurrentSymbolList(
     //   symbolList, currentSymbolType
     // );
-
-    this.setCurrentSymbolList(originList, currentSymbolType)
+    this.setCurrentSymbolList(toJS(originList), currentSymbolType)
   }
 }
 
