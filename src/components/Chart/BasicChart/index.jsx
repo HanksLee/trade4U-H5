@@ -78,12 +78,6 @@ export default class BasicChart extends React.Component {
     ) {
       this.state.chart.applyOptions(chartOption);
     }
-    // const {chartOption} = this.state;
-    // if(chartOption.width === 0 || chartOption.height === 0)
-    //   return;
-    // console.log("chartOptions")
-    // const nowChartOption = this.createChartOption(defaultChartOption , chartOption);
-    // this.chart = createChart(this.containerRef , nowChartOption);
   }
 
   //function

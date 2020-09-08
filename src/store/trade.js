@@ -141,7 +141,7 @@ class TradeStore extends BaseStore {
     addList.map(aItem => {
       const { order_number, timestamp, } = aItem;
       const i = originlist.findIndex(oItem => {
-        return (oItem.order_number = order_number);
+        return (oItem.order_number === order_number);
       });
       if (!utils.isEmpty(originlist[i])) {
         originTimestamp = originlist[i].timestamp;
