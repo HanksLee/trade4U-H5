@@ -51,7 +51,8 @@ export default class extends React.Component {
     const { isAddSelfSelect, currentSymbol } = this.state;
     const { currentSymbolType } = this.props;
 
-    let symbolID = currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id;
+    // let symbolID = currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id;
+    let symbolID = currentSymbol.id;
 
     if (isAddSelfSelect === 0) {
       const res = await api.market.addSelfSelectSymbolList({
@@ -131,7 +132,8 @@ export default class extends React.Component {
           <span>週K</span>
           <span>月K</span>
         </div> */}
-        <WS_TrendContainer nowRealID={currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id} unit={"1m"} />
+        {/* <WS_TrendContainer nowRealID={currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id} unit={"1m"} /> */}
+        <WS_TrendContainer nowRealID={currentSymbol.id} unit={"1m"} />
         <div className="stock-detail">
           <div><span>小数点位</span><span>{String(currentSymbol?.symbol_display?.decimals_place)}</span></div>
           <div><span>合约大小</span><span>{String(currentSymbol?.symbol_display?.contract_size)}</span></div>

@@ -250,6 +250,7 @@ class MarketStore extends BaseStore {
     // this.setCurrentSymbolList(
     //   symbolList, currentSymbolType
     // );
+
     this.setCurrentSymbolList(toJS(originList), currentSymbolType)
   }
 }
