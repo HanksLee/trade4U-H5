@@ -15,7 +15,7 @@ import AddIcon from "assets/img/add.svg";
 import SearchIcon from "assets/img/search.svg";
 import { inject, observer } from "mobx-react";
 import { Spin } from "antd";
-import { Tabs } from "antd-mobile";
+import { Tabs, TabBar } from "antd-mobile";
 import { LoadingOutlined } from "@ant-design/icons";
 import moment from "moment";
 import ws from "utils/ws";
@@ -47,6 +47,7 @@ export default class extends React.Component {
     page: 1,
     hasData: true,
   };
+  tabRefs = {}; // 储存 tab项目 dom 元素，key 为 SymbolType 的 id
 
   async componentDidMount() {
     // this.connectWebsocket();
@@ -168,6 +169,7 @@ export default class extends React.Component {
 
   switchSymbolType = async (item) => {
     console.log("item :>> ", item);
+    this.tabRefs[item.id].scrollIntoView(); // 将目前选中的 tab 卷动至可见
     this.setState({ currentSymbolType: item, page: 1, page_size: 20 }, () => {
       this.getList();
     });
@@ -377,24 +379,26 @@ export default class extends React.Component {
     const { common } = this.props;
     // console.log("symbolTypeList :>> ", symbolTypeList);
     // console.log("currentSymbolType :>> ", currentSymbolType);
+    // console.log("this.tabRefs :>> ", this.tabRefs);
     const quoted_price = common.getKeyConfig("quoted_price");
-
     const price_title = this.getPriceTitle(quoted_price);
     // const currentList = currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
-    const renderNavBar = (tabBar) => {
+    const renderTabBar = (tabBar) => {
       // console.log("tabBar :>> ", tabBar);
       return (
         <Navbar className="market-navbar">
           <NavLeft>
             {/* <img className="nav-icon" alt="edit" src={EditIcon} onClick={this.navigateToManagePage} /> */}
+
             {symbolTypeList.map((item, idx) => {
               return (
                 <div
+                  ref={(el) => (this.tabRefs[item.id] = el)}
                   onClick={() => tabBar.goToTab(idx)}
                   className={`market-navbar-item ${
                     currentSymbolType.symbol_type_name ===
-                      item.symbol_type_name && "active"
-                  }`}
+                    item.symbol_type_name && "active"
+                    }`}
                 >
                   {item.symbol_type_name}
                 </div>
@@ -423,69 +427,68 @@ export default class extends React.Component {
     };
     return (
       <Page noNavbar>
-        <div className="self-select-table">
-          <Tabs
-            initialPage={0}
-            tabs={symbolTypeList}
-            renderTabBar={renderNavBar}
-            // renderTab={(tab) => <span>{tab.symbol_type_name}</span>}
-            onChange={this.switchSymbolType}
-            tabBarBackgroundColor="transparent"
-            tabBarActiveTextColor="#F2E205"
-            tabBarInactiveTextColor="#838D9E"
-            tabBarUnderlineStyle={{
-              display: "none",
-            }}
-          >
-            {symbolTypeList.map((symbolType, idx) => {
-              return (
-                <div>
-                  <div className="self-select-table-header">
-                    {symbolType.symbol_type_name === "自选" ? (
-                      <div className="market-type">
-                        <p onClick={this.switchShowSubSymbolType}>
-                          {subCurrentSymbolType}
-                        </p>
-                        {showSubSymbolType && (
-                          <ul>
-                            {subSymbolTypeList.map((item, index) => (
-                              <li
-                                className={
-                                  subCurrentSymbolType ===
-                                    item.symbol_type_name && "active"
-                                }
-                                onClick={() => {
-                                  this.switchSubSelfSelctList(
-                                    item.symbol_type_name
-                                  );
-                                }}
-                              >
-                                {item.symbol_type_name}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    ) : (
+        <Tabs
+          initialPage={0}
+          tabs={symbolTypeList}
+          renderTabBar={renderTabBar}
+          // renderTab={(tab) => <span>{tab.symbol_type_name}</span>}
+          onChange={this.switchSymbolType}
+          tabBarBackgroundColor="transparent"
+          tabBarActiveTextColor="#F2E205"
+          tabBarInactiveTextColor="#838D9E"
+          tabBarUnderlineStyle={{ display: "none" }}
+        >
+          {symbolTypeList.map((symbolType, idx) => {
+            return (
+              <>
+                <div className="self-select-header">
+                  {symbolType.symbol_type_name === "自选" ? (
+                    <div className="market-type">
+                      <p onClick={this.switchShowSubSymbolType}>
+                        {subCurrentSymbolType}
+                      </p>
+                      {showSubSymbolType && (
+                        <ul>
+                          {subSymbolTypeList.map((item, index) => (
+                            <li
+                              className={
+                                subCurrentSymbolType ===
+                                item.symbol_type_name && "active"
+                              }
+                              onClick={() => {
+                                this.switchSubSelfSelctList(
+                                  item.symbol_type_name
+                                );
+                              }}
+                            >
+                              {item.symbol_type_name}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ) : (
                       <div></div>
                     )}
-                    {price_title}
-                  </div>
+                  {price_title}
+                </div>
+                <div className="self-select-table">
                   <WS_ProductList
-                    currentSymbolType={symbolType.symbol_type_name}
-                    symbol_type_code={symbolType.symbol_type_code}
+                    currentSymbolType={currentSymbolType.symbol_type_name}
+                    symbol_type_code={currentSymbolType.symbol_type_code}
                     dataLoading={dataLoading}
                     channelCode={
-                      symbolType.symbol_type_code === "self" ? "SELF" : "NONE"
+                      currentSymbolType.symbol_type_code === "self" ? "SELF" : "NONE"
                     }
                     quoted_price={quoted_price}
                     thisRouter={this.$f7router}
+                    thisStore={this.props.market}
                   ></WS_ProductList>
                 </div>
-              );
-            })}
-          </Tabs>
-        </div>
+              </>
+            );
+          })}
+        </Tabs>
       </Page>
     );
   }

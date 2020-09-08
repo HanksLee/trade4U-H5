@@ -32,9 +32,13 @@ export default class extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      currentSymbol: this.props.currentSymbol,
+      currentSymbol: {},
       isAddSelfSelect: 0
     }
+  }
+
+  componentDidMount() {
+    this.setState({ currentSymbol: this.props.market.currentSymbol })
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -88,7 +92,7 @@ export default class extends React.Component {
   }
 
   render() {
-    console.log(this.props)
+    // console.log(this.props)
     const { currentSymbolType } = this.props;
     const { currentSymbol, isAddSelfSelect } = this.state;
     return (
