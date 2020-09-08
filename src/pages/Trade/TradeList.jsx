@@ -140,7 +140,7 @@ export default class extends BaseReact {
       async () => {
         try {
           const { page, page_size, historyList, dataLoading } = this.state;
-          console.log(this)
+          // console.log(this)
           const res = await this.$api.trade.getTradeInfo();
           let tradeInfo = {
             balance: res.data.balance,

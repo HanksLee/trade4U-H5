@@ -379,7 +379,7 @@ export default class extends React.Component {
     const { common } = this.props;
     // console.log("symbolTypeList :>> ", symbolTypeList);
     // console.log("currentSymbolType :>> ", currentSymbolType);
-    console.log("this.tabRefs :>> ", this.tabRefs);
+    // console.log("this.tabRefs :>> ", this.tabRefs);
     const quoted_price = common.getKeyConfig("quoted_price");
     const price_title = this.getPriceTitle(quoted_price);
     // const currentList = currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;

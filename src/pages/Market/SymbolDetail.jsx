@@ -92,7 +92,7 @@ export default class extends React.Component {
   }
 
   render() {
-    console.log(this.props)
+    // console.log(this.props)
     const { currentSymbolType } = this.props;
     const { currentSymbol, isAddSelfSelect } = this.state;
     return (
