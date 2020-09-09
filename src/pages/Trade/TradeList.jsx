@@ -339,7 +339,6 @@ export default class extends BaseReact {
       : currentTradeTab === '挂单'
         ? futureTradeList
         : finishTradeList;
-
     return (
       <div className={`trade-content-content ${currentTradeTab === "历史" && "history-mode"}`}>
         {!utils.isEmpty(currentTradeList) && currentTradeList.map((item, index) => (<div className="trade-content-item">
@@ -445,10 +444,11 @@ export default class extends BaseReact {
                 </div>
                 {
                   item?.product_market !== "MT" &&
-                  <div className="trade-content-content-bottom-btn"
+                  <div
+                    style={{ pointerEvents: !item?.swap_switch && 'none', opacity: !item?.swap_switch && '0.5' }}
+                    className="trade-content-content-bottom-btn"
                     onClick={() => {
                       const { confirm } = Modal;
-
                       const that = this;
                       confirm({
                         title: '关闭递延提示',
@@ -459,19 +459,18 @@ export default class extends BaseReact {
                         okText: "确认",
                         async onOk() {
                           await that.props.common.$api.trade.updateTrade(item.order_number, {
-                            swap_switch: true
+                            swap_switch: false
                           });
                           Toast.success("关闭递延成功", 2);
                           await that.onRefresh(currentTradeTab)
                         },
-                        onCancel() {
-                        },
+                        onCancel() {},
                       });
-                    }
-                    }>
+                    }}>
                     关闭递延
-                </div>}
-              </div>}
+                   </div>}
+                 </div>
+                }
             {currentTradeTab === "挂单" &&
               <div className="trade-content-content-bottom-btn-group">
                 <div className="trade-content-content-bottom-btn"
