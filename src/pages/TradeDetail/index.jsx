@@ -235,7 +235,7 @@ export default class extends React.Component {
     const { type_display: currentSymbolType } =
       currentSymbol?.symbol_display ?? {};
     this.setState({ tabDataLoading: true }, async () => {
-      const id = currentSymbol?.id;
+      const id = currentSymbol?.product_details?.symbol;
       const res = await api.trade.getFunds(id, {});
       if (res.status === 200) {
         this.setState({ tabDataLoading: false, fund: res.data });

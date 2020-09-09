@@ -136,6 +136,7 @@
   margin-top: 10px;
   margin-bottom: 10px;
   position: relative;
+
   .now-stock {
     font-size: 36px;
   }
@@ -204,7 +205,7 @@
   transition: max-height 0.5s;
 
   &.show {
-    max-height: 100%;
+    max-height: 700px;
   }
 
   .trade-detail-more-info-contract {
@@ -313,11 +314,11 @@
     .fund-content {
       padding: 16px 14px;
       border-bottom: 1px solid #2e3b55;
-      
+
       > div + div {
         border-top: unset;
       }
-    
+
       > div {
         font-size: 14px;
         color: #ffffff;
@@ -328,7 +329,7 @@
           background-color: #2e3b55;
           line-height: 28px;
         }
-        
+
         &:nth-child(n+3) {
           display: flex;
 
