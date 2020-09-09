@@ -1,18 +1,14 @@
 import intl from "react-intl-universal";
 import React from "react";
 import utils from "utils";
-import {
-  List,
-  InputItem,
-  Toast,
-} from "antd-mobile";
+import { List, InputItem, Toast } from "antd-mobile";
 import { createForm } from "rc-form";
-import { Select, Form, InputNumber, Button, Spin } from 'antd';
-import { Page, Navbar, NavRight } from "framework7-react";
+import { Select, Form, InputNumber, Button, Spin } from "antd";
+import { Page, Navbar, NavTitle, NavLeft, Link, Icon } from "framework7-react";
 import api from "services";
 import moment from "moment";
 import { LoadingOutlined } from "@ant-design/icons";
-import 'antd/dist/antd.css';
+import "antd/dist/antd.css";
 import "./index.scss";
 
 const country = [
@@ -62,19 +58,19 @@ export default class extends React.Component {
     this.props.history.goBack();
   };
 
-  selectCurrentPayment = value => {
-    const { paymentMethods, } = this.state;
+  selectCurrentPayment = (value) => {
+    const { paymentMethods } = this.state;
 
     {
-      paymentMethods.map(item => {
+      paymentMethods.map((item) => {
         if (item.id == value) {
-          this.setState({ currentPayment: item, });
+          this.setState({ currentPayment: item });
         }
       });
     }
-  }
+  };
 
-  deposit = async values => {
+  deposit = async (values) => {
     if (!this.state.isPaying) {
       try {
         const res = await api.setting.deposit({
@@ -82,14 +78,17 @@ export default class extends React.Component {
           expect_amount: Number(values.expect_amount),
         });
         if (res.status === 201 && res.data.gopayurl) {
-          this.setState({
-            isPaying: true,
-            orderNumber: res.data.order_number,
-            showLoading: true,
-          }, () => {
-            this.paymentWindow = window.open(res.data.gopayurl);
-            this.checkDepositStatus();
-          });
+          this.setState(
+            {
+              isPaying: true,
+              orderNumber: res.data.order_number,
+              showLoading: true,
+            },
+            () => {
+              this.paymentWindow = window.open(res.data.gopayurl);
+              this.checkDepositStatus();
+            }
+          );
         } else {
           throw new Error();
         }
@@ -104,7 +103,7 @@ export default class extends React.Component {
   checkDepositStatus = async () => {
     if (!this.state.showLoading) return;
     const res = await api.setting.checkDepositStatus({
-      params: { order_number: this.state.orderNumber, },
+      params: { order_number: this.state.orderNumber },
     });
     if (res.data.status === 1) {
       this.getWithdrawableBalance();
@@ -132,19 +131,24 @@ export default class extends React.Component {
     });
   };
 
-
   render() {
     // const { getFieldProps } = this.props.form;
-    const { withdrawableBalance, paymentMethods, showLoading, currentPayment, } = this.state;
+    const {
+      withdrawableBalance,
+      paymentMethods,
+      showLoading,
+      currentPayment,
+    } = this.state;
     // const { Option } = Select;
     return (
       <Page>
-        <Navbar
-          title={"入金"}
-          backLink="Back"
-          className="text-color-white"
-        >
-          <NavRight></NavRight>
+        <Navbar className="text-color-white">
+          <NavLeft>
+            <Link onClick={() => this.$f7router.back({ force: false })}>
+              <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
+            </Link>
+          </NavLeft>
+          <NavTitle>入金</NavTitle>
         </Navbar>
         <div className="withdraw-item-title">淨資產</div>
         <div className="remain-fund">{withdrawableBalance}</div>
@@ -159,41 +163,52 @@ export default class extends React.Component {
 
             <Form.Item
               name="payment"
-              rules={[{ required: true, message: "请输入支付通道", }]}
+              rules={[{ required: true, message: "请输入支付通道" }]}
               className="deposit-select"
             >
-
-              <Select className="select-option deposit-select-option" placeholder="選擇支付管道" onChange={this.selectCurrentPayment}>
-                {paymentMethods.map(item => {
+              <Select
+                className="select-option deposit-select-option"
+                placeholder="選擇支付管道"
+                onChange={this.selectCurrentPayment}
+              >
+                {paymentMethods.map((item) => {
                   return (
                     <Select.Option value={item.id}>{item.name}</Select.Option>
                   );
                 })}
               </Select>
             </Form.Item>
-            {currentPayment && <Form.Item
-              className="expect-amount-text"
-              name="expect_amount"
-              label={
-                <>
-                  <p>金额</p>
-                  <p className="expect-amount-tips">
-                    ＊提示：手续费{currentPayment.fee}%，入金上限 {currentPayment.max_deposit} / 下限 {currentPayment.min_deposit} ＊
-                </p>
-                </>
-              }
-              rules={[{ required: true, message: "请输入金额", }]}
-            >
-              <InputNumber
-                min={currentPayment.min_deposit}
-                max={currentPayment.max_deposit}
-                className="line-input"
-                placeholder="输入金额"
-              />
-            </Form.Item>}
+            {currentPayment && (
+              <Form.Item
+                className="expect-amount-text"
+                name="expect_amount"
+                label={
+                  <>
+                    <p>金额</p>
+                    <p className="expect-amount-tips">
+                      ＊提示：手续费{currentPayment.fee}%，入金上限{" "}
+                      {currentPayment.max_deposit} / 下限{" "}
+                      {currentPayment.min_deposit} ＊
+                    </p>
+                  </>
+                }
+                rules={[{ required: true, message: "请输入金额" }]}
+              >
+                <InputNumber
+                  min={currentPayment.min_deposit}
+                  max={currentPayment.max_deposit}
+                  className="line-input"
+                  placeholder="输入金额"
+                />
+              </Form.Item>
+            )}
             <div className="deposit-btn-container">
-              <Button className="deposit-btn" onClick={this.resetForm}>清除資料</Button>
-              <Button className="deposit-btn" htmlType="submit">下一步</Button>
+              <Button className="deposit-btn" onClick={this.resetForm}>
+                清除資料
+              </Button>
+              <Button className="deposit-btn" htmlType="submit">
+                下一步
+              </Button>
             </div>
           </List>
         </Form>

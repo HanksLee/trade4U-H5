@@ -1,7 +1,7 @@
 import intl from "react-intl-universal";
 import React from "react";
 import utils from "utils";
-import { Page, Navbar, NavRight } from "framework7-react";
+import { Page, Navbar, NavTitle, NavLeft, Link, Icon } from "framework7-react";
 import api from "services";
 import moment from "moment";
 // import ws from "utils/ws";
@@ -80,13 +80,13 @@ export default class extends React.Component {
     const { hasNotify, hasAnnouncement } = this.props.message;
     return (
       <Page>
-        <Navbar
-          title={"新闻"}
-          backLink="Back"
-          className="text-color-white"
-        >
-          <NavRight>
-          </NavRight>
+        <Navbar className="text-color-white">
+          <NavLeft>
+            <Link onClick={() => this.$f7router.back({ force: false })}>
+              <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
+            </Link>
+          </NavLeft>
+          <NavTitle>新闻</NavTitle>
         </Navbar>
         <div
           className="message-wrap announcement"

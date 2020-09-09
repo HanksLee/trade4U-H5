@@ -1,13 +1,17 @@
 import intl from "react-intl-universal";
 import React from "react";
 import utils from "utils";
-import {
-  List,
-  InputItem,
-  Toast,
-} from "antd-mobile";
+import { List, InputItem, Toast } from "antd-mobile";
 import { createForm } from "rc-form";
-import { Page, Navbar, NavRight } from "framework7-react";
+import {
+  Page,
+  Navbar,
+  NavTitle,
+  NavLeft,
+  NavRight,
+  Link,
+  Icon,
+} from "framework7-react";
 import api from "services";
 import "./index.scss";
 
@@ -18,13 +22,13 @@ export default class extends React.Component {
     smskey: undefined,
     errMsg: "",
     waitTime: 60,
-    canSendSMS: true
+    canSendSMS: true,
   };
 
   sendSMS = () => {
     const { waitTime, canSendSMS } = this.state;
     if (canSendSMS !== true) {
-      return false
+      return false;
     } else {
       this.setState({ canSendSMS: false }, async () => {
         let payload = {
@@ -33,30 +37,26 @@ export default class extends React.Component {
         const res = await api.setting.sendSMS(payload);
 
         if (res.status === 201) {
-          this.setState({ smsKey: res.data.key, });
+          this.setState({ smsKey: res.data.key });
         } else {
-          this.setState({ errMsg: res.data.message })
+          this.setState({ errMsg: res.data.message });
         }
         let time = waitTime;
-        let timeID = setInterval(
-          async () => {
-            time--;
-            if (time === 0) {
-              clearInterval(timeID)
-              this.setState({ waitTime: 60 })
-            } else {
-              this.setState({ waitTime: time })
-            }
-          }, 1000);
-      })
+        let timeID = setInterval(async () => {
+          time--;
+          if (time === 0) {
+            clearInterval(timeID);
+            this.setState({ waitTime: 60 });
+          } else {
+            this.setState({ waitTime: time });
+          }
+        }, 1000);
+      });
     }
-
-
   };
 
-
   handleVerifySubmit = async (evt) => {
-    const { smsKey, } = this.state;
+    const { smsKey } = this.state;
 
     this.props.form.validateFields(async (err, values) => {
       if (!err) {
@@ -68,12 +68,12 @@ export default class extends React.Component {
         const res = await api.setting.verifySMS(payload);
 
         if (res.status === 201) {
-          this.setState({ verifyPass: true, smsKey: res.data.key, });
+          this.setState({ verifyPass: true, smsKey: res.data.key });
         } else {
-          this.setState({ errMsg: res.data.message })
+          this.setState({ errMsg: res.data.message });
         }
       }
-    })
+    });
   };
 
   handleResetPwdSubmit = async (evt) => {
@@ -120,15 +120,13 @@ export default class extends React.Component {
             initialValue: "",
           })}
           type="password"
-          placeholder={intl.get(
-            "settings.password.check-password.placeholder"
-          )}
+          placeholder={intl.get("settings.password.check-password.placeholder")}
         >
           {intl.get("settings.password.check-password")}
         </InputItem>
       </List>
-    )
-  }
+    );
+  };
 
   sendSmsComponent = () => {
     const { getFieldProps } = this.props.form;
@@ -153,27 +151,39 @@ export default class extends React.Component {
           className="sms-input"
         >
           {"简讯验证码"}
-          <div className={`sms-btn ${!canSendSMS && "reject"}`} onClick={this.sendSMS}>发送简讯验证码</div>
-          {waitTime !== 60 && <div className="sms-prompt">{waitTime}秒后可重新发送</div>}
+          <div
+            className={`sms-btn ${!canSendSMS && "reject"}`}
+            onClick={this.sendSMS}
+          >
+            发送简讯验证码
+          </div>
+          {waitTime !== 60 && (
+            <div className="sms-prompt">{waitTime}秒后可重新发送</div>
+          )}
         </InputItem>
 
         {!utils.isEmpty(errMsg) && <div className="sms-error">{errMsg}</div>}
       </List>
-    )
-  }
+    );
+  };
 
   render() {
     const { smsConfirm } = this.state;
     return (
       <Page>
-        <Navbar
-          title={intl.get("settings.password")}
-          backLink="Back"
-          className="text-color-white"
-        >
+        <Navbar className="text-color-white">
+          <NavLeft>
+            <Link onClick={() => this.$f7router.back({ force: false })}>
+              <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
+            </Link>
+          </NavLeft>
+          <NavTitle>{intl.get("settings.password")}</NavTitle>
           <NavRight>
-            {!smsConfirm ? <div onClick={this.handleVerifySubmit}>下一步</div> : <div onClick={this.handleResetPwdSubmit}></div>}
-
+            {!smsConfirm ? (
+              <div onClick={this.handleVerifySubmit}>下一步</div>
+            ) : (
+              <div onClick={this.handleResetPwdSubmit}></div>
+            )}
           </NavRight>
         </Navbar>
         {!smsConfirm ? this.sendSmsComponent() : this.resetPwdComponent()}
