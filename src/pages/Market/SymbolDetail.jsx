@@ -17,7 +17,8 @@ import channelConfig from "./config/trendChannelConfig"
 import Trend from "./Trend";
 import 'antd/dist/antd.css';
 import './index.scss';
-import UpArrowIcon from "assets/img/up-arrow-icon.svg";
+import GreenArrowIcon from "assets/img/green-arrow-icon.svg";
+import RedArrowIcon from "assets/img/red-arrow-icon.svg";
 import OrderIcon from "assets/img/order-icon.svg";
 
 const WS_TrendContainer = WSConnect(
@@ -32,29 +33,32 @@ export default class extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      currentSymbol: {},
-      isAddSelfSelect: 0
+      // currentSymbol: {},
+      // isAddSelfSelect: 0
     }
   }
 
   componentDidMount() {
-    this.setState({ currentSymbol: this.props.market.currentSymbol })
+    // this.setState({ currentSymbol: this.props.market.currentSymbol })
   }
 
   static getDerivedStateFromProps(props, state) {
     // console.log(props)
+    // console.log(this)
+    // this.setState({ currentSymbol: props.market.currentSymbol })
   }
 
 
   showSelfSelectModal = async () => {
     const { confirm } = Modal;
-    const { isAddSelfSelect, currentSymbol } = this.state;
+    // const { isAddSelfSelect } = this.state;
+    const { currentSymbol } = this.props.market
     const { currentSymbolType } = this.props;
 
     // let symbolID = currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id;
     let symbolID = currentSymbol.id;
 
-    if (isAddSelfSelect === 0) {
+    if (currentSymbol.is_self_select === 0) {
       const res = await api.market.addSelfSelectSymbolList({
         symbol: [symbolID],
       });
@@ -95,7 +99,9 @@ export default class extends React.Component {
   render() {
     // console.log(this.props)
     const { currentSymbolType } = this.props;
-    const { currentSymbol, isAddSelfSelect } = this.state;
+    const { isAddSelfSelect } = this.state;
+    const { currentSymbol } = this.props.market;
+    console.log(currentSymbol)
     return (
       <Page noToolbar>
         <Navbar>
@@ -116,12 +122,34 @@ export default class extends React.Component {
           )
         } */}
         <div className="stock-container">
-          <div className="now-stock">{currentSymbol?.product_details?.sell}</div>
-          <div className="arrow"><img src={UpArrowIcon} alt="UpArrowIcon" /></div>
+          <div
+            className={`self-select-buy-sell-block now-stock ${
+              currentSymbol?.product_details?.change > 0 && "p-up stock-green"
+              } ${currentSymbol?.product_details?.change < 0 && "p-down stock-red-gif"}`}
+          >
+            {currentSymbol?.product_details?.sell}
+          </div>
+          <div className="arrow">
+            {currentSymbol?.product_details?.change >= 0
+              ? <img src={GreenArrowIcon} alt="GreenArrowIcon" />
+              : <img class="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
+            }
+          </div>
           <div className="spread-stock">
             <div>
-              <p>{currentSymbol?.product_details?.change}</p>
-              <p>{`${((currentSymbol?.product_details?.change) / (currentSymbol?.product_details?.sell) * 100).toFixed(2)}%`}</p>
+              <p
+                className={`self-select-buy-sell-block ${
+                  currentSymbol?.product_details?.change > 0 && "p-up stock-green"
+                  } ${currentSymbol?.product_details?.change < 0 && "p-down stock-red-gif"}`}>
+                {currentSymbol?.product_details?.change}
+              </p>
+              <p
+                className={`self-select-buy-sell-block ${
+                  currentSymbol?.product_details?.change > 0 && "p-up stock-green"
+                  } ${currentSymbol?.product_details?.change < 0 && "p-down stock-red-gif"}`}
+              >
+                {`${currentSymbol?.product_details?.chg}%`}
+              </p>
             </div>
           </div>
         </div>
@@ -133,7 +161,7 @@ export default class extends React.Component {
           <span>月K</span>
         </div> */}
         {/* <WS_TrendContainer nowRealID={currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id} unit={"1m"} /> */}
-        <WS_TrendContainer nowRealID={currentSymbol.id} unit={"1m"} />
+        <WS_TrendContainer nowRealID={currentSymbol.symbol} unit={"1m"} />
         <div className="stock-detail">
           <div><span>小数点位</span><span>{String(currentSymbol?.symbol_display?.decimals_place)}</span></div>
           <div><span>合约大小</span><span>{String(currentSymbol?.symbol_display?.contract_size)}</span></div>
@@ -157,7 +185,7 @@ export default class extends React.Component {
             }}
           />
           <Link
-            icon={`${isAddSelfSelect === 0 ? 'self-select-icon' : 'self-select-icon-active'}`}
+            icon={`${currentSymbol.is_self_select === 0 ? 'self-select-icon' : 'self-select-icon-active'}`}
             text="自选"
             className="tabbar-label"
             // onClick={this.updateLastestSymbol}
@@ -165,7 +193,7 @@ export default class extends React.Component {
           />
           <div className="order-btn"><img src={OrderIcon} alt="OrderIcon"
             onClick={() => {
-              this.$f7router.navigate(`/trade/${currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id}/`, {
+              this.$f7router.navigate(`/trade/${currentSymbol.symbol}/`, {
                 props: {
                   mode: 'add',
                 }

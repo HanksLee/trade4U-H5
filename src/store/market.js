@@ -219,7 +219,17 @@ class MarketStore extends BaseStore {
       //   ...this.currentList,
       //   ...d,
       // };
-      this.setSelfSelectSymbolList(d, true)
+      console.log(this.currentSymbol)
+      if (!utils.isEmpty(this.currentSymbol)) {
+        d.filter(item => {
+          if (item.product_details.symbol === this.currentSymbol.product_details.symbol) {
+            console.log(item.product_details.sell)
+            this.setCurrentSymbol(item, true)
+          }
+        })
+      }
+
+      this.setSelfSelectSymbolList(d, true);
     }
   }
 

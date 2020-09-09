@@ -218,6 +218,7 @@
     }
   }
 }
+
 .self-select-table {
   margin-top: r(44);
   margin-bottom: 80px;
@@ -360,85 +361,85 @@
       // }
 
       0% {
-        background-image: linear-gradient(270deg, #166856 100%, #0c372e 0%),
-          linear-gradient(90deg, #166856 90%, #0c372e 0%);
+        background-image: linear-gradient(270deg, #166856 100%, #0c372e 0%), linear-gradient(90deg, #166856 90%, #0c372e 0%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       10% {
-        background-image: linear-gradient(270deg, #166856 90%, #0c372e 100%),
-          linear-gradient(90deg, #166856 80%, #0c372e 100%);
+        background-image: linear-gradient(270deg, #166856 90%, #0c372e 100%), linear-gradient(90deg, #166856 80%, #0c372e 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       20% {
-        background-image: linear-gradient(270deg, #166856 80%, #0c372e 100%),
-          linear-gradient(90deg, #166856 70%, #0c372e 100%);
+        background-image: linear-gradient(270deg, #166856 80%, #0c372e 100%), linear-gradient(90deg, #166856 70%, #0c372e 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       30% {
-        background-image: linear-gradient(270deg, #166856 70%, #0c372e 100%),
-          linear-gradient(90deg, #166856 60%, #0c372e 100%);
+        background-image: linear-gradient(270deg, #166856 70%, #0c372e 100%), linear-gradient(90deg, #166856 60%, #0c372e 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       40% {
-        background-image: linear-gradient(270deg, #166856 60%, #0c372e 100%),
-          linear-gradient(90deg, #166856 50%, #0c372e 100%);
+        background-image: linear-gradient(270deg, #166856 60%, #0c372e 100%), linear-gradient(90deg, #166856 50%, #0c372e 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       50% {
-        background-image: linear-gradient(270deg, #166856 50%, #0c372e 90%),
-          linear-gradient(90deg, #166856 40%, #0c372e 90%);
+        background-image: linear-gradient(270deg, #166856 50%, #0c372e 90%), linear-gradient(90deg, #166856 40%, #0c372e 90%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       60% {
-        background-image: linear-gradient(270deg, #166856 40%, #0c372e 90%),
-          linear-gradient(90deg, #166856 30%, #0c372e 90%);
+        background-image: linear-gradient(270deg, #166856 40%, #0c372e 90%), linear-gradient(90deg, #166856 30%, #0c372e 90%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       70% {
-        background-image: linear-gradient(270deg, #166856 30%, #0c372e 70%),
-          linear-gradient(90deg, #166856 20%, #0c372e 70%);
+        background-image: linear-gradient(270deg, #166856 30%, #0c372e 70%), linear-gradient(90deg, #166856 20%, #0c372e 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       80% {
-        background-image: linear-gradient(270deg, #166856 20%, #0c372e 70%),
-          linear-gradient(90deg, #166856 10%, #0c372e 70%);
+        background-image: linear-gradient(270deg, #166856 20%, #0c372e 70%), linear-gradient(90deg, #166856 10%, #0c372e 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       90% {
-        background-image: linear-gradient(270deg, #166856 10%, #0c372e 70%),
-          linear-gradient(90deg, #166856 0%, #0c372e 70%);
+        background-image: linear-gradient(270deg, #166856 10%, #0c372e 70%), linear-gradient(90deg, #166856 0%, #0c372e 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       100% {
         background-image: #0f342d;
         margin-left: 5px;
@@ -456,85 +457,85 @@
 
     @keyframes red-ani {
       0% {
-        background-image: linear-gradient(270deg, #9b1f11 100%, #66140b 0%),
-          linear-gradient(90deg, #9b1f11 90%, #66140b 0%);
+        background-image: linear-gradient(270deg, #9b1f11 100%, #66140b 0%), linear-gradient(90deg, #9b1f11 90%, #66140b 0%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       10% {
-        background-image: linear-gradient(270deg, #9b1f11 90%, #66140b 100%),
-          linear-gradient(90deg, #9b1f11 80%, #66140b 100%);
+        background-image: linear-gradient(270deg, #9b1f11 90%, #66140b 100%), linear-gradient(90deg, #9b1f11 80%, #66140b 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       20% {
-        background-image: linear-gradient(270deg, #9b1f11 80%, #66140b 100%),
-          linear-gradient(90deg, #9b1f11 70%, #66140b 100%);
+        background-image: linear-gradient(270deg, #9b1f11 80%, #66140b 100%), linear-gradient(90deg, #9b1f11 70%, #66140b 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       30% {
-        background-image: linear-gradient(270deg, #9b1f11 70%, #66140b 100%),
-          linear-gradient(90deg, #9b1f11 60%, #66140b 100%);
+        background-image: linear-gradient(270deg, #9b1f11 70%, #66140b 100%), linear-gradient(90deg, #9b1f11 60%, #66140b 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       40% {
-        background-image: linear-gradient(270deg, #9b1f11 60%, #66140b 100%),
-          linear-gradient(90deg, #9b1f11 50%, #66140b 100%);
+        background-image: linear-gradient(270deg, #9b1f11 60%, #66140b 100%), linear-gradient(90deg, #9b1f11 50%, #66140b 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       50% {
-        background-image: linear-gradient(270deg, #9b1f11 50%, #66140b 90%),
-          linear-gradient(90deg, #9b1f11 40%, #66140b 90%);
+        background-image: linear-gradient(270deg, #9b1f11 50%, #66140b 90%), linear-gradient(90deg, #9b1f11 40%, #66140b 90%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       60% {
-        background-image: linear-gradient(270deg, #9b1f11 40%, #66140b 90%),
-          linear-gradient(90deg, #9b1f11 30%, #66140b 90%);
+        background-image: linear-gradient(270deg, #9b1f11 40%, #66140b 90%), linear-gradient(90deg, #9b1f11 30%, #66140b 90%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       70% {
-        background-image: linear-gradient(270deg, #9b1f11 30%, #66140b 70%),
-          linear-gradient(90deg, #9b1f11 20%, #66140b 70%);
+        background-image: linear-gradient(270deg, #9b1f11 30%, #66140b 70%), linear-gradient(90deg, #9b1f11 20%, #66140b 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       80% {
-        background-image: linear-gradient(270deg, #9b1f11 20%, #66140b 70%),
-          linear-gradient(90deg, #9b1f11 10%, #66140b 70%);
+        background-image: linear-gradient(270deg, #9b1f11 20%, #66140b 70%), linear-gradient(90deg, #9b1f11 10%, #66140b 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       90% {
-        background-image: linear-gradient(270deg, #9b1f11 10%, #66140b 70%),
-          linear-gradient(90deg, #9b1f11 0%, #66140b 70%);
+        background-image: linear-gradient(270deg, #9b1f11 10%, #66140b 70%), linear-gradient(90deg, #9b1f11 0%, #66140b 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       100% {
         background-image: #310a05;
         margin-left: 5px;
@@ -592,6 +593,10 @@
   .arrow {
     margin-left: 6px;
     margin-right: 10px;
+
+    .deg180 {
+      transform: rotateX(180deg);
+    }
   }
 
   .spread-stock {
