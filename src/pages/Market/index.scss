@@ -124,12 +124,15 @@
   }
 }
 
-.transistion-text {
+.trader-status {
+  --trader-status-color: #fff;
   font-size: 10px;
   padding: 3px 15px;
-  color: #f2e205;
   border-radius: 4px;
-  border: 1px solid rgba(242, 226, 5, 1);
+  color: var(--trader-status-color, #fff);
+  border: 1px solid var(--trader-status-color, #fff);
+  // color: #f2e205;
+  // border: 1px solid #f2e205;
 }
 
 .add-icon {
