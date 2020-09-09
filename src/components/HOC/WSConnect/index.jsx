@@ -172,7 +172,7 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
         // console.log("RECONNECT");
       });
       wsc.setStatusEvent(DISCONNECTED, (wsc, closeCode) => {
-        // console.log("DISCONNECTED");
+        console.log("DISCONNECTED");
         this.disconnetCount++;
         if (closeCode === AUTO && this.disconnetCount < disconnectMax) {
           tryReconnect();

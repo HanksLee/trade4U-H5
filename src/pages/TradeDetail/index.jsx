@@ -155,12 +155,14 @@ export default class extends React.Component {
         },
       });
     } else {
+      console.log(toJS(currentTrade))
       this.setState({
         params: {
           lots: currentTrade.lots,
           open_price: currentTrade.open_price,
           take_profit: currentTrade.take_profit,
           stop_loss: currentTrade.stop_loss,
+          trading_volume:currentTrade.trading_volume
         },
       });
     }
@@ -932,7 +934,6 @@ export default class extends React.Component {
       .add(handFee)
       .done();
 
-      console.log(isSubmit)
     return (
       <>
         <div className="trade-detail-input-container">
