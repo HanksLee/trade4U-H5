@@ -414,9 +414,10 @@
   display: flex;
   padding: 10px;
   background-color: transparent;
-
+ 
   &.announcement {
     border-bottom: 0.00267rem solid rgba(0, 0, 0, 0.1);
+    
   }
 
   .message-icon-container {
@@ -440,6 +441,8 @@
         background-color: #6236ff;
       }
     }
+
+    
 
     > .has-unread-message {
       width: 10px;

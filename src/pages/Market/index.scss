@@ -576,7 +576,8 @@
   color: #44d7b6;
   display: flex;
   justify-content: center;
-  align-items: stretch;
+  //align-items: stretch;
+  align-items: center;
   margin-top: 10px;
   margin-bottom: 10px;
 
@@ -601,7 +602,7 @@
 
   .spread-stock {
     font-size: 12px;
-    flex-wrap: wrap;
+    flex-wrap: wrap !important;
 
     p {
       margin: 0;

@@ -5,6 +5,7 @@
 #view-trade {
   .page-content {
     padding-bottom: 80px;
+    overflow:hidden;
   }
 
   .trade-navbar {
@@ -40,11 +41,11 @@
 
     .trade-stats-row {
       &:nth-child(1) {
-        margin-bottom: 20px;
+        margin-bottom: 10px;
       }
 
       &:nth-child(2) {
-        margin-bottom: 10px;
+       // margin-bottom: 8px;
       }
 
       .trade-stats-col {
@@ -77,14 +78,15 @@
 
       .trade-stats-col:nth-child(3) {
         text-align: right;
+        white-space: nowrap;
       }
     }
   }
 
   .trade-tabs {
     display: flex;
-    padding-bottom: 24px;
-    padding-top: 18px;
+    padding-bottom: 12px;
+    padding-top: 6px;
     background-color: #1d1d26;
 
     > div {

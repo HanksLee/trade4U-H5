@@ -383,6 +383,7 @@ export default class extends React.Component {
     const quoted_price = common.getKeyConfig("quoted_price");
     const price_title = this.getPriceTitle(quoted_price);
     // const currentList = currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
+    
     const renderTabBar = (tabBar) => {
       // console.log("tabBar :>> ", tabBar);
       return (
