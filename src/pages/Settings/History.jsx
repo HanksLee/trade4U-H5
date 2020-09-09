@@ -5,7 +5,7 @@ import axios from "axios";
 import { Pagination, DatePicker } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import utils from "utils";
-import { Page, Navbar, NavRight } from "framework7-react";
+import { Page, Navbar, NavTitle, NavLeft, Link, Icon } from "framework7-react";
 import api from "services";
 import moment from "moment";
 import locale from "antd/lib/date-picker/locale/zh_CN";
@@ -78,10 +78,13 @@ export default class extends React.Component {
     } = this.state;
     return (
       <Page>
-        <Navbar title={"资金明细"} backLink="Back" className="text-color-white">
-          <NavRight>
-            {/* <div onClick={this.handleSubmit}>確認</div> */}
-          </NavRight>
+        <Navbar className="text-color-white">
+          <NavLeft>
+            <Link onClick={() => this.$f7router.back({ force: false })}>
+              <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
+            </Link>
+          </NavLeft>
+          <NavTitle>资金明细</NavTitle>
         </Navbar>
         <div className="history-total">
           <div className="total-item">

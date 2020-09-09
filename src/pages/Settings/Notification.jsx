@@ -2,7 +2,7 @@ import intl from "react-intl-universal";
 import React from "react";
 import utils from "utils";
 import { WhiteSpace } from "antd-mobile";
-import { Page, Navbar, NavRight } from "framework7-react";
+import { Page, Navbar, NavTitle, NavLeft, Link, Icon } from "framework7-react";
 import api from "services";
 import moment from "moment";
 import "./index.scss";
@@ -53,14 +53,13 @@ export default class extends React.Component {
     const { notification } = this.state;
     return (
       <Page>
-        <Navbar
-          title={intl.get("settings.message.announcement")}
-          backLink="Back"
-          className="text-color-white"
-        >
-          <NavRight>
-            {/* <div onClick={this.handleSubmit}>確認</div> */}
-          </NavRight>
+        <Navbar className="text-color-white">
+          <NavLeft>
+            <Link onClick={() => this.$f7router.back({ force: false })}>
+              <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
+            </Link>
+          </NavLeft>
+          <NavTitle>{intl.get("settings.message.announcement")}</NavTitle>
         </Navbar>
         <div className="card-wrap">
           {utils.isEmpty(notification) === false &&
