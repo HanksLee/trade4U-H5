@@ -39,10 +39,8 @@ export default class extends React.Component {
   updateLastestSymbol = () => {
     this.$event.emit("update-latest-symbol");
   };
-
   render() {
     const { hasAnnouncement, hasNotify } = this.props.message;
-
     // 取得系统配置参数，转换为物件，并动态渲染可见页面
     const { systemConfig } = this.props.common;
     const config = systemConfig.reduce((obj, curr) => {
@@ -50,18 +48,16 @@ export default class extends React.Component {
       obj[key] = value;
       return obj;
     }, {});
+    const isIpoVisible = utils.parseBool(config["function_ipo"]); // 申购页
+    const isNewsVisible = utils.parseBool(config["function_news"]); // 新闻页
     return (
       <Page name="home">
         <Views tabs className="safe-areas">
           <View id="view-market" name="行情" tabActive tab url="/market/" />
           {/* <View id="view-chart" name="图表" tab url="/chart/" /> */}
-          {config.function_ipo && (
-            <View id="view-subscribe" name="申购" tab url="/subscribe/" />
-          )}
+          <View id="view-subscribe" name="申购" tab url="/subscribe/" />
           <View id="view-trade" name="交易" tab url="/trade/" />
-          {config.function_news && (
-            <View id="view-news" name="新闻" tab url="/news/" />
-          )}
+          <View id="view-news" name="新闻" tab url="/news/" />
           {/* <View id="view-history" name="历史" tab url="/history/" /> */}
           <View id="view-settings" name="设置" tab url="/settings/" />
           <Toolbar tabbar labels bottom className="app-tabbar">
@@ -77,7 +73,7 @@ export default class extends React.Component {
               text="图表"
               onClick={this.updateLastestSymbol}
             /> */}
-            {config.function_ipo && (
+            {isIpoVisible && (
               <Link
                 tabLink="#view-subscribe"
                 icon="subscribe-icon"
@@ -96,7 +92,7 @@ export default class extends React.Component {
                 this.$event.emit("refresh-trade-page");
               }}
             />
-            {config.function_news && (
+            {isNewsVisible && (
               <Link
                 tabLink="#view-news"
                 icon="news-icon"
