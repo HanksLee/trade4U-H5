@@ -1,5 +1,5 @@
-import React from 'react';
-import { Page, Navbar, BlockTitle, Block } from 'framework7-react';
+import React from "react";
+import { Page, Navbar, BlockTitle, Block } from "framework7-react";
 
 export default class extends React.Component {
   constructor(props) {
@@ -15,16 +15,13 @@ export default class extends React.Component {
     this.state = {
       product: currentProduct,
     };
-
   }
   render() {
     return (
       <Page name="product">
-        <Navbar title={this.state.product.title} backLink="Back" />
+        <Navbar title={this.state.product.title} backLink="返回" />
         <BlockTitle>About {this.state.product.title}</BlockTitle>
-        <Block strong>
-          {this.state.product.description}
-        </Block>
+        <Block strong>{this.state.product.description}</Block>
       </Page>
     );
   }
