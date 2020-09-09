@@ -24,13 +24,13 @@ function setRootFontSizeFromClient() {
 
   window.dpr = dpr;
   window.rem = rem;
-  window.r = function(value) {
+  window.r = function (value) {
     value = Number(value);
     // @ts-ignore
     return `${value / process.env.designWidth}rem`;
   };
 
-  window.onresize = function() {
+  window.onresize = function () {
     htmlEl.style.fontSize = `${document.documentElement.clientWidth}px`;
   };
 }
@@ -113,11 +113,11 @@ function getFormData(payload) {
 
 function parseEmoji(text) {
   text = text || "";
-  let ret = text.replace(/\[(.+?)\]/g, m => {
+  let ret = text.replace(/\[(.+?)\]/g, (m) => {
     // @ts-ignore
     return String.fromCharCode(`0x${m.substr(5, 4)}`, `0x${m.substr(9, 4)}`);
   });
-  const ret2 = (window).twemoji.parse(ret);
+  const ret2 = window.twemoji.parse(ret);
 
   return ret2;
 }
@@ -137,11 +137,11 @@ function moveArrayPosition(oldIndex, newIndex, arr) {
 function getFileInfo(file, callback) {
   let reader = new FileReader();
   reader.readAsDataURL(file);
-  reader.onload = function(evt) {
+  reader.onload = function (evt) {
     const url = evt.currentTarget.result;
     const img = new Image();
     img.src = url;
-    img.onload = function(evt) {
+    img.onload = function (evt) {
       callback && callback(img);
     };
   };
@@ -165,12 +165,20 @@ function randomNum(minNum, maxNum) {
       return 0;
   }
 }
+function parseBool(input) {
+  // parse "0", "False" to false
+  if (!input) return Boolean(input);
+  const isTrue = /true/i.test(input);
+  const isFalse = /false/i.test(input);
+  return isTrue ? true : isFalse ? false : Boolean(input);
+}
 
 // export const coordinate = {
 
 // };
 
 export default {
+  parseBool,
   setRootFontSizeFromClient,
   isEmpty: _isEmpty,
   setLStorage,
