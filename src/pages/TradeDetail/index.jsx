@@ -1564,30 +1564,33 @@ export default class extends React.Component {
     // console.log("currentSymbolType :>> ", currentSymbolType);
     return (
       <div className="fund-content">
-        {!utils.isEmpty(fund) ? <ReactEcharts
-          option={{
-            color: ["#b8eeb8", "#EEB8B8", "#fff798", "#9de6e2"],
-            legend: {
-              top: 15,
-              data: ['主力买入', '主力卖出', '散户买入', '散户卖出'],
-              textStyle: { color: '#838d9e', fontSize: 14 }
-            },
-            series: [
-              {
-                bottom: 0, top: 50, right: 0, left: 0,
-                type: 'pie',
-                radius: '55%',
-                data: [
-                  { value: Math.round(Number(fund.major_in_amount) / 10000), name: '主力买入' },
-                  { value: Math.round(Number(fund.major_out_amount) / 10000), name: '主力卖出' },
-                  { value: Math.round(Number(fund.retail_in_amount) / 10000), name: '散户买入' },
-                  { value: Math.round(Number(fund.retail_out_amount) / 10000), name: '散户卖出' }
-                ],
-                label: { fontSize: 14 }
-              }
-            ]
-          }}
-        /> : <div />}
+        {!utils.isEmpty(fund)
+          ? <ReactEcharts
+            option={{
+              color: ["#b8eeb8", "#EEB8B8", "#fff798", "#9de6e2"],
+              legend: {
+                top: 15,
+                data: ['主力买入', '主力卖出', '散户买入', '散户卖出'],
+                textStyle: { color: '#838d9e', fontSize: 14 }
+              },
+              series: [
+                {
+                  bottom: 0, top: 50, right: 0, left: 0,
+                  type: 'pie',
+                  radius: '55%',
+                  data: [
+                    { value: Math.round(Number(fund.major_in_amount) / 10000), name: '主力买入' },
+                    { value: Math.round(Number(fund.major_out_amount) / 10000), name: '主力卖出' },
+                    { value: Math.round(Number(fund.retail_in_amount) / 10000), name: '散户买入' },
+                    { value: Math.round(Number(fund.retail_out_amount) / 10000), name: '散户卖出' }
+                  ],
+                  label: { fontSize: 14 }
+                }
+              ]
+            }}
+          /> 
+          : <div />
+        }
         <div>主力、散户资金流向</div>
         {utils.isEmpty(fund) && (
           <div>
