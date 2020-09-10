@@ -41,13 +41,8 @@ export default class SymbolDetail extends React.Component {
     super(props);
     this.state = {
       // currentSymbol: {},
-<<<<<<< HEAD:src/pages/Market/SymbolDetail.jsx
       isAddSelfSelect: 0
     }
-=======
-      // isAddSelfSelect: 0
-    };
->>>>>>> develop:src/pages/Market/SymbolDetail/SymbolDetail.jsx
   }
 
   componentDidMount() {
@@ -66,13 +61,8 @@ export default class SymbolDetail extends React.Component {
 
   showSelfSelectModal = async () => {
     const { confirm } = Modal;
-<<<<<<< HEAD:src/pages/Market/SymbolDetail.jsx
     const { isAddSelfSelect } = this.state;
     const { currentSymbol } = this.props.market
-=======
-    // const { isAddSelfSelect } = this.state;
-    const { currentSymbol } = this.props.market;
->>>>>>> develop:src/pages/Market/SymbolDetail/SymbolDetail.jsx
     const { currentSymbolType } = this.props;
 
     // let symbolID = currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id;
@@ -108,7 +98,7 @@ export default class SymbolDetail extends React.Component {
             await that.props.market.getSelfSelectSymbolList(queryString, true);
           }
         },
-        onCancel() {},
+        onCancel() { },
       });
     }
   };
@@ -161,10 +151,10 @@ export default class SymbolDetail extends React.Component {
           <div
             className={`self-select-buy-sell-block now-stock ${
               currentSymbol?.product_details?.change > 0 && "p-up stock-green"
-            } ${
+              } ${
               currentSymbol?.product_details?.change < 0 &&
               "p-down stock-red-gif"
-            }`}
+              }`}
           >
             {currentSymbol?.product_details?.sell}
           </div>
@@ -172,8 +162,8 @@ export default class SymbolDetail extends React.Component {
             {currentSymbol?.product_details?.change >= 0 ? (
               <img src={GreenArrowIcon} alt="GreenArrowIcon" />
             ) : (
-              <img class="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
-            )}
+                <img class="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
+              )}
           </div>
           <div className="spread-stock">
             <div>
@@ -181,10 +171,10 @@ export default class SymbolDetail extends React.Component {
                 className={`self-select-buy-sell-block ${
                   currentSymbol?.product_details?.change > 0 &&
                   "p-up stock-green"
-                } ${
+                  } ${
                   currentSymbol?.product_details?.change < 0 &&
                   "p-down stock-red-gif"
-                }`}
+                  }`}
               >
                 {currentSymbol?.product_details?.change}
               </p>
@@ -192,17 +182,16 @@ export default class SymbolDetail extends React.Component {
                 className={`self-select-buy-sell-block ${
                   currentSymbol?.product_details?.change > 0 &&
                   "p-up stock-green"
-                } ${
+                  } ${
                   currentSymbol?.product_details?.change < 0 &&
                   "p-down stock-red-gif"
-                }`}
+                  }`}
               >
                 {`${currentSymbol?.product_details?.chg}%`}
               </p>
             </div>
           </div>
         </div>
-<<<<<<< HEAD:src/pages/Market/SymbolDetail.jsx
         {/* <div className="switch-chart">
           <span>分時</span>
           <span className="active">5日</span>
@@ -258,11 +247,6 @@ export default class SymbolDetail extends React.Component {
             <span>{String(currentSymbol?.symbol_display?.selling_fee)}</span>
           </div>
         </div>
-=======
-
-        <WS_TrendContainer nowRealID={currentSymbol.symbol} unit={"1m"} />
-        <SymbolInfo />
->>>>>>> develop:src/pages/Market/SymbolDetail/SymbolDetail.jsx
         <Toolbar tabbar labels bottom className="app-tabbar stock-tabbar">
           <Link
             tabLinkActive
@@ -278,7 +262,7 @@ export default class SymbolDetail extends React.Component {
               isAddSelfSelect === 0
                 ? "self-select-icon"
                 : "self-select-icon-active"
-            }`}
+              }`}
             text="自选"
             className="tabbar-label"
             onClick={this.showSelfSelectModal}
@@ -287,8 +271,8 @@ export default class SymbolDetail extends React.Component {
             {trader_status === "in_transaction" ? (
               <img src={OrderIcon} alt="OrderIcon" />
             ) : (
-              <img src={OrderIconDisabled} alt="OrderIconDisabled" />
-            )}
+                <img src={OrderIconDisabled} alt="OrderIconDisabled" />
+              )}
           </div>
         </Toolbar>
       </Page>
