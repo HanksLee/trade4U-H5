@@ -41,16 +41,17 @@ export default class SymbolDetail extends React.Component {
     super(props);
     this.state = {
       // currentSymbol: {},
-      // isAddSelfSelect: 0
-    };
+      // isAddSelfSelect: 0    };
   }
 
   componentDidMount() {
     // this.setState({ currentSymbol: this.props.market.currentSymbol });
-    console.log(
-      "this.props.market.currentSymbol :>> ",
-      toJS(this.props.market.currentSymbol)
-    );
+    // console.log(
+    //   "this.props.market.currentSymbol :>> ",
+    //   toJS(this.props.market.currentSymbol)
+    // );
+    // console.log(this.$f7router, this.$f7.router);
+    // console.log(this.$f7router === this.$f7.router);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -126,7 +127,8 @@ export default class SymbolDetail extends React.Component {
     // const { currentSymbol, isAddSelfSelect } = this.state;
     const { trader_status } = currentSymbol;
     // 非交易时段点击不做反应
-    if (trader_status !== "in_transaction") return;
+    // 应测试方便要求先一律打開
+    // if (trader_status !== "in_transaction") return;
     const symbolType = currentSymbol.id;
     this.$f7router.navigate(`/trade/${symbolType}/`, {
       props: { mode: "add" },
