@@ -107,11 +107,13 @@
 
         input {
           background-color: #17283e !important;
-          color: #838d9e;
-          font-size: 12px;
+          //color: #838d9e;
+          color:#fff;
+          font-size: 14px;
 
           &::placeholder {
-            color: inherit;
+            //color: inherit;
+            color: #838d9e;
             font-size: inherit;
           }
         }
@@ -124,12 +126,15 @@
   }
 }
 
-.transistion-text {
+.trader-status {
+  --trader-status-color: #fff;
   font-size: 10px;
   padding: 3px 15px;
-  color: #f2e205;
   border-radius: 4px;
-  border: 1px solid rgba(242, 226, 5, 1);
+  color: var(--trader-status-color, #fff);
+  border: 1px solid var(--trader-status-color, #fff);
+  // color: #f2e205;
+  // border: 1px solid #f2e205;
 }
 
 .add-icon {
@@ -218,6 +223,7 @@
     }
   }
 }
+
 .self-select-table {
   margin-top: r(44);
   margin-bottom: 80px;
@@ -275,6 +281,25 @@
       white-space: nowrap;
       overflow: hidden;
       padding: 7px;
+      
+      div{
+        margin-bottom: 11px;
+      }
+      p{
+        margin-bottom: 0px;
+        .symbol-type-code {
+          font-size: 10px;
+          color: #21212b;
+          padding: 1px 3px;
+          background-color: #0091ff;
+          margin-right: 6px;
+          border-radius: 1px;
+        }
+        .symbol-code {
+          font-size: 16px;
+          color: #838d9e;
+        }    
+      }
     }
 
     .self-select-spread {
@@ -360,85 +385,85 @@
       // }
 
       0% {
-        background-image: linear-gradient(270deg, #166856 100%, #0c372e 0%),
-          linear-gradient(90deg, #166856 90%, #0c372e 0%);
+        background-image: linear-gradient(270deg, #166856 100%, #0c372e 0%), linear-gradient(90deg, #166856 90%, #0c372e 0%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       10% {
-        background-image: linear-gradient(270deg, #166856 90%, #0c372e 100%),
-          linear-gradient(90deg, #166856 80%, #0c372e 100%);
+        background-image: linear-gradient(270deg, #166856 90%, #0c372e 100%), linear-gradient(90deg, #166856 80%, #0c372e 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       20% {
-        background-image: linear-gradient(270deg, #166856 80%, #0c372e 100%),
-          linear-gradient(90deg, #166856 70%, #0c372e 100%);
+        background-image: linear-gradient(270deg, #166856 80%, #0c372e 100%), linear-gradient(90deg, #166856 70%, #0c372e 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       30% {
-        background-image: linear-gradient(270deg, #166856 70%, #0c372e 100%),
-          linear-gradient(90deg, #166856 60%, #0c372e 100%);
+        background-image: linear-gradient(270deg, #166856 70%, #0c372e 100%), linear-gradient(90deg, #166856 60%, #0c372e 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       40% {
-        background-image: linear-gradient(270deg, #166856 60%, #0c372e 100%),
-          linear-gradient(90deg, #166856 50%, #0c372e 100%);
+        background-image: linear-gradient(270deg, #166856 60%, #0c372e 100%), linear-gradient(90deg, #166856 50%, #0c372e 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       50% {
-        background-image: linear-gradient(270deg, #166856 50%, #0c372e 90%),
-          linear-gradient(90deg, #166856 40%, #0c372e 90%);
+        background-image: linear-gradient(270deg, #166856 50%, #0c372e 90%), linear-gradient(90deg, #166856 40%, #0c372e 90%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       60% {
-        background-image: linear-gradient(270deg, #166856 40%, #0c372e 90%),
-          linear-gradient(90deg, #166856 30%, #0c372e 90%);
+        background-image: linear-gradient(270deg, #166856 40%, #0c372e 90%), linear-gradient(90deg, #166856 30%, #0c372e 90%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       70% {
-        background-image: linear-gradient(270deg, #166856 30%, #0c372e 70%),
-          linear-gradient(90deg, #166856 20%, #0c372e 70%);
+        background-image: linear-gradient(270deg, #166856 30%, #0c372e 70%), linear-gradient(90deg, #166856 20%, #0c372e 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       80% {
-        background-image: linear-gradient(270deg, #166856 20%, #0c372e 70%),
-          linear-gradient(90deg, #166856 10%, #0c372e 70%);
+        background-image: linear-gradient(270deg, #166856 20%, #0c372e 70%), linear-gradient(90deg, #166856 10%, #0c372e 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       90% {
-        background-image: linear-gradient(270deg, #166856 10%, #0c372e 70%),
-          linear-gradient(90deg, #166856 0%, #0c372e 70%);
+        background-image: linear-gradient(270deg, #166856 10%, #0c372e 70%), linear-gradient(90deg, #166856 0%, #0c372e 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       100% {
         background-image: #0f342d;
         margin-left: 5px;
@@ -456,85 +481,85 @@
 
     @keyframes red-ani {
       0% {
-        background-image: linear-gradient(270deg, #9b1f11 100%, #66140b 0%),
-          linear-gradient(90deg, #9b1f11 90%, #66140b 0%);
+        background-image: linear-gradient(270deg, #9b1f11 100%, #66140b 0%), linear-gradient(90deg, #9b1f11 90%, #66140b 0%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       10% {
-        background-image: linear-gradient(270deg, #9b1f11 90%, #66140b 100%),
-          linear-gradient(90deg, #9b1f11 80%, #66140b 100%);
+        background-image: linear-gradient(270deg, #9b1f11 90%, #66140b 100%), linear-gradient(90deg, #9b1f11 80%, #66140b 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       20% {
-        background-image: linear-gradient(270deg, #9b1f11 80%, #66140b 100%),
-          linear-gradient(90deg, #9b1f11 70%, #66140b 100%);
+        background-image: linear-gradient(270deg, #9b1f11 80%, #66140b 100%), linear-gradient(90deg, #9b1f11 70%, #66140b 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       30% {
-        background-image: linear-gradient(270deg, #9b1f11 70%, #66140b 100%),
-          linear-gradient(90deg, #9b1f11 60%, #66140b 100%);
+        background-image: linear-gradient(270deg, #9b1f11 70%, #66140b 100%), linear-gradient(90deg, #9b1f11 60%, #66140b 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       40% {
-        background-image: linear-gradient(270deg, #9b1f11 60%, #66140b 100%),
-          linear-gradient(90deg, #9b1f11 50%, #66140b 100%);
+        background-image: linear-gradient(270deg, #9b1f11 60%, #66140b 100%), linear-gradient(90deg, #9b1f11 50%, #66140b 100%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       50% {
-        background-image: linear-gradient(270deg, #9b1f11 50%, #66140b 90%),
-          linear-gradient(90deg, #9b1f11 40%, #66140b 90%);
+        background-image: linear-gradient(270deg, #9b1f11 50%, #66140b 90%), linear-gradient(90deg, #9b1f11 40%, #66140b 90%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       60% {
-        background-image: linear-gradient(270deg, #9b1f11 40%, #66140b 90%),
-          linear-gradient(90deg, #9b1f11 30%, #66140b 90%);
+        background-image: linear-gradient(270deg, #9b1f11 40%, #66140b 90%), linear-gradient(90deg, #9b1f11 30%, #66140b 90%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       70% {
-        background-image: linear-gradient(270deg, #9b1f11 30%, #66140b 70%),
-          linear-gradient(90deg, #9b1f11 20%, #66140b 70%);
+        background-image: linear-gradient(270deg, #9b1f11 30%, #66140b 70%), linear-gradient(90deg, #9b1f11 20%, #66140b 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       80% {
-        background-image: linear-gradient(270deg, #9b1f11 20%, #66140b 70%),
-          linear-gradient(90deg, #9b1f11 10%, #66140b 70%);
+        background-image: linear-gradient(270deg, #9b1f11 20%, #66140b 70%), linear-gradient(90deg, #9b1f11 10%, #66140b 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       90% {
-        background-image: linear-gradient(270deg, #9b1f11 10%, #66140b 70%),
-          linear-gradient(90deg, #9b1f11 0%, #66140b 70%);
+        background-image: linear-gradient(270deg, #9b1f11 10%, #66140b 70%), linear-gradient(90deg, #9b1f11 0%, #66140b 70%);
         border-radius: 0px;
         margin-left: 5px;
         font-weight: bold;
         font-size: 17px;
       }
+
       100% {
         background-image: #310a05;
         margin-left: 5px;
@@ -558,6 +583,10 @@
 
 .nav-icon {
   padding: 10px 5px;
+  width: 30px;
+  &:active{
+    opacity: 0.5;
+  }
 }
 
 .nav-icon + .nav-icon {
@@ -593,6 +622,10 @@
   .arrow {
     margin-left: 6px;
     margin-right: 10px;
+
+    .deg180 {
+      transform: rotateX(180deg);
+    }
   }
 
   .spread-stock {
@@ -666,6 +699,10 @@
     transform: translateX(-50%);
     bottom: 25px;
     z-index: 100;
+
+    &:active{
+      opacity: 0.5;
+    }
   }
 }
 
@@ -680,12 +717,14 @@
     > p {
       &.search-result-name {
         color: #ffffff;
-        font-size: 12px;
-        margin-bottom: 10px;
+        font-size: 18px;
+        //margin-bottom: 10px;
+        margin-bottom: 0px;
       }
 
       &:last-child {
         margin-bottom: 0;
+       
       }
     }
 
@@ -699,7 +738,8 @@
     }
 
     .symbol-code {
-      font-size: 10px;
+      //font-size: 10px;
+      font-size: 16px;
       color: #838d9e;
     }
   }

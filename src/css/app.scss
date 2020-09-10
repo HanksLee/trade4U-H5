@@ -128,13 +128,24 @@ $primary: #21212b;
         background-color: rgba(242, 226, 5, 1);
         border: 1px solid rgba(242, 226, 5, 1);
         color: #21212b;
+
+        &:active{
+          background:#807816;
+          border:1px solid #807816;
+        }
       }
 
       &:nth-child(2) {
         background-color: transparent;
         border: 1px solid #838d9e;
         color: #838d9e;
+
+        &:active{
+         opacity: 0.5;
+        }
+        
       }
+
     }
   }
 }

@@ -136,6 +136,7 @@
   margin-top: 10px;
   margin-bottom: 10px;
   position: relative;
+
   .now-stock {
     font-size: 36px;
   }
@@ -171,6 +172,9 @@
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
+    &:active{
+      opacity: 0.5;
+    }
   }
 }
 
@@ -204,7 +208,7 @@
   transition: max-height 0.5s;
 
   &.show {
-    max-height: 100%;
+    max-height: 800px;
   }
 
   .trade-detail-more-info-contract {
@@ -313,11 +317,11 @@
     .fund-content {
       padding: 16px 14px;
       border-bottom: 1px solid #2e3b55;
-      
+
       > div + div {
         border-top: unset;
       }
-    
+
       > div {
         font-size: 14px;
         color: #ffffff;
@@ -328,7 +332,7 @@
           background-color: #2e3b55;
           line-height: 28px;
         }
-        
+
         &:nth-child(n+3) {
           display: flex;
 
@@ -432,6 +436,9 @@
         text-align: center;
         background: rgba(131, 141, 158, 1);
         color: #fff;
+        &:active{
+         opacity: 0.5;
+        }
       }
 
       .trade-detail-input-item-less-btn {
@@ -483,6 +490,10 @@
   &.reject {
     background-color: #6d7278 !important;
     color: #21212b !important;
+  }
+
+  &:active{
+    opacity: 0.5;
   }
 }
 

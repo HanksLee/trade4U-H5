@@ -5,7 +5,7 @@
 #view-trade {
   .page-content {
     padding-bottom: 80px;
-    overflow:hidden;
+    overflow: hidden;
   }
 
   .trade-navbar {
@@ -45,7 +45,7 @@
       }
 
       &:nth-child(2) {
-       // margin-bottom: 8px;
+        // margin-bottom: 8px;
       }
 
       .trade-stats-col {
@@ -118,10 +118,10 @@
 
   .trade-content-content {
     overflow-y: scroll;
-    max-height: calc(100vh - 44px - 138px - 70px - 38px - 80px);
+    max-height: calc(100vh - 44px - 138px - 70px - 38px - 80px );
 
     &.history-mode {
-      max-height: calc(100vh - 44px - 76px - 70px - 38px - 80px);
+      max-height: calc(100vh - 44px - 76px - 70px - 38px  - 80px ); 
     }
   }
 
@@ -139,13 +139,14 @@
   .trade-content-content-bottom-data > p {
     font-size: 14px;
     flex-basis: 22%;
+    white-space: nowrap;
 
     &:nth-child(n+2) {
       text-align: right;
     }
 
     &:nth-child(even) {
-      color:#ffffff;
+      color: #ffffff;
     }
   }
 
@@ -165,9 +166,11 @@
       color: #ffffff;
       font-size: 18px;
     }
-    P{
+
+    P {
       font-size: 16px;
     }
+
     p.transaction-direction {
       color: #21212b;
       border-radius: 4px;
@@ -232,6 +235,9 @@
       font-size: 12px;
       color: #ffffff;
       text-align: center;
+      &:active{
+        opacity: 0.5;
+      }
     }
 
     .trade-content-content-bottom-btn-group {
