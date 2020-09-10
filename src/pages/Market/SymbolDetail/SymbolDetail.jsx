@@ -26,6 +26,7 @@ import GreenArrowIcon from "assets/img/green-arrow-icon.svg";
 import RedArrowIcon from "assets/img/red-arrow-icon.svg";
 import OrderIcon from "assets/img/order-icon.svg";
 import OrderIconDisabled from "assets/img/order-icon-disabled.svg";
+import { SymbolInfo } from "../SymbolInfo";
 const WS_TrendContainer = WSConnect(channelConfig[0], channelConfig, Trend);
 
 import styles from "./SymbolDetail.module.scss";
@@ -192,7 +193,7 @@ export default class SymbolDetail extends React.Component {
         </div>
 
         <WS_TrendContainer nowRealID={currentSymbol.symbol} unit={"1m"} />
-        <StockInfo />
+        <SymbolInfo />
         <Toolbar tabbar labels bottom className="app-tabbar stock-tabbar">
           <Link
             tabLinkActive
@@ -222,56 +223,6 @@ export default class SymbolDetail extends React.Component {
           </div>
         </Toolbar>
       </Page>
-    );
-  }
-}
-
-@inject("market", "trend")
-@observer
-class StockInfo extends React.Component {
-  state = {};
-  renderDetail = () => {
-    const { currentSymbol } = this.props.market;
-    const { symbol_display } = currentSymbol;
-    const field = {
-      decimals_place: { text: "小数点位", format: (val) => String(val) },
-      contract_size: { text: "合约大小", format: (val) => String(val) },
-      spread: { text: "点差", format: (val) => String(val) },
-      margin_currency_display: { text: "预付款货币" },
-      profit_currency_display: { text: "获利货币" },
-      min_lots: { text: "最小交易手数", format: (val) => String(val) },
-      max_lots: { text: "最大交易手数", format: (val) => String(val) },
-      lots_step: { text: "交易数步长", format: (val) => String(val) },
-      purchase_fee: { text: "买入库存费", format: (val) => String(val) },
-      selling_fee: { text: "卖出库存费", format: (val) => String(val) },
-    };
-    console.log("currentSymbol :>> ", currentSymbol);
-    return (
-      <div className={cx("stock-detail")}>
-        {Object.entries(field).map(([key, detail]) => {
-          const displayValue = symbol_display[key];
-          return (
-            <div className={cx("item")}>
-              <span>{detail.text}</span>
-              <span>{displayValue}</span>
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-  render() {
-    const { currentSymbol } = this.props.market;
-    const tabs = [{ title: "1st Tab" }, { title: "2nd Tab" }];
-    return (
-      <div>
-        <Tabs
-          tabs={tabs}
-          renderTabBar={(props) => <Tabs.DefaultTabBar {...props} page={3} />}
-        >
-          {this.renderDetail}
-        </Tabs>
-      </div>
     );
   }
 }
