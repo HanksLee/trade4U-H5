@@ -122,7 +122,6 @@ export default class DatafeedProvider {
     to,
     onHistoryCallback
   ) {
-    console.log("getBars", symbolInfo, resolution);
 
     if (!symbolInfo) return;
 

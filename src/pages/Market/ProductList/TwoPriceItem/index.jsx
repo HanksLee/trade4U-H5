@@ -18,7 +18,12 @@ export default ({ thisRouter, item, currentSymbolType, thisStore }) => {
       }}
     >
       <div className="item-main-info">
-        <div className="self-select-name">{item?.symbol_display?.name}</div>
+        <div className="self-select-name">{item?.symbol_display?.name}
+          <p>
+            <span className="symbol-type-code">{item?.product_market}</span>
+            <span className="symbol-code">{item?.symbol_display?.product_display?.code}</span>
+          </p>
+        </div>
         <div
           className={`self-select-buy-sell-block ${
             item?.product_details?.change > 0 && "p-up stock-green"

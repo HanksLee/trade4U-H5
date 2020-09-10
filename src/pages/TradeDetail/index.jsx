@@ -95,16 +95,15 @@ export default class extends React.Component {
       page: 1,
       newsHasMore: true,
       newsError: false,
-      isSubmit: false
+      isSubmit: false,
     };
   }
   profitRule = this.props.common.nowProfitRule;
 
   async componentDidMount() {
-    // await this.initSymbolList();
+    await this.initSymbolList();
 
     const { stockParams } = this.state;
-    const { margin_value, leverage } = stockParams;
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
     const { currentSymbol } = this.props.market;
@@ -118,12 +117,16 @@ export default class extends React.Component {
       calculate_for_sell_tax,
       contract_size,
     } = currentSymbol.symbol_display;
+
+    const { margin_value, leverage } = mode === "add"? stockParams : currentTrade;
     const { sell } = currentSymbol.product_details ?? { sell: 0 };
     const leverageMap = currentSymbol?.symbol_display?.leverage.split(",");
+    const defaultLeverage =  mode === "add"? leverageMap[0] :leverage;
+    const defaultPrice =  mode === "add"? sell : currentTrade.open_price;
     const { trading_volume, lots, totalFunds } = this.getTradingVolumeInfo(
       margin_value,
-      leverageMap[0],
-      sell,
+      defaultLeverage,
+      defaultPrice,
       contract_size
     );
 
@@ -131,7 +134,6 @@ export default class extends React.Component {
     window.addEventListener("scroll", this.newsHandleScroll, true);
     // this.getNewsList(currentSymbol?.product_details?.symbol);
     if (mode === "add") {
-
       this.setState({
         params: {
           ...this.state.params,
@@ -156,13 +158,21 @@ export default class extends React.Component {
       });
     } else {
       this.setState({
+        stockParams: {
+          ...stockParams,
+          leverage:currentTrade.leverage,
+          holdDays:currentTrade.position_type,
+        },
         params: {
-          lots: currentTrade.lots,
+          ...this.state.params,
           open_price: currentTrade.open_price,
+          trading_volume:currentTrade.trading_volume,
+          lots:currentTrade.lots,
           take_profit: currentTrade.take_profit,
           stop_loss: currentTrade.stop_loss,
-          trading_volume: currentTrade.trading_volume
-        },
+
+          totalFunds,
+        }
       });
     }
   }
@@ -294,16 +304,6 @@ export default class extends React.Component {
     // );
   };
 
-  getCurrentOrder = async (order_number) => {
-    const res = await api.news.getNewsList({
-      params: {
-        symbol_code: currentSymbol?.product_details?.symbol,
-        page: this.state.page,
-        // page_size: 1
-      },
-    });
-
-  }
   getStockBuyCount = (totalFunds, sell, contract_size) => {
     const buyCount = math
       .chain(totalFunds)
@@ -730,6 +730,7 @@ export default class extends React.Component {
           lots: lots.toString(),
           symbol: currentSymbol.id,
           action: params.action,
+          position_type:stockParams.holdDays
         };
 
         if (tradeInfo.free_margin - totalPlatformCurrency < 0) {
@@ -768,7 +769,6 @@ export default class extends React.Component {
         }
 
         if (utils.isEmpty(payload.open_price) || utils.isEmpty(payload.lots)) {
-          console.log("payload:", payload, params);
           return false;
         }
 
@@ -792,7 +792,6 @@ export default class extends React.Component {
             // },
           });
         } else {
-
           error({
             title: "提示",
             className: "trade-modal success-modal",
@@ -871,6 +870,7 @@ export default class extends React.Component {
   renderStockInput = () => {
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
+    const {swaps ,taxes ,fee} = currentTrade;
     const { currentSymbol, currentShowSymbol } = this.props.market;
     const {
       open_currency_rate,
@@ -894,7 +894,7 @@ export default class extends React.Component {
       stockParams,
       positionTypeMap,
       leverageMap,
-      isSubmit
+      isSubmit,
     } = this.state;
     const { leverage, margin_value, rules, action } = stockParams;
     const { totalFunds, trading_volume, lots } = params;
@@ -916,7 +916,7 @@ export default class extends React.Component {
       purchase_fee,
       selling_fee,
     };
-    const handFee = this.calculateForValue(
+    const handFee = fee || this.calculateForValue(
       calculate_for_buy_hands_fee,
       calcObj,
       decimals_place
@@ -924,7 +924,7 @@ export default class extends React.Component {
 
     const calculate_stock_fee =
       action === 0 ? calculate_for_buy_stock_fee : calculate_for_sell_stock_fee;
-    const stockFee = this.calculateForValue(
+    const stockFee = swaps || this.calculateForValue(
       calculate_stock_fee,
       calcObj,
       decimals_place
@@ -945,8 +945,19 @@ export default class extends React.Component {
     return (
       <>
         <div className="trade-detail-input-container">
+          {(mode === "update" || mode === "delete") && (
+            <div className="trade-detail-input-item">
+              <div className="trade-detail-input-item-title">持仓价格</div>
+              <div className="trade-detail-input-item-btn-group">
+                <div className={`trade-detail-input-item-text`}>
+                  {params.open_price}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="trade-detail-input-item">
-            <div className="trade-detail-input-item-title">类型</div>
+          <div className="trade-detail-input-item-title">{mode !== "add" && "持仓"}类型</div>
             <div className="trade-detail-input-item-btn-group">
               {mode === "add" && (
                 <>
@@ -1035,49 +1046,51 @@ export default class extends React.Component {
             </div>
           </div>} */}
 
-          <div className="trade-detail-input-item">
-            <div className="trade-detail-input-item-title">价格</div>
-            <div className="trade-detail-input-item-btn-group">
-              <div
-                className="trade-detail-input-item-less-btn"
-                onClick={() => {
-                  this.onFundsChanged(
-                    null,
-                    -stockParams.unitFunds,
-                    "margin_value"
-                  );
-                }}
-              >
-                －
-              </div>
-              <div className="trade-detail-input-item-input">
-                <Input
-                  type="number"
-                  min={100}
-                  value={stockParams.margin_value}
-                  onChange={(evt) => {
+          {mode === "add" && (
+            <div className="trade-detail-input-item">
+              <div className="trade-detail-input-item-title">价格</div>
+              <div className="trade-detail-input-item-btn-group">
+                <div
+                  className="trade-detail-input-item-less-btn"
+                  onClick={() => {
                     this.onFundsChanged(
-                      Number(evt.target.value),
                       null,
+                      -stockParams.unitFunds,
                       "margin_value"
                     );
                   }}
-                />
-              </div>
-              <div
-                className="trade-detail-input-item-add-btn"
-                onClick={() => {
-                  this.onFundsChanged(
-                    null,
-                    stockParams.unitFunds,
-                    "margin_value"
-                  );
-                }}
-              >
-                ＋
+                >
+                  －
+                </div>
+                <div className="trade-detail-input-item-input">
+                  <Input
+                    type="number"
+                    min={100}
+                    value={stockParams.margin_value}
+                    onChange={(evt) => {
+                      this.onFundsChanged(
+                        Number(evt.target.value),
+                        null,
+                        "margin_value"
+                      );
+                    }}
+                  />
+                </div>
+                <div
+                  className="trade-detail-input-item-add-btn"
+                  onClick={() => {
+                    this.onFundsChanged(
+                      null,
+                      stockParams.unitFunds,
+                      "margin_value"
+                    );
+                  }}
+                >
+                  ＋
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">槓桿倍數</div>
@@ -1101,9 +1114,7 @@ export default class extends React.Component {
                 </>
               )}
               {(mode === "update" || mode === "delete") && (
-                <div className={`trade-detail-input-item-text`}>
-                  {leverage}
-                </div>
+                <div className={`trade-detail-input-item-text`}>{leverage}</div>
               )}
             </div>
           </div>
@@ -1162,10 +1173,10 @@ export default class extends React.Component {
                   </div>
                 </>
               ) : (
-                  <div className={`trade-detail-input-item-text`}>
-                    {params.stop_loss}
-                  </div>
-                )}
+                <div className={`trade-detail-input-item-text`}>
+                  {params.take_profit}
+                </div>
+              )}
             </div>
           </div>
 
@@ -1218,12 +1229,13 @@ export default class extends React.Component {
         <div
           className={`trade-detail-submit-btn 
                         ${
-            (tradeType !== "instance" &&
-              utils.isEmpty(params.open_price)) ||
-              utils.isEmpty(params.lots) || isSubmit
-              ? "reject"
-              : ""
-            }
+                          (tradeType !== "instance" &&
+                            utils.isEmpty(params.open_price)) ||
+                          utils.isEmpty(params.lots) ||
+                          isSubmit
+                            ? "reject"
+                            : ""
+                        }
                         ${mode === "add" ? "add" : "modify"}`}
           style={{ marginBottom: "20px" }}
           onClick={() => {

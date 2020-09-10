@@ -2,17 +2,22 @@ import * as React from "react";
 import { createChart } from "lightweight-charts";
 import defaultChartOption from "./config/option";
 
+const BASICSTEP = 15;
 export default class BasicChart extends React.Component {
   state = {
     chart: null,
-    chartOption: null
+    chartOption: null,
   };
   containerRef = null;
   chartStyle = {
     width: "100%",
-    height: "100%"
+    height: "100%",
   };
 
+  basic = {
+    start: null,
+    end: null,
+  };
   constructor(props) {
     super(props);
     this.containerRef = React.createRef();
@@ -20,7 +25,7 @@ export default class BasicChart extends React.Component {
   static getDerivedStateFromProps(nextProps, prevState) {
     return {
       ...prevState,
-      ...nextProps
+      ...nextProps,
     };
   }
   shouldComponentUpdate(nextProps, nextState) {
@@ -37,18 +42,18 @@ export default class BasicChart extends React.Component {
   }
 
   render() {
-    const { chartStyle } = this;
+    const { chartStyle, setBasicInfo } = this;
     const { chart } = this.state;
     const { children } = this.props;
     return (
       <div
-        ref={ref => {
+        ref={(ref) => {
           this.containerRef = ref;
         }}
         style={chartStyle}
       >
-        {React.Children.map(children, child => {
-          return React.cloneElement(child, { chart });
+        {React.Children.map(children, (child) => {
+          return React.cloneElement(child, { chart, setBasicInfo });
         })}
       </div>
     );
@@ -60,12 +65,39 @@ export default class BasicChart extends React.Component {
     const chartOption = {
       ...defaultChartOption,
       width: clientWidth,
-      height: clientHeight
+      height: clientHeight,
     };
 
     const chart = createChart(this.containerRef, chartOption);
+
+    chart
+      .timeScale()
+      .subscribeVisibleLogicalRangeChange((newVisibleLogicRange) => {
+        const timeScale = chart.timeScale();
+        const { from, to } = newVisibleLogicRange;
+        const { start, end } = this.basic;
+
+        if(start === null || end === null){
+          return;
+        }
+        const leftStep =  BASICSTEP * -1
+        if (from  < start + leftStep) {
+          timeScale.setVisibleLogicalRange({
+            from: leftStep,
+            to: to,
+          });
+        }
+
+        const rightStep = BASICSTEP;
+        if(to > end + rightStep){
+          timeScale.setVisibleLogicalRange({
+            from: from,
+            to: end + rightStep,
+          });
+        }
+      });
     this.setState({
-      chart
+      chart,
     });
   }
   componentDidUpdate(prevProps, prevState) {
@@ -91,5 +123,20 @@ export default class BasicChart extends React.Component {
     }
 
     return defaultOption;
+  };
+
+  setBasicInfo = (start, end) => {
+    this.basic = {
+      start,
+      end,
+    };
+    this.setTimeLineRangeResize(start, end);
+  };
+
+  setTimeLineRangeResize = (from, to) => {
+    this.state.chart.timeScale().setVisibleLogicalRange({
+      from: from + BASICSTEP * -1,
+      to: to + BASICSTEP,
+    });
   };
 }

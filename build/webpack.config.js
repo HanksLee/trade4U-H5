@@ -30,6 +30,7 @@ function resolvePath(dir) {
 }
 
 const env = process.env.NODE_ENV || "development";
+const isDevMode = env === "development";
 const target = process.env.TARGET || "web";
 const s = JSON.stringify;
 const setLoaderSourceMap = (loader, options, isProd) => {
@@ -43,8 +44,10 @@ module.exports = {
   },
   output: {
     path: resolvePath("www"),
-    filename: env === "production" ? 'assets/js/build.[chunkhash:5].js' : 'build.js',
-    chunkFilename: env === "production" ? 'assets/js/[name].[chunkhash:5].js' : '[name].js',
+    filename:
+      env === "production" ? "assets/js/build.[chunkhash:5].js" : "build.js",
+    chunkFilename:
+      env === "production" ? "assets/js/[name].[chunkhash:5].js" : "[name].js",
     publicPath: "",
     hotUpdateChunkFilename: "hot/hot-update.js",
     hotUpdateMainFilename: "hot/hot-update.json",
@@ -107,11 +110,11 @@ module.exports = {
           env === "development"
             ? "style-loader"
             : {
-              loader: MiniCssExtractPlugin.loader,
-              options: {
-                publicPath: "../",
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  publicPath: "../",
+                },
               },
-            },
           "css-loader",
           "postcss-loader",
         ],
@@ -122,11 +125,11 @@ module.exports = {
           env === "development"
             ? "style-loader"
             : {
-              loader: MiniCssExtractPlugin.loader,
-              options: {
-                publicPath: "../",
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  publicPath: "../",
+                },
               },
-            },
           "css-loader",
           "postcss-loader",
           "stylus-loader",
@@ -138,27 +141,27 @@ module.exports = {
           env === "development"
             ? "style-loader"
             : {
-              loader: MiniCssExtractPlugin.loader,
-              options: {
-                publicPath: "../",
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  publicPath: "../",
+                },
               },
-            },
           "css-loader",
           "postcss-loader",
           "less-loader",
         ],
       },
       {
-        test: /\.(sa|sc)ss$/,
+        test: /^((?!\.module).)*scss$/, // 非 .module 的 scss
         use: [
           env === "development"
             ? "style-loader"
             : {
-              loader: MiniCssExtractPlugin.loader,
-              options: {
-                publicPath: "../",
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  publicPath: "../",
+                },
               },
-            },
           "css-loader",
           "postcss-loader",
           // 'sass-loader',
@@ -171,6 +174,42 @@ module.exports = {
           //   },
           //   env !== 'development'
           // ),
+          {
+            loader: "sass-loader",
+            options: {
+              prependData: `
+              $assetsPath: "${config.assetsPath}";`,
+            },
+          },
+          setLoaderSourceMap("sass-resources-loader", {
+            resources: [
+              resolve("src/css/vars.scss"),
+              resolve("src/css/mixins.scss"),
+              resolve("src/css/func.scss"),
+            ],
+          }),
+        ],
+      },
+      {
+        test: /\.module\.scss$/, // module.scss
+        use: [
+          isDevMode
+            ? "style-loader"
+            : {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  publicPath: "../",
+                },
+              },
+          {
+            loader: "css-loader",
+            options: {
+              modules: {
+                localIdentName: "[path][name]__[local]",
+              },
+            },
+          },
+          "postcss-loader",
           {
             loader: "sass-loader",
             options: {
@@ -226,19 +265,19 @@ module.exports = {
 
     ...(env === "production"
       ? [
-        new OptimizeCSSPlugin({
-          cssProcessorOptions: {
-            safe: true,
-            map: { inline: false },
-          },
-        }),
-        new webpack.optimize.ModuleConcatenationPlugin(),
-      ]
+          new OptimizeCSSPlugin({
+            cssProcessorOptions: {
+              safe: true,
+              map: { inline: false },
+            },
+          }),
+          new webpack.optimize.ModuleConcatenationPlugin(),
+        ]
       : [
-        // Development only plugins
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NamedModulesPlugin(),
-      ]),
+          // Development only plugins
+          new webpack.HotModuleReplacementPlugin(),
+          new webpack.NamedModulesPlugin(),
+        ]),
     new HtmlWebpackPlugin({
       filename: "./index.html",
       template: "./src/index.html",
@@ -246,18 +285,24 @@ module.exports = {
       minify:
         env === "production"
           ? {
-            collapseWhitespace: true,
-            removeComments: true,
-            removeRedundantAttributes: true,
-            removeScriptTypeAttributes: true,
-            removeStyleLinkTypeAttributes: true,
-            useShortDoctype: true,
-          }
+              collapseWhitespace: true,
+              removeComments: true,
+              removeRedundantAttributes: true,
+              removeScriptTypeAttributes: true,
+              removeStyleLinkTypeAttributes: true,
+              useShortDoctype: true,
+            }
           : false,
     }),
     new MiniCssExtractPlugin({
-      filename: env === "production" ? 'css/[name].[chunkhash:5].css' : 'css/[name].css',
-      chunkFilename: env === "production" ? 'css/[name].[chunkhash:5].css' : 'css/[name].css',
+      filename:
+        env === "production"
+          ? "css/[name].[chunkhash:5].css"
+          : "css/[name].css",
+      chunkFilename:
+        env === "production"
+          ? "css/[name].[chunkhash:5].css"
+          : "css/[name].css",
     }),
     new CopyWebpackPlugin([
       {
