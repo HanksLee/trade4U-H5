@@ -101,14 +101,11 @@ export default class extends React.Component {
   profitRule = this.props.common.nowProfitRule;
 
   async componentDidMount() {
-    // await this.initSymbolList();
+    await this.initSymbolList();
 
     const { stockParams } = this.state;
-    const { margin_value, leverage } = stockParams;
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
-    const { mode, currentTradeTab } = this.props;
-    const { stockParams } = this.state;
     const { currentSymbol } = this.props.market;
     const {
       calculate_for_buy_hands_fee,
