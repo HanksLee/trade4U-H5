@@ -1,11 +1,19 @@
 import intl from "react-intl-universal";
 import React from "react";
 import utils from "utils";
-import { Modal } from 'antd';
+import { Modal } from "antd";
 import api from "services";
-import { Page, Navbar, NavTitle, NavRight, NavLeft, Icon, Link } from 'framework7-react';
+import {
+  Page,
+  Navbar,
+  NavTitle,
+  NavRight,
+  NavLeft,
+  Icon,
+  Link,
+} from "framework7-react";
 import { inject, observer } from "mobx-react";
-import 'antd/dist/antd.css';
+import "antd/dist/antd.css";
 import "./index.scss";
 
 @inject("message")
@@ -13,19 +21,18 @@ import "./index.scss";
 export default class extends React.Component {
   state = { currentTab: "港股" };
 
-  componentDidMount() {
-  }
+  componentDidMount() {}
 
   switchSubscribeTabs = (name) => {
-    this.setState({ currentTab: name })
-  }
+    this.setState({ currentTab: name });
+  };
 
   showLogoutModal = () => {
     const { confirm } = Modal;
     const that = this;
     confirm({
-      title: '提示',
-      content: '您確定要登出嗎',
+      title: "提示",
+      content: "您確定要登出嗎",
       className: "trade-modal",
       centered: true,
       cancelText: "取消",
@@ -33,19 +40,16 @@ export default class extends React.Component {
       onOk() {
         that.logout();
       },
-      onCancel() {
-      },
+      onCancel() {},
     });
-  }
+  };
 
   render() {
-    const { currentTab } = this.state
+    const { currentTab } = this.state;
     return (
       <Page name="subscirbe" className="subscribe-page">
-
         <Navbar>
-          <NavLeft>
-          </NavLeft>
+          <NavLeft></NavLeft>
           <NavTitle>申购</NavTitle>
           <NavRight></NavRight>
         </Navbar>
@@ -60,24 +64,44 @@ export default class extends React.Component {
                 </div>)
             })
           } */}
-          <div className={`subscirbe-tab-item ${currentTab === "港股" && 'active'}`} onClick={() => { this.switchSubscribeTabs("港股") }}>港股</div>
-          <div className={`subscirbe-tab-item ${currentTab === "沪深" && 'active'}`} onClick={() => { this.switchSubscribeTabs("沪深") }}>沪深</div>
+          <div
+            className={`subscirbe-tab-item ${
+              currentTab === "港股" && "active"
+            }`}
+            onClick={() => {
+              this.switchSubscribeTabs("港股");
+            }}
+          >
+            港股
+          </div>
+          <div
+            className={`subscirbe-tab-item ${
+              currentTab === "沪深" && "active"
+            }`}
+            onClick={() => {
+              this.switchSubscribeTabs("沪深");
+            }}
+          >
+            沪深
+          </div>
         </div>
         <div className="subscribe-container">
-          <div className="subscribe-item"
+          <div
+            className="subscribe-item"
             // onClick={()=>{
-            //   this.$f7router.navigate(`/subscribe-detail/${currentSymbol.symbol}`, 
+            //   this.$f7router.navigate(`/subscribe-detail/${currentSymbol.symbol}`,
             //   // {
             //   //   context: currentSymbol,
             //   // }
             //   )
             // }}
             onClick={() => {
-              this.$f7router.navigate(`/subscribe/detail`,
+              this.$f7router.navigate(
+                `/subscribe/detail`
                 // {
                 //   context: currentSymbol,
                 // }
-              )
+              );
             }}
           >
             <div className="subscribe-item-left">
@@ -87,8 +111,12 @@ export default class extends React.Component {
               </div>
             </div>
             <div className="subscribe-item-middle">
-              <p><span className="subscribe-remark">可申购</span>泰格医药</p>
-              <p>申购价：<span className="subscribe-price">30.30</span></p>
+              <p>
+                <span className="subscribe-remark">可申购</span>泰格医药
+              </p>
+              <p>
+                申购价：<span className="subscribe-price">30.30</span>
+              </p>
             </div>
             <div className="subscribe-item-right">
               <i className="icon icon-forward"></i>
@@ -103,8 +131,12 @@ export default class extends React.Component {
               </div>
             </div>
             <div className="subscribe-item-middle">
-              <p><span className="subscribe-remark">可申购</span>泰格医药</p>
-              <p>申购价：<span className="subscribe-price">30.30</span></p>
+              <p>
+                <span className="subscribe-remark">可申购</span>泰格医药
+              </p>
+              <p>
+                申购价：<span className="subscribe-price">30.30</span>
+              </p>
             </div>
             <div className="subscribe-item-right">
               <i className="icon icon-forward"></i>
@@ -119,8 +151,12 @@ export default class extends React.Component {
               </div>
             </div>
             <div className="subscribe-item-middle">
-              <p><span className="subscribe-remark">可申购</span>泰格医药</p>
-              <p>申购价：<span className="subscribe-price">30.30</span></p>
+              <p>
+                <span className="subscribe-remark">可申购</span>泰格医药
+              </p>
+              <p>
+                申购价：<span className="subscribe-price">30.30</span>
+              </p>
             </div>
             <div className="subscribe-item-right">
               <i className="icon icon-forward"></i>
@@ -135,14 +171,17 @@ export default class extends React.Component {
               </div>
             </div>
             <div className="subscribe-item-middle">
-              <p><span className="subscribe-remark">可申购</span>泰格医药</p>
-              <p>申购价：<span className="subscribe-price">30.30</span></p>
+              <p>
+                <span className="subscribe-remark">可申购</span>泰格医药
+              </p>
+              <p>
+                申购价：<span className="subscribe-price">30.30</span>
+              </p>
             </div>
             <div className="subscribe-item-right">
               <i className="icon icon-forward"></i>
             </div>
           </div>
-
         </div>
       </Page>
     );
