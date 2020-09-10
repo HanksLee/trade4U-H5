@@ -95,18 +95,16 @@ export default class extends React.Component {
       page: 1,
       newsHasMore: true,
       newsError: false,
-      isSubmit:false
+      isSubmit: false,
     };
   }
   profitRule = this.props.common.nowProfitRule;
 
   async componentDidMount() {
     await this.initSymbolList();
-
-    const { stockParams } = this.state;
-    const { margin_value, leverage } = stockParams;
-    const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
+    const { mode, currentTradeTab } = this.props;
+    const { stockParams } = this.state;
     const { currentSymbol } = this.props.market;
     const {
       calculate_for_buy_hands_fee,
@@ -118,12 +116,16 @@ export default class extends React.Component {
       calculate_for_sell_tax,
       contract_size,
     } = currentSymbol.symbol_display;
+
+    const { margin_value, leverage } = mode === "add"? stockParams : currentTrade;
     const { sell } = currentSymbol.product_details ?? { sell: 0 };
-    const leverageMap =  currentSymbol?.symbol_display?.leverage.split(",");
+    const leverageMap = currentSymbol?.symbol_display?.leverage.split(",");
+    const defaultLeverage =  mode === "add"? leverageMap[0] :leverage;
+    const defaultPrice =  mode === "add"? sell : currentTrade.open_price;
     const { trading_volume, lots, totalFunds } = this.getTradingVolumeInfo(
       margin_value,
-      leverageMap[0],
-      sell,
+      defaultLeverage,
+      defaultPrice,
       contract_size
     );
 
@@ -131,7 +133,6 @@ export default class extends React.Component {
     window.addEventListener("scroll", this.newsHandleScroll, true);
     // this.getNewsList(currentSymbol?.product_details?.symbol);
     if (mode === "add") {
- 
       this.setState({
         params: {
           ...this.state.params,
@@ -155,15 +156,22 @@ export default class extends React.Component {
         },
       });
     } else {
-      console.log(toJS(currentTrade))
       this.setState({
+        stockParams: {
+          ...stockParams,
+          leverage:currentTrade.leverage,
+          holdDays:currentTrade.position_type,
+        },
         params: {
-          lots: currentTrade.lots,
+          ...this.state.params,
           open_price: currentTrade.open_price,
+          trading_volume:currentTrade.trading_volume,
+          lots:currentTrade.lots,
           take_profit: currentTrade.take_profit,
           stop_loss: currentTrade.stop_loss,
-          trading_volume:currentTrade.trading_volume
-        },
+
+          totalFunds,
+        }
       });
     }
   }
@@ -258,7 +266,6 @@ export default class extends React.Component {
       });
 
       if (res.status === 200) {
-        console.log(res);
         this.setState(
           {
             tabDataLoading: false,
@@ -296,16 +303,6 @@ export default class extends React.Component {
     );
   };
 
-  getCurrentOrder = async(order_number)=>{
-    const res = await api.news.getNewsList({
-      params: {
-        symbol_code: currentSymbol?.product_details?.symbol,
-        page: this.state.page,
-        // page_size: 1
-      },
-    });
-
-  }
   getStockBuyCount = (totalFunds, sell, contract_size) => {
     const buyCount = math
       .chain(totalFunds)
@@ -704,7 +701,7 @@ export default class extends React.Component {
   };
 
   onSubmit = async (totalPlatformCurrency) => {
-    const { params, stockParams ,isSubmit } = this.state;
+    const { params, stockParams, isSubmit } = this.state;
     const {
       mode,
       market: { currentSymbol },
@@ -713,11 +710,11 @@ export default class extends React.Component {
     const { success, error } = Modal;
     const lots = params.lots;
 
-    if(!isSubmit){
+    if (!isSubmit) {
       this.setState({
-        isSubmit:true
+        isSubmit: true,
       });
-    }else{
+    } else {
       return;
     }
 
@@ -732,6 +729,7 @@ export default class extends React.Component {
           lots: lots.toString(),
           symbol: currentSymbol.id,
           action: params.action,
+          position_type:stockParams.holdDays
         };
 
         if (tradeInfo.free_margin - totalPlatformCurrency < 0) {
@@ -741,7 +739,7 @@ export default class extends React.Component {
             content: "可用预付款不足",
           });
           this.setState({
-            isSubmit:false
+            isSubmit: false,
           });
           return;
         }
@@ -770,7 +768,6 @@ export default class extends React.Component {
         }
 
         if (utils.isEmpty(payload.open_price) || utils.isEmpty(payload.lots)) {
-          console.log("payload:", payload, params);
           return false;
         }
 
@@ -794,19 +791,16 @@ export default class extends React.Component {
             // },
           });
         } else {
-    
           error({
             title: "提示",
             className: "trade-modal success-modal",
             content: res.data.message,
             okText: "确认",
-            onOk() {
-           
-            },
+            onOk() {},
           });
-          
+
           this.setState({
-            isSubmit:false
+            isSubmit: false,
           });
         }
       } else if (mode === "update") {
@@ -865,7 +859,7 @@ export default class extends React.Component {
     } catch (err) {
       this.$msg.error(err?.response?.data?.message);
       this.setState({
-        isSubmit:false
+        isSubmit: false,
       });
     }
   };
@@ -873,6 +867,7 @@ export default class extends React.Component {
   renderStockInput = () => {
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
+    const {swaps ,taxes ,fee} = currentTrade;
     const { currentSymbol, currentShowSymbol } = this.props.market;
     const {
       open_currency_rate,
@@ -896,7 +891,7 @@ export default class extends React.Component {
       stockParams,
       positionTypeMap,
       leverageMap,
-      isSubmit
+      isSubmit,
     } = this.state;
     const { leverage, margin_value, rules, action } = stockParams;
     const { totalFunds, trading_volume, lots } = params;
@@ -918,7 +913,7 @@ export default class extends React.Component {
       purchase_fee,
       selling_fee,
     };
-    const handFee = this.calculateForValue(
+    const handFee = fee || this.calculateForValue(
       calculate_for_buy_hands_fee,
       calcObj,
       decimals_place
@@ -926,7 +921,7 @@ export default class extends React.Component {
 
     const calculate_stock_fee =
       action === 0 ? calculate_for_buy_stock_fee : calculate_for_sell_stock_fee;
-    const stockFee = this.calculateForValue(
+    const stockFee = swaps || this.calculateForValue(
       calculate_stock_fee,
       calcObj,
       decimals_place
@@ -947,8 +942,19 @@ export default class extends React.Component {
     return (
       <>
         <div className="trade-detail-input-container">
+          {(mode === "update" || mode === "delete") && (
+            <div className="trade-detail-input-item">
+              <div className="trade-detail-input-item-title">持仓价格</div>
+              <div className="trade-detail-input-item-btn-group">
+                <div className={`trade-detail-input-item-text`}>
+                  {params.open_price}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="trade-detail-input-item">
-            <div className="trade-detail-input-item-title">类型</div>
+          <div className="trade-detail-input-item-title">{mode !== "add" && "持仓"}类型</div>
             <div className="trade-detail-input-item-btn-group">
               {mode === "add" && (
                 <>
@@ -1037,49 +1043,51 @@ export default class extends React.Component {
             </div>
           </div>} */}
 
-          <div className="trade-detail-input-item">
-            <div className="trade-detail-input-item-title">价格</div>
-            <div className="trade-detail-input-item-btn-group">
-              <div
-                className="trade-detail-input-item-less-btn"
-                onClick={() => {
-                  this.onFundsChanged(
-                    null,
-                    -stockParams.unitFunds,
-                    "margin_value"
-                  );
-                }}
-              >
-                －
-              </div>
-              <div className="trade-detail-input-item-input">
-                <Input
-                  type="number"
-                  min={100}
-                  value={stockParams.margin_value}
-                  onChange={(evt) => {
+          {mode === "add" && (
+            <div className="trade-detail-input-item">
+              <div className="trade-detail-input-item-title">价格</div>
+              <div className="trade-detail-input-item-btn-group">
+                <div
+                  className="trade-detail-input-item-less-btn"
+                  onClick={() => {
                     this.onFundsChanged(
-                      Number(evt.target.value),
                       null,
+                      -stockParams.unitFunds,
                       "margin_value"
                     );
                   }}
-                />
-              </div>
-              <div
-                className="trade-detail-input-item-add-btn"
-                onClick={() => {
-                  this.onFundsChanged(
-                    null,
-                    stockParams.unitFunds,
-                    "margin_value"
-                  );
-                }}
-              >
-                ＋
+                >
+                  －
+                </div>
+                <div className="trade-detail-input-item-input">
+                  <Input
+                    type="number"
+                    min={100}
+                    value={stockParams.margin_value}
+                    onChange={(evt) => {
+                      this.onFundsChanged(
+                        Number(evt.target.value),
+                        null,
+                        "margin_value"
+                      );
+                    }}
+                  />
+                </div>
+                <div
+                  className="trade-detail-input-item-add-btn"
+                  onClick={() => {
+                    this.onFundsChanged(
+                      null,
+                      stockParams.unitFunds,
+                      "margin_value"
+                    );
+                  }}
+                >
+                  ＋
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="trade-detail-input-item">
             <div className="trade-detail-input-item-title">槓桿倍數</div>
@@ -1103,9 +1111,7 @@ export default class extends React.Component {
                 </>
               )}
               {(mode === "update" || mode === "delete") && (
-                <div className={`trade-detail-input-item-text`}>
-                  {leverage}
-                </div>
+                <div className={`trade-detail-input-item-text`}>{leverage}</div>
               )}
             </div>
           </div>
@@ -1165,7 +1171,7 @@ export default class extends React.Component {
                 </>
               ) : (
                 <div className={`trade-detail-input-item-text`}>
-                  {params.stop_loss}
+                  {params.take_profit}
                 </div>
               )}
             </div>
@@ -1222,7 +1228,8 @@ export default class extends React.Component {
                         ${
                           (tradeType !== "instance" &&
                             utils.isEmpty(params.open_price)) ||
-                          utils.isEmpty(params.lots) || isSubmit
+                          utils.isEmpty(params.lots) ||
+                          isSubmit
                             ? "reject"
                             : ""
                         }
@@ -1574,32 +1581,51 @@ export default class extends React.Component {
     // console.log("currentSymbolType :>> ", currentSymbolType);
     return (
       <div className="fund-content">
-         {!utils.isEmpty(fund) ? <ReactEcharts
-          option={{
-            color: ["#b8eeb8", "#EEB8B8", "#fff798", "#9de6e2"],
-            legend: {
-              top: 15,
-              data: ['主力买入', '主力卖出', '散户买入', '散户卖出'],
-              textStyle: { color: '#838d9e', fontSize: 14 }
-            },
-            series: [
-              {
-                bottom: 0, top: 50, right: 0, left: 0,
-                type: 'pie',
-                radius: '55%',
-                data: [
-                  { value: Math.round(Number(fund.major_in_amount) / 10000), name: '主力买入' },
-                  { value: Math.round(Number(fund.major_out_amount) / 10000), name: '主力卖出' },
-                  { value: Math.round(Number(fund.retail_in_amount) / 10000), name: '散户买入' },
-                  { value: Math.round(Number(fund.retail_out_amount) / 10000), name: '散户卖出' }
-                ],
-                label: { fontSize: 14 }
-              }
-            ]
-          }}
-        /> : <div />}
+        {!utils.isEmpty(fund) ? (
+          <ReactEcharts
+            option={{
+              color: ["#b8eeb8", "#EEB8B8", "#fff798", "#9de6e2"],
+              legend: {
+                top: 15,
+                data: ["主力买入", "主力卖出", "散户买入", "散户卖出"],
+                textStyle: { color: "#838d9e", fontSize: 14 },
+              },
+              series: [
+                {
+                  bottom: 0,
+                  top: 50,
+                  right: 0,
+                  left: 0,
+                  type: "pie",
+                  radius: "55%",
+                  data: [
+                    {
+                      value: Math.round(Number(fund.major_in_amount) / 10000),
+                      name: "主力买入",
+                    },
+                    {
+                      value: Math.round(Number(fund.major_out_amount) / 10000),
+                      name: "主力卖出",
+                    },
+                    {
+                      value: Math.round(Number(fund.retail_in_amount) / 10000),
+                      name: "散户买入",
+                    },
+                    {
+                      value: Math.round(Number(fund.retail_out_amount) / 10000),
+                      name: "散户卖出",
+                    },
+                  ],
+                  label: { fontSize: 14 },
+                },
+              ],
+            }}
+          />
+        ) : (
+          <div />
+        )}
 
-                <div>主力、散户资金流向</div>
+        <div>主力、散户资金流向</div>
         {utils.isEmpty(fund) && (
           <div>
             <span>此产品无资金流向显示</span>
