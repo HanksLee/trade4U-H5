@@ -41,16 +41,14 @@ export default class SymbolDetail extends React.Component {
     super(props);
     this.state = {
       // currentSymbol: {},
-      isAddSelfSelect: 0
-    }
+      isAddSelfSelect: 0,
+    };
   }
 
   componentDidMount() {
-    this.setState({ isAddSelfSelect: this.props.market.currentSymbol.is_self_select });
-    // console.log(
-    //   "this.props.market.currentSymbol :>> ",
-    //   toJS(this.props.market.currentSymbol)
-    // );
+    this.setState({
+      isAddSelfSelect: this.props.market.currentSymbol.is_self_select,
+    });
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -62,7 +60,7 @@ export default class SymbolDetail extends React.Component {
   showSelfSelectModal = async () => {
     const { confirm } = Modal;
     const { isAddSelfSelect } = this.state;
-    const { currentSymbol } = this.props.market
+    const { currentSymbol } = this.props.market;
     const { currentSymbolType } = this.props;
 
     // let symbolID = currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id;
@@ -98,7 +96,7 @@ export default class SymbolDetail extends React.Component {
             await that.props.market.getSelfSelectSymbolList(queryString, true);
           }
         },
-        onCancel() { },
+        onCancel() {},
       });
     }
   };
@@ -126,7 +124,8 @@ export default class SymbolDetail extends React.Component {
     // const { currentSymbol, isAddSelfSelect } = this.state;
     const { trader_status } = currentSymbol;
     // 非交易时段点击不做反应
-    if (trader_status !== "in_transaction") return;
+    // 应测试方便要求先一律打開
+    // if (trader_status !== "in_transaction") return;
     const symbolType = currentSymbol.id;
     this.$f7router.navigate(`/trade/${symbolType}/`, {
       props: { mode: "add" },
@@ -151,10 +150,10 @@ export default class SymbolDetail extends React.Component {
           <div
             className={`self-select-buy-sell-block now-stock ${
               currentSymbol?.product_details?.change > 0 && "p-up stock-green"
-              } ${
+            } ${
               currentSymbol?.product_details?.change < 0 &&
               "p-down stock-red-gif"
-              }`}
+            }`}
           >
             {currentSymbol?.product_details?.sell}
           </div>
@@ -162,8 +161,8 @@ export default class SymbolDetail extends React.Component {
             {currentSymbol?.product_details?.change >= 0 ? (
               <img src={GreenArrowIcon} alt="GreenArrowIcon" />
             ) : (
-                <img class="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
-              )}
+              <img class="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
+            )}
           </div>
           <div className="spread-stock">
             <div>
@@ -171,10 +170,10 @@ export default class SymbolDetail extends React.Component {
                 className={`self-select-buy-sell-block ${
                   currentSymbol?.product_details?.change > 0 &&
                   "p-up stock-green"
-                  } ${
+                } ${
                   currentSymbol?.product_details?.change < 0 &&
                   "p-down stock-red-gif"
-                  }`}
+                }`}
               >
                 {currentSymbol?.product_details?.change}
               </p>
@@ -182,10 +181,10 @@ export default class SymbolDetail extends React.Component {
                 className={`self-select-buy-sell-block ${
                   currentSymbol?.product_details?.change > 0 &&
                   "p-up stock-green"
-                  } ${
+                } ${
                   currentSymbol?.product_details?.change < 0 &&
                   "p-down stock-red-gif"
-                  }`}
+                }`}
               >
                 {`${currentSymbol?.product_details?.chg}%`}
               </p>
@@ -202,6 +201,7 @@ export default class SymbolDetail extends React.Component {
         {/* <WS_TrendContainer nowRealID={currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id} unit={"1m"} /> */}
         <WS_TrendContainer nowRealID={currentSymbol.id} unit={"1m"} />
         <SymbolInfo />
+<<<<<<< HEAD
         {/* <div className="stock-detail">
           <div>
             <span>小数点位</span>
@@ -248,6 +248,8 @@ export default class SymbolDetail extends React.Component {
             <span>{String(currentSymbol?.symbol_display?.selling_fee)}</span>
           </div>
         </div> */}
+=======
+>>>>>>> develop
         <Toolbar tabbar labels bottom className="app-tabbar stock-tabbar">
           <Link
             tabLinkActive
@@ -263,7 +265,7 @@ export default class SymbolDetail extends React.Component {
               isAddSelfSelect === 0
                 ? "self-select-icon"
                 : "self-select-icon-active"
-              }`}
+            }`}
             text="自选"
             className="tabbar-label"
             onClick={this.showSelfSelectModal}
@@ -272,8 +274,8 @@ export default class SymbolDetail extends React.Component {
             {trader_status === "in_transaction" ? (
               <img src={OrderIcon} alt="OrderIcon" />
             ) : (
-                <img src={OrderIconDisabled} alt="OrderIconDisabled" />
-              )}
+              <img src={OrderIconDisabled} alt="OrderIconDisabled" />
+            )}
           </div>
         </Toolbar>
       </Page>
