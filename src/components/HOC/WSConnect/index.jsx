@@ -1,6 +1,12 @@
 import * as React from "react";
 import { BaseReact } from "components/baseComponent";
 import WebSocketControl from "utils/WebSocketControl";
+import { AUTO, NORMAL } from "utils/WebSocketControl/close";
+
+import {initBuffer , checkBuffer} from 'utils/buffer'
+import moment from 'moment';
+
+
 import {
   STANDBY, //啟動ws之前
   CONNECTING, //已開通通路，未接收到訊息
@@ -10,16 +16,17 @@ import {
   URLREPLACE, // Url 切換
   ERROR //
 } from "utils/WebSocketControl/status";
-import { AUTO, NORMAL } from "utils/WebSocketControl/close";
 
 export default function WSConnect(defaultChannl, channelConfig, Comp) {
   const {
     path,
     pathKey,
+    bufferInfo,
     connectDistanceTime,
     tryConnectMax,
     disconnectMax
   } = defaultChannl;
+  
   const wsControl = new WebSocketControl({
     path: path,
     connectDistanceTime: connectDistanceTime
@@ -41,6 +48,8 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
     connectQueue.splice(0, connectQueue.length);
   };
 
+ 
+
   return class extends BaseReact {
     state = {
       selectedChannel: defaultChannl,
@@ -48,7 +57,7 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       initMsg: false
     };
     disconnetCount = 0;
-
+    buffer = bufferInfo;
     constructor(props) {
       super(props);
     }
@@ -116,10 +125,10 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       const { selectedChannel, refreshChannel } = this.state;
       if (!refreshChannel) return;
 
-      const { path, pathKey } = selectedChannel;
+      const { path, pathKey  , bufferInfo} = selectedChannel;
 
       const newPath = this.getNewPath(path, pathKey);
-
+      this.buffer = bufferInfo;
       wsControl.replaceUrl(newPath);
     }
 
@@ -154,6 +163,14 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       });
       wsc.setReceviceMsg((wsc, msg) => {
         // console.log("ReceviceMsg:" ,msg);
+        const { buffer } = this;
+        const { timeId, BUFFER_TIME, lastCheckUpdateTime , list } = buffer;
+        const receviceTime = moment().valueOf();
+        buffer.list = [...list, ...data];
+        
+        if(!checkBuffer(BUFFER_TIME ,BUFFER_MAXCOUNT , maxCount ,lastCheckUpdateTime, receviceTime)){
+          return;
+        }
         if (this.receviceMsgLinter) this.receviceMsgLinter(msg);
       });
 
@@ -172,12 +189,12 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
         // console.log("RECONNECT");
       });
       wsc.setStatusEvent(DISCONNECTED, (wsc, closeCode) => {
-        console.log("DISCONNECTED");
         this.disconnetCount++;
         if (closeCode === AUTO && this.disconnetCount < disconnectMax) {
           tryReconnect();
         } else if (this.disconnetCount === disconnectMax) {
           this.$msg.error("已断线，请确认网路状态或联系客服");
+          this.disconnetCount = 0;
         }
       });
       wsc.setStatusEvent(ERROR, (wsc, e) => {
@@ -198,4 +215,6 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       wsControl.sendMsg(o);
     };
   };
+
+
 }

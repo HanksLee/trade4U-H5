@@ -59,13 +59,13 @@ export default class extends BaseReact {
   }
 
   componentDidMount() {
-    // const { nowRealID } = this.state;
-    // const { unit } = this.props;
-    // this.chartOption = {
-    //   width: this.chartRef.clientWidth,
-    //   height: this.chartRef.clientHeight - 50
-    // };
-    // this.props.trend.fetchTrendList(nowRealID, unit);
+    const { nowRealID } = this.state;
+    const { unit } = this.props;
+    this.chartOption = {
+      width: this.chartRef.clientWidth,
+      height: this.chartRef.clientHeight - 50
+    };
+    this.props.trend.fetchTrendList(nowRealID, unit);
     const { setReceviceMsgLinter, setStatusChangeListener, } = this.props;
     setReceviceMsgLinter(this.receviceMsgLinter);
     setStatusChangeListener(this.statusChangListener);
@@ -86,7 +86,7 @@ export default class extends BaseReact {
     this.clearBuffer();
     // console.log("old trend")
     this.trend.fetchTrendList(nowRealID, unit);
-    // console.log("trend")
+    console.log("trend")
   }
 
   //function

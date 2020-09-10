@@ -192,7 +192,7 @@ export default class SymbolDetail extends React.Component {
           </div>
         </div>
 
-        <WS_TrendContainer nowRealID={currentSymbol.symbol} unit={"1m"} />
+        <WS_TrendContainer nowRealID={currentSymbol.id} unit={"1m"} />
         <SymbolInfo />
         <Toolbar tabbar labels bottom className="app-tabbar stock-tabbar">
           <Link
