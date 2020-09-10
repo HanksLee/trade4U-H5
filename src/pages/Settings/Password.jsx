@@ -46,7 +46,7 @@ export default class extends React.Component {
           time--;
           if (time === 0) {
             clearInterval(timeID);
-            this.setState({ waitTime: 60 });
+            this.setState({ waitTime: 60, canSendSMS: true });
           } else {
             this.setState({ waitTime: time });
           }
@@ -70,7 +70,7 @@ export default class extends React.Component {
         if (res.status === 201) {
           this.setState({ verifyPass: true, smsKey: res.data.key });
         } else {
-          this.setState({ errMsg: res.data.message });
+          this.setState({ errMsg: "验证码不得为空" });
         }
       }
     });
@@ -155,11 +155,11 @@ export default class extends React.Component {
             className={`sms-btn ${!canSendSMS && "reject"}`}
             onClick={this.sendSMS}
           >
-            发送简讯验证码
+            {waitTime !== 60 ? `${waitTime}秒后可重新发送` : "发送简讯验证码"}
           </div>
-          {waitTime !== 60 && (
+          {/* {waitTime !== 60 && (
             <div className="sms-prompt">{waitTime}秒后可重新发送</div>
-          )}
+          )} */}
         </InputItem>
 
         {!utils.isEmpty(errMsg) && <div className="sms-error">{errMsg}</div>}
@@ -182,8 +182,8 @@ export default class extends React.Component {
             {!smsConfirm ? (
               <div onClick={this.handleVerifySubmit}>下一步</div>
             ) : (
-              <div onClick={this.handleResetPwdSubmit}></div>
-            )}
+                <div onClick={this.handleResetPwdSubmit}></div>
+              )}
           </NavRight>
         </Navbar>
         {!smsConfirm ? this.sendSmsComponent() : this.resetPwdComponent()}
