@@ -151,7 +151,6 @@ class MarketStore extends BaseStore {
 
   @action
   createSymbolList = (list) => {
-    // console.log(list)
     return list.map((item, i) => {
       const {
         id,
@@ -219,15 +218,13 @@ class MarketStore extends BaseStore {
       //   ...this.currentList,
       //   ...d,
       // };
-      console.log(this.currentSymbol)
-      if (!utils.isEmpty(this.currentSymbol)) {
-        d.filter(item => {
-          if (item.product_details.symbol === this.currentSymbol.product_details.symbol) {
-            console.log(item.product_details.sell)
-            this.setCurrentSymbol(item, true)
-          }
-        })
-      }
+      // if (!utils.isEmpty(this.currentSymbol)) {
+      //   d.filter(item => {
+      //     if (item.product_details.symbol === this.currentSymbol.product_details.symbol) {
+      //       this.setCurrentSymbol(item, true)
+      //     }
+      //   })
+      // }
 
       this.setSelfSelectSymbolList(d, true);
     }

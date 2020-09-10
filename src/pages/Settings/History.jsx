@@ -47,7 +47,7 @@ export default class extends React.Component {
       cancel();
     }
     const { page, page_size, create_time_start, create_time_end } = this.state;
-    console.log("this.state :>> ", this.state);
+    // console.log("this.state :>> ", this.state);
     // 送出 api querystring 前，将 moment 转为 timestamp
     const res = await api.history.getHistoryList({
       params: {
@@ -152,7 +152,7 @@ export default class extends React.Component {
                     item.after_balance - item.before_balance > 0
                       ? "p-up"
                       : "p-down"
-                  }`}
+                    }`}
                 >
                   {item.after_balance - item.before_balance > 0 ? "+" : "-"}
                   {item.amount}

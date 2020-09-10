@@ -55,7 +55,7 @@ export default class extends React.Component {
       onOk() {
         that.logout();
       },
-      onCancel() {},
+      onCancel() { },
     });
   };
 
@@ -157,7 +157,7 @@ export default class extends React.Component {
             </div>
           </ListItem>
         </List> */}
-        {/* <List>
+        <List>
           <ListItem
             title={"涨跌偏好"}
             link={`/settings/color-prefer`}
@@ -170,7 +170,7 @@ export default class extends React.Component {
               />
             </div>
           </ListItem>
-        </List> */}
+        </List>
         {/* <List>
           <ListItem
             title={"客服"}

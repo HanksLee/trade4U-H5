@@ -155,7 +155,6 @@ export default class extends React.Component {
         },
       });
     } else {
-      console.log(toJS(currentTrade))
       this.setState({
         params: {
           lots: currentTrade.lots,
@@ -258,7 +257,6 @@ export default class extends React.Component {
       });
 
       if (res.status === 200) {
-        console.log(res);
         this.setState(
           {
             tabDataLoading: false,

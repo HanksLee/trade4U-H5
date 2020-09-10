@@ -35,17 +35,17 @@ export default class extends React.Component {
     super(props);
     this.state = {
       // currentSymbol: {},
-      // isAddSelfSelect: 0
+      isAddSelfSelect: 0
     }
   }
 
 
   componentDidMount() {
-    // this.setState({ currentSymbol: this.props.market.currentSymbol });
-    console.log(
-      "this.props.market.currentSymbol :>> ",
-      toJS(this.props.market.currentSymbol)
-    );
+    this.setState({ isAddSelfSelect: this.props.market.currentSymbol.is_self_select });
+    // console.log(
+    //   "this.props.market.currentSymbol :>> ",
+    //   toJS(this.props.market.currentSymbol)
+    // );
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -56,14 +56,14 @@ export default class extends React.Component {
 
   showSelfSelectModal = async () => {
     const { confirm } = Modal;
-    // const { isAddSelfSelect } = this.state;
+    const { isAddSelfSelect } = this.state;
     const { currentSymbol } = this.props.market
     const { currentSymbolType } = this.props;
 
     // let symbolID = currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id;
     let symbolID = currentSymbol.id;
 
-    if (currentSymbol.is_self_select === 0) {
+    if (isAddSelfSelect === 0) {
       const res = await api.market.addSelfSelectSymbolList({
         symbol: [symbolID],
       });
@@ -130,6 +130,7 @@ export default class extends React.Component {
   render() {
     const { currentSymbol } = this.props.market;
     const { trader_status } = currentSymbol;
+    const { isAddSelfSelect } = this.state;
     return (
       <Page noToolbar>
         <Navbar>
@@ -188,7 +189,7 @@ export default class extends React.Component {
           <span>月K</span>
         </div> */}
         {/* <WS_TrendContainer nowRealID={currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id} unit={"1m"} /> */}
-        <WS_TrendContainer nowRealID={currentSymbol.symbol} unit={"1m"} />
+        <WS_TrendContainer nowRealID={currentSymbol.id} unit={"1m"} />
         <div className="stock-detail">
           <div>
             <span>小数点位</span>
@@ -247,7 +248,7 @@ export default class extends React.Component {
           />
           <Link
             icon={`${
-              currentSymbol.is_self_select === 0
+              isAddSelfSelect === 0
                 ? "self-select-icon"
                 : "self-select-icon-active"
               }`}

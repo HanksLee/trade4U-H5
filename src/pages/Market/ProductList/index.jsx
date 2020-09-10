@@ -56,7 +56,7 @@ export default class extends React.Component {
       },
     };
 
-    console.log(o);
+    // console.log(o);
     this.props.sendMsg(o);
   };
 
@@ -174,21 +174,21 @@ export default class extends React.Component {
       currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
     const PirceItem = this.getProductItem(quoted_price);
     const testTimestamp = {
-      color:"#FFF",
-      padding:"10px"
+      color: "#FFF",
+      padding: "10px"
     }
     return (
       <>
         {currentList.map((item) => {
           return (
             <>
-            <PirceItem
-              thisRouter={thisRouter}
-              currentSymbolType={currentSymbolType}
-              item={item}
-              thisStore={thisStore}
-            />
-            <div style={testTimestamp} > {moment(item.product_details?.timestamp * 1000).format("YYYY/MM/DD hh:mm:ss")}</div>
+              <PirceItem
+                thisRouter={thisRouter}
+                currentSymbolType={currentSymbolType}
+                item={item}
+                thisStore={thisStore}
+              />
+              <div style={testTimestamp} > {moment(item.product_details?.timestamp * 1000).format("YYYY/MM/DD hh:mm:ss")}</div>
             </>
           );
         })}
