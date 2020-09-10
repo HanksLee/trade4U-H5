@@ -26,11 +26,11 @@ export class SymbolInfo extends React.Component {
   }
   getFund = async () => {
     const { currentSymbol } = this.props.market;
-    console.log("this.props.trade :>> ", this.props.trade);
+    // console.log("this.props.trade :>> ", this.props.trade);
     this.setState({ tabDataLoading: true }, async () => {
       const id = currentSymbol?.product_details?.symbol;
       const res = await api.trade.getFunds(id, {});
-      console.log("res :>> ", res);
+      // console.log("res :>> ", res);
       if (res.status === 200) {
         this.setState({ tabDataLoading: false, fund: res.data });
       } else {
@@ -42,14 +42,14 @@ export class SymbolInfo extends React.Component {
   getNewsList = async () => {
     const { currentSymbol } = this.props.market;
     const { currentNewsPage } = this.state;
-    console.log("this.props.market :>> ", toJS(this.props.market));
+    // console.log("this.props.market :>> ", toJS(this.props.market));
     const res = await api.news.getNewsList({
       params: {
         symbol_code: currentSymbol?.product_details?.symbol,
         page: currentNewsPage,
       },
     });
-    console.log("getNewsList res :>> ", res);
+    // console.log("getNewsList res :>> ", res);
     if (res.status === 200) {
       this.setState({
         page: currentNewsPage + 1,
@@ -73,7 +73,6 @@ export class SymbolInfo extends React.Component {
       purchase_fee: { text: "买入库存费", format: (val) => String(val) },
       selling_fee: { text: "卖出库存费", format: (val) => String(val) },
     };
-    console.log("currentSymbol :>> ", currentSymbol);
     return (
       <div className={cx("tab-body")}>
         <div className={cx("stock-detail")}>
