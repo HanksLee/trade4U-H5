@@ -77,7 +77,7 @@ export class SymbolInfo extends React.Component {
       <div className={cx("tab-body")}>
         <div className={cx("stock-detail")}>
           {Object.entries(field).map(([key, detail]) => {
-            const displayValue = symbol_display[key];
+            const displayValue = symbol_display[key] ?? "-";
             return (
               <div className={cx("item")}>
                 <div className={cx("item-col", "item-title")}>
@@ -108,14 +108,14 @@ export class SymbolInfo extends React.Component {
           {!utils.isEmpty(fund) && (
             <div className={cx("fund-table")}>
               <tr className={cx("fund-table-row")}>
-                <th className={cx("fund-table-cell")}>金额(元)</th>
+                <th className={cx("fund-table-cell")}> </th>
                 <th className={cx("fund-table-cell")}>主力买入</th>
                 <th className={cx("fund-table-cell")}>主力卖出</th>
                 <th className={cx("fund-table-cell")}>散户买入</th>
                 <th className={cx("fund-table-cell")}>散户卖出</th>
               </tr>
               <tr className={cx("fund-table-row")}>
-                <td className={cx("fund-table-cell")}></td>
+                <td className={cx("fund-table-cell")}>金额(元)</td>
                 <td className={cx("fund-table-cell")}>
                   {Math.round(Number(fund.major_in_amount) / 10000)}
                 </td>
