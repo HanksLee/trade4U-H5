@@ -107,11 +107,13 @@
 
         input {
           background-color: #17283e !important;
-          color: #838d9e;
-          font-size: 12px;
+          //color: #838d9e;
+          color:#fff;
+          font-size: 14px;
 
           &::placeholder {
-            color: inherit;
+            //color: inherit;
+            color: #838d9e;
             font-size: inherit;
           }
         }
@@ -275,6 +277,25 @@
       white-space: nowrap;
       overflow: hidden;
       padding: 7px;
+      
+      div{
+        margin-bottom: 11px;
+      }
+      p{
+        margin-bottom: 0px;
+        .symbol-type-code {
+          font-size: 10px;
+          color: #21212b;
+          padding: 1px 3px;
+          background-color: #0091ff;
+          margin-right: 6px;
+          border-radius: 1px;
+        }
+        .symbol-code {
+          font-size: 16px;
+          color: #838d9e;
+        }    
+      }
     }
 
     .self-select-spread {
@@ -558,6 +579,10 @@
 
 .nav-icon {
   padding: 10px 5px;
+  width: 30px;
+  &:active{
+    opacity: 0.5;
+  }
 }
 
 .nav-icon + .nav-icon {
@@ -666,6 +691,10 @@
     transform: translateX(-50%);
     bottom: 25px;
     z-index: 100;
+
+    &:active{
+      opacity: 0.5;
+    }
   }
 }
 
@@ -680,12 +709,14 @@
     > p {
       &.search-result-name {
         color: #ffffff;
-        font-size: 12px;
-        margin-bottom: 10px;
+        font-size: 18px;
+        //margin-bottom: 10px;
+        margin-bottom: 0px;
       }
 
       &:last-child {
         margin-bottom: 0;
+       
       }
     }
 
@@ -699,7 +730,8 @@
     }
 
     .symbol-code {
-      font-size: 10px;
+      //font-size: 10px;
+      font-size: 16px;
       color: #838d9e;
     }
   }

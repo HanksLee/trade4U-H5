@@ -171,6 +171,9 @@
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
+    &:active{
+      opacity: 0.5;
+    }
   }
 }
 
@@ -432,6 +435,9 @@
         text-align: center;
         background: rgba(131, 141, 158, 1);
         color: #fff;
+        &:active{
+         opacity: 0.5;
+        }
       }
 
       .trade-detail-input-item-less-btn {
@@ -483,6 +489,10 @@
   &.reject {
     background-color: #6d7278 !important;
     color: #21212b !important;
+  }
+
+  &:active{
+    opacity: 0.5;
   }
 }
 

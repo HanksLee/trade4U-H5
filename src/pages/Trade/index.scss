@@ -233,6 +233,9 @@
       font-size: 12px;
       color: #ffffff;
       text-align: center;
+      &:active{
+        opacity: 0.5;
+      }
     }
 
     .trade-content-content-bottom-btn-group {

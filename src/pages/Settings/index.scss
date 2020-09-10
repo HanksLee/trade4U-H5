@@ -37,6 +37,9 @@
       flex-basis: 42.667%;
       background: rgba(242, 226, 5, 1);
       border-radius: 4px;
+      &:active{
+        opacity: 0.5;
+      }
     }
 
     .btn-reverse {
@@ -200,7 +203,7 @@
       }
 
       .item-title {
-        font-size: 14px;
+        font-size: 18px;
         color: #ffffff;
       }
 
@@ -280,6 +283,9 @@
 
       > div {
         position: relative;
+        img{
+          width: 30px;
+        }
       }
     }
   }
@@ -292,6 +298,10 @@
     position: absolute;
     right: -3px;
     top: -3px;
+  }
+
+  &:active{
+    opacity: 0.5;
   }
 }
 
@@ -607,10 +617,15 @@
 
       .ant-form-item-control-input-content {
         padding: 2px 0;
-        border-bottom: 1px solid white;
+       // border-bottom: 1px solid white;
 
         input {
           font-size: 16px;
+          border-bottom: 1px solid white;
+          &:focus{
+            box-shadow: unset;
+            border-bottom: 1px solid #F2E205;
+          }
         }
 
         .ant-input-number {
@@ -621,6 +636,8 @@
           &.ant-input-number-focused {
             box-shadow: unset;
           }
+
+          
         }
 
         .ant-input-number-handler-wrap {
@@ -632,6 +649,7 @@
             padding: unset;
           }
         }
+        
       }
     }
 
@@ -692,16 +710,19 @@
       }
 
       .am-input-control {
-        border-bottom: 1px solid white;
+        //border-bottom: 1px solid white;
         margin-top: 10px;
         input {
           font-size: 16px;
           //color: #6d7278;
           color: #ffffff;
           line-height: 26px;
-
+          border-bottom: 1px solid white;
           &::placeholder {
             font-size: 16px;
+          }
+          &:focus{
+            border-bottom: 1px solid #F2E205;
           }
         }
         input:disabled{
@@ -838,6 +859,10 @@
     text-align: center;
     color: rgba(242, 226, 5, 1);
     background-color: transparent;
+
+    &:active{
+      opacity: 0.5;
+    }
   }
 }
 
