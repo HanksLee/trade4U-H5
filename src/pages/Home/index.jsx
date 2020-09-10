@@ -51,7 +51,7 @@ export default class extends React.Component {
     const isIpoVisible = utils.parseBool(config["function_ipo"]); // 申购页
     const isNewsVisible = utils.parseBool(config["function_news"]); // 新闻页
     return (
-      <Page name="home">
+      <Page name="home" noNavbar>
         <Views tabs className="safe-areas">
           <View id="view-market" name="行情" tabActive tab url="/market/" />
           {/* <View id="view-chart" name="图表" tab url="/chart/" /> */}
