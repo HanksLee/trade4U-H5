@@ -200,52 +200,7 @@ export default class SymbolDetail extends React.Component {
         </div> */}
         {/* <WS_TrendContainer nowRealID={currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id} unit={"1m"} /> */}
         <WS_TrendContainer nowRealID={currentSymbol.id} unit={"1m"} />
-        <div className="stock-detail">
-          <div>
-            <span>小数点位</span>
-            <span>{String(currentSymbol?.symbol_display?.decimals_place)}</span>
-          </div>
-          <div>
-            <span>合约大小</span>
-            <span>{String(currentSymbol?.symbol_display?.contract_size)}</span>
-          </div>
-          <div>
-            <span>点差</span>
-            <span>{String(currentSymbol?.symbol_display?.spread)}</span>
-          </div>
-          <div>
-            <span>预付款货币</span>
-            <span>
-              {currentSymbol?.symbol_display?.margin_currency_display}
-            </span>
-          </div>
-          <div>
-            <span>获利货币</span>
-            <span>
-              {currentSymbol?.symbol_display?.profit_currency_display}
-            </span>
-          </div>
-          <div>
-            <span>最小交易手数</span>
-            <span>{String(currentSymbol?.symbol_display?.min_lots)}</span>
-          </div>
-          <div>
-            <span>最大交易手数</span>
-            <span>{String(currentSymbol?.symbol_display?.max_lots)}</span>
-          </div>
-          <div>
-            <span>交易数步长</span>
-            <span>{String(currentSymbol?.symbol_display?.lots_step)}</span>
-          </div>
-          <div>
-            <span>买入库存费</span>
-            <span>{String(currentSymbol?.symbol_display?.purchase_fee)}</span>
-          </div>
-          <div>
-            <span>卖出库存费</span>
-            <span>{String(currentSymbol?.symbol_display?.selling_fee)}</span>
-          </div>
-        </div>
+        <SymbolInfo />
         <Toolbar tabbar labels bottom className="app-tabbar stock-tabbar">
           <Link
             tabLinkActive

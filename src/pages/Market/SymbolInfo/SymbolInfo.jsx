@@ -194,11 +194,9 @@ export class SymbolInfo extends React.Component {
               <div
                 className="news-content-item"
                 onClick={() => {
-                  console.log("this :>> ", this);
-                  this.$f7router.navigate("/news/detail", {
-                    props: {
-                      newsDetail: item,
-                    },
+                  const router = this.$f7.views.main.router;
+                  router.navigate("/news/detail", {
+                    props: { newsDetail: item },
                   });
                 }}
               >
