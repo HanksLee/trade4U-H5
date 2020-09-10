@@ -3,9 +3,8 @@ import { BaseReact } from "components/baseComponent";
 import WebSocketControl from "utils/WebSocketControl";
 import { AUTO, NORMAL } from "utils/WebSocketControl/close";
 
-import {initBuffer , checkBuffer} from 'utils/buffer'
-import moment from 'moment';
-
+import { initBuffer, checkBuffer , mergeRegisterData , getRegisterCount } from "utils/buffer";
+import moment from "moment";
 
 import {
   STANDBY, //啟動ws之前
@@ -14,7 +13,7 @@ import {
   DISCONNECTED, //斷線
   RECONNECT, //斷線重新連線
   URLREPLACE, // Url 切換
-  ERROR //
+  ERROR, //
 } from "utils/WebSocketControl/status";
 
 export default function WSConnect(defaultChannl, channelConfig, Comp) {
@@ -24,12 +23,12 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
     bufferInfo,
     connectDistanceTime,
     tryConnectMax,
-    disconnectMax
+    disconnectMax,
   } = defaultChannl;
-  
+
   const wsControl = new WebSocketControl({
     path: path,
-    connectDistanceTime: connectDistanceTime
+    connectDistanceTime: connectDistanceTime,
   });
 
   const connectQueue = [];
@@ -42,24 +41,24 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
   };
 
   const clearConnectQueue = () => {
-    connectQueue.forEach(id => {
+    connectQueue.forEach((id) => {
       window.clearTimeout(id);
     });
     connectQueue.splice(0, connectQueue.length);
   };
 
- 
-
   return class extends BaseReact {
     state = {
       selectedChannel: defaultChannl,
       refreshChannel: false,
-      initMsg: false
+      initMsg: false,
     };
     disconnetCount = 0;
-    buffer = bufferInfo;
+    buffer = null;
     constructor(props) {
       super(props);
+
+      this.buffer = this.createBuffer();
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -71,7 +70,7 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
 
       return {
         ...prevState,
-        refreshChannel
+        refreshChannel,
       };
     }
 
@@ -81,7 +80,7 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
         return true;
       }
 
-      const newChannel = channelConfig.filter(item => {
+      const newChannel = channelConfig.filter((item) => {
         return item.channelCode === nextProps.channelCode;
       });
 
@@ -90,7 +89,7 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       }
 
       nextState.selectedChannel = {
-        ...newChannel[0]
+        ...newChannel[0],
       };
 
       return true;
@@ -125,10 +124,10 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       const { selectedChannel, refreshChannel } = this.state;
       if (!refreshChannel) return;
 
-      const { path, pathKey  , bufferInfo} = selectedChannel;
+      const { path, pathKey, bufferInfo } = selectedChannel;
 
       const newPath = this.getNewPath(path, pathKey);
-      this.buffer = bufferInfo;
+      this.buffer = this.createBuffer();
       wsControl.replaceUrl(newPath);
     }
 
@@ -156,36 +155,103 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       return path;
     };
 
-    setWSEvent = wsc => {
+    createBuffer = () => {
+      const { limitTime, maxCount, regType } = bufferInfo || {
+        limitTime: null,
+        maxCount: null,
+        reg: null,
+      };
+      return initBuffer(limitTime, maxCount, regType);
+    };
+
+    mergeData = (reg, msg) => {
+      const { type, data } = msg;
+      if (Array.isArray(reg)) {
+        return [...reg, ...data];
+      }
+      const regValue = reg[type];
+
+      if (!regValue) {
+        return;
+      }
+
+      if (Array.isArray(data)) {
+        for (let value of data) {
+          reg[type].push(value);
+        }
+      } else {
+        reg[type].push(value);
+      }
+
+      return reg;
+    };
+
+    getRegCount = (reg) => {
+      if (Array.isArray(reg)) {
+        return reg.length;
+      }
+
+      let total = 0;
+      for (let value of reg) {
+        total += value.length;
+      }
+
+      return total;
+    };
+    setWSEvent = (wsc) => {
       wsc.setStatusChange((wsc, before, now) => {
         // console.log("StatusChange:" ,`${before}->${now}`);
         if (this.statusChangListener) this.statusChangListener(before, now);
       });
       wsc.setReceviceMsg((wsc, msg) => {
         // console.log("ReceviceMsg:" ,msg);
-        const { buffer } = this;
-        const { timeId, BUFFER_TIME, lastCheckUpdateTime , list } = buffer;
-        const receviceTime = moment().valueOf();
-        buffer.list = [...list, ...data];
-        
-        if(!checkBuffer(BUFFER_TIME ,BUFFER_MAXCOUNT , maxCount ,lastCheckUpdateTime, receviceTime)){
+        if (!bufferInfo && this.receviceMsgLinter) {
+          this.receviceMsgLinter(msg);
           return;
         }
-        if (this.receviceMsgLinter) this.receviceMsgLinter(msg);
+        const { buffer } = this;
+        const {
+          timeId,
+          BUFFER_TIME,
+          BUFFER_MAXCOUNT,
+          lastCheckUpdateTime,
+        } = buffer;
+        const receviceTime = moment().valueOf();
+        buffer.register = mergeRegisterData(buffer.register, msg);
+
+        const maxCount = getRegisterCount(buffer.register);
+        if (
+          !checkBuffer(
+            BUFFER_TIME,
+            BUFFER_MAXCOUNT,
+            maxCount,
+            lastCheckUpdateTime,
+            receviceTime
+          )
+        ) {
+          return;
+        }
+        if (this.receviceMsgLinter) this.receviceMsgLinter(buffer.register);
+
+        this.buffer = this.createBuffer();
       });
 
-      wsc.setStatusEvent(STANDBY, wsc => {
+      wsc.setStatusEvent(STANDBY, (wsc) => {
         // console.log("STANDBY");
         clearConnectQueue();
       });
       wsc.setStatusEvent(CONNECTING, (wsc, count) => {
         // console.log("CONNECTING:",count);
-        if (count === tryConnectMax) tryReconnect();
+        if (count === tryConnectMax) {
+          tryReconnect();
+          if (this.receviceMsgLinter)
+            this.receviceMsgLinter(this.buffer.register);
+        }
       });
-      wsc.setStatusEvent(CONNECTED, wsc => {
+      wsc.setStatusEvent(CONNECTED, (wsc) => {
         // console.log("CONNECTED");
       });
-      wsc.setStatusEvent(RECONNECT, wsc => {
+      wsc.setStatusEvent(RECONNECT, (wsc) => {
         // console.log("RECONNECT");
       });
       wsc.setStatusEvent(DISCONNECTED, (wsc, closeCode) => {
@@ -204,17 +270,15 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
     };
 
     receviceMsgLinter = null;
-    setReceviceMsgLinter = fn => {
+    setReceviceMsgLinter = (fn) => {
       this.receviceMsgLinter = fn;
     };
     statusChangListener = null;
-    setStatusChangeListener = fn => {
+    setStatusChangeListener = (fn) => {
       this.statusChangListener = fn;
     };
-    sendMsg = o => {
+    sendMsg = (o) => {
       wsControl.sendMsg(o);
     };
   };
-
-
 }

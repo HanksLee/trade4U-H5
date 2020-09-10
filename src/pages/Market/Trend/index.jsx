@@ -86,7 +86,7 @@ export default class extends BaseReact {
     this.clearBuffer();
     // console.log("old trend")
     this.trend.fetchTrendList(nowRealID, unit);
-    console.log("trend")
+    // console.log("trend")
   }
 
   //function

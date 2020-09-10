@@ -28,11 +28,9 @@ export default class extends React.Component {
     currentSymbolType: this.props.currentSymbolType,
   };
 
-  buffer = {};
-
   constructor(props) {
     super(props);
-    this.buffer = this.initBuffer();
+
   }
   componentDidMount() {
     this.props.setReceviceMsgLinter(this.receviceMsgLinter);
@@ -56,7 +54,7 @@ export default class extends React.Component {
       },
     };
 
-    console.log(o);
+    // console.log(o);
     this.props.sendMsg(o);
   };
 
@@ -70,22 +68,8 @@ export default class extends React.Component {
   }
 
   receviceMsgLinter = (d) => {
-    const { data } = d;
-
-    const { buffer } = this;
-    const { timeId, BUFFER_TIME, list } = buffer;
-    const receviceTime = moment().valueOf();
-    buffer.list = [...list, ...data];
-
-    if (timeId) window.clearTimeout(timeId);
-    if (!this.checkBuffer(buffer, receviceTime)) {
-      buffer.timeId = window.setTimeout(() => {
-        this.updateContent(buffer);
-      }, BUFFER_TIME);
-      return;
-    }
-
-    this.updateContent(buffer);
+    console.log(d)
+    this.updateContent(d);
   };
 
   checkBuffer(buffer, receviceTime) {
@@ -100,7 +84,7 @@ export default class extends React.Component {
     else return false;
   }
 
-  updateContent = (buffer) => {
+  updateContent = (list) => {
     const { currentSymbolType } = this.state;
     const {
       selfSelectSymbolList,
@@ -109,13 +93,12 @@ export default class extends React.Component {
     } = this.props.market;
     const currentList =
       currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
-    const { list } = buffer;
-    const newList = this.sortList(list);
-    buffer.list = this.filterBufferlList(newList);
 
-    updateCurrentSymbolList(buffer.list, currentList, currentSymbolType);
+    const sortList = this.sortList(list);
+    const filterList = this.filterBufferlList(sortList);
 
-    this.buffer = this.initBuffer();
+    updateCurrentSymbolList(filterList , currentList, currentSymbolType);
+
   };
 
   filterBufferlList(list) {
@@ -152,16 +135,6 @@ export default class extends React.Component {
     return tmp;
   };
 
-  initBuffer() {
-    return {
-      BUFFER_MAXCOUNT: 50,
-      BUFFER_TIME: 2000,
-      timeId: 0,
-      lastCheckUpdateTime: moment().valueOf(),
-      list: [],
-    };
-  }
-
   render() {
     // console.log(this.props.market.selfSelectSymbolList)
     // console.log(this)
@@ -174,21 +147,21 @@ export default class extends React.Component {
       currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
     const PirceItem = this.getProductItem(quoted_price);
     const testTimestamp = {
-      color:"#FFF",
-      padding:"10px"
+      color: "#FFF",
+      padding: "10px"
     }
     return (
       <>
         {currentList.map((item) => {
           return (
             <>
-            <PirceItem
-              thisRouter={thisRouter}
-              currentSymbolType={currentSymbolType}
-              item={item}
-              thisStore={thisStore}
-            />
-            <div style={testTimestamp} > {moment(item.product_details?.timestamp * 1000).format("YYYY/MM/DD hh:mm:ss")}</div>
+              <PirceItem
+                thisRouter={thisRouter}
+                currentSymbolType={currentSymbolType}
+                item={item}
+                thisStore={thisStore}
+              />
+              <div style={testTimestamp} > {moment(item.product_details?.timestamp * 1000).format("YYYY/MM/DD hh:mm:ss")}</div>
             </>
           );
         })}
