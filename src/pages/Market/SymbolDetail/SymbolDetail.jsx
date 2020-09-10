@@ -21,12 +21,16 @@ import { inject, observer } from "mobx-react";
 import WSConnect from "components/HOC/WSConnect";
 import channelConfig from "../config/trendChannelConfig";
 import Trend from "../Trend";
-import "./SymbolDetail.scss";
+
 import GreenArrowIcon from "assets/img/green-arrow-icon.svg";
 import RedArrowIcon from "assets/img/red-arrow-icon.svg";
 import OrderIcon from "assets/img/order-icon.svg";
 import OrderIconDisabled from "assets/img/order-icon-disabled.svg";
 const WS_TrendContainer = WSConnect(channelConfig[0], channelConfig, Trend);
+
+import styles from "./SymbolDetail.module.scss";
+import classnames from "classnames/bind";
+const cx = classnames.bind(styles);
 
 @inject("market", "trend")
 @observer
@@ -243,11 +247,11 @@ class StockInfo extends React.Component {
     };
     console.log("currentSymbol :>> ", currentSymbol);
     return (
-      <div className="stock-detail">
+      <div className={cx("stock-detail")}>
         {Object.entries(field).map(([key, detail]) => {
           const displayValue = symbol_display[key];
           return (
-            <div className="item">
+            <div className={cx("item")}>
               <span>{detail.text}</span>
               <span>{displayValue}</span>
             </div>
