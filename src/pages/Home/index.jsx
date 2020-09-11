@@ -12,6 +12,8 @@ import Framework7 from "framework7/framework7-lite.esm.bundle.js";
 import { inject, observer } from "mobx-react";
 import "./index.scss";
 
+import WS_Symbol from "components/Websocket/Symbol";
+
 @inject("common", "message")
 @observer
 export default class extends React.Component {
@@ -52,6 +54,7 @@ export default class extends React.Component {
     const isNewsVisible = utils.parseBool(config["function_news"]); // 新闻页
     return (
       <Page name="home">
+        <WS_Symbol />
         <Views tabs className="safe-areas">
           <View id="view-market" name="行情" tabActive tab url="/market/" />
           {/* <View id="view-chart" name="图表" tab url="/chart/" /> */}

@@ -1,8 +1,9 @@
 import React from "react";
 import { inject, observer } from "mobx-react";
+import { reaction } from "mobx";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import moment from "moment-timezone"
+import moment from "moment-timezone";
 import Dom7 from "dom7";
 import "../index.scss";
 import {
@@ -30,19 +31,22 @@ export default class extends React.Component {
 
   constructor(props) {
     super(props);
-
+    this.setUpdateListListener();
   }
   componentDidMount() {
-    this.props.setReceviceMsgLinter(this.receviceMsgLinter);
+    // this.props.setReceviceMsgLinter(this.receviceMsgLinter);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps , prevState) {
     const { nextSymbolIDList, prevSymbolIDList } = this.props.market;
+
     if (this.state.currentSymbolType !== "自选") {
       if (!utils.isEmpty(prevSymbolIDList)) {
-        this.trackSymbol(prevSymbolIDList, "unsubscribe");
+        this.props.common.setUnSubscribeSymbol({list:prevSymbolIDList})
+        // this.trackSymbol(prevSymbolIDList, "unsubscribe");
       }
-      this.trackSymbol(nextSymbolIDList, "subscribe");
+      this.props.common.setSubscribeSymbol({list:nextSymbolIDList})
+      // this.trackSymbol(nextSymbolIDList, "subscribe");
     }
   }
 
@@ -55,7 +59,7 @@ export default class extends React.Component {
     };
 
     // console.log(o);
-    this.props.sendMsg(o);
+   // this.props.sendMsg(o);
   };
 
   componentWillReceiveProps(nextProps) {
@@ -67,22 +71,21 @@ export default class extends React.Component {
     }
   }
 
-  receviceMsgLinter = (d) => {
-    console.log(d)
-    this.updateContent(d);
+  // receviceMsgLinter = (d) => {
+  //   //this.updateContent(d);
+
+  // };
+
+  setUpdateListListener = () => {
+    const { subscribeSymbolList } = this.props.common;
+    reaction(
+      () => this.props.common.subscribeSymbolList,
+      (subscribeSymbolList) => {
+        console.log("setUpdateListListener",subscribeSymbolList)
+        this.updateContent(subscribeSymbolList);
+      }
+    );
   };
-
-  checkBuffer(buffer, receviceTime) {
-    const { list, lastCheckUpdateTime, BUFFER_MAXCOUNT, BUFFER_TIME } = buffer;
-    let maxCount = list.length;
-
-    if (
-      receviceTime - lastCheckUpdateTime >= BUFFER_TIME ||
-      maxCount >= BUFFER_MAXCOUNT
-    )
-      return true;
-    else return false;
-  }
 
   updateContent = (list) => {
     const { currentSymbolType } = this.state;
@@ -97,8 +100,7 @@ export default class extends React.Component {
     const sortList = this.sortList(list);
     const filterList = this.filterBufferlList(sortList);
 
-    updateCurrentSymbolList(filterList , currentList, currentSymbolType);
-
+    updateCurrentSymbolList(filterList, currentList, currentSymbolType);
   };
 
   filterBufferlList(list) {
@@ -140,7 +142,7 @@ export default class extends React.Component {
     // console.log(this)
     // console.log(this.props)
     // console.log("this.$f7router :>> ", this.$f7router);
-    const { thisRouter, quoted_price, thisStore } = this.props;
+    const { thisRouter, quoted_price, thisStore ,symbol_type_code} = this.props;
     const { selfSelectSymbolList, symbolList } = this.props.market;
     const { currentSymbolType, dataLoading } = this.state;
     const currentList =
@@ -148,8 +150,9 @@ export default class extends React.Component {
     const PirceItem = this.getProductItem(quoted_price);
     const testTimestamp = {
       color: "#FFF",
-      padding: "10px"
-    }
+      padding: "10px",
+    };
+
     return (
       <>
         {currentList.map((item) => {
@@ -158,10 +161,16 @@ export default class extends React.Component {
               <PirceItem
                 thisRouter={thisRouter}
                 currentSymbolType={currentSymbolType}
+                currentSymbolTypeCode={symbol_type_code}
                 item={item}
                 thisStore={thisStore}
               />
-              <div style={testTimestamp} > {moment(item.product_details?.timestamp * 1000).format("YYYY/MM/DD hh:mm:ss")}</div>
+              <div style={testTimestamp}>
+                {" "}
+                {moment(item.product_details?.timestamp * 1000).format(
+                  "YYYY/MM/DD hh:mm:ss"
+                )}
+              </div>
             </>
           );
         })}
@@ -205,5 +214,4 @@ export default class extends React.Component {
       return TwoPriceItem;
     }
   };
-
 }

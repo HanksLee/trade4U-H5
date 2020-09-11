@@ -102,6 +102,11 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
           setReceviceMsgLinter={this.setReceviceMsgLinter}
           setStatusChangeListener={this.setStatusChangeListener}
           sendMsg={this.sendMsg}
+          replaceUrl={this.replaceUrl}
+          startWS={this.startWS}
+          closeWS={this.closeWS}
+          reconnectWS={this.reconnectWS}
+          getProgress={this.getProgress}
         />
       );
     }
@@ -277,8 +282,25 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
     setStatusChangeListener = (fn) => {
       this.statusChangListener = fn;
     };
+
+    getProgress = ()=>{
+      return wsControl.nowProgress;
+    }
     sendMsg = (o) => {
       wsControl.sendMsg(o);
     };
+    replaceUrl = (newPath) => {
+      wsControl.replaceUrl(newPath);
+    };
+    startWS = ()=>{
+      wsControl.startWS();
+    };
+    closeWS = ()=>{
+      wsControl.closeWS();
+    }
+    reconnectWS = ()=>{
+      wsControl.reconnectWS();
+    }
+
   };
 }

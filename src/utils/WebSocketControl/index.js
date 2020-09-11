@@ -128,6 +128,9 @@ export default class WebSocketControl {
   }
 
   replaceUrl(path) {
+    if(this._path === path){
+      return;
+    }
     if(!path) {
       this.closeWS();
       return;

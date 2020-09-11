@@ -1,6 +1,6 @@
 import React from "react";
 
-export default ({ thisRouter, item, currentSymbolType, thisStore }) => {
+export default ({ thisRouter, item, currentSymbolType, thisStore ,currentSymbolTypeCode}) => {
   return (
     <div
       className="self-select-tr"
@@ -13,6 +13,7 @@ export default ({ thisRouter, item, currentSymbolType, thisStore }) => {
           props: {
             // currentSymbol: item,
             currentSymbolType,
+            currentSymbolTypeCode
           },
         });
       }}
