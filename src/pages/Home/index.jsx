@@ -12,6 +12,8 @@ import Framework7 from "framework7/framework7-lite.esm.bundle.js";
 import { inject, observer } from "mobx-react";
 import "./index.scss";
 
+let up
+
 @inject("common", "message")
 @observer
 export default class extends React.Component {
@@ -99,6 +101,9 @@ export default class extends React.Component {
                 text="新闻"
                 force={true}
                 reloadCurrent={true}
+                onClick={() => {
+                  this.$event.emit("refresh-news-page");
+                }}
               />
             )}
             <Link

@@ -118,11 +118,11 @@ export default class extends React.Component {
       contract_size,
     } = currentSymbol.symbol_display;
 
-    const { margin_value, leverage } = mode === "add"? stockParams : currentTrade;
+    const { margin_value, leverage } = mode === "add" ? stockParams : currentTrade;
     const { sell } = currentSymbol.product_details ?? { sell: 0 };
     const leverageMap = currentSymbol?.symbol_display?.leverage.split(",");
-    const defaultLeverage =  mode === "add"? leverageMap[0] :leverage;
-    const defaultPrice =  mode === "add"? sell : currentTrade.open_price;
+    const defaultLeverage = mode === "add" ? leverageMap[0] : leverage;
+    const defaultPrice = mode === "add" ? sell : currentTrade.open_price;
     const { trading_volume, lots, totalFunds } = this.getTradingVolumeInfo(
       margin_value,
       defaultLeverage,
@@ -160,14 +160,14 @@ export default class extends React.Component {
       this.setState({
         stockParams: {
           ...stockParams,
-          leverage:currentTrade.leverage,
-          holdDays:currentTrade.position_type,
+          leverage: currentTrade.leverage,
+          holdDays: currentTrade.position_type,
         },
         params: {
           ...this.state.params,
           open_price: currentTrade.open_price,
-          trading_volume:currentTrade.trading_volume,
-          lots:currentTrade.lots,
+          trading_volume: currentTrade.trading_volume,
+          lots: currentTrade.lots,
           take_profit: currentTrade.take_profit,
           stop_loss: currentTrade.stop_loss,
 
@@ -730,7 +730,7 @@ export default class extends React.Component {
           lots: lots.toString(),
           symbol: currentSymbol.id,
           action: params.action,
-          position_type:stockParams.holdDays
+          position_type: stockParams.holdDays
         };
 
         if (tradeInfo.free_margin - totalPlatformCurrency < 0) {
@@ -870,7 +870,7 @@ export default class extends React.Component {
   renderStockInput = () => {
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
-    const {swaps ,taxes ,fee} = currentTrade;
+    const { swaps, taxes, fee } = currentTrade;
     const { currentSymbol, currentShowSymbol } = this.props.market;
     const {
       open_currency_rate,
@@ -957,7 +957,7 @@ export default class extends React.Component {
           )}
 
           <div className="trade-detail-input-item">
-          <div className="trade-detail-input-item-title">{mode !== "add" && "持仓"}类型</div>
+            <div className="trade-detail-input-item-title">{mode !== "add" && "持仓"}类型</div>
             <div className="trade-detail-input-item-btn-group">
               {mode === "add" && (
                 <>
@@ -997,7 +997,7 @@ export default class extends React.Component {
 
           {mode === "add" && (
             <div className="trade-detail-input-item">
-              <div className="trade-detail-input-item-title">类型</div>
+              <div className="trade-detail-input-item-title">方向</div>
               <div className="trade-detail-input-item-btn-group">
                 {stockTypes.map((item) => {
                   return (
@@ -1048,7 +1048,7 @@ export default class extends React.Component {
 
           {mode === "add" && (
             <div className="trade-detail-input-item">
-              <div className="trade-detail-input-item-title">价格</div>
+              <div className="trade-detail-input-item-title">操作资金</div>
               <div className="trade-detail-input-item-btn-group">
                 <div
                   className="trade-detail-input-item-less-btn"
@@ -1093,7 +1093,7 @@ export default class extends React.Component {
           )}
 
           <div className="trade-detail-input-item">
-            <div className="trade-detail-input-item-title">槓桿倍數</div>
+            <div className="trade-detail-input-item-title">槓杆倍数</div>
             <div className="trade-detail-input-item-btn-group">
               {mode === "add" && (
                 <>
@@ -1120,14 +1120,14 @@ export default class extends React.Component {
           </div>
 
           <div className="trade-detail-input-item">
-            <div className="trade-detail-input-item-title">操盤資金</div>
+            <div className="trade-detail-input-item-title">操盘资金</div>
             <div className="trade-detail-input-item-btn-group">
               <div className={`trade-detail-input-item-text`}>{totalFunds}</div>
             </div>
           </div>
 
           <div className="trade-detail-input-item">
-            <div className="trade-detail-input-item-title">買入數量</div>
+            <div className="trade-detail-input-item-title">买入数量</div>
             <div className="trade-detail-input-item-btn-group">
               <div className={`trade-detail-input-item-text`}>
                 {trading_volume}
@@ -1173,10 +1173,10 @@ export default class extends React.Component {
                   </div>
                 </>
               ) : (
-                <div className={`trade-detail-input-item-text`}>
-                  {params.take_profit}
-                </div>
-              )}
+                  <div className={`trade-detail-input-item-text`}>
+                    {params.take_profit}
+                  </div>
+                )}
             </div>
           </div>
 
@@ -1229,13 +1229,13 @@ export default class extends React.Component {
         <div
           className={`trade-detail-submit-btn 
                         ${
-                          (tradeType !== "instance" &&
-                            utils.isEmpty(params.open_price)) ||
-                          utils.isEmpty(params.lots) ||
-                          isSubmit
-                            ? "reject"
-                            : ""
-                        }
+            (tradeType !== "instance" &&
+              utils.isEmpty(params.open_price)) ||
+              utils.isEmpty(params.lots) ||
+              isSubmit
+              ? "reject"
+              : ""
+            }
                         ${mode === "add" ? "add" : "modify"}`}
           style={{ marginBottom: "20px" }}
           onClick={() => {
@@ -1689,6 +1689,9 @@ export default class extends React.Component {
 
     const { currentSymbol } = this.props.market;
 
+    console.log(currentSymbol?.symbol_display?.lots_step)
+    console.log(String(currentSymbol?.symbol_display?.lots_step))
+
     const { moreInfo, tradeType, params, tabDataLoading } = this.state;
     return (
       <Page noToolbar>
@@ -1758,53 +1761,101 @@ export default class extends React.Component {
               <div>
                 <span>小数点位</span>
                 <span>
-                  {String(currentSymbol?.symbol_display?.decimals_place)}
+                  {(currentSymbol?.symbol_display?.decimals_place !== undefined
+                    && currentSymbol?.symbol_display?.decimals_place !== null)
+                    ? currentSymbol?.symbol_display?.decimals_place
+                    : "-"
+                  }
                 </span>
               </div>
               <div>
                 <span>合约大小</span>
                 <span>
-                  {String(currentSymbol?.symbol_display?.contract_size)}
+                  {(currentSymbol?.symbol_display?.contract_size !== undefined
+                    && currentSymbol?.symbol_display?.contract_size !== null)
+                    ? currentSymbol?.symbol_display?.contract_size
+                    : "-"
+                  }
                 </span>
               </div>
               <div>
                 <span>点差</span>
-                <span>{String(currentSymbol?.symbol_display?.spread)}</span>
+                <span>
+                  {(currentSymbol?.symbol_display?.spread !== undefined
+                    && currentSymbol?.symbol_display?.spread !== null)
+                    ? currentSymbol?.symbol_display?.spread
+                    : "-"
+                  }
+                </span>
               </div>
               <div>
                 <span>预付款货币</span>
                 <span>
-                  {currentSymbol?.symbol_display?.margin_currency_display}
+                  {(currentSymbol?.symbol_display?.margin_currency_display !== undefined
+                    && currentSymbol?.symbol_display?.margin_currency_display !== null)
+                    ? currentSymbol?.symbol_display?.margin_currency_display
+                    : "-"
+                  }
                 </span>
               </div>
               <div>
                 <span>获利货币</span>
                 <span>
-                  {currentSymbol?.symbol_display?.profit_currency_display}
+                  {(currentSymbol?.symbol_display?.profit_currency_display !== undefined
+                    && currentSymbol?.symbol_display?.profit_currency_display !== null)
+                    ? currentSymbol?.symbol_display?.profit_currency_display
+                    : "-"
+                  }
                 </span>
               </div>
               <div>
                 <span>最小交易手数</span>
-                <span>{String(currentSymbol?.symbol_display?.min_lots)}</span>
+                <span>
+                  {(currentSymbol?.symbol_display?.min_lots !== undefined
+                    && currentSymbol?.symbol_display?.min_lots !== null)
+                    ? currentSymbol?.symbol_display?.min_lots
+                    : "-"
+                  }
+                </span>
               </div>
               <div>
                 <span>最大交易手数</span>
-                <span>{String(currentSymbol?.symbol_display?.max_lots)}</span>
+                <span>
+                  {(currentSymbol?.symbol_display?.max_lots !== undefined
+                    && currentSymbol?.symbol_display?.max_lots !== null)
+                    ? currentSymbol?.symbol_display?.max_lots
+                    : "-"
+                  }
+                </span>
               </div>
               <div>
                 <span>交易数步长</span>
-                <span>{String(currentSymbol?.symbol_display?.lots_step)}</span>
+                <span>
+                  {(currentSymbol?.symbol_display?.lots_step !== undefined
+                    && currentSymbol?.symbol_display?.lots_step !== null)
+                    ? currentSymbol?.symbol_display?.lots_step
+                    : "-"
+                  }
+                </span>
               </div>
               <div>
                 <span>买入库存费</span>
                 <span>
-                  {String(currentSymbol?.symbol_display?.purchase_fee)}
+                  {(currentSymbol?.symbol_display?.purchase_fee !== undefined
+                    && currentSymbol?.symbol_display?.purchase_fee !== null)
+                    ? currentSymbol?.symbol_display?.purchase_fee
+                    : "-"
+                  }
                 </span>
               </div>
               <div>
                 <span>卖出库存费</span>
                 <span>
-                  {String(currentSymbol?.symbol_display?.selling_fee)}
+                  {(currentSymbol?.symbol_display?.selling_fee !== undefined
+                    && currentSymbol?.symbol_display?.selling_fee !== null)
+                    ? currentSymbol?.symbol_display?.selling_fee
+                    : "-"
+                  }
                 </span>
               </div>
             </div>

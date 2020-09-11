@@ -70,7 +70,17 @@ export default class extends React.Component {
         if (res.status === 201) {
           this.setState({ verifyPass: true, smsKey: res.data.key });
         } else {
-          this.setState({ errMsg: "验证码不得为空" });
+          if (res.data.error_code === 400) {
+            if (utils.isEmpty(smsKey)) {
+              this.setState({ errMsg: "请先按发送简讯验证码按钮" });
+            } else {
+              this.setState({ errMsg: "验证码不得为空" });
+            }
+
+          } else if (res.data.error_code === 403) {
+            this.setState({ errMsg: "验证码有误" });
+          }
+
         }
       }
     });
