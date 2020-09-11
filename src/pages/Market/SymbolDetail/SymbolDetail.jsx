@@ -143,53 +143,59 @@ export default class SymbolDetail extends React.Component {
               <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
             </Link>
           </NavLeft>
-          <NavTitle>{currentSymbol?.symbol_display?.name}</NavTitle>
+          <NavTitle className="symbol-detail-navbar-center">
+            <span>{currentSymbol?.symbol_display?.name}</span>
+            <span className="stock-code">{currentSymbol?.product_details?.symbol}</span>
+          </NavTitle>
           <NavRight>{this.renderTraderStatus(trader_status)}</NavRight>
         </Navbar>
         <div className="stock-container">
-          <div
-            className={`self-select-buy-sell-block now-stock ${
-              currentSymbol?.product_details?.change > 0 && "p-up stock-green"
-              } ${
-              currentSymbol?.product_details?.change < 0 &&
-              "p-down stock-red-gif"
-              }`}
-          >
-            {currentSymbol?.product_details?.sell}
-          </div>
-          <div className="arrow">
-            {currentSymbol?.product_details?.change >= 0 ? (
-              <img src={GreenArrowIcon} alt="GreenArrowIcon" />
-            ) : (
-                <img class="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
-              )}
-          </div>
-          <div className="spread-stock">
-            <div>
-              <p
-                className={`self-select-buy-sell-block ${
-                  currentSymbol?.product_details?.change > 0 &&
-                  "p-up stock-green"
-                  } ${
-                  currentSymbol?.product_details?.change < 0 &&
-                  "p-down stock-red-gif"
-                  }`}
-              >
-                {currentSymbol?.product_details?.change}
-              </p>
-              <p
-                className={`self-select-buy-sell-block ${
-                  currentSymbol?.product_details?.change > 0 &&
-                  "p-up stock-green"
-                  } ${
-                  currentSymbol?.product_details?.change < 0 &&
-                  "p-down stock-red-gif"
-                  }`}
-              >
-                {`${currentSymbol?.product_details?.chg}%`}
-              </p>
+          <div className="stock-container-price">
+            <div
+              className={`self-select-buy-sell-block now-stock ${
+                currentSymbol?.product_details?.change > 0 && "p-up stock-green"
+                } ${
+                currentSymbol?.product_details?.change < 0 &&
+                "p-down stock-red-gif"
+                }`}
+            >
+              {currentSymbol?.product_details?.sell}
+            </div>
+            <div className="arrow">
+              {currentSymbol?.product_details?.change >= 0 ? (
+                <img src={GreenArrowIcon} alt="GreenArrowIcon" />
+              ) : (
+                  <img class="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
+                )}
+            </div>
+            <div className="spread-stock">
+              <div>
+                <p
+                  className={`self-select-buy-sell-block ${
+                    currentSymbol?.product_details?.change > 0 &&
+                    "p-up stock-green"
+                    } ${
+                    currentSymbol?.product_details?.change < 0 &&
+                    "p-down stock-red-gif"
+                    }`}
+                >
+                  {currentSymbol?.product_details?.change}
+                </p>
+                <p
+                  className={`self-select-buy-sell-block ${
+                    currentSymbol?.product_details?.change > 0 &&
+                    "p-up stock-green"
+                    } ${
+                    currentSymbol?.product_details?.change < 0 &&
+                    "p-down stock-red-gif"
+                    }`}
+                >
+                  {`${currentSymbol?.product_details?.chg}%`}
+                </p>
+              </div>
             </div>
           </div>
+
         </div>
         {/* <div className="switch-chart">
           <span>分時</span>

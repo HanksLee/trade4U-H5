@@ -67,9 +67,11 @@ export default class extends React.Component {
   getNotificationMessageList = async () => {
     const res = await api.setting.getNotificationmessage();
     if (res.status === 200) {
-      this.setState({
-        notification: res.data.results[0],
-      });
+      if (!utils.isEmpty(res.data.results)) {
+        this.setState({
+          notification: res.data.results[0],
+        });
+      }
     }
   };
 
@@ -77,9 +79,11 @@ export default class extends React.Component {
     // const tempArray = [];
     const res = await api.setting.getMessage();
     if (res.status === 200) {
-      this.setState({
-        announcement: res.data.results[0],
-      });
+      if (!utils.isEmpty(res.data.results)) {
+        this.setState({
+          announcement: res.data.results[0],
+        });
+      }
     }
   };
 
@@ -98,85 +102,75 @@ export default class extends React.Component {
           <NavRight></NavRight>
         </Navbar>
 
-        {announcement && (
-          <div
-            className="message-wrap announcement"
-            onClick={this.goAnnouncement}
-          >
-            <div className="message-icon-container">
-              {hasAnnouncement && <span className="has-unread-message"></span>}
-              <div className="message-icon announcement-icon">
-                <img
-                  src="../../../assets/img/announcement-icon.svg"
-                  alt="announcement-icon.svg"
-                />
-              </div>
-            </div>
-            <div className="message-content-container">
-              <p className="message-content-title">站內公告</p>
-              <p className="message-content-time">
-                <span className="message-date">
-                  {moment(announcement["create_time"] * 1000).format(
-                    "YYYY/MM/DD"
-                  )}
-                </span>
-                <span>
-                  {moment(announcement["create_time"] * 1000).format(
-                    "HH:mm:ss"
-                  )}
-                </span>
-              </p>
-              <p
-                className="message-content-content"
-                dangerouslySetInnerHTML={{
-                  __html:
-                    announcement["content"] &&
-                    announcement["content"].length > 20
-                      ? `${announcement["content"].substr(0, 20)}...`
-                      : announcement["content"],
-                }}
-              ></p>
-            </div>
-            <div className="message-goto-container">
-              <i className="icon icon-forward"></i>
+        <div
+          className="message-wrap announcement"
+          onClick={this.goAnnouncement}
+        >
+          <div className="message-icon-container">
+            {hasAnnouncement && <span className="has-unread-message"></span>}
+            <div className="message-icon announcement-icon">
+              <img
+                src="../../../assets/img/announcement-icon.svg"
+                alt="announcement-icon.svg"
+              />
             </div>
           </div>
-        )}
-        {notification && (
-          <div className="message-wrap" onClick={this.goNotification}>
-            <div className="message-icon-container">
-              {hasNotify && <span className="has-unread-message"></span>}
-              <div className="message-icon notice-icon">
-                <img
-                  src="../../../assets/img/notice-icon.svg"
-                  alt="notice-icon.svg"
-                />
-              </div>
-            </div>
-            <div className="message-content-container">
-              <p className="message-content-title">服务消息</p>
-              <p className="message-content-time">
+          <div className="message-content-container">
+            <p className="message-content-title">站內公告</p>
+            <p className="message-content-time">
+              {!utils.isEmpty(announcement) &&
                 <span className="message-date">
-                  {moment(notification["create_time"] * 1000).format(
-                    "YYYY/MM/DD"
+                  {moment(announcement["create_time"] * 1000).format(
+                    "YYYY/MM/DD  HH:mm:ss"
                   )}
                 </span>
-                <span>
-                  {moment(notification["create_time"] * 1000).format(
-                    "HH:mm:ss"
-                  )}
-                </span>
-              </p>
-              <p className="message-content-content">
-                {notification["title"]}
-                ...
-              </p>
-            </div>
-            <div className="message-goto-container">
-              <i className="icon icon-forward"></i>
+              }
+            </p>
+            <p
+              className="message-content-content"
+            // dangerouslySetInnerHTML={{
+            //   __html:
+            //     announcement["content"] &&
+            //       announcement["content"].length > 20
+            //       ? `${announcement["content"].substr(0, 20)}...`
+            //       : announcement["content"],
+            // }}
+            >{!utils.isEmpty(announcement) && announcement["title"]}</p>
+          </div>
+          <div className="message-goto-container">
+            <i className="icon icon-forward"></i>
+          </div>
+        </div>
+
+        <div className="message-wrap" onClick={this.goNotification}>
+          <div className="message-icon-container">
+            {hasNotify && <span className="has-unread-message"></span>}
+            <div className="message-icon notice-icon">
+              <img
+                src="../../../assets/img/notice-icon.svg"
+                alt="notice-icon.svg"
+              />
             </div>
           </div>
-        )}
+          <div className="message-content-container">
+            <p className="message-content-title">服务消息</p>
+            <p className="message-content-time">
+              {!utils.isEmpty(notification) &&
+                <span className="message-date">
+                  {moment(notification["create_time"] * 1000).format(
+                    "YYYY/MM/DD  HH:mm:ss"
+                  )}
+                </span>
+              }
+            </p>
+            <p className="message-content-content">
+              {!utils.isEmpty(notification) && notification["title"]}
+            </p>
+          </div>
+          <div className="message-goto-container">
+            <i className="icon icon-forward"></i>
+          </div>
+        </div>
       </Page>
     );
   }

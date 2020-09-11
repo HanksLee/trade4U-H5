@@ -5,6 +5,7 @@ import { List, InputItem, Toast } from "antd-mobile";
 import { createForm } from "rc-form";
 import { Select, Form, InputNumber, Button, Spin } from "antd";
 import { Page, Navbar, NavTitle, NavLeft, Link, Icon } from "framework7-react";
+import { inject, observer } from "mobx-react";
 import api from "services";
 import moment from "moment";
 import { LoadingOutlined } from "@ant-design/icons";
@@ -23,11 +24,12 @@ const country = [
 ];
 
 @createForm()
+@inject("setting")
+@observer
 export default class extends React.Component {
   paymentWindow = null;
   formRef = React.createRef();
   state = {
-    withdrawableBalance: 0,
     paymentMethods: [],
     isPaying: false,
     orderNumber: "",
@@ -37,20 +39,12 @@ export default class extends React.Component {
 
   componentDidMount() {
     this.getPaymentMethods();
-    this.getWithdrawableBalance();
   }
 
   getPaymentMethods = async () => {
     const res = await api.setting.getPaymentMethods();
     this.setState({
       paymentMethods: res.data,
-    });
-  };
-
-  getWithdrawableBalance = async () => {
-    const res = await api.setting.getWithdrawableBalance();
-    this.setState({
-      withdrawableBalance: res.data.withdrawable_balance,
     });
   };
 
@@ -133,8 +127,8 @@ export default class extends React.Component {
 
   render() {
     // const { getFieldProps } = this.props.form;
+    const { withdrawableBalance } = this.props.setting;
     const {
-      withdrawableBalance,
       paymentMethods,
       showLoading,
       currentPayment,

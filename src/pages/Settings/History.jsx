@@ -55,7 +55,7 @@ export default class extends React.Component {
         page_size,
         create_time_start: create_time_start.unix(),
         create_time_end: create_time_end.unix(),
-        type: "deposit_and_withdraw",
+        // type: "deposit_and_withdraw",
       },
     });
     if (res.status === 200) {

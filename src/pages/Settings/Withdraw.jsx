@@ -13,6 +13,7 @@ import { Select, Form, Input, message, Button } from "antd";
 import { createForm } from "rc-form";
 // import { RcFile } from "antd/lib/upload";
 import { Page, Navbar, NavTitle, NavLeft, Link, Icon } from "framework7-react";
+import { inject, observer } from "mobx-react";
 import api from "services";
 import moment from "moment";
 import "./index.scss";
@@ -28,22 +29,15 @@ const country = [
   },
 ];
 
+@inject("setting")
+@observer
 export default class extends React.Component {
   formRef = React.createRef();
-  state = {
-    withdrawableBalance: 0,
-  };
+  state = {};
 
   componentDidMount() {
-    this.getWithdrawableBalance();
   }
 
-  getWithdrawableBalance = async () => {
-    const res = await api.setting.getWithdrawableBalance();
-    this.setState({
-      withdrawableBalance: res.data.withdrawable_balance,
-    });
-  };
 
   goBack = () => {
     this.props.history.goBack();
@@ -64,7 +58,7 @@ export default class extends React.Component {
 
   render() {
     // const { getFieldProps } = this.props.form;
-    const { withdrawableBalance } = this.state;
+    const { withdrawableBalance } = this.props.setting;
     return (
       <Page>
         <Navbar className="text-color-white">
