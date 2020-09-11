@@ -207,7 +207,7 @@ export class SymbolInfo extends React.Component {
                 </div>
                 {!utils.isEmpty(item.thumbnail) && (
                   <div className="news-content-item-img">
-                    <img src={item.thumbnail} alt="thumbmail" />
+                    <img src={item.thumbnail} alt="thumbnail" />
                   </div>
                 )}
               </div>

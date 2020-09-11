@@ -1,9 +1,9 @@
 import React from "react";
 import { BaseReact } from "components/baseComponent";
 
-import { Modal, Spin } from 'antd';
+import { Modal, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Toast } from 'antd-mobile';
+import { Toast } from "antd-mobile";
 import moment from "moment";
 import { inject, observer } from "mobx-react";
 import "./index.scss";
@@ -15,7 +15,7 @@ import {
   ORDER_OPEN,
   ORDER_CLOSE,
   ORDER_PROFIT,
-  PENDING_ORDER_CLOSE
+  PENDING_ORDER_CLOSE,
 } from "./config/wsType";
 
 const $$ = Dom7;
@@ -46,15 +46,17 @@ export default class extends BaseReact {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.currentTradeTab !== this.state.currentTradeTab) {
-      this.setState({
-        currentTradeTab: nextProps.currentTradeTab,
-        page: 1
-      }, () => {
-        this.onRefresh(nextProps.currentTradeTab)
-      })
+      this.setState(
+        {
+          currentTradeTab: nextProps.currentTradeTab,
+          page: 1,
+        },
+        () => {
+          this.onRefresh(nextProps.currentTradeTab);
+        }
+      );
 
-
-      if (nextProps.currentTradeTab === '历史') {
+      if (nextProps.currentTradeTab === "历史") {
         window.addEventListener("scroll", this.handleScroll, true);
       } else {
         window.removeEventListener("scroll", this.handleScroll, true);
@@ -63,7 +65,7 @@ export default class extends BaseReact {
   }
 
   componentDidMount() {
-    const { setReceviceMsgLinter, setStatusChangListener, } = this.props;
+    const { setReceviceMsgLinter, setStatusChangListener } = this.props;
     const { currentTradeTab } = this.state;
     this.initEvents(currentTradeTab);
     this.initData(currentTradeTab);
@@ -79,17 +81,30 @@ export default class extends BaseReact {
   setTradeContentHeight = () => {
     // page
     const pageHeight = document.getElementById("view-trade").clientHeight;
-    const tradeNavbarHeight = document.getElementsByClassName("trade-navbar")[0].clientHeight;
-    const tabbarHeight = document.getElementsByClassName("app-tabbar")[0].clientHeight;
-    const tradeStatsHeight = document.getElementsByClassName("trade-stats")[0].clientHeight;
-    const tradeTabsHeight = document.getElementsByClassName("trade-tabs")[0].clientHeight;
-    const tradeContentTitleHeight = document.getElementsByClassName("trade-content-title")[0].clientHeight;
+    const tradeNavbarHeight = document.getElementsByClassName("trade-navbar")[0]
+      .clientHeight;
+    const tabbarHeight = document.getElementsByClassName("app-tabbar")[0]
+      .clientHeight;
+    const tradeStatsHeight = document.getElementsByClassName("trade-stats")[0]
+      .clientHeight;
+    const tradeTabsHeight = document.getElementsByClassName("trade-tabs")[0]
+      .clientHeight;
+    const tradeContentTitleHeight = document.getElementsByClassName(
+      "trade-content-title"
+    )[0].clientHeight;
 
-    const tradeContentContentHeight = pageHeight - tradeNavbarHeight - tradeStatsHeight - tradeTabsHeight - tradeContentTitleHeight - tabbarHeight;
+    const tradeContentContentHeight =
+      pageHeight -
+      tradeNavbarHeight -
+      tradeStatsHeight -
+      tradeTabsHeight -
+      tradeContentTitleHeight -
+      tabbarHeight;
 
-    document.getElementsByClassName("trade-content-content")[0].style.height = `${tradeContentContentHeight}px`;
-  }
-
+    document.getElementsByClassName(
+      "trade-content-content"
+    )[0].style.height = `${tradeContentContentHeight}px`;
+  };
 
   initEvents = (currentTradeTab) => {
     this.props.common.globalEvent.on("refresh-trade-page", () => {
@@ -166,69 +181,74 @@ export default class extends BaseReact {
             // margin_level: 18017848.22, // 预付款比例
           };
 
-          if (currentTradeTab === '持仓') {
+          if (currentTradeTab === "持仓") {
             const res = await this.$api.trade.getTradeList({
               params: {
-                status: "in_transaction"
-              }
-            })
+                status: "in_transaction",
+              },
+            });
 
             this.props.trade.setTradeList(res.data);
             this.updateTradeInfo(tradeInfo);
           }
 
-          if (currentTradeTab === '挂单') {
+          if (currentTradeTab === "挂单") {
             const res = await this.$api.trade.getTradeList({
               params: {
-                status: "pending"
-              }
-            })
+                status: "pending",
+              },
+            });
 
             this.props.trade.setTradeList(res.data, "future");
             this.updateTradeInfo(tradeInfo);
           }
 
-          if (currentTradeTab === '历史') {
+          if (currentTradeTab === "历史") {
             this.setState({ dataLoading: true }, async () => {
-              let queryString = `page_size=${page_size}&page=${page}`
-              const res = await this.$api.trade.getFinishTradeList(queryString, {});
+              let queryString = `page_size=${page_size}&page=${page}`;
+              const res = await this.$api.trade.getFinishTradeList(
+                queryString,
+                {}
+              );
               if (res.status === 200) {
-                this.setState({
-                  dataLoading: false,
-                  historyList: [...historyList, ...res.data.results],
-                  page: page + 1,
-                }, () => {
-                  const { historyList } = this.state;
-                  this.setState({ hasMore: this.state.historyList.length < res.data.count, })
-                  this.props.trade.setTradeList(historyList, "finish");
-                  this.props.trade.setFinishTradeInfo(res.data.total_data);
-                });
+                this.setState(
+                  {
+                    dataLoading: false,
+                    historyList: [...historyList, ...res.data.results],
+                    page: page + 1,
+                  },
+                  () => {
+                    const { historyList } = this.state;
+                    this.setState({
+                      hasMore: this.state.historyList.length < res.data.count,
+                    });
+                    this.props.trade.setTradeList(historyList, "finish");
+                    this.props.trade.setFinishTradeInfo(res.data.total_data);
+                  }
+                );
               }
-            })
-
+            });
           }
-
-        } catch (e) {
-        }
+        } catch (e) {}
 
         this.setState({ loading: false });
       }
     );
   };
 
-  receviceMsgLinter = d => {
+  receviceMsgLinter = (d) => {
     const { currentTradeTab } = this.state;
-    const { buffer, } = this;
-    const { timeId, BUFFER_TIME, } = buffer;
+    const { buffer } = this;
+    const { timeId, BUFFER_TIME } = buffer;
 
-    if (currentTradeTab === '历史') {
+    if (currentTradeTab === "历史") {
       if (timeId) window.clearTimeout(timeId);
       return;
     }
 
     const receviceTime = moment().valueOf();
     //console.log("setReceviceMsgLinter" , d);
-    const { type, data, } = d;
+    const { type, data } = d;
 
     if (type === META_FUND) {
       buffer[META_FUND] = data;
@@ -254,16 +274,16 @@ export default class extends BaseReact {
   };
 
   checkBuffer(buffer, key, receviceTime) {
-    const { lastCheckUpdateTime, BUFFER_MAXCOUNT, BUFFER_TIME, } = buffer;
+    const { lastCheckUpdateTime, BUFFER_MAXCOUNT, BUFFER_TIME } = buffer;
     let maxCount = 0;
     switch (key) {
-      case '持仓':
+      case "持仓":
         maxCount =
           buffer[ORDER_PROFIT].length +
           buffer[ORDER_OPEN].length +
           buffer[ORDER_CLOSE].length;
         break;
-      case '挂单':
+      case "挂单":
         maxCount = buffer[PENDING_ORDER_CLOSE].length;
         break;
     }
@@ -279,14 +299,14 @@ export default class extends BaseReact {
   filterBufferlList(list) {
     return list.filter((item, i, all) => {
       return (
-        all.findIndex(fItem => {
+        all.findIndex((fItem) => {
           return fItem.order_number === item.order_number;
         }) === i
       );
     });
   }
 
-  updateContent = buffer => {
+  updateContent = (buffer) => {
     for (let key in buffer) {
       const value = buffer[key];
 
@@ -306,7 +326,7 @@ export default class extends BaseReact {
     // const {initMsg} = this.props;
   };
 
-  sortOrderList = list => {
+  sortOrderList = (list) => {
     const tmp = Object.assign([], list);
 
     tmp.sort((a, b) => {
@@ -330,7 +350,6 @@ export default class extends BaseReact {
     return tmp;
   };
 
-
   initBuffer() {
     return {
       BUFFER_MAXCOUNT: 50,
@@ -346,201 +365,242 @@ export default class extends BaseReact {
   }
 
   render() {
-
     const { tapIndex, currentTradeTab, dataLoading } = this.state;
     const { tradeList, futureTradeList, finishTradeList } = this.props.trade;
     const initSymbol = utils.isEmpty(tradeList) ? 0 : tradeList[0]?.symbol;
-    const currentTradeList = currentTradeTab === '持仓'
-      ? tradeList
-      : currentTradeTab === '挂单'
+    const currentTradeList =
+      currentTradeTab === "持仓"
+        ? tradeList
+        : currentTradeTab === "挂单"
         ? futureTradeList
         : finishTradeList;
     return (
-      <div className={`trade-content-content ${currentTradeTab === "历史" && "history-mode"}`}>
-        {!utils.isEmpty(currentTradeList) && currentTradeList.map((item, index) => (
-
-          <div className="trade-content-item">
-            <div className="trade-content-content-top"
-              onClick={() => {
-                this.setState({
-                  tapIndex: tapIndex == item.order_number ? -1 : item.order_number,
-                });
-              }}
-            >
-              <div className="trade-content-content-top-item">
-                <p className="content-text">{item.symbol_name}</p>
-                <p>
-                  <span className="symbol-type-code">{item.product_market}</span>
-                  <span className="symbol-code">{item.product_code}</span>
-                </p>
-              </div>
-              <div className="trade-content-content-top-item">
-                <p className="content-text">{item.new_price}</p>
-              </div>
-              <div className="trade-content-content-top-item">
-                <p className={`transaction-direction 
-                ${(Number(item.action) === 0 ||
-                    Number(item.action) === 2 ||
-                    Number(item.action) === 4)
-                    ? 'buy'
-                    : 'sell'}`}>
-                  {tradeActionMap[item.action]}</p>
-                <p>{item.lots}</p>
-              </div>
-              <div className="trade-content-content-top-item">
-                <p className={`${Number(item.profit) > 0 ? "p-up" : "p-down"}`}>{item.profit}</p>
-              </div>
-            </div>
-            <div className={`trade-content-content-bottom ${tapIndex == item.order_number ? "show" : ""}`}>
-              <div className="trade-content-content-bottom-data">
-                <p>开仓价</p>
-                <p>{item.open_price}</p>
-                {currentTradeTab === "历史" &&
-                  <>
-                    <p>平仓价</p>
-                    <p>{item.close_price}</p>
-                  </>
-                }
-                <p>交易手数</p>
-                <p>{item.lots}</p>
-                <p>止盈</p>
-                <p>{item.take_profit || "-"}</p>
-                <p>止損</p>
-                <p>{item.stop_loss || "-"}</p>
-                <p>盈亏</p>
-                <p>{item.profit}</p>
-                <p>库存费</p>
-                <p>{item.swaps || "-"}</p>
-                <p>手续费</p>
-                <p>{item.fee || "-"}</p>
-                <p>税费</p>
-                <p>{item.taxes || "-"}</p>
-                <p>开仓时间</p>
-                <p>
-                  <div>{moment(item.create_time * 1000).format("YYYY.MM.DD")}</div>
-                  <div>{moment(item.create_time * 1000).format("HH:mm:ss")}</div>
-                </p>
-                {currentTradeTab === "历史" &&
-                  <>
-                    <p>平仓时间</p>
-                    <p>
-                      <div>{moment(item.close_time * 1000).format("YYYY.MM.DD")}</div>
-                      <div>{moment(item.close_time * 1000).format("HH:mm:ss")}</div>
-                    </p>
-                  </>
-                }
-                <p>订单号</p>
-                <p className="order-number">{item.order_number}</p>
-              </div>
-              {currentTradeTab === "持仓" &&
-                <div className="trade-content-content-bottom-btn-group">
-                  <div className="trade-content-content-bottom-btn"
-                    onClick={() => {
-                      this.props.trade.setCurrentTrade(item);
-                      this.goToPage(`/trade/${item?.symbol}/`, {
-                        props: {
-                          mode: "update",
-                          currentTradeTab
-                        },
-                      })
-                    }
-                    }>
-                    修改
-            </div>
-                  <div className="trade-content-content-bottom-btn"
-                    onClick={() => {
-                      this.props.trade.setCurrentTrade(item);
-                      this.goToPage(`/trade/${item?.symbol}/`, {
-                        props: {
-                          mode: "delete",
-                          currentTradeTab
-                        },
-                      })
-                    }
-                    }>
-                    平仓
+      <div
+        className={`trade-content-content ${
+          currentTradeTab === "历史" && "history-mode"
+        }`}
+      >
+        {!utils.isEmpty(currentTradeList) &&
+          currentTradeList.map((item, index) => (
+            <div className="trade-content-item">
+              <div
+                className="trade-content-content-top"
+                onClick={() => {
+                  this.setState({
+                    tapIndex:
+                      tapIndex == item.order_number ? -1 : item.order_number,
+                  });
+                }}
+              >
+                <div className="trade-content-content-top-item">
+                  <p className="content-text">{item.symbol_name}</p>
+                  <p>
+                    <span className="symbol-type-code">
+                      {item.product_market}
+                    </span>
+                    <span className="symbol-code">{item.product_code}</span>
+                  </p>
                 </div>
-                  {
-                    item?.product_market !== "MT" &&
+                <div className="trade-content-content-top-item">
+                  <p className="content-text">{item.new_price}</p>
+                </div>
+                <div className="trade-content-content-top-item">
+                  <p
+                    className={`transaction-direction 
+                ${
+                  Number(item.action) === 0 ||
+                  Number(item.action) === 2 ||
+                  Number(item.action) === 4
+                    ? "buy"
+                    : "sell"
+                }`}
+                  >
+                    {tradeActionMap[item.action]}
+                  </p>
+                  <p>{item.lots}</p>
+                </div>
+                <div className="trade-content-content-top-item">
+                  <p
+                    className={`${Number(item.profit) > 0 ? "p-up" : "p-down"}`}
+                  >
+                    {item.profit}
+                  </p>
+                </div>
+              </div>
+              <div
+                className={`trade-content-content-bottom ${
+                  tapIndex == item.order_number ? "show" : ""
+                }`}
+              >
+                <div className="trade-content-content-bottom-data">
+                  <p>开仓价</p>
+                  <p>{item.open_price}</p>
+                  {currentTradeTab === "历史" && (
+                    <>
+                      <p>平仓价</p>
+                      <p>{item.close_price}</p>
+                    </>
+                  )}
+                  <p>交易手数</p>
+                  <p>{item.lots}</p>
+                  <p>止盈</p>
+                  <p>{item.take_profit || "-"}</p>
+                  <p>止損</p>
+                  <p>{item.stop_loss || "-"}</p>
+                  <p>盈亏</p>
+                  <p>{item.profit}</p>
+                  <p>库存费</p>
+                  <p>{item.swaps || "-"}</p>
+                  <p>手续费</p>
+                  <p>{item.fee || "-"}</p>
+                  <p>税费</p>
+                  <p>{item.taxes || "-"}</p>
+                  <p>开仓时间</p>
+                  <p>
+                    <div>
+                      {moment(item.create_time * 1000).format("YYYY.MM.DD")}
+                    </div>
+                    <div>
+                      {moment(item.create_time * 1000).format("HH:mm:ss")}
+                    </div>
+                  </p>
+                  {currentTradeTab === "历史" && (
+                    <>
+                      <p>平仓时间</p>
+                      <p>
+                        <div>
+                          {moment(item.close_time * 1000).format("YYYY.MM.DD")}
+                        </div>
+                        <div>
+                          {moment(item.close_time * 1000).format("HH:mm:ss")}
+                        </div>
+                      </p>
+                    </>
+                  )}
+                  <p>订单号</p>
+                  <p className="order-number">{item.order_number}</p>
+                </div>
+                {currentTradeTab === "持仓" && (
+                  <div className="trade-content-content-bottom-btn-group">
                     <div
-                      style={{ pointerEvents: !item?.swap_switch && 'none', opacity: !item?.swap_switch && '0.5' }}
                       className="trade-content-content-bottom-btn"
                       onClick={() => {
+                        this.props.trade.setCurrentTrade(item);
+                        this.goToPage(`/trade/${item?.symbol}/`, {
+                          props: {
+                            mode: "update",
+                            currentTradeTab,
+                          },
+                        });
+                      }}
+                    >
+                      修改
+                    </div>
+                    <div
+                      className="trade-content-content-bottom-btn"
+                      onClick={() => {
+                        this.props.trade.setCurrentTrade(item);
+                        this.goToPage(`/trade/${item?.symbol}/`, {
+                          props: {
+                            mode: "delete",
+                            currentTradeTab,
+                          },
+                        });
+                      }}
+                    >
+                      平仓
+                    </div>
+                    {item?.product_market !== "MT" && (
+                      <div
+                        style={{
+                          pointerEvents: !item?.swap_switch && "none",
+                          opacity: !item?.swap_switch && "0.5",
+                        }}
+                        className="trade-content-content-bottom-btn"
+                        onClick={() => {
+                          const { confirm } = Modal;
+                          const that = this;
+                          confirm({
+                            title: "关闭递延提示",
+                            content: "您確定要关闭递延嗎",
+                            className: "trade-modal",
+                            centered: true,
+                            cancelText: "取消",
+                            okText: "确认",
+                            async onOk() {
+                              await that.props.common.$api.trade.updateTrade(
+                                item.order_number,
+                                {
+                                  swap_switch: false,
+                                }
+                              );
+                              Toast.success("关闭递延成功", 2);
+                              await that.onRefresh(currentTradeTab);
+                            },
+                            onCancel() {},
+                          });
+                        }}
+                      >
+                        关闭递延
+                      </div>
+                    )}
+                  </div>
+                )}
+                {currentTradeTab === "挂单" && (
+                  <div className="trade-content-content-bottom-btn-group">
+                    <div
+                      className="trade-content-content-bottom-btn"
+                      onClick={() => {
+                        this.props.trade.setCurrentTrade(item);
+                        this.goToPage(`/trade/${item?.symbol}/`, {
+                          props: {
+                            mode: "update",
+                            currentTradeTab,
+                          },
+                        });
+                      }}
+                    >
+                      修改
+                    </div>
+                    <div
+                      className="trade-content-content-bottom-btn"
+                      onClick={() => {
+                        // this.props.trade.setCurrentTrade(item);
+                        // this.goToPage(`/trade/${item?.symbol}/`, {
+                        //   props: {
+                        //     mode: "delete",
+                        //     currentTradeTab
+                        //   },
+                        // })
                         const { confirm } = Modal;
+
                         const that = this;
                         confirm({
-                          title: '关闭递延提示',
-                          content: '您確定要关闭递延嗎',
+                          title: "提示",
+                          content: "您確定要删单嗎",
                           className: "trade-modal",
                           centered: true,
                           cancelText: "取消",
                           okText: "确认",
                           async onOk() {
-                            await that.props.common.$api.trade.updateTrade(item.order_number, {
-                              swap_switch: false
-                            });
-                            Toast.success("关闭递延成功", 2);
-                            await that.onRefresh(currentTradeTab)
+                            await that.props.common.$api.trade.closeTrade(
+                              item.order_number
+                            );
+                            Toast.success("删单成功", 2);
+                            await that.onRefresh(currentTradeTab);
                           },
-                          onCancel() { },
+                          onCancel() {},
                         });
-                      }}>
-                      关闭递延
-                   </div>}
-                </div>
-              }
-              {currentTradeTab === "挂单" &&
-                <div className="trade-content-content-bottom-btn-group">
-                  <div className="trade-content-content-bottom-btn"
-                    onClick={() => {
-                      this.props.trade.setCurrentTrade(item);
-                      this.goToPage(`/trade/${item?.symbol}/`, {
-                        props: {
-                          mode: "update",
-                          currentTradeTab
-                        },
-                      })
-                    }
-                    }>
-                    修改
+                      }}
+                    >
+                      删单
+                    </div>
+                  </div>
+                )}
               </div>
-                  <div className="trade-content-content-bottom-btn"
-                    onClick={() => {
-                      // this.props.trade.setCurrentTrade(item);
-                      // this.goToPage(`/trade/${item?.symbol}/`, {
-                      //   props: {
-                      //     mode: "delete",
-                      //     currentTradeTab
-                      //   },
-                      // })
-                      const { confirm } = Modal;
-
-                      const that = this;
-                      confirm({
-                        title: '提示',
-                        content: '您確定要删单嗎',
-                        className: "trade-modal",
-                        centered: true,
-                        cancelText: "取消",
-                        okText: "确认",
-                        async onOk() {
-                          await that.props.common.$api.trade.closeTrade(item.order_number);
-                          Toast.success("删单成功", 2);
-                          await that.onRefresh(currentTradeTab)
-                        },
-                        onCancel() {
-                        },
-                      });
-                    }
-                    }>
-                    删单
             </div>
-                </div>}
-            </div>
-          </div>
-
-        ))}
-        {currentTradeTab === '历史' && dataLoading && (
+          ))}
+        {currentTradeTab === "历史" && dataLoading && (
           <Spin
             className="spin-icon"
             indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}

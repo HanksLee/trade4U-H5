@@ -150,49 +150,46 @@ export default class SymbolDetail extends React.Component {
           <NavRight>{this.renderTraderStatus(trader_status)}</NavRight>
         </Navbar>
         <div className="stock-container">
-          <div className="stock-container-price">
-            <div
-              className={`self-select-buy-sell-block now-stock ${
-                currentSymbol?.product_details?.change > 0 && "p-up stock-green"
-                } ${
-                currentSymbol?.product_details?.change < 0 &&
-                "p-down stock-red-gif"
-                }`}
-            >
-              {currentSymbol?.product_details?.sell}
-            </div>
-            <div className="arrow">
-              {currentSymbol?.product_details?.change >= 0 ? (
-                <img src={GreenArrowIcon} alt="GreenArrowIcon" />
-              ) : (
-                  <img class="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
-                )}
-            </div>
-            <div className="spread-stock">
-              <div>
-                <p
-                  className={`self-select-buy-sell-block ${
-                    currentSymbol?.product_details?.change > 0 &&
-                    "p-up stock-green"
-                    } ${
-                    currentSymbol?.product_details?.change < 0 &&
-                    "p-down stock-red-gif"
-                    }`}
-                >
-                  {currentSymbol?.product_details?.change}
-                </p>
-                <p
-                  className={`self-select-buy-sell-block ${
-                    currentSymbol?.product_details?.change > 0 &&
-                    "p-up stock-green"
-                    } ${
-                    currentSymbol?.product_details?.change < 0 &&
-                    "p-down stock-red-gif"
-                    }`}
-                >
-                  {`${currentSymbol?.product_details?.chg}%`}
-                </p>
-              </div>
+          <div
+            className={`self-select-buy-sell-block now-stock ${
+              currentSymbol?.product_details?.change > 0 && "p-up stock-up"
+              } ${
+              currentSymbol?.product_details?.change < 0 && "p-down stock-down"
+              }`}
+          >
+            {currentSymbol?.product_details?.sell}
+          </div>
+          <div className="arrow">
+            {currentSymbol?.product_details?.change >= 0 ? (
+              <img src={GreenArrowIcon} alt="GreenArrowIcon" />
+            ) : (
+                <img class="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
+              )}
+          </div>
+          <div className="spread-stock">
+            <div>
+              <p
+                className={`self-select-buy-sell-block ${
+                  currentSymbol?.product_details?.change > 0 &&
+                  "p-up stock-green"
+                  } ${
+                  currentSymbol?.product_details?.change < 0 &&
+                  "p-down stock-down"
+                  }`}
+              >
+                {currentSymbol?.product_details?.change}
+              </p>
+              <p
+                className={`self-select-buy-sell-block ${
+                  currentSymbol?.product_details?.change > 0 &&
+                  "p-up stock-green"
+                  } ${
+                  currentSymbol?.product_details?.change < 0 &&
+                  "p-down stock-down"
+                  }`}
+              >
+                {`${currentSymbol?.product_details?.chg}%`}
+              </p>
             </div>
           </div>
 
