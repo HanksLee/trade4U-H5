@@ -177,7 +177,6 @@ export default class extends React.Component {
       color: "#FFF",
       padding: "10px",
     };
-    console.log("thisStore :>> ", thisStore);
     return (
       <>
         {currentList.map((item) => {

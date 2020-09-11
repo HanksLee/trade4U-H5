@@ -12,7 +12,7 @@ export default function OnePriceItem({
   thisStore,
 }) {
   const { product_market, product_details, symbol_display } = item ?? {};
-  console.log("item :>> ", toJS(item));
+  // console.log("item :>> ", toJS(item));
   const { sell, change, chg } = product_details ?? {};
 
   return (
