@@ -109,7 +109,7 @@ export default class SymbolDetail extends React.Component {
             await that.props.market.getSelfSelectSymbolList(queryString, true);
           }
         },
-        onCancel() {},
+        onCancel() { },
       });
     }
   };
@@ -160,7 +160,10 @@ export default class SymbolDetail extends React.Component {
               <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
             </Link>
           </NavLeft>
-          <NavTitle>{currentSymbol?.symbol_display?.name}</NavTitle>
+          <NavTitle className="symbol-detail-navbar-center">
+            <span>{currentSymbol?.symbol_display?.name}</span>
+            <span className="stock-code">{currentSymbol?.product_details?.symbol}</span>
+          </NavTitle>
           <NavRight>{this.renderTraderStatus(trader_status)}</NavRight>
         </Navbar>
         <div className="stock-container">
@@ -178,8 +181,8 @@ export default class SymbolDetail extends React.Component {
             {isHigh ? (
               <img src={GreenArrowIcon} alt="GreenArrowIcon" />
             ) : (
-              <img class="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
-            )}
+                <img class="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
+              )}
           </div>
           <div className="spread-stock">
             <div>
@@ -207,6 +210,7 @@ export default class SymbolDetail extends React.Component {
               </p>
             </div>
           </div>
+
         </div>
         {/* <div className="switch-chart">
           <span>分時</span>
@@ -231,7 +235,7 @@ export default class SymbolDetail extends React.Component {
               isAddSelfSelect === 0
                 ? "self-select-icon"
                 : "self-select-icon-active"
-            }`}
+              }`}
             text="自选"
             className="tabbar-label"
             onClick={this.showSelfSelectModal}
@@ -240,8 +244,8 @@ export default class SymbolDetail extends React.Component {
             {trader_status === "in_transaction" ? (
               <img src={OrderIcon} alt="OrderIcon" />
             ) : (
-              <img src={OrderIconDisabled} alt="OrderIconDisabled" />
-            )}
+                <img src={OrderIconDisabled} alt="OrderIconDisabled" />
+              )}
           </div>
         </Toolbar>
       </Page>

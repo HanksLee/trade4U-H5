@@ -11,6 +11,7 @@ import {
 } from "antd-mobile";
 import { Upload } from "antd";
 import { createForm } from "rc-form";
+import { inject, observer } from "mobx-react";
 // import { RcFile } from "antd/lib/upload";
 import {
   Page,
@@ -38,36 +39,38 @@ const country = [
 ];
 
 @createForm()
+@inject("setting")
+@observer
 export default class extends React.Component {
   state = {
-    userInfo: [],
-    id_card_front: "",
-    id_card_back: "",
+    // userInfo: [],
+    // id_card_front: "",
+    // id_card_back: "",
     emailError: false,
     idCardError: false,
     mobileError: false,
     postalError: false,
-    isDiasble: true,
+    // isDiasble: true,
   };
 
   componentDidMount() {
-    this.getList();
+    // this.getList();
   }
 
-  getList = async () => {
-    const res = await api.setting.getAccountInfo();
-    if (res.status === 200) {
-      this.setState({
-        userInfo: res.data,
-        id_card_front: res.data.id_card_front,
-        id_card_back: res.data.id_card_back,
-        isDiasble:
-          res.data.inspect_status === 1 || res.data.inspect_status === 2
-            ? true
-            : false,
-      });
-    }
-  };
+  // getList = async () => {
+  //   const res = await api.setting.getAccountInfo();
+  //   if (res.status === 200) {
+  //     this.setState({
+  //       userInfo: res.data,
+  //       id_card_front: res.data.id_card_front,
+  //       id_card_back: res.data.id_card_back,
+  //       isDiasble:
+  //         res.data.inspect_status === 1 || res.data.inspect_status === 2
+  //           ? true
+  //           : false,
+  //     });
+  //   }
+  // };
 
   goBack = () => {
     this.props.history.goBack();
@@ -203,7 +206,8 @@ export default class extends React.Component {
   };
 
   render() {
-    const { userInfo, id_card_back, id_card_front, isDiasble } = this.state;
+    const { userInfo, isInputDisable } = this.props.setting;
+    // const { userInfo, id_card_back, id_card_front, isDiasble } = this.state;
     const { getFieldProps } = this.props.form;
     return (
       <Page>
@@ -215,15 +219,15 @@ export default class extends React.Component {
           </NavLeft>
           <NavTitle>{intl.get("settings.account")}</NavTitle>
           {userInfo["inspect_status"] !== 0 &&
-          userInfo["inspect_status"] !== 3 ? (
-            <NavRight></NavRight>
-          ) : (
-            <NavRight>
-              <div onClick={this.handleSubmit}>
-                {intl.get("settings.confirm")}
-              </div>
-            </NavRight>
-          )}
+            userInfo["inspect_status"] !== 3 ? (
+              <NavRight></NavRight>
+            ) : (
+              <NavRight>
+                <div onClick={this.handleSubmit}>
+                  {intl.get("settings.confirm")}
+                </div>
+              </NavRight>
+            )}
         </Navbar>
         <div className="info-status-wrap">
           <div className="info-status-line"></div>
@@ -267,25 +271,25 @@ export default class extends React.Component {
           )}
           {(userInfo["inspect_status"] === 2 ||
             userInfo["inspect_status"] === 3) && (
-            <div className="info-status">
-              <img src="../../../assets/img/success.svg" alt="success.svg" />
-              <p className="ant-upload-text" style={{ color: "#4a93f4" }}>
-                {intl.get("settings.account.verifying-form")}
-              </p>
-            </div>
-          )}
+              <div className="info-status">
+                <img src="../../../assets/img/success.svg" alt="success.svg" />
+                <p className="ant-upload-text" style={{ color: "#4a93f4" }}>
+                  {intl.get("settings.account.verifying-form")}
+                </p>
+              </div>
+            )}
           {(userInfo["inspect_status"] === 0 ||
             userInfo["inspect_status"] === 1) && (
-            <div className="info-status">
-              <img
-                src="../../../assets/img/unfinished.svg"
-                alt="unfinished.svg"
-              />
-              <p className="ant-upload-text">
-                {intl.get("settings.account.wait")}
-              </p>
-            </div>
-          )}
+              <div className="info-status">
+                <img
+                  src="../../../assets/img/unfinished.svg"
+                  alt="unfinished.svg"
+                />
+                <p className="ant-upload-text">
+                  {intl.get("settings.account.wait")}
+                </p>
+              </div>
+            )}
           {userInfo["inspect_status"] === 2 && (
             <div className="info-status">
               <img src="../../../assets/img/success.svg" alt="success.svg" />
@@ -309,7 +313,7 @@ export default class extends React.Component {
           )}
         <List>
           <InputItem
-            disabled={isDiasble}
+            disabled={isInputDisable}
             {...getFieldProps("first_name", {
               initialValue: userInfo["first_name"] || "",
             })}
@@ -318,7 +322,7 @@ export default class extends React.Component {
             {intl.get("settings.account.firstname")}
           </InputItem>
           <InputItem
-            disabled={isDiasble}
+            disabled={isInputDisable}
             {...getFieldProps("last_name", {
               initialValue: userInfo["last_name"] || "",
             })}
@@ -327,7 +331,7 @@ export default class extends React.Component {
             {intl.get("settings.account.lastname")}
           </InputItem>
           <DatePicker
-            disabled={isDiasble}
+            disabled={isInputDisable}
             {...getFieldProps("birth", {
               initialValue: new Date(userInfo["birth"]) || undefined,
             })}
@@ -342,7 +346,7 @@ export default class extends React.Component {
             </List.Item>
           </DatePicker>
           <InputItem
-            disabled={isDiasble}
+            disabled={isInputDisable}
             {...getFieldProps("id_card", {
               initialValue: userInfo["id_card"] || "",
               validateTrigger: "onBlur",
@@ -363,56 +367,56 @@ export default class extends React.Component {
         </div>
         <div className="id-card-form">
           <Upload
-            disabled={isDiasble}
+            disabled={isInputDisable}
             accept="image/*"
             listType="picture-card"
             showUploadList={false}
             beforeUpload={this.beforeIdCardFrontUpload}
           >
-            {id_card_front ? (
+            {userInfo["id_card_front"] ? (
               <div className="upload-image-preview">
                 <img
-                  src={id_card_front}
+                  src={userInfo["id_card_front"]}
                   alt="id-card-front"
-                  // style={{ height: "100%" }}
+                // style={{ height: "100%" }}
                 />
               </div>
             ) : (
-              <div className="upload-image-preview">
-                <div>
-                  <img src="../../../assets/img/camera.svg" alt="camera" />
-                  <p className="ant-upload-text">
-                    {intl.get("settings.account.id-card-front.placeholder")}
-                  </p>
+                <div className="upload-image-preview">
+                  <div>
+                    <img src="../../../assets/img/camera.svg" alt="camera" />
+                    <p className="ant-upload-text">
+                      {intl.get("settings.account.id-card-front.placeholder")}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </Upload>
           <Upload
-            disabled={isDiasble}
+            disabled={isInputDisable}
             accept="image/*"
             listType="picture-card"
             showUploadList={false}
             beforeUpload={this.beforeIdCardBackUpload}
           >
-            {id_card_back ? (
+            {userInfo["id_card_back"] ? (
               <div className="upload-image-preview">
                 <img
-                  src={id_card_back}
+                  src={userInfo["id_card_back"]}
                   alt="id-card-back"
-                  // style={{ height: "100%" }}
+                // style={{ height: "100%" }}
                 />
               </div>
             ) : (
-              <div className="upload-image-preview">
-                <div>
-                  <img src="../../../assets/img/camera.svg" alt="camera" />
-                  <p className="ant-upload-text">
-                    {intl.get("settings.account.id-card-back.placeholder")}
-                  </p>
+                <div className="upload-image-preview">
+                  <div>
+                    <img src="../../../assets/img/camera.svg" alt="camera" />
+                    <p className="ant-upload-text">
+                      {intl.get("settings.account.id-card-back.placeholder")}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </Upload>
         </div>
 
@@ -420,7 +424,7 @@ export default class extends React.Component {
 
         <List>
           <InputItem
-            disabled={isDiasble}
+            disabled={isInputDisable}
             {...getFieldProps("mobile", {
               initialValue: userInfo["mobile"] || "",
               validateTrigger: "onBlur",
@@ -434,7 +438,7 @@ export default class extends React.Component {
             {intl.get("settings.account.mobile")}
           </InputItem>
           <Picker
-            disabled={isDiasble}
+            disabled={isInputDisable}
             cols={1}
             extra={intl.get("settings.account.nationality.placeholder")}
             data={country}
@@ -448,7 +452,7 @@ export default class extends React.Component {
             </List.Item>
           </Picker>
           <Picker
-            disabled={isDiasble}
+            disabled={isInputDisable}
             cols={1}
             extra={intl.get(
               "settings.account.country-of-residence.placeholder"
@@ -464,7 +468,7 @@ export default class extends React.Component {
             </List.Item>
           </Picker>
           <InputItem
-            disabled={isDiasble}
+            disabled={isInputDisable}
             {...getFieldProps("street", {
               initialValue: userInfo["street"] || "",
             })}
@@ -478,7 +482,7 @@ export default class extends React.Component {
 
         <List>
           <InputItem
-            disabled={isDiasble}
+            disabled={isInputDisable}
             {...getFieldProps("city", {
               initialValue: userInfo["city"] || "",
             })}
@@ -487,7 +491,7 @@ export default class extends React.Component {
             {intl.get("settings.account.city")}
           </InputItem>
           <InputItem
-            disabled={isDiasble}
+            disabled={isInputDisable}
             {...getFieldProps("postal", {
               initialValue: userInfo["postal"] || "",
               validateTrigger: "onBlur",
@@ -506,7 +510,7 @@ export default class extends React.Component {
 
         <List>
           <InputItem
-            disabled={isDiasble}
+            disabled={isInputDisable}
             {...getFieldProps("email", {
               initialValue: userInfo["email"] || "",
               validateTrigger: "onBlur",

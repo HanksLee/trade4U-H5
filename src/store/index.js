@@ -4,6 +4,7 @@ import trade from "./trade";
 import message from "./message";
 import product from "./product";
 import trend from "./trend";
+import setting from "./setting";
 
 export default {
   common,
@@ -11,5 +12,6 @@ export default {
   trade,
   message,
   product,
-  trend
+  trend,
+  setting
 };

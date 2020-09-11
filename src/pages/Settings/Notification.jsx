@@ -62,8 +62,10 @@ export default class extends React.Component {
           <NavTitle>{intl.get("settings.message.announcement")}</NavTitle>
         </Navbar>
         <div className="card-wrap">
-          {utils.isEmpty(notification) === false &&
-            this.renderNotificationCard()}
+          {!utils.isEmpty(notification)
+            ? this.renderNotificationCard()
+            : <div className="no-message">暂无服务消息</div>
+          }
         </div>
       </Page>
     );

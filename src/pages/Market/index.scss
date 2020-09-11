@@ -2,6 +2,17 @@
   // outline: 1px solid red;
 }
 
+#view-market {
+  .symbol-detail-navbar-center {
+    font-size: 18px;
+    font-weight: normal;
+
+    .stock-code {
+      margin-left: 10px;
+    }
+  }
+}
+
 .market-navbar {
   .left {
     width: calc(100% - 70px);
@@ -284,8 +295,13 @@
       div {
         margin-bottom: 11px;
       }
+
+      <<<<<<< HEAD
+
+======= >  >  >  >  >  >  > develop
       p {
         margin-bottom: 0px;
+
         .symbol-type-code {
           font-size: 10px;
           color: #21212b;
@@ -294,6 +310,7 @@
           margin-right: 6px;
           border-radius: 1px;
         }
+
         .symbol-code {
           font-size: 16px;
           color: #838d9e;
@@ -373,6 +390,7 @@
 .nav-icon {
   padding: 10px 5px;
   width: 30px;
+
   &:active {
     opacity: 0.5;
   }
@@ -390,40 +408,42 @@
 }
 
 .stock-container {
-  color: #44d7b6;
-  display: flex;
-  justify-content: center;
-  //align-items: stretch;
-  align-items: center;
-  margin-top: 10px;
-  margin-bottom: 10px;
-
-  .now-stock {
-    font-size: 36px;
-  }
-
-  .arrow,
-  .spread-stock {
+  .stock-container-price {
+    color: #44d7b6;
     display: flex;
-    align-content: center;
-  }
+    justify-content: center;
+    //align-items: stretch;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
 
-  .arrow {
-    margin-left: 6px;
-    margin-right: 10px;
-
-    .deg180 {
-      transform: rotateX(180deg);
+    .now-stock {
+      font-size: 36px;
     }
-  }
 
-  .spread-stock {
-    font-size: 12px;
-    flex-wrap: wrap !important;
+    .arrow,
+    .spread-stock {
+      display: flex;
+      align-content: center;
+    }
 
-    p {
-      margin: 0;
-      flex-basis: 100%;
+    .arrow {
+      margin-left: 6px;
+      margin-right: 10px;
+
+      .deg180 {
+        transform: rotateX(180deg);
+      }
+    }
+
+    .spread-stock {
+      font-size: 12px;
+      flex-wrap: wrap !important;
+
+      p {
+        margin: 0;
+        flex-basis: 100%;
+      }
     }
   }
 }

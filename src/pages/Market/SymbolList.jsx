@@ -1,5 +1,6 @@
 import api from 'services';
 import React from 'react';
+import axios from "axios";
 import { Page, Navbar, List, ListItem, NavTitle, NavRight, NavLeft, Icon, Link, Searchbar } from 'framework7-react';
 import './index.scss';
 import { inject, observer } from "mobx-react";
@@ -7,6 +8,8 @@ import selectSVG from '../../static/icons/self-select-icon.svg';
 import activeSelectSVG from '../../static/icons/self-select-icon-active.svg';
 
 const pageSize = 60
+let CancelToken = axios.CancelToken;
+let cancel;
 
 @inject("market")
 @observer
@@ -31,10 +34,18 @@ export default class extends React.Component {
   }
 
   getSymbolList = async (query, init = true) => {
+    if (cancel != undefined) {
+      cancel();
+    }
     this.setState({
       isLoading: true,
     })
-    const res = await api.market.getSymbolList(query)
+    const res = await api.market.getSymbolList(query, {
+      cancelToken: new CancelToken(function executor(c) {
+        // An executor function receives a cancel function as a parameter
+        cancel = c;
+      }),
+    })
     const { selfSelectSymbolList, } = this.props.market
     const ids = selfSelectSymbolList.map(item => item.symbol_display.id)
 

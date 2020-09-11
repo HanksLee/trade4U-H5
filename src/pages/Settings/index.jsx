@@ -18,21 +18,22 @@ import { inject, observer } from "mobx-react";
 import "antd/dist/antd.css";
 import "./index.scss";
 
-@inject("message")
+@inject("message", "setting")
 @observer
 export default class extends React.Component {
-  state = { withdrawableBalance: 0 };
+  // state = { withdrawableBalance: 0 };
 
-  componentDidMount() {
-    this.getWithdrawableBalance();
+  async componentDidMount() {
+    await this.props.setting.getWithdrawableBalance();
+    await this.props.setting.getUserInfo();
   }
 
-  getWithdrawableBalance = async () => {
-    const res = await api.setting.getWithdrawableBalance();
-    this.setState({
-      withdrawableBalance: res.data.withdrawable_balance,
-    });
-  };
+  // getWithdrawableBalance = async () => {
+  //   const res = await api.setting.getWithdrawableBalance();
+  //   this.setState({
+  //     withdrawableBalance: res.data.withdrawable_balance,
+  //   });
+  // };
 
   logout = () => {
     localStorage.removeItem("MOON_H5_TOKEN");
@@ -60,8 +61,8 @@ export default class extends React.Component {
   };
 
   render() {
+    const { userInfo, withdrawableBalance } = this.props.setting;
     const { hasNotify, hasAnnouncement } = this.props.message;
-    const { withdrawableBalance } = this.state;
     return (
       <Page name="settings">
         <Navbar>
@@ -80,7 +81,8 @@ export default class extends React.Component {
             </List>
           </NavRight>
         </Navbar>
-        <div className="withdraw-item-title">可提馀额</div>
+        <div className="user-name">{userInfo["first_name"]}{userInfo["last_name"]}</div>
+        <div className="withdraw-item-title">可提馀额(元)</div>
         <div className="remain-fund">{withdrawableBalance}</div>
         <div className="fund-btn-container">
           <div className="fund-btn">

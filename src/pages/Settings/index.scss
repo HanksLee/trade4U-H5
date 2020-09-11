@@ -37,7 +37,8 @@
       flex-basis: 42.667%;
       background: rgba(242, 226, 5, 1);
       border-radius: 4px;
-      &:active{
+
+      &:active {
         opacity: 0.5;
       }
     }
@@ -48,7 +49,6 @@
 
       .item-title {
         color: rgba(242, 226, 5, 1) !important;
-       
       }
     }
 
@@ -75,6 +75,7 @@
   }
 }
 
+.user-name,
 .setting-item-title,
 .withdraw-item-title,
 .deposit-item-title {
@@ -83,7 +84,6 @@
   padding-left: 16px;
   margin-top: 20px;
 }
-
 
 .history-total,
 .history-detail .detail-title,
@@ -123,7 +123,7 @@
   }
 
   .detail-title {
-    color: #838D9E;
+    color: #838d9e;
     margin-bottom: 10px;
   }
 
@@ -184,13 +184,15 @@
 .list {
   ul {
     background-color: transparent;
-    
+
     .item-content {
       padding-left: calc(var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left));
-      i{
+
+      i {
         width: 16px;
         height: 16px;
       }
+
       .item-media {
         > div {
           width: 30px;
@@ -283,7 +285,8 @@
 
       > div {
         position: relative;
-        img{
+
+        img {
           width: 30px;
         }
       }
@@ -300,7 +303,7 @@
     top: -3px;
   }
 
-  &:active{
+  &:active {
     opacity: 0.5;
   }
 }
@@ -424,10 +427,9 @@
   display: flex;
   padding: 10px;
   background-color: transparent;
- 
+
   &.announcement {
     border-bottom: 0.00267rem solid rgba(0, 0, 0, 0.1);
-    
   }
 
   .message-icon-container {
@@ -451,8 +453,6 @@
         background-color: #6236ff;
       }
     }
-
-    
 
     > .has-unread-message {
       width: 10px;
@@ -491,6 +491,7 @@
       flex-basis: 65%;
       text-align: right;
       font-size: 12px;
+
       .message-date {
         margin-right: 5px;
         //font-size: 14px;
@@ -498,11 +499,12 @@
     }
 
     .message-content-content {
+      height: 44px;
+      overflow: hidden;
       flex-basis: 100%;
       margin-top: 7px;
       font-size: 14px;
     }
-
   }
 
   .message-goto-container {
@@ -541,7 +543,7 @@
       position: relative;
       display: flex;
       padding: 10px 0;
-      border-bottom:solid 1px #C8C7CC;
+      border-bottom: solid 1px #c8c7cc;
 
       &::after {
         content: "";
@@ -568,7 +570,6 @@
     .card-time {
       color: #838d9e;
       text-align: right;
-      
     }
 
     .card-content-container {
@@ -579,6 +580,10 @@
         color: #838d9e;
       }
     }
+  }
+
+  .no-message {
+    color: #ffffff;
   }
 }
 
@@ -617,14 +622,15 @@
 
       .ant-form-item-control-input-content {
         padding: 2px 0;
-       // border-bottom: 1px solid white;
+        // border-bottom: 1px solid white;
 
         input {
           font-size: 16px;
           border-bottom: 1px solid white;
-          &:focus{
+
+          &:focus {
             box-shadow: unset;
-            border-bottom: 1px solid #F2E205;
+            border-bottom: 1px solid #f2e205;
           }
         }
 
@@ -636,8 +642,6 @@
           &.ant-input-number-focused {
             box-shadow: unset;
           }
-
-          
         }
 
         .ant-input-number-handler-wrap {
@@ -649,7 +653,6 @@
             padding: unset;
           }
         }
-        
       }
     }
 
@@ -673,9 +676,9 @@
         text-align: left;
         font-size: 16px;
         border-bottom: 1px solid #ffffff;
-        color:#ffffff;
+        color: #ffffff;
       }
-      
+
       .am-list-arrow {
         // display: none;
         // width: 32px;
@@ -692,7 +695,7 @@
     .am-list-line {
       flex-wrap: wrap;
       padding: 8px 0;
-      
+
       &::after {
         content: unset !important;
       }
@@ -712,20 +715,24 @@
       .am-input-control {
         //border-bottom: 1px solid white;
         margin-top: 10px;
+
         input {
           font-size: 16px;
           //color: #6d7278;
           color: #ffffff;
           line-height: 26px;
           border-bottom: 1px solid white;
+
           &::placeholder {
             font-size: 16px;
           }
-          &:focus{
-            border-bottom: 1px solid #F2E205;
+
+          &:focus {
+            border-bottom: 1px solid #f2e205;
           }
         }
-        input:disabled{
+
+        input:disabled {
           font-size: inherit;
           background-color: inherit;
         }
@@ -794,7 +801,6 @@
 
     .ant-select-selection-search-input {
       height: 26px;
-    
     }
   }
 
@@ -804,7 +810,8 @@
     padding: 0;
     box-shadow: unset !important;
     font-size: 16px;
-    border-bottom: solid 1px #C8C7CC;
+    border-bottom: solid 1px #c8c7cc;
+
     &:hover {
       border-color: unset;
     }
@@ -860,7 +867,7 @@
     color: rgba(242, 226, 5, 1);
     background-color: transparent;
 
-    &:active{
+    &:active {
       opacity: 0.5;
     }
   }
