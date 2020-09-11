@@ -83,7 +83,7 @@ var routes = [
     async(routeTo, routeFrom, resolve, reject) {
       const reactComponent = () =>
         import(
-          /* webpackChunkName: 'symbol-page' */ "../pages/Market/SymbolDetail.jsx"
+          /* webpackChunkName: 'symbol-page' */ "../pages/Market/SymbolDetail/index.jsx"
         );
       reactComponent().then((rc) => {
         resolve({ component: rc.default });

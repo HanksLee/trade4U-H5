@@ -12,6 +12,8 @@ export default {
     timeVisible:true,
     secondsVisible:true,
     visible: true,
+    fixLeftEdge:false,
+    rightOffset: 22,
     tickMarkFormatter: (time, tickMarkType, locale) => {
       const timeObj = moment(time * 1000);
       const timeString = timeObj.format('HH:mm');

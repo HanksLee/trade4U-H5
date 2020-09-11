@@ -1,0 +1,48 @@
+.symbol-info {
+  min-height: 50vh;
+  color: #fff;
+}
+.tab-body {
+  padding: 10px;
+  padding-bottom: 100px;
+}
+.no-content {
+  display: flex;
+  justify-content: center;
+}
+// 详细资讯
+.stock-detail {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  color: #fff;
+  .item {
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    .item-title {
+      color: #838d9e;
+    }
+    .item-col {
+      width: 50%;
+      text-align: center;
+    }
+  }
+}
+// 盘口
+.fund-content {
+  color: #fff;
+  .fund-content-title {
+    text-align: center;
+    background-color: #2e3b55;
+  }
+  .fund-table {
+    border: 1px solid #2e3b55;
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+  }
+  .fund-table-cell {
+    border: 1px solid #2e3b55;
+    text-align: center;
+  }
+}
