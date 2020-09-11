@@ -27,7 +27,9 @@ export default function TwoPriceItem({
         <div className="self-select-name">
           {item?.symbol_display?.name}
           <p>
-            <span className="symbol-type-code">{item?.product_market}</span>
+            <span className="symbol-type-code">
+              {item?.symbol_display?.product_display?.market}
+            </span>
             <span className="symbol-code">
               {item?.symbol_display?.product_display?.code}
             </span>

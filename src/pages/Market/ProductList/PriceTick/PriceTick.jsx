@@ -3,6 +3,7 @@ import { toJS } from "mobx";
 import classnames from "classnames/bind";
 import styles from "./PriceTick.module.scss";
 const cx = classnames.bind(styles);
+const cn = classnames;
 /**
  * sell 卖出报价
  * change 涨跌点数
@@ -26,16 +27,20 @@ export const PriceTick = React.memo(({ buy, sell, change, chg, className }) => {
   return (
     <>
       <div
-        className={`self-select-buy-sell-block ${textClass} ${
-          isLightOn && lightClass
-        } `}
+        className={cn({
+          "self-select-buy-sell-block": true,
+          [textClass]: true,
+          [lightClass]: isLightOn,
+        })}
       >
         {sell}
       </div>
       <div
-        className={`self-select-buy-sell-block ${textClass} ${
-          isLightOn && lightClass
-        }`}
+        className={cn({
+          "self-select-buy-sell-block": true,
+          [textClass]: true,
+          [lightClass]: isLightOn,
+        })}
       >
         {chg}%
       </div>
