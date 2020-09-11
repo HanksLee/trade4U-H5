@@ -81,7 +81,6 @@ export default class extends React.Component {
     reaction(
       () => this.props.common.subscribeSymbolList,
       (subscribeSymbolList) => {
-        console.log("setUpdateListListener",subscribeSymbolList)
         this.updateContent(subscribeSymbolList);
       }
     );
