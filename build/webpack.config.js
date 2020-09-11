@@ -152,7 +152,7 @@ module.exports = {
         ],
       },
       {
-        test: /^((?!\.module).)*scss$/, // 非 .module 的 scss
+        test: /(?<!\.module)\.scss$/, // 非 .module 的 .scss
         use: [
           env === "development"
             ? "style-loader"

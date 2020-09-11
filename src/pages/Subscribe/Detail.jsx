@@ -41,45 +41,56 @@ export default class extends React.Component {
         </Navbar>
         <div className="subscribe-detail-header">
           <span>泰格医药0857</span>
-          <span>30.30</span>
+          <div> <span>申購價 : </span><span>30.30</span></div>
         </div>
         <div className="subscribe-detail-content">
           <div>
-            <span>申购日期</span>
-            <span>2020-12-31</span>
+            <span>品種</span>
+            <span>港股</span>
+          </div>
+          <div>
+            <span>申購代碼</span>
+            <span>03347</span>
+          </div>
+          <div>
+            <span>申購日期</span>
+            <span>2020-10-10</span>
           </div>
           <div>
             <span>截止日期</span>
-            <span>2020-12-31</span>
+            <span>2020-10-13</span>
+          </div>
+          <div>
+            <span>中籤公布日</span>
+            <span>2020-10-19</span>
           </div>
           <div>
             <span>上市日期</span>
-            <span>2020-12-31</span>
+            <span>2020-10-31</span>
           </div>
           <div>
             <span>每手金额</span>
-            <span>2662.00</span>
+            <span>121200</span>
           </div>
           <div>
             <span>每手股数</span>
             <span>1000</span>
           </div>
           <div>
-            <span>发行总数(万股)</span>
-            <span>13333.44</span>
-          </div>
-          <div>
-            <span>香港发行(万股)</span>
-            <span>5000</span>
-          </div>
-          <div>
-            <span>国际发行(万股)</span>
-            <span>13333.44</span>
+            <span>幣種</span>
+            <span>HKD</span>
           </div>
         </div>
         <div className={`subscribe-detail-submit-btn`}
           style={{ marginBottom: '20px' }}
-        // onClick={this.onSubmit}
+          // onClick={this.onSubmit}
+          onClick={() => {
+
+            this.$f7router.navigate(
+              `/subscribe/subscribeorder`
+
+            );
+          }}
         >
           {"申购"}
         </div>

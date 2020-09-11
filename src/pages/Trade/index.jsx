@@ -1,14 +1,6 @@
 import React from "react";
 import { BaseReact } from "components/baseComponent";
-import {
-  Page,
-  Navbar,
-  NavRight,
-  Block,
-  Row,
-  Col,
-
-} from "framework7-react";
+import { Page, Navbar, NavRight, Block, Row, Col } from "framework7-react";
 import AddIcon from "assets/img/add.svg";
 import moment from "moment";
 import { inject, observer } from "mobx-react";
@@ -23,11 +15,7 @@ import Dom7 from "dom7";
 import TradeList from "./TradeList";
 
 const $$ = Dom7;
-const WS_TradeList = WSConnect(
-  channelConfig[0],
-  channelConfig,
-  TradeList
-);
+const WS_TradeList = WSConnect(channelConfig[0], channelConfig, TradeList);
 
 @inject("common", "trade")
 @observer
@@ -67,68 +55,71 @@ export default class extends BaseReact {
     this.onRefresh();
   };
 
-
   switchTradeTabs = (name) => {
-    this.setState({ currentTradeTab: name })
-    if (name === '历史') {
-      this.setState({ title: '净盈亏' })
+    this.setState({ currentTradeTab: name });
+    if (name === "历史") {
+      this.setState({ title: "净盈亏" });
     } else {
-      this.setState({ title: '持仓盈亏' })
+      this.setState({ title: "持仓盈亏" });
     }
-  }
+  };
 
   render() {
-    const { title, tapIndex, loading, currentTradeTab, activeItem } = this.state;
+    const {
+      title,
+      tapIndex,
+      loading,
+      currentTradeTab,
+      activeItem,
+    } = this.state;
     const {
       tradeInfo,
       tradeList,
       futureTradeList,
       computedTradeList,
       currentTrade,
-      finishTradeInfo
+      finishTradeInfo,
     } = this.props.trade;
     const initSymbol = utils.isEmpty(tradeList) ? 0 : tradeList[0]?.symbol;
     return (
       <Page
         name="trade"
         className="trade-page"
-      // ptr
-      // onPtrRefresh={this.onRefresh}
+        // ptr
+        // onPtrRefresh={this.onRefresh}
       >
-
-        <Navbar
-          title={title}
-          className="trade-navbar"
-        >
+        <Navbar title={title} className="trade-navbar">
           <NavRight>
             {/* <div onClick={this.handleSubmit}>確認</div> */}
           </NavRight>
         </Navbar>
-        {currentTradeTab !== "历史" &&
+        {currentTradeTab !== "历史" && (
           // <Block
           //   strong
           //   className={`trade-stats ${
           //     loading ? "skeleton-text skeleton-effect-blink" : ""
           //     }`}
           // >
-          <Block
-            strong
-            className={`trade-stats `}
-          >
+          <Block strong className={`trade-stats `}>
             {/* <div className="trade-title">持仓盈亏</div> */}
             <Row className={"trade-stats-row"}>
               <Col width="25" className={"trade-stats-col"}>
                 <p>结余</p>
                 <p>{tradeInfo?.balance?.toFixed(2)}</p>
               </Col>
-              <Col width="50" className={'trade-stats-col'}>
-                <p className={`trade-total-number ${tradeInfo?.profit?.toFixed(2) > 0 ? "p-up" : "p-down"}`}>{tradeInfo?.profit?.toFixed(2)}</p>
+              <Col width="50" className={"trade-stats-col"}>
+                <p
+                  className={`trade-total-number ${
+                    tradeInfo?.profit?.toFixed(2) > 0 ? "p-up" : "p-down"
+                  }`}
+                >
+                  {tradeInfo?.profit?.toFixed(2)}
+                </p>
               </Col>
               <Col width="25" className={"trade-stats-col"}>
                 <p>净值</p>
                 <p>{tradeInfo?.equity?.toFixed(2)}</p>
               </Col>
-
             </Row>
             <Row className={"trade-stats-row"}>
               <Col width="25" className={"trade-stats-col"}>
@@ -144,15 +135,16 @@ export default class extends BaseReact {
                 <p>
                   {tradeInfo.margin == 0
                     ? "-"
-                    : tradeInfo?.margin_level?.toFixed(2)}
+                    : `${tradeInfo?.margin_level?.toFixed(2)}%`}
                 </p>
               </Col>
             </Row>
-          </Block>}
-        {currentTradeTab === "历史" &&
+          </Block>
+        )}
+        {currentTradeTab === "历史" && (
           // <Block
           //   strong
-          //   className={`trade-stats 
+          //   className={`trade-stats
           //   ${loading ? "skeleton-text skeleton-effect-blink" : ""}
           //     `}
           // >
@@ -166,26 +158,37 @@ export default class extends BaseReact {
                 <p>盈利</p>
                 <p>{finishTradeInfo?.profit?.toFixed(2)}</p>
               </Col>
-              <Col width="50" className={'trade-stats-col'}>
-                <p className={`trade-total-number ${finishTradeInfo?.balance?.toFixed(2) > 0 ? "p-up" : "p-down"}`}>{finishTradeInfo?.balance?.toFixed(2)}</p>
+              <Col width="50" className={"trade-stats-col"}>
+                <p
+                  className={`trade-total-number ${
+                    finishTradeInfo?.balance?.toFixed(2) > 0 ? "p-up" : "p-down"
+                  }`}
+                >
+                  {finishTradeInfo?.balance?.toFixed(2)}
+                </p>
               </Col>
               <Col width="25" className={"trade-stats-col"}>
                 <p>亏损</p>
                 <p>{finishTradeInfo?.loss?.toFixed(2)}</p>
               </Col>
             </Row>
-          </Block>}
+          </Block>
+        )}
         <div className="trade-tabs">
-          {
-            tradeTabOptions.map((item) => {
-              return (
-                <div
-                  onClick={() => { this.switchTradeTabs(item.name) }}
-                  className={`market-navbar-item ${currentTradeTab === item.name && 'active'}`}>
-                  {item.name}
-                </div>)
-            })
-          }
+          {tradeTabOptions.map((item) => {
+            return (
+              <div
+                onClick={() => {
+                  this.switchTradeTabs(item.name);
+                }}
+                className={`market-navbar-item ${
+                  currentTradeTab === item.name && "active"
+                }`}
+              >
+                {item.name}
+              </div>
+            );
+          })}
         </div>
 
         <div className="trade-content-title">
@@ -194,8 +197,11 @@ export default class extends BaseReact {
           <div>方向｜手数</div>
           <div>盈亏</div>
         </div>
-        <WS_TradeList currentTradeTab={currentTradeTab} thisRouter={this.$f7router}></WS_TradeList>
-      </Page >
+        <WS_TradeList
+          currentTradeTab={currentTradeTab}
+          thisRouter={this.$f7router}
+        ></WS_TradeList>
+      </Page>
     );
   }
 }
