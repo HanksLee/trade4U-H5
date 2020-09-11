@@ -123,6 +123,18 @@ var routes = [
     },
   },
   {
+    path: "/subscribe/subscribeorder",
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () =>
+        import(
+          /* webpackChunkName: 'trade-page' */ "../pages/Subscribe/SubscribeOrder.jsx"
+        );
+      reactComponent().then((rc) => {
+        resolve({ component: rc.default });
+      });
+    },
+  },
+  {
     path: "/trade/",
     async(routeTo, routeFrom, resolve, reject) {
       const reactComponent = () =>

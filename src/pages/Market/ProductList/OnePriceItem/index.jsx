@@ -20,7 +20,7 @@ export default ({ thisRouter, item, currentSymbolType, thisStore }) => {
       <div className="item-main-info">
         <div className="self-select-name">{item?.product_details?.name}
           <p>
-            <span className="symbol-type-code">{item?.product_market}</span>
+            <span className="symbol-type-code">{item?.symbol_display?.product_display?.market}</span>
             <span className="symbol-code">{item?.symbol_display?.product_display?.code}</span>
           </p>
         </div>

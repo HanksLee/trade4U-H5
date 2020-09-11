@@ -1,6 +1,7 @@
 import React from "react";
 
 export default ({ thisRouter, item, currentSymbolType, thisStore }) => {
+  
   return (
     <div
       className="self-select-tr"
@@ -20,7 +21,7 @@ export default ({ thisRouter, item, currentSymbolType, thisStore }) => {
       <div className="item-main-info">
         <div className="self-select-name">{item?.symbol_display?.name}
           <p>
-            <span className="symbol-type-code">{item?.product_market}</span>
+            <span className="symbol-type-code">{item?.symbol_display?.product_display?.market}</span>
             <span className="symbol-code">{item?.symbol_display?.product_display?.code}</span>
           </p>
         </div>
