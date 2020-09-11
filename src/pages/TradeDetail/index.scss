@@ -47,7 +47,7 @@
     background-color: #fff;
     height: 0;
     overflow: hidden;
-    transition: height .3s;
+    transition: height 0.3s;
     font-size: r(17);
     text-align: center;
     //font-weight: bold;
@@ -114,13 +114,13 @@
 
       &.up {
         input {
-          color: $up;
+          color: var(--up-color);
         }
       }
 
       &.down {
         input {
-          color: $down;
+          color: var(--down-color);
         }
       }
     }
@@ -172,7 +172,7 @@
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
-    &:active{
+    &:active {
       opacity: 0.5;
     }
   }
@@ -333,7 +333,7 @@
           line-height: 28px;
         }
 
-        &:nth-child(n+3) {
+        &:nth-child(n + 3) {
           display: flex;
 
           > span {
@@ -420,7 +420,7 @@
         // margin-left: 20px;
       }
 
-      .trade-detail-input-item-btn:nth-child(n+3) {
+      .trade-detail-input-item-btn:nth-child(n + 3) {
         margin-top: 20px;
       }
 
@@ -436,8 +436,8 @@
         text-align: center;
         background: rgba(131, 141, 158, 1);
         color: #fff;
-        &:active{
-         opacity: 0.5;
+        &:active {
+          opacity: 0.5;
         }
       }
 
@@ -492,7 +492,7 @@
     color: #21212b !important;
   }
 
-  &:active{
+  &:active {
     opacity: 0.5;
   }
 }

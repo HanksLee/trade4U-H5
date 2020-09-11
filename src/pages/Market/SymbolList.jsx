@@ -180,7 +180,7 @@ export default class extends React.Component {
                   <div className="search-result" onClick={() => { this.handleItemOpened(item) }}>
                     <p className="search-result-name">{item?.symbol_display?.name}</p>
                     <p>
-                      {/* <span className="symbol-type-code">US</span> */}
+                      <span className="symbol-type-code">{item?.symbol_display?.product_display?.market}</span>
                       <span className="symbol-code">{item?.symbol_display?.product_display?.code}</span>
                     </p>
                   </div>

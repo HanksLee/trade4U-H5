@@ -19,9 +19,10 @@ $icon-color-hover: $primary-color;
 $hot: #f5222d;
 $normal: $primary-color;
 $wait: rgba(250, 173, 20, 1);
-$block:rgba(0, 0, 0, 0.25);
+$block: rgba(0, 0, 0, 0.25);
 
 $primary: #325497;
-$up: #44d7b6;
-$down: #e94a39;
+// ! 涨跌颜色改用 css var(--up-color) 和 var(--down-color)
+// var(--up-color): #44d7b6;
+// var(--down-color): #e94a39;
 $grey: #8c8c8c;

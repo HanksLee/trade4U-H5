@@ -77,7 +77,7 @@ export class SymbolInfo extends React.Component {
       <div className={cx("tab-body")}>
         <div className={cx("stock-detail")}>
           {Object.entries(field).map(([key, detail]) => {
-            const displayValue = symbol_display[key];
+            const displayValue = symbol_display[key] ?? "-";
             return (
               <div className={cx("item")}>
                 <div className={cx("item-col", "item-title")}>
@@ -106,30 +106,34 @@ export class SymbolInfo extends React.Component {
             <div className={cx("no-content")}>此产品无资金流向显示</div>
           )}
           {!utils.isEmpty(fund) && (
-            <div className={cx("fund-table")}>
-              <tr className={cx("fund-table-row")}>
-                <th className={cx("fund-table-cell")}>金额(元)</th>
-                <th className={cx("fund-table-cell")}>主力买入</th>
-                <th className={cx("fund-table-cell")}>主力卖出</th>
-                <th className={cx("fund-table-cell")}>散户买入</th>
-                <th className={cx("fund-table-cell")}>散户卖出</th>
-              </tr>
-              <tr className={cx("fund-table-row")}>
-                <td className={cx("fund-table-cell")}></td>
-                <td className={cx("fund-table-cell")}>
-                  {Math.round(Number(fund.major_in_amount) / 10000)}
-                </td>
-                <td className={cx("fund-table-cell")}>
-                  {Math.round(Number(fund.major_out_amount) / 10000)}
-                </td>
-                <td className={cx("fund-table-cell")}>
-                  {Math.round(Number(fund.major_in_amount) / 10000)}
-                </td>
-                <td className={cx("fund-table-cell")}>
-                  {Math.round(Number(fund.retail_out_amount) / 10000)}
-                </td>
-              </tr>
-            </div>
+            <table className={cx("fund-table")}>
+              <thead>
+                <tr>
+                  <th className={cx("fund-table-cell")}> </th>
+                  <th className={cx("fund-table-cell")}>主力买入</th>
+                  <th className={cx("fund-table-cell")}>主力卖出</th>
+                  <th className={cx("fund-table-cell")}>散户买入</th>
+                  <th className={cx("fund-table-cell")}>散户卖出</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className={cx("fund-table-cell")}>金额(元)</td>
+                  <td className={cx("fund-table-cell")}>
+                    {Math.round(Number(fund.major_in_amount) / 10000)}
+                  </td>
+                  <td className={cx("fund-table-cell")}>
+                    {Math.round(Number(fund.major_out_amount) / 10000)}
+                  </td>
+                  <td className={cx("fund-table-cell")}>
+                    {Math.round(Number(fund.major_in_amount) / 10000)}
+                  </td>
+                  <td className={cx("fund-table-cell")}>
+                    {Math.round(Number(fund.retail_out_amount) / 10000)}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           )}
         </div>
       </div>
@@ -193,13 +197,7 @@ export class SymbolInfo extends React.Component {
             newsList.map((item) => (
               <div
                 className="news-content-item"
-                onClick={() => {
-                  this.$f7router.navigate("/news/detail", {
-                    props: {
-                      newsDetail: item,
-                    },
-                  });
-                }}
+                onClick={(e) => this.handleNewsItemClick(e, item)}
               >
                 <div className="news-content-item-text">
                   <p>{item.title}</p>
@@ -209,7 +207,7 @@ export class SymbolInfo extends React.Component {
                 </div>
                 {!utils.isEmpty(item.thumbnail) && (
                   <div className="news-content-item-img">
-                    <img src={item.thumbnail} alt="thumbmail" />
+                    <img src={item.thumbnail} alt="thumbnail" />
                   </div>
                 )}
               </div>
@@ -217,6 +215,13 @@ export class SymbolInfo extends React.Component {
         </div>
       </div>
     );
+  };
+  handleNewsItemClick = (_, item) => {
+    const router = this.props.router ?? this.$f7.views.main.router;
+    if (!router) return;
+    router.navigate("/news/detail", {
+      props: { newsDetail: item },
+    });
   };
   render() {
     const { currentSymbol } = this.props.market;

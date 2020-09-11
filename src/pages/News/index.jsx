@@ -32,12 +32,20 @@ export default class extends React.Component {
     await this.getSymbolTypeList();
     this.switchActiveDot(0);
     this.getList();
+    this.initEvents();
     window.addEventListener("scroll", this.handleScroll, true);
   }
 
   componentDidUpdate() {
     // this.switchActiveDot(0);
   }
+
+  initEvents = () => {
+    console.log(this.props.common.globalEvent)
+    this.props.common.globalEvent.on("refresh-news-page", () => {
+      this.getList();
+    });
+  };
 
   handleScroll = () => {
     const { error, hasMore, dataLoading, tabIndex } = this.state;

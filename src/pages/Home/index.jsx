@@ -102,6 +102,9 @@ export default class extends React.Component {
                 text="新闻"
                 force={true}
                 reloadCurrent={true}
+                onClick={() => {
+                  this.$event.emit("refresh-news-page");
+                }}
               />
             )}
             <Link

@@ -146,18 +146,17 @@ export default class extends React.Component {
     const { currentSymbolType, dataLoading } = this.state;
     const currentList =
       currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
-    const PirceItem = this.getProductItem(quoted_price);
+    const PriceItem = this.getProductItem(quoted_price);
     const testTimestamp = {
       color: "#FFF",
       padding: "10px",
     };
-
     return (
       <>
         {currentList.map((item) => {
           return (
             <>
-              <PirceItem
+              <PriceItem
                 thisRouter={thisRouter}
                 currentSymbolType={currentSymbolType}
                 currentSymbolTypeCode={symbol_type_code}
