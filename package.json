@@ -33,10 +33,11 @@
   },
   "scripts": {
     "start": "npm run dev",
-    "dev": "cross-env NODE_ENV=development MODE=dev webpack-dev-server --config ./build/webpack.config.js --host 0.0.0.0",
+    "dev": "cross-env NODE_ENV=development MODE=dev webpack-dev-server --config ./build/webpack.config.js --host 127.0.0.1",
     "build-qa": "cross-env NODE_ENV=production MODE=qa node ./build/build.js",
     "build-prod": "cross-env NODE_ENV=production MODE=prod node ./build/build.js",
-    "postinstall": "cpy ./node_modules/framework7-icons/fonts/*.* ./src/fonts/"
+    "postinstall": "cpy ./node_modules/framework7-icons/fonts/*.* ./src/fonts/",
+    "lint": "eslint src"
   },
   "browserslist": [
     "Android >= 7",
