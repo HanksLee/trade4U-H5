@@ -200,16 +200,14 @@ export default class SymbolDetail extends React.Component {
         </div> */}
         {/* <WS_TrendContainer nowRealID={currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id} unit={"1m"} /> */}
         <WS_TrendContainer nowRealID={currentSymbol.id} unit={"1m"} />
-        <SymbolInfo />
+        <SymbolInfo router={this.$f7router} />
         <Toolbar tabbar labels bottom className="app-tabbar stock-tabbar">
           <Link
             tabLinkActive
             icon="market-icon"
             text="行情"
             className="tabbar-label"
-            onClick={() => {
-              this.$f7router.back();
-            }}
+            onClick={() => this.$f7router.back()}
           />
           <Link
             icon={`${
