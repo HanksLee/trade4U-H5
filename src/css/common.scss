@@ -1,10 +1,10 @@
-// placeholder
+// up 涨 down 跌颜色，吃 css 变数
 .p-up {
-  color: $up !important;
+  color: var(--up-color) !important;
 }
 
 .p-down {
-  color: $down !important;
+  color: var(--down-color) !important;
 }
 
 .p-grey {
@@ -16,11 +16,11 @@
 }
 
 .bg-up {
-  background-color: $up;
+  background-color: var(--up-color);
 }
 
 .bg-down {
-  background-color: $down;
+  background-color: var(--down-color);
 }
 
 .bg-grey {
@@ -33,4 +33,165 @@
 
 .bg-orange {
   background-color: #f7b500;
+}
+
+.stock-up {
+  animation: stock-up-light 2s;
+}
+.stock-down {
+  animation: stock-down-light 2s;
+}
+
+@keyframes stock-up-light {
+  0% {
+    background-image: linear-gradient(270deg, #166856 100%, #0c372e 0%),
+      linear-gradient(90deg, #166856 90%, #0c372e 0%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  10% {
+    background-image: linear-gradient(270deg, #166856 90%, #0c372e 100%),
+      linear-gradient(90deg, #166856 80%, #0c372e 100%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  20% {
+    background-image: linear-gradient(270deg, #166856 80%, #0c372e 100%),
+      linear-gradient(90deg, #166856 70%, #0c372e 100%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  30% {
+    background-image: linear-gradient(270deg, #166856 70%, #0c372e 100%),
+      linear-gradient(90deg, #166856 60%, #0c372e 100%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  40% {
+    background-image: linear-gradient(270deg, #166856 60%, #0c372e 100%),
+      linear-gradient(90deg, #166856 50%, #0c372e 100%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  50% {
+    background-image: linear-gradient(270deg, #166856 50%, #0c372e 90%),
+      linear-gradient(90deg, #166856 40%, #0c372e 90%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  60% {
+    background-image: linear-gradient(270deg, #166856 40%, #0c372e 90%),
+      linear-gradient(90deg, #166856 30%, #0c372e 90%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  70% {
+    background-image: linear-gradient(270deg, #166856 30%, #0c372e 70%),
+      linear-gradient(90deg, #166856 20%, #0c372e 70%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  80% {
+    background-image: linear-gradient(270deg, #166856 20%, #0c372e 70%),
+      linear-gradient(90deg, #166856 10%, #0c372e 70%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  90% {
+    background-image: linear-gradient(270deg, #166856 10%, #0c372e 70%),
+      linear-gradient(90deg, #166856 0%, #0c372e 70%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  100% {
+    background-image: #0f342d;
+    // margin-left: 5px;
+  }
+}
+
+@keyframes stock-down-light {
+  0% {
+    background-image: linear-gradient(270deg, #9b1f11 100%, #66140b 0%),
+      linear-gradient(90deg, #9b1f11 90%, #66140b 0%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  10% {
+    background-image: linear-gradient(270deg, #9b1f11 90%, #66140b 100%),
+      linear-gradient(90deg, #9b1f11 80%, #66140b 100%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  20% {
+    background-image: linear-gradient(270deg, #9b1f11 80%, #66140b 100%),
+      linear-gradient(90deg, #9b1f11 70%, #66140b 100%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  30% {
+    background-image: linear-gradient(270deg, #9b1f11 70%, #66140b 100%),
+      linear-gradient(90deg, #9b1f11 60%, #66140b 100%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  40% {
+    background-image: linear-gradient(270deg, #9b1f11 60%, #66140b 100%),
+      linear-gradient(90deg, #9b1f11 50%, #66140b 100%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  50% {
+    background-image: linear-gradient(270deg, #9b1f11 50%, #66140b 90%),
+      linear-gradient(90deg, #9b1f11 40%, #66140b 90%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  60% {
+    background-image: linear-gradient(270deg, #9b1f11 40%, #66140b 90%),
+      linear-gradient(90deg, #9b1f11 30%, #66140b 90%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  70% {
+    background-image: linear-gradient(270deg, #9b1f11 30%, #66140b 70%),
+      linear-gradient(90deg, #9b1f11 20%, #66140b 70%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  80% {
+    background-image: linear-gradient(270deg, #9b1f11 20%, #66140b 70%),
+      linear-gradient(90deg, #9b1f11 10%, #66140b 70%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  90% {
+    background-image: linear-gradient(270deg, #9b1f11 10%, #66140b 70%),
+      linear-gradient(90deg, #9b1f11 0%, #66140b 70%);
+    // margin-left: 5px;
+    font-weight: bold;
+  }
+
+  100% {
+    background-image: #310a05;
+    // margin-left: 5px;
+  }
 }

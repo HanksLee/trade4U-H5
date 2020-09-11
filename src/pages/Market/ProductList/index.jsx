@@ -2,7 +2,7 @@ import React from "react";
 import { inject, observer } from "mobx-react";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import moment from "moment-timezone"
+import moment from "moment-timezone";
 import Dom7 from "dom7";
 import "../index.scss";
 import {
@@ -172,23 +172,29 @@ export default class extends React.Component {
     const { currentSymbolType, dataLoading } = this.state;
     const currentList =
       currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
-    const PirceItem = this.getProductItem(quoted_price);
+    const PriceItem = this.getProductItem(quoted_price);
     const testTimestamp = {
       color: "#FFF",
-      padding: "10px"
-    }
+      padding: "10px",
+    };
+    console.log("thisStore :>> ", thisStore);
     return (
       <>
         {currentList.map((item) => {
           return (
             <>
-              <PirceItem
+              <PriceItem
                 thisRouter={thisRouter}
                 currentSymbolType={currentSymbolType}
                 item={item}
                 thisStore={thisStore}
               />
-              <div style={testTimestamp} > {moment(item.product_details?.timestamp * 1000).format("YYYY/MM/DD hh:mm:ss")}</div>
+              <div style={testTimestamp}>
+                {" "}
+                {moment(item.product_details?.timestamp * 1000).format(
+                  "YYYY/MM/DD hh:mm:ss"
+                )}
+              </div>
             </>
           );
         })}
@@ -232,5 +238,4 @@ export default class extends React.Component {
       return TwoPriceItem;
     }
   };
-
 }
