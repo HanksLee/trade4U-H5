@@ -12,6 +12,8 @@ $primary: #21212b;
   --f7-list-margin-vertical: 0;
   --f7-navbar-inner-padding-left: 16px;
   --f7-navbar-inner-padding-right: 16px;
+  --up-color: #44d7b6;
+  --down-color: #e94a39;
 }
 
 .ios-translucent-bars .navbar-bg {
@@ -115,7 +117,6 @@ $primary: #21212b;
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
-    
 
     > button {
       width: 100px;
@@ -129,9 +130,9 @@ $primary: #21212b;
         border: 1px solid rgba(242, 226, 5, 1);
         color: #21212b;
 
-        &:active{
-          background:#807816;
-          border:1px solid #807816;
+        &:active {
+          background: #807816;
+          border: 1px solid #807816;
         }
       }
 
@@ -140,12 +141,10 @@ $primary: #21212b;
         border: 1px solid #838d9e;
         color: #838d9e;
 
-        &:active{
-         opacity: 0.5;
+        &:active {
+          opacity: 0.5;
         }
-        
       }
-
     }
   }
 }
@@ -241,4 +240,4 @@ $primary: #21212b;
 }
 
 /* Your app custom styles here */
-@import "./reset", "./font", "./base", "./common","./news";
+@import "./reset", "./font", "./base", "./common", "./news";

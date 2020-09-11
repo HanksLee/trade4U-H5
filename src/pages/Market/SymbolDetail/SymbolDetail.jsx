@@ -149,10 +149,9 @@ export default class SymbolDetail extends React.Component {
         <div className="stock-container">
           <div
             className={`self-select-buy-sell-block now-stock ${
-              currentSymbol?.product_details?.change > 0 && "p-up stock-green"
+              currentSymbol?.product_details?.change > 0 && "p-up stock-up"
             } ${
-              currentSymbol?.product_details?.change < 0 &&
-              "p-down stock-red-gif"
+              currentSymbol?.product_details?.change < 0 && "p-down stock-down"
             }`}
           >
             {currentSymbol?.product_details?.sell}
@@ -172,7 +171,7 @@ export default class SymbolDetail extends React.Component {
                   "p-up stock-green"
                 } ${
                   currentSymbol?.product_details?.change < 0 &&
-                  "p-down stock-red-gif"
+                  "p-down stock-down"
                 }`}
               >
                 {currentSymbol?.product_details?.change}
@@ -183,7 +182,7 @@ export default class SymbolDetail extends React.Component {
                   "p-up stock-green"
                 } ${
                   currentSymbol?.product_details?.change < 0 &&
-                  "p-down stock-red-gif"
+                  "p-down stock-down"
                 }`}
               >
                 {`${currentSymbol?.product_details?.chg}%`}

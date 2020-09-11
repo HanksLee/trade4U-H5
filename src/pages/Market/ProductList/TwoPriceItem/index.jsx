@@ -1,14 +1,20 @@
 import React from "react";
+TwoPriceItem.displayName = "TwoPriceItem";
 
-export default ({ thisRouter, item, currentSymbolType, thisStore }) => {
+export default function TwoPriceItem({
+  thisRouter,
+  item,
+  currentSymbolType,
+  thisStore,
+}) {
   return (
     <div
       className="self-select-tr"
       key={item.symbol}
       data-id={item.id}
       onClick={async () => {
-        let routeId = currentSymbolType === '自选' ? item.symbol : item.id;
-        await thisStore.getCurrentSymbol(routeId)
+        let routeId = currentSymbolType === "自选" ? item.symbol : item.id;
+        await thisStore.getCurrentSymbol(routeId);
         thisRouter.navigate(`/market/symbol/${routeId}`, {
           props: {
             // currentSymbol: item,
@@ -18,23 +24,26 @@ export default ({ thisRouter, item, currentSymbolType, thisStore }) => {
       }}
     >
       <div className="item-main-info">
-        <div className="self-select-name">{item?.symbol_display?.name}
+        <div className="self-select-name">
+          {item?.symbol_display?.name}
           <p>
             <span className="symbol-type-code">{item?.product_market}</span>
-            <span className="symbol-code">{item?.symbol_display?.product_display?.code}</span>
+            <span className="symbol-code">
+              {item?.symbol_display?.product_display?.code}
+            </span>
           </p>
         </div>
         <div
           className={`self-select-buy-sell-block ${
-            item?.product_details?.change > 0 && "p-up stock-green"
-            } ${item?.product_details?.change < 0 && "p-down stock-red-gif"}`}
+            item?.product_details?.change > 0 && "p-up stock-up"
+          } ${item?.product_details?.change < 0 && "p-down stock-down"}`}
         >
           {item?.product_details?.buy}
         </div>
         <div
           className={`self-select-buy-sell-block ${
-            item?.product_details?.change > 0 && "p-up stock-green"
-            } ${item?.product_details?.change < 0 && "p-down stock-red-gif"}`}
+            item?.product_details?.change > 0 && "p-up stock-uo"
+          } ${item?.product_details?.change < 0 && "p-down stock-down"}`}
         >
           {item?.product_details?.sell}
         </div>
@@ -51,5 +60,4 @@ export default ({ thisRouter, item, currentSymbolType, thisStore }) => {
       </div>
     </div>
   );
-};
-
+}
