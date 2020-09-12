@@ -1707,9 +1707,6 @@ export default class extends React.Component {
 
     const { currentSymbol } = this.props.market;
 
-    console.log(currentSymbol?.symbol_display?.lots_step);
-    console.log(String(currentSymbol?.symbol_display?.lots_step));
-
     const { moreInfo, tradeType, params, tabDataLoading } = this.state;
     return (
       <Page noToolbar>

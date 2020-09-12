@@ -41,7 +41,7 @@ export default class extends React.Component {
   }
 
   initEvents = () => {
-    console.log(this.props.common.globalEvent)
+    // console.log(this.props.common.globalEvent)
     this.props.common.globalEvent.on("refresh-news-page", () => {
       this.getList();
     });
