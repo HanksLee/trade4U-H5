@@ -40,8 +40,8 @@ const config = {
 const math = create(all, config);
 
 const tradeActions = [
-  "买入",
-  "卖出",
+  "多单",
+  "空单",
   "Buy Limit",
   "Sell Limit",
   "Buy Stop",
