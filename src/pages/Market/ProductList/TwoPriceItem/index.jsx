@@ -44,7 +44,7 @@ export default function TwoPriceItem({
         </div>
         <div
           className={`self-select-buy-sell-block ${
-            item?.product_details?.change > 0 && "p-up stock-uo"
+            item?.product_details?.change > 0 && "p-up stock-up"
           } ${item?.product_details?.change < 0 && "p-down stock-down"}`}
         >
           {item?.product_details?.sell}
