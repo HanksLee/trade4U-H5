@@ -948,7 +948,7 @@ export default class extends React.Component {
         <div className="trade-detail-input-container">
           {(mode === "update" || mode === "delete") && (
             <div className="trade-detail-input-item">
-              <div className="trade-detail-input-item-title">持仓价格</div>
+              <div className="trade-detail-input-item-title">开仓价格</div>
               <div className="trade-detail-input-item-btn-group">
                 <div className={`trade-detail-input-item-text`}>
                   {params.open_price}
