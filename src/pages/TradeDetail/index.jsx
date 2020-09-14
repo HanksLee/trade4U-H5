@@ -1645,7 +1645,7 @@ export default class extends React.Component {
               <span>散户卖出</span>
             </div>
             <div>
-              <span>金额(元)</span>
+              <span>金额(万)</span>
               <span>{Math.round(Number(fund.major_in_amount) / 10000)}</span>
               <span>{Math.round(Number(fund.major_out_amount) / 10000)}</span>
               <span>{Math.round(Number(fund.retail_in_amount) / 10000)}</span>

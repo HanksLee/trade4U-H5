@@ -118,7 +118,7 @@ export class SymbolInfo extends React.Component {
               </thead>
               <tbody>
                 <tr>
-                  <td className={cx("fund-table-cell")}>金额(元)</td>
+                  <td className={cx("fund-table-cell")}>金额(万)</td>
                   <td className={cx("fund-table-cell")}>
                     {Math.round(Number(fund.major_in_amount) / 10000)}
                   </td>
