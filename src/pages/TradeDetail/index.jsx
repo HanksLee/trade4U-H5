@@ -286,7 +286,7 @@ export default class extends React.Component {
 
   initSymbolList = async () => {
     const {
-      symbolList,
+      currentSymbol,
       getSymbolList,
       setCurrentSymbol,
       getCurrentSymbol,
@@ -294,8 +294,9 @@ export default class extends React.Component {
 
     const { id, mode } = this.props;
 
-    if (utils.isEmpty(symbolList)) {
-      await getSymbolList();
+    if (utils.isEmpty(currentSymbol) || currentSymbol.id !== id) {
+
+      await getCurrentSymbol(id);
     }
 
     // await getCurrentSymbol(
