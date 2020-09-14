@@ -44,41 +44,41 @@ export default class extends React.Component {
           <div> <span>申購價 : </span><span>30.30</span></div>
         </div>
         <div className="subscribe-detail-content">
-          <div>
-            <span>品種</span>
-            <span>港股</span>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">品種</div>
+            <div className="subscribe-detail-text">港股</div>
           </div>
-          <div>
-            <span>申購代碼</span>
-            <span>03347</span>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">申購代碼</div>
+            <div className="subscribe-detail-text">03347</div>
           </div>
-          <div>
-            <span>申購日期</span>
-            <span>2020-10-10</span>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">申購日期</div>
+            <div className="subscribe-detail-text">2020-10-10</div>
           </div>
-          <div>
-            <span>截止日期</span>
-            <span>2020-10-13</span>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">截止日期</div>
+            <div className="subscribe-detail-text">2020-10-13</div>
           </div>
-          <div>
-            <span>中籤公布日</span>
-            <span>2020-10-19</span>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">中籤公布日</div>
+            <div className="subscribe-detail-text">2020-10-19</div>
           </div>
-          <div>
-            <span>上市日期</span>
-            <span>2020-10-31</span>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">上市日期</div>
+            <div className="subscribe-detail-text">2020-10-31</div>
           </div>
-          <div>
-            <span>每手金额</span>
-            <span>121200</span>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">每手金额</div>
+            <div className="subscribe-detail-text">121200</div>
           </div>
-          <div>
-            <span>每手股数</span>
-            <span>1000</span>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">每手股数</div>
+            <div className="subscribe-detail-text">1000</div>
           </div>
-          <div>
-            <span>幣種</span>
-            <span>HKD</span>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">幣種</div>
+            <div className="subscribe-detail-text">HKD</div>
           </div>
         </div>
         <div className={`subscribe-detail-submit-btn`}

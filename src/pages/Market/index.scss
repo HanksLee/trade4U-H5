@@ -235,6 +235,19 @@
   }
 }
 
+.symbol-type-code {
+  font-size: 10px;
+  color: #21212b;
+  padding: 1px 3px;
+  background-color: #0091ff;
+  margin-right: 6px;
+  border-radius: 1px;
+}
+.symbol-code {
+  font-size: 16px;
+  color: #838d9e;
+}
+
 .self-select-table {
   margin-top: r(44);
   margin-bottom: 80px;
@@ -295,48 +308,14 @@
       div {
         margin-bottom: 11px;
       }
-
       p {
         margin-bottom: 0px;
-
-        .symbol-type-code {
-          font-size: 10px;
-          color: #21212b;
-          padding: 1px 3px;
-          background-color: #0091ff;
-          margin-right: 6px;
-          border-radius: 1px;
-        }
-
-        .symbol-code {
-          font-size: 16px;
-          color: #838d9e;
-        }
       }
     }
 
     .self-select-spread {
       color: #838d9e;
       font-size: 10px;
-    }
-
-    .self-select-code {
-      color: #8c8c8c;
-      font-size: 10px;
-
-      .symbol-type-code {
-        font-size: 6px;
-        color: #21212b;
-        padding: 1px 3px;
-        background-color: #0091ff;
-        margin-right: 6px;
-        border-radius: 1px;
-      }
-
-      .symbol-code {
-        font-size: 10px;
-        color: #838d9e;
-      }
     }
 
     .self-select-buy-sell-block {
@@ -387,7 +366,6 @@
 .nav-icon {
   padding: 10px 5px;
   width: 30px;
-
   &:active {
     opacity: 0.5;
   }
@@ -530,21 +508,6 @@
       &:last-child {
         margin-bottom: 0;
       }
-    }
-
-    .symbol-type-code {
-      font-size: 6px;
-      color: #21212b;
-      padding: 1px 3px;
-      background-color: #0091ff;
-      margin-right: 6px;
-      border-radius: 1px;
-    }
-
-    .symbol-code {
-      //font-size: 10px;
-      font-size: 16px;
-      color: #838d9e;
     }
   }
 
