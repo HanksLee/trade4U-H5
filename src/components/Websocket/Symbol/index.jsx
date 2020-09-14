@@ -55,18 +55,19 @@ class Symbol extends React.Component {
 
     this.props.common.setSubscribeSymbolList(filterList);
 
-    const {setSelectedSymbolInfo , selectedSymbolId} = this.props.common;
-    const {next} = selectedSymbolId;
-    if(this.checkIdExist(filterList , next.symbol)){
-      const infoList = filterList.filter((item , i)=>{
+    const { setSelectedSymbolInfo, selectedSymbolId } = this.props.common;
+    const { next } = selectedSymbolId;
+    
+    if (next === null) return;
+    if (this.checkIdExist(filterList, next.symbol)) {
+      const infoList = filterList.filter((item, i) => {
         return item.symbol === next.symbol;
       });
-      
-      if(infoList.length === 0)return;
-      const info = infoList[infoList.length -1];
+
+      if (infoList.length === 0) return;
+      const info = infoList[infoList.length - 1];
       setSelectedSymbolInfo(info);
     }
-
   };
 
   filterBufferlList(list) {
@@ -108,11 +109,15 @@ class Symbol extends React.Component {
     reaction(
       () => this.props.common.selectedSymbolId,
       (selectedSymbolId) => {
-        const { subscribeSymbol, selectedSymbolTypeInfo , setSelectedSymbolInfo } = this.props.common;
+        const {
+          subscribeSymbol,
+          selectedSymbolTypeInfo,
+          setSelectedSymbolInfo,
+        } = this.props.common;
 
         const { code, next, prev } = selectedSymbolId;
 
-        if(code === null){
+        if (code === null) {
           setSelectedSymbolInfo({});
           return;
         }
@@ -127,15 +132,14 @@ class Symbol extends React.Component {
           this.replaceWSUrl(code);
         }
 
-        const {list} = subscribeSymbol;
-        if(!this.checkIdExist(list ,prev.id)){
+        const { list } = subscribeSymbol;
+        if (!this.checkIdExist(list, prev.id)) {
           this.trackSymbol([prev.id], UNSUBSCRIBE);
         }
 
-        if(!this.checkIdExist(list ,next.id)){
+        if (!this.checkIdExist(list, next.id)) {
           this.trackSymbol([next.id], SUBSCRIBE);
         }
-
       }
     );
   };
@@ -219,7 +223,7 @@ class Symbol extends React.Component {
   checkIdExist = (list, id) => {
     if (list.length === 0 || id === null) return false;
 
-    const findId = list.findIndex((item)=>{
+    const findId = list.findIndex((item) => {
       return item.symbol === id;
     });
 
