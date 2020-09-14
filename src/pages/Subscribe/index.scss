@@ -52,6 +52,8 @@
   }
 
   .subscribe-select-header {
+    position: relative;
+    top:0;
     z-index: 100;
     background-color: #21212b;
     font-size: 14px;
@@ -60,6 +62,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
 
     & > div {
       flex: 1;
@@ -172,6 +175,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        
 
         .date {
           height: 76px;
@@ -184,7 +188,7 @@
           flex-wrap: wrap;
 
           p {
-            flex-basis: 100%;
+            // flex-basis: 100%;
             margin-bottom: 0;
             font-size: 16px;
             color: #ffffff;
