@@ -16,16 +16,52 @@ import { inject, observer } from "mobx-react";
 import "antd/dist/antd.css";
 import "./index.scss";
 
-@inject("message")
+@inject("common","message")
 @observer
 export default class extends React.Component {
+  
   state = { currentTab: "港股" };
 
-  componentDidMount() { }
+  
+  componentDidMount() {
+    this.initEvents();
+  }
+
+  initEvents = () => {
+    this.props.common.globalEvent.on("refresh-subscribe-page", () => {
+      this.setSubscribeContentHeight();
+    });
+  };
+
+  setSubscribeContentHeight = () => {
+    // page
+    const pageHeight = document.getElementById("view-subscribe").clientHeight;
+    const subscribeNavbarHeight = document.getElementsByClassName("subscribe-navbar")[0].clientHeight;
+    const tabbarHeight = document.getElementsByClassName("app-tabbar")[0].clientHeight;
+    const subscribeTabsHeight = document.getElementsByClassName("subscribe-tabs")[0].clientHeight;
+    const subscribeSelectHeight = document.getElementsByClassName("subscribe-select-header")[0].clientHeight;
+
+    const subscribeContentHeight =
+      pageHeight -
+      subscribeNavbarHeight -
+      tabbarHeight -
+      subscribeTabsHeight -
+      subscribeSelectHeight;
+
+    document.getElementsByClassName(
+      "subscribe-container"
+    )[0].style.height = `${subscribeContentHeight}px`;
+  };
+
+
 
   switchSubscribeTabs = (name) => {
+    this.setSubscribeContentHeight();
     this.setState({ currentTab: name });
+
   };
+
+
 
   showLogoutModal = () => {
     const { confirm } = Modal;
@@ -53,10 +89,9 @@ export default class extends React.Component {
 
   render() {
     const { currentTab, subscribeSelectShow = false } = this.state;
-
     return (
-      <Page name="subscirbe" className="subscribe-page">
-        <Navbar>
+      <Page name="subscribe" className="subscribe-page">
+        <Navbar className="subscribe-navbar">
           <NavLeft></NavLeft>
           <NavTitle>申购</NavTitle>
           <NavRight></NavRight>

@@ -34,6 +34,7 @@ import "antd/dist/antd.css";
 import "./index.scss";
 import ReactEcharts from "echarts-for-react";
 import { create, all } from "mathjs";
+import ContactsListComponent from "framework7/components/contacts-list/contacts-list";
 const config = {
   number: "BigNumber",
 };
@@ -944,6 +945,7 @@ export default class extends React.Component {
       .toFixed(2);
 
     return (
+     
       <>
         <div className="trade-detail-input-container">
           {(mode === "update" || mode === "delete") && (

@@ -83,6 +83,9 @@ export default class extends React.Component {
                 text="申购"
                 force={true}
                 reloadCurrent={true}
+                onClick={() => {
+                  this.$event.emit("refresh-subscribe-page");
+                }}
               />
             )}
             <Link

@@ -22,10 +22,28 @@ export default class extends React.Component {
         super(props)
     }
 
+    componentDidMount() {
+        this.setSubscribeDetailContentHeight();
+    }
+
+    setSubscribeDetailContentHeight = () => {
+        // page
+        const pageHeight = document.getElementById("view-subscribe").clientHeight;
+        const subscribeDetailNavbarHeight = document.getElementsByClassName("subscribe-detail-navbar")[0].clientHeight;
+        const subscribeDetailHeaderHeight = document.getElementsByClassName("subscribe-detail-header")[0].clientHeight;
+        const subscribeDetailContentHeight =
+            pageHeight
+            - subscribeDetailNavbarHeight
+            - subscribeDetailHeaderHeight;
+
+        document.getElementsByClassName("subscribe-detail-content")[0].style.height = `${subscribeDetailContentHeight}px`;
+    };
+
+
     render() {
         return (
             <Page noToolbar>
-                <Navbar>
+                <Navbar className="subscribe-detail-navbar">
                     <NavLeft>
                         <Link onClick={() => { this.$f7router.back(); }}>
                             <Icon color={'white'} f7={'chevron_left'} size={r(18)} ></Icon>
@@ -99,7 +117,7 @@ export default class extends React.Component {
                             <div className="subscribe-detail-title">认购金额</div>
                             <div className="subscribe-detail-text">24521.06</div>
                         </div>
-                        <div className="subscribe-detail-item">  
+                        <div className="subscribe-detail-item">
                             <div className="subscribe-detail-title">融资比例</div>
                             <div className="subscribe-detail-text">60%</div>
                         </div>
