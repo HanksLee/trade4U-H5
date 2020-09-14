@@ -329,7 +329,7 @@ export default class extends React.Component {
     }
 
     try {
-      return math.evaluate(formula).toFixed(decimals_place);
+      return math.evaluate(formula).toFixed(2);
     } catch (e) {
       return 0;
     }
@@ -939,7 +939,8 @@ export default class extends React.Component {
       .chain(margin_value)
       .multiply(open_currency_rate)
       .add(handFee)
-      .done();
+      .done()
+      .toFixed(2);
 
     return (
       <>
@@ -1705,9 +1706,6 @@ export default class extends React.Component {
     const quoted_price = common.getKeyConfig("quoted_price");
 
     const { currentSymbol } = this.props.market;
-
-    console.log(currentSymbol?.symbol_display?.lots_step);
-    console.log(String(currentSymbol?.symbol_display?.lots_step));
 
     const { moreInfo, tradeType, params, tabDataLoading } = this.state;
     return (

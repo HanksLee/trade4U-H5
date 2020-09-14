@@ -9,6 +9,7 @@ module.exports = {
     },
     sourceType: "module",
   },
+  parser: "@typescript-eslint/parser",
   extends: [
     // React hook 错误讯息提示
     "plugin:react-hooks/recommended",

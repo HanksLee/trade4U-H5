@@ -260,6 +260,11 @@ class MarketStore extends BaseStore {
 
     this.setCurrentSymbolList(toJS(originList), currentSymbolType)
   }
+
+
+
+  
+
 }
 
 export default new MarketStore();

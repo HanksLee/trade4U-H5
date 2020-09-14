@@ -25,6 +25,7 @@ import channelConfig from "./config/channelConfig";
 import WSConnect from "components/HOC/WSConnect";
 import ProductList from "./ProductList";
 import utils from "utils";
+import Item from "antd-mobile/lib/popover/Item";
 
 const $$ = Dom7;
 const WS_ProductList = WSConnect(channelConfig[0], channelConfig, ProductList);
@@ -54,7 +55,7 @@ export default class extends React.Component {
     this.getSymbolTypeList();
     this.props.common.getProfitRule();
     window.addEventListener("scroll", this.handleScroll, true);
-
+    this.props.common.setSelectedSymbolTypeInfo({code:"self"});
     // this.setState({ currentSymbolType: this.state.symbolTypeList[0] })
     // $$('.self-select-tr').on('click', (evt) => {
     //   const dom = $$(evt.target).parents('.self-select-tr')[0] || $$(evt.target)[0];
@@ -193,6 +194,8 @@ export default class extends React.Component {
         this.getList();
       }
     );
+
+
   };
 
   getSymbolTypeList = async () => {
@@ -363,7 +366,12 @@ export default class extends React.Component {
     }
     return strs[0];
   };
-
+  gotoSelectedTab = (tabBar , id , symbol_type_name , symbol_type_code)=>{
+    tabBar.goToTab(id);
+    if(this.state.subCurrentSymbolType !== symbol_type_name){
+      this.props.common.setSelectedSymbolTypeInfo({code:symbol_type_code});
+    }
+  }
   render() {
     // const { selfSelectSymbolList, symbolList } = this.props.market;
     const {
@@ -395,7 +403,7 @@ export default class extends React.Component {
               return (
                 <div
                   ref={(el) => (this.tabRefs[item.id] = el)}
-                  onClick={() => tabBar.goToTab(idx)}
+                  onClick={() => this.gotoSelectedTab(tabBar ,idx ,item.symbol_type_name , item.symbol_type_code )}
                   className={`market-navbar-item ${
                     currentSymbolType.symbol_type_name ===
                     item.symbol_type_name && "active"
@@ -474,7 +482,7 @@ export default class extends React.Component {
                   {price_title}
                 </div>
                 <div className="self-select-table">
-                  <WS_ProductList
+                  <ProductList
                     currentSymbolType={currentSymbolType.symbol_type_name}
                     symbol_type_code={currentSymbolType.symbol_type_code}
                     dataLoading={dataLoading}
@@ -484,7 +492,7 @@ export default class extends React.Component {
                     quoted_price={quoted_price}
                     thisRouter={this.$f7router}
                     thisStore={this.props.market}
-                  ></WS_ProductList>
+                  ></ProductList>
                 </div>
               </>
             );

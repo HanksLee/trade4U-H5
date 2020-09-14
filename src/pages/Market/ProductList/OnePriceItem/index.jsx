@@ -10,11 +10,11 @@ export default function OnePriceItem({
   item,
   currentSymbolType,
   thisStore,
+  currentSymbolTypeCode
 }) {
   const { product_market, product_details, symbol_display } = item ?? {};
   // console.log("item :>> ", toJS(item));
   const { sell, change, chg } = product_details ?? {};
-
   return (
     <div
       className="self-select-tr"
@@ -27,6 +27,7 @@ export default function OnePriceItem({
           props: {
             // currentSymbol: item,
             currentSymbolType,
+            currentSymbolTypeCode,
           },
         });
       }}

@@ -26,7 +26,6 @@ const channelConfig = [
       maxCount:50
     }
   }
-
 ];
 
 export default channelConfig;

@@ -404,43 +404,42 @@
   // margin-bottom: 10px;
 }
 
+// FIXME: 加了 stock-container-price 之後 SymbolDetail 頁跑版，先回退上一版，待重新合併
 .stock-container {
-  .stock-container-price {
-    color: #44d7b6;
+  color: #44d7b6;
+  display: flex;
+  justify-content: center;
+  //align-items: stretch;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+  .now-stock {
+    font-size: 36px;
+  }
+
+  .arrow,
+  .spread-stock {
     display: flex;
-    justify-content: center;
-    //align-items: stretch;
-    align-items: center;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    align-content: center;
+  }
 
-    .now-stock {
-      font-size: 36px;
+  .arrow {
+    margin-left: 6px;
+    margin-right: 10px;
+
+    .deg180 {
+      transform: rotateX(180deg);
     }
+  }
 
-    .arrow,
-    .spread-stock {
-      display: flex;
-      align-content: center;
-    }
+  .spread-stock {
+    font-size: 12px;
+    flex-wrap: wrap !important;
 
-    .arrow {
-      margin-left: 6px;
-      margin-right: 10px;
-
-      .deg180 {
-        transform: rotateX(180deg);
-      }
-    }
-
-    .spread-stock {
-      font-size: 12px;
-      flex-wrap: wrap !important;
-
-      p {
-        margin: 0;
-        flex-basis: 100%;
-      }
+    p {
+      margin: 0;
+      flex-basis: 100%;
     }
   }
 }
