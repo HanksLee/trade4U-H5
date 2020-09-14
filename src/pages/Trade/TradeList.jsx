@@ -522,7 +522,7 @@ export default class extends BaseReact {
                           const that = this;
                           confirm({
                             title: "关闭递延提示",
-                            content: "您確定要关闭递延嗎",
+                            content: (<p>您確定要关闭递延嗎<br/>将于下一个交易日16:00自动卖出</p>),
                             className: "trade-modal",
                             centered: true,
                             cancelText: "取消",

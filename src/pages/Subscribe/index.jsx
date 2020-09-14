@@ -46,9 +46,7 @@ export default class extends React.Component {
 
   showSubscribeSelect = () => {
     const { subscribeSelectShow } = this.state;
-    console.log(!subscribeSelectShow);
     this.setState({
-
       subscribeSelectShow: !subscribeSelectShow
     })
   };
