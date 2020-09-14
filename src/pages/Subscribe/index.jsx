@@ -21,7 +21,7 @@ import "./index.scss";
 export default class extends React.Component {
   state = { currentTab: "港股" };
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   switchSubscribeTabs = (name) => {
     this.setState({ currentTab: name });
@@ -40,12 +40,22 @@ export default class extends React.Component {
       onOk() {
         that.logout();
       },
-      onCancel() {},
+      onCancel() { },
     });
   };
 
+  showSubscribeSelect = () => {
+    const { subscribeSelectShow } = this.state;
+    console.log(!subscribeSelectShow);
+    this.setState({
+
+      subscribeSelectShow: !subscribeSelectShow
+    })
+  };
+
   render() {
-    const { currentTab } = this.state;
+    const { currentTab, subscribeSelectShow = false } = this.state;
+
     return (
       <Page name="subscirbe" className="subscribe-page">
         <Navbar>
@@ -67,7 +77,7 @@ export default class extends React.Component {
           <div
             className={`subscirbe-tab-item ${
               currentTab === "港股" && "active"
-            }`}
+              }`}
             onClick={() => {
               this.switchSubscribeTabs("港股");
             }}
@@ -77,12 +87,23 @@ export default class extends React.Component {
           <div
             className={`subscirbe-tab-item ${
               currentTab === "沪深" && "active"
-            }`}
+              }`}
             onClick={() => {
               this.switchSubscribeTabs("沪深");
             }}
           >
             沪深
+          </div>
+        </div>
+        <div className="subscribe-select-header">
+          <div className="subscribe-type">
+            <p onClick={() => { this.showSubscribeSelect() }}>可申购</p>
+            {subscribeSelectShow &&
+              (<ul >
+                <li className="active">可申购</li>
+                <li>已申购</li>
+              </ul>)
+            }
           </div>
         </div>
         <div className="subscribe-container">
@@ -182,7 +203,64 @@ export default class extends React.Component {
               <i className="icon icon-forward"></i>
             </div>
           </div>
+
+          <div className="subscribe-item noSubscribe">
+            <div className="subscribe-item-left">
+              <div className="date">
+                <p>已截止</p>
+              </div>
+            </div>
+            <div className="subscribe-item-middle">
+              <p>
+                <span className="subscribe-remark">未申购</span>泰格医药
+              </p>
+              <p>
+                申购价：<span className="subscribe-price">30.30</span>
+              </p>
+            </div>
+            <div className="subscribe-item-right">
+              <i className="icon icon-forward"></i>
+            </div>
+          </div>
+
+          <div className="subscribe-item isSubscribe"
+            onClick={() => { this.$f7router.navigate(`/subscribe/isSubscribeDetail`) }}>
+            <div className="subscribe-item-left">
+              <div className="date">
+                <p>已截止</p>
+                <p>06/20</p>
+              </div>
+            </div>
+            <div className="subscribe-item-middle">
+              <p><span className="subscribe-remark">已申购</span>泰格医药</p>
+              <p>申购价：<span className="subscribe-price">30.30</span></p>
+              <p>申购手数：<span className="">1</span></p>
+              <p>申購金額：<span className="">121200</span></p>
+            </div>
+            <div className="subscribe-item-right">
+              <i className="icon icon-forward"></i>
+            </div>
+          </div>
+          <div className="subscribe-item isSubscribe">
+            <div className="subscribe-item-left">
+              <div className="date">
+                <p>已截止</p>
+                <p>06/20</p>
+              </div>
+            </div>
+            <div className="subscribe-item-middle">
+              <p><span className="subscribe-remark">已申购</span>泰格医药</p>
+              <p>申购价：<span className="subscribe-price">30.30</span></p>
+              <p>申购手数：<span className="">1</span></p>
+              <p>申購金額：<span className="">121200</span></p>
+            </div>
+            <div className="subscribe-item-right">
+              <i className="icon icon-forward"></i>
+            </div>
+          </div>
         </div>
+
+
       </Page>
     );
   }
