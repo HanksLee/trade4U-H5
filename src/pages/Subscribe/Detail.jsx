@@ -27,7 +27,7 @@ export default class extends React.Component {
 
     return (
       <Page noToolbar>
-        <Navbar>
+        <Navbar className="subscribe-detail-navbar">
           <NavLeft>
             <Link onClick={() => { this.$f7router.back(); }}>
               <Icon color={'white'} f7={'chevron_left'} size={r(18)} ></Icon>

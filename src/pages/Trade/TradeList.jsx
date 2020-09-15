@@ -72,6 +72,7 @@ export default class extends BaseReact {
     // this.connectWebsocket();
     setReceviceMsgLinter(this.receviceMsgLinter);
     // setStatusChangListener(this.statusChangListener);
+
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -229,7 +230,7 @@ export default class extends BaseReact {
               }
             });
           }
-        } catch (e) {}
+        } catch (e) { }
 
         this.setState({ loading: false });
       }
@@ -368,17 +369,22 @@ export default class extends BaseReact {
     const { tapIndex, currentTradeTab, dataLoading } = this.state;
     const { tradeList, futureTradeList, finishTradeList } = this.props.trade;
     const initSymbol = utils.isEmpty(tradeList) ? 0 : tradeList[0]?.symbol;
+    const { getKeyConfig } = this.props.common;
+    const refCurrency = getKeyConfig("platform_currency");
+    const refCurrencyIcon = refCurrency === 'CNY' 
+                          ? '￥' 
+                          : refCurrency === 'USD' ? '＄' : 'HK';
     const currentTradeList =
       currentTradeTab === "持仓"
         ? tradeList
         : currentTradeTab === "挂单"
-        ? futureTradeList
-        : finishTradeList;
+          ? futureTradeList
+          : finishTradeList;
     return (
       <div
         className={`trade-content-content ${
           currentTradeTab === "历史" && "history-mode"
-        }`}
+          }`}
       >
         {!utils.isEmpty(currentTradeList) &&
           currentTradeList.map((item, index) => (
@@ -408,12 +414,12 @@ export default class extends BaseReact {
                   <p
                     className={`transaction-direction 
                 ${
-                  Number(item.action) === 0 ||
-                  Number(item.action) === 2 ||
-                  Number(item.action) === 4
-                    ? "buy"
-                    : "sell"
-                }`}
+                      Number(item.action) === 0 ||
+                        Number(item.action) === 2 ||
+                        Number(item.action) === 4
+                        ? "buy"
+                        : "sell"
+                      }`}
                   >
                     {tradeActionMap[item.action]}
                   </p>
@@ -430,7 +436,7 @@ export default class extends BaseReact {
               <div
                 className={`trade-content-content-bottom ${
                   tapIndex == item.order_number ? "show" : ""
-                }`}
+                  }`}
               >
                 <div className="trade-content-content-bottom-data">
                   <p>开仓价</p>
@@ -441,18 +447,18 @@ export default class extends BaseReact {
                       <p>{item.close_price}</p>
                     </>
                   )}
-                  <p>交易手数</p>
+                  <p>买入股数</p>
                   <p>{item.lots}</p>
                   <p>止盈</p>
                   <p>{item.take_profit || "-"}</p>
                   <p>止損</p>
                   <p>{item.stop_loss || "-"}</p>
                   <p>盈亏</p>
-                  <p>{item.profit}</p>
+                  <p>{refCurrencyIcon}{item.profit}</p>
                   <p>库存费</p>
                   <p>{item.swaps || "-"}</p>
                   <p>手续费</p>
-                  <p>{item.fee || "-"}</p>
+                  <p>{refCurrencyIcon}{item.fee || "-"}</p>
                   <p>税费</p>
                   <p>{item.taxes || "-"}</p>
                   <p>开仓时间</p>
@@ -522,7 +528,7 @@ export default class extends BaseReact {
                           const that = this;
                           confirm({
                             title: "关闭递延提示",
-                            content: "您確定要关闭递延嗎",
+                            content: (<p>您確定要关闭递延嗎<br />将于下一个交易日16:00自动卖出</p>),
                             className: "trade-modal",
                             centered: true,
                             cancelText: "取消",
@@ -537,7 +543,7 @@ export default class extends BaseReact {
                               Toast.success("关闭递延成功", 2);
                               await that.onRefresh(currentTradeTab);
                             },
-                            onCancel() {},
+                            onCancel() { },
                           });
                         }}
                       >
@@ -589,7 +595,7 @@ export default class extends BaseReact {
                             Toast.success("删单成功", 2);
                             await that.onRefresh(currentTradeTab);
                           },
-                          onCancel() {},
+                          onCancel() { },
                         });
                       }}
                     >

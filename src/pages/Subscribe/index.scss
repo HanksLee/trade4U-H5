@@ -3,7 +3,7 @@
 }
 #view-subscribe {
   .page-content {
-    padding-bottom: 80px;
+    //padding-bottom: 80px;
     overflow: hidden;
   }
 
@@ -52,7 +52,9 @@
   }
 
   .subscribe-select-header {
-    z-index: 10;
+    position: relative;
+    top:0;
+    z-index: 100;
     background-color: #21212b;
     font-size: 14px;
     color: #838d9e;
@@ -60,6 +62,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
 
     & > div {
       flex: 1;
@@ -157,7 +160,7 @@
 
   .subscribe-container {
     overflow-y: scroll;
-    max-height: calc(100vh - 44px - 70px - 46px - 80px);
+    // max-height: calc(100vh - 44px - 70px - 46px - 80px);
 
     .subscribe-item {
       padding: 10px 16px;
@@ -172,6 +175,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        
 
         .date {
           height: 76px;
@@ -180,7 +184,7 @@
           border-radius: 50%;
           display: flex;
           justify-content: center;
-          align-content: center;
+          align-items: center;
           flex-wrap: wrap;
 
           p {
@@ -284,7 +288,7 @@
   font-size: 14px;
   margin-bottom: 55px;
   overflow-y: scroll;
-  max-height: calc(100vh - 44px - 49px);
+  //max-height: calc(100vh - 44px - 49px);
   .subscribe-detail-title {
     color: #838d9e;
   }
