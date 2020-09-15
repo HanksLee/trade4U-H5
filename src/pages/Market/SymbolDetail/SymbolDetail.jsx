@@ -152,7 +152,7 @@ export default class SymbolDetail extends React.Component {
     const { trader_status } = currentSymbol;
     const { isAddSelfSelect } = this.state;
     const isHigh = selectedSymbolInfo.change ? selectedSymbolInfo?.change > 0 : currentSymbol?.product_details?.change  > 0 ;
-  
+    const quoted_price = this.props.common.getKeyConfig("quoted_price");
     return (
       <Page noToolbar>
         <Navbar>
@@ -222,7 +222,7 @@ export default class SymbolDetail extends React.Component {
         </div> */}
         {/* <WS_TrendContainer nowRealID={currentSymbolType === '自选' ? currentSymbol.symbol : currentSymbol.id} unit={"1m"} /> */}
         <WS_TrendContainer nowRealID={currentSymbol.id} unit={"1m"} />
-        <SymbolInfo router={this.$f7router} />
+        <SymbolInfo quoted_price={quoted_price} router={this.$f7router} />
         <Toolbar tabbar labels bottom className="app-tabbar stock-tabbar">
           <Link
             tabLinkActive
