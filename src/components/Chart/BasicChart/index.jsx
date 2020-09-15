@@ -73,6 +73,7 @@ export default class BasicChart extends React.Component {
     chart
       .timeScale()
       .subscribeVisibleLogicalRangeChange((newVisibleLogicRange) => {
+        if(!newVisibleLogicRange) return;
         const timeScale = chart.timeScale();
         const { from, to } = newVisibleLogicRange;
         const { start, end } = this.basic;

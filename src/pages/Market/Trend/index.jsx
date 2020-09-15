@@ -21,7 +21,7 @@ export default class extends BaseReact {
     nowRealID: null
   };
 
-  buffer = {};
+  initDate = null;
   trend = null;
   chartRef = null;
   chartOption = {
@@ -33,7 +33,7 @@ export default class extends BaseReact {
 
     this.trend = props.trend;
     this.chartRef = React.createRef();
-    this.buffer = this.initBuffer();
+    this.initDate =  this.getDateString();
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -91,53 +91,30 @@ export default class extends BaseReact {
 
   //function
 
-  receviceMsgLinter = d => {
+  receviceMsgLinter = list => {
     // console.log(d)
-    const { nowRealID } = this.state;
-    const { data, } = d;
+    const { unit } = this.props;
+    const {nowRealID} = this.state;
 
-    const { buffer, } = this;
-    const { timeId, BUFFER_TIME, list, } = buffer;
-    const receviceTime = moment().valueOf();
-    buffer.list.push(data);
+    const newList = this.sortList(list);
 
-    if (timeId) window.clearTimeout(timeId);
-    if (!this.checkBuffer(buffer, receviceTime)) {
-      buffer.timeId = window.setTimeout(() => {
-        this.updateContent(buffer);
-      }, BUFFER_TIME);
-      return;
+    const lastDate = this.getDateString();
+
+    if(this.initDate === lastDate){
+      this.trend.setTrendUpdateList(newList);
+    }
+    else{
+      this.props.trend.fetchTrendList(nowRealID, unit);
+      this.initDate = this.getDateString();
     }
 
-    this.updateContent(buffer);
+ 
   };
 
   statusChangListener = (before, next) => {
 
   };
 
-
-  //buffer
-  checkBuffer(buffer, receviceTime) {
-    const { list, lastCheckUpdateTime, BUFFER_MAXCOUNT, BUFFER_TIME, } = buffer;
-    let maxCount = list.length;
-
-    if (
-      receviceTime - lastCheckUpdateTime >= BUFFER_TIME ||
-      maxCount >= BUFFER_MAXCOUNT
-    )
-      return true;
-    else return false;
-  }
-
-  updateContent = buffer => {
-    const { list, } = buffer;
-    buffer.list = this.sortList(list);
-
-    this.trend.setTrendUpdateList(buffer.list);
-
-    this.buffer = this.initBuffer();
-  };
 
 
   sortList = list => {
@@ -160,19 +137,8 @@ export default class extends BaseReact {
     return tmp;
   };
 
-  clearBuffer = () => {
-    const { timeId } = this.buffer;
-    window.clearTimeout(timeId);
-    this.buffer = this.initBuffer();
-  }
 
-  initBuffer() {
-    return {
-      BUFFER_MAXCOUNT: 50,
-      BUFFER_TIME: 2000,
-      timeId: 0,
-      lastCheckUpdateTime: moment().valueOf(),
-      list: [],
-    };
+  getDateString = ()=>{
+    return moment().format("YYYY/MM/d");
   }
 }

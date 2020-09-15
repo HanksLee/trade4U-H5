@@ -53,6 +53,7 @@ export default class SymbolDetail extends React.Component {
     const {currentSymbolTypeCode} = this.props;
     const { currentSymbol } = this.props.market;
     const id = currentSymbol.id;
+
     const symbol = currentSymbol.product_details?.symbol ?? null;
     this.props.common.setSelectedSymbolId(currentSymbolTypeCode, {
       id,
@@ -140,7 +141,7 @@ export default class SymbolDetail extends React.Component {
     // 应测试方便要求先一律打開
     // if (trader_status !== "in_transaction") return;
     const symbolType = currentSymbol.id;
-    this.props.common.setSelectedSymbolId(null, null);
+
     this.$f7router.navigate(`/trade/${symbolType}/`, {
       props: { mode: "add" },
     });

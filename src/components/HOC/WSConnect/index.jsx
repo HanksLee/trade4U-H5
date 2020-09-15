@@ -3,7 +3,7 @@ import { BaseReact } from "components/baseComponent";
 import WebSocketControl from "utils/WebSocketControl";
 import { AUTO, NORMAL } from "utils/WebSocketControl/close";
 
-import { initBuffer, checkBuffer , mergeRegisterData , getRegisterCount } from "utils/buffer";
+import { initBuffer, checkBuffer , mergeRegisterData , getRegisterCount ,checkRegisterHasValue } from "utils/buffer";
 import moment from "moment";
 
 import {
@@ -132,6 +132,7 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       const { path, pathKey, bufferInfo } = selectedChannel;
 
       const newPath = this.getNewPath(path, pathKey);
+      if(wsControl._path === newPath) return;
       this.buffer = this.createBuffer();
       wsControl.replaceUrl(newPath);
     }
@@ -169,40 +170,6 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       return initBuffer(limitTime, maxCount, regType);
     };
 
-    mergeData = (reg, msg) => {
-      const { type, data } = msg;
-      if (Array.isArray(reg)) {
-        return [...reg, ...data];
-      }
-      const regValue = reg[type];
-
-      if (!regValue) {
-        return;
-      }
-
-      if (Array.isArray(data)) {
-        for (let value of data) {
-          reg[type].push(value);
-        }
-      } else {
-        reg[type].push(value);
-      }
-
-      return reg;
-    };
-
-    getRegCount = (reg) => {
-      if (Array.isArray(reg)) {
-        return reg.length;
-      }
-
-      let total = 0;
-      for (let value of reg) {
-        total += value.length;
-      }
-
-      return total;
-    };
     setWSEvent = (wsc) => {
       wsc.setStatusChange((wsc, before, now) => {
         // console.log("StatusChange:" ,`${before}->${now}`);
@@ -237,7 +204,7 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
           return;
         }
         if (this.receviceMsgLinter) this.receviceMsgLinter(buffer.register);
-
+        console.log("setReceviceMsg ");
         this.buffer = this.createBuffer();
       });
 
@@ -247,13 +214,17 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       });
       wsc.setStatusEvent(CONNECTING, (wsc, count) => {
         // console.log("CONNECTING:",count);
+        if (this.receviceMsgLinter && checkRegisterHasValue(this.buffer.register)){
+          this.receviceMsgLinter(this.buffer.register);
+          console.log("CONNECTING:receviceMsgLinter - ",count);
+        }
+       
         if (count === tryConnectMax) {
           tryReconnect();
-          if (this.receviceMsgLinter)
-            this.receviceMsgLinter(this.buffer.register);
         }
       });
       wsc.setStatusEvent(CONNECTED, (wsc) => {
+        this.disconnetCount = 0;
         // console.log("CONNECTED");
       });
       wsc.setStatusEvent(RECONNECT, (wsc) => {
