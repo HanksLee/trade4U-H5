@@ -53,8 +53,8 @@ export default class DetailPage extends React.Component {
     const detail = this.props.subscribe.getNewStockDetail(id);
     const newStockMap = this.props.subscribe.newStockMap;
     const userSubscribeMap = this.props.subscribe.userSubscribeMap;
-    console.log("newStockMap :>> ", toJS(newStockMap));
-    console.log("userSubscribeMap :>> ", toJS(userSubscribeMap));
+    // console.log("newStockMap :>> ", toJS(newStockMap));
+    // console.log("userSubscribeMap :>> ", toJS(userSubscribeMap));
     const isUserDidSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
     const orderInfo = userSubscribeMap[id]; // 申购资讯
     return (

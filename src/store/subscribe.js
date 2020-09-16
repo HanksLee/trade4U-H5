@@ -19,7 +19,7 @@ class SubscribeStore extends BaseStore {
   @action.bound
   async getNewStockList(data) {
     const res = await api.subscribe.getNewStockList();
-    console.log("NewStock res :>> ", res);
+    // console.log("NewStock res :>> ", res);
     this.setNewStockList(res.data);
   }
 
@@ -47,7 +47,7 @@ class SubscribeStore extends BaseStore {
   @action.bound
   async getUserSubscribeList(data) {
     const res = await api.subscribe.getUserSubscribeList();
-    console.log("UserSubscribe res :>> ", res);
+    // console.log("UserSubscribe res :>> ", res);
     this.setUserSubscribeList(res.data.results);
   }
 

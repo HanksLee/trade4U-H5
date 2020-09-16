@@ -94,8 +94,8 @@ export default class Subscribe extends React.Component {
   renderNewStockList = () => {
     const newStockList = this.props.subscribe.newStockList;
     const userSubscribeList = this.props.subscribe.userSubscribeList;
-    console.log("newStockList :>> ", toJS(newStockList));
-    console.log("userSubscribeList :>> ", toJS(userSubscribeList));
+    // console.log("newStockList :>> ", toJS(newStockList));
+    // console.log("userSubscribeList :>> ", toJS(userSubscribeList));
     const userSubscribeMap = this.props.subscribe.userSubscribeMap;
     return newStockList.map((data) => {
       const stockId = data.id;

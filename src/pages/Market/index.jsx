@@ -169,11 +169,11 @@ export default class extends React.Component {
         if (!utils.isEmpty(nextSymbolIDList)) {
           moveSymbolIDList(cloneDeep(nextSymbolIDList));
           this.props.common.setUnSubscribeSymbol({ list: prevSymbolIDList });
-          console.log(prevSymbolIDList);
+          // console.log(prevSymbolIDList);
           // this.trackSymbol(prevSymbolIDList, "unsubscribe");
         }
         this.props.common.setSubscribeSymbol({ list: nextSymbolIDList });
-        console.log(nextSymbolIDList);
+        // console.log(nextSymbolIDList);
         // this.trackSymbol(nextSymbolIDList, "subscribe");
       });
     }

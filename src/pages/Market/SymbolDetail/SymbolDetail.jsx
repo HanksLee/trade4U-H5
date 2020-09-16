@@ -57,7 +57,7 @@ export default class SymbolDetail extends React.Component {
     const symbol = currentSymbol.product_details?.symbol ?? null;
     this.props.common.setSelectedSymbolId(currentSymbolTypeCode, {
       id,
-      symbol
+      symbol,
     });
     // console.log(
     //   "this.props.market.currentSymbol :>> ",
@@ -110,7 +110,7 @@ export default class SymbolDetail extends React.Component {
             await that.props.market.getSelfSelectSymbolList(queryString, true);
           }
         },
-        onCancel() { },
+        onCancel() {},
       });
     }
   };
@@ -149,23 +149,32 @@ export default class SymbolDetail extends React.Component {
   };
   render() {
     const { selectedSymbolInfo } = this.props.common;
-    console.log(selectedSymbolInfo)
+    // console.log(selectedSymbolInfo)
     const { currentSymbol } = this.props.market;
     const { trader_status } = currentSymbol;
     const { isAddSelfSelect } = this.state;
-    const isHigh = selectedSymbolInfo.change ? selectedSymbolInfo?.change > 0 : currentSymbol?.product_details?.change > 0;
+    const isHigh = selectedSymbolInfo.change
+      ? selectedSymbolInfo?.change > 0
+      : currentSymbol?.product_details?.change > 0;
     const quoted_price = this.props.common.getKeyConfig("quoted_price");
     return (
       <Page noToolbar>
         <Navbar>
           <NavLeft>
-            <Link back onClick={() => { this.props.common.setSelectedSymbolId(null, null) }} >
+            <Link
+              back
+              onClick={() => {
+                this.props.common.setSelectedSymbolId(null, null);
+              }}
+            >
               <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
             </Link>
           </NavLeft>
           <NavTitle className="symbol-detail-navbar-center">
             <span>{currentSymbol?.symbol_display?.name}</span>
-            <span className="stock-code">{currentSymbol?.product_details?.symbol}</span>
+            <span className="stock-code">
+              {currentSymbol?.product_details?.symbol}
+            </span>
           </NavTitle>
           <NavRight>{this.renderTraderStatus(trader_status)}</NavRight>
         </Navbar>
@@ -173,10 +182,7 @@ export default class SymbolDetail extends React.Component {
           <div
             className={`self-select-buy-sell-block now-stock ${
               isHigh && "p-up stock-up"
-              } ${
-              !isHigh &&
-              "p-down stock-down"
-              }`}
+            } ${!isHigh && "p-down stock-down"}`}
           >
             {selectedSymbolInfo?.sell ?? currentSymbol?.product_details?.sell}
           </div>
@@ -184,36 +190,31 @@ export default class SymbolDetail extends React.Component {
             {isHigh ? (
               <img src={GreenArrowIcon} alt="GreenArrowIcon" />
             ) : (
-                <img class="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
-              )}
+              <img class="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
+            )}
           </div>
           <div className="spread-stock">
             <div>
               <p
                 className={`self-select-buy-sell-block ${
-                  isHigh &&
-                  "p-up stock-up"
-                  } ${
-                  !isHigh &&
-                  "p-down stock-down"
-                  }`}
+                  isHigh && "p-up stock-up"
+                } ${!isHigh && "p-down stock-down"}`}
               >
-                {selectedSymbolInfo?.change ?? currentSymbol?.product_details?.change}
+                {selectedSymbolInfo?.change ??
+                  currentSymbol?.product_details?.change}
               </p>
               <p
                 className={`self-select-buy-sell-block ${
-                  isHigh &&
-                  "p-up stock-up"
-                  } ${
-                  !isHigh &&
-                  "p-down stock-down"
-                  }`}
+                  isHigh && "p-up stock-up"
+                } ${!isHigh && "p-down stock-down"}`}
               >
-                {`${selectedSymbolInfo?.chg ?? currentSymbol?.product_details?.change}%`}
+                {`${
+                  selectedSymbolInfo?.chg ??
+                  currentSymbol?.product_details?.change
+                }%`}
               </p>
             </div>
           </div>
-
         </div>
         {/* <div className="switch-chart">
           <span>分時</span>
@@ -238,7 +239,7 @@ export default class SymbolDetail extends React.Component {
               isAddSelfSelect === 0
                 ? "self-select-icon"
                 : "self-select-icon-active"
-              }`}
+            }`}
             text="自选"
             className="tabbar-label"
             onClick={this.showSelfSelectModal}
@@ -247,8 +248,8 @@ export default class SymbolDetail extends React.Component {
             {trader_status === "in_transaction" ? (
               <img src={OrderIcon} alt="OrderIcon" />
             ) : (
-                <img src={OrderIconDisabled} alt="OrderIconDisabled" />
-              )}
+              <img src={OrderIconDisabled} alt="OrderIconDisabled" />
+            )}
           </div>
         </Toolbar>
       </Page>
