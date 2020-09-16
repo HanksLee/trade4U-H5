@@ -4,7 +4,8 @@ import trade from "./trade";
 import setting from "./setting";
 import history from "./history";
 import trend from "./trend";
-import news from "./news"
+import news from "./news";
+import subscribe from "./subscribe";
 
 export default {
   common,
@@ -13,5 +14,6 @@ export default {
   setting,
   history,
   trend,
-  news
+  news,
+  subscribe,
 };

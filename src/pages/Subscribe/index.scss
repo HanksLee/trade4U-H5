@@ -3,8 +3,8 @@
 }
 #view-subscribe {
   .page-content {
-    //padding-bottom: 80px;
-    overflow: hidden;
+    // padding-bottom: 80px;
+    // overflow: hidden;
   }
 
   .trade-navbar {
@@ -53,7 +53,7 @@
 
   .subscribe-select-header {
     position: relative;
-    top:0;
+    top: 0;
     z-index: 100;
     background-color: #21212b;
     font-size: 14px;
@@ -125,7 +125,9 @@
       }
 
       .item-content {
-        padding-left: calc(var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left));
+        padding-left: calc(
+          var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left)
+        );
 
         .item-media {
           > div {
@@ -175,7 +177,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        
 
         .date {
           height: 76px;
@@ -265,8 +266,7 @@
 }
 
 .subscribe-detail-header,
-.subscribe-detail-content .subscribe-detail-item,
-.subscribe-detail-title-head{
+.subscribe-detail-content .subscribe-detail-item {
   padding: 10px 16px;
   display: flex;
   justify-content: space-between;
@@ -276,30 +276,18 @@
 .subscribe-detail-header {
   border-bottom: 1px solid rgba(46, 59, 85, 1);
   font-size: 18px;
-
-  span {
-    &:last-child {
-      color: #44d7b6;
-    }
-  }
 }
 
 .subscribe-detail-content {
   font-size: 14px;
   margin-bottom: 55px;
   overflow-y: scroll;
-  //max-height: calc(100vh - 44px - 49px);
   .subscribe-detail-title {
     color: #838d9e;
   }
-  .subscribe-detail-title-head{
-    font-size: 16px;
-  }
-  .subscribe-detail-container-done{
+  .subscribe-detail-container-done {
     border-top: 1px solid rgba(46, 59, 85, 1);
   }
-  
-  
 }
 
 .subscribe-detail-submit-btn {
