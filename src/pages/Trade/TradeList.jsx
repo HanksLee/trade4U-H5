@@ -229,7 +229,7 @@ export default class TradeList extends BaseReact {
               }
             });
           }
-        } catch (e) {}
+        } catch (e) { }
 
         this.setState({ loading: false });
       }
@@ -376,13 +376,13 @@ export default class TradeList extends BaseReact {
       currentTradeTab === "持仓"
         ? tradeList
         : currentTradeTab === "挂单"
-        ? futureTradeList
-        : finishTradeList;
+          ? futureTradeList
+          : finishTradeList;
     return (
       <div
         className={`trade-content-content ${
           currentTradeTab === "历史" && "history-mode"
-        }`}
+          }`}
       >
         {!utils.isEmpty(currentTradeList) &&
           currentTradeList.map((item, index) => (
@@ -397,12 +397,12 @@ export default class TradeList extends BaseReact {
                 }}
               >
                 <div className="trade-content-content-top-item">
-                  <p className="content-text">{item.symbol_name}</p>
+                  <p className="content-text" style={{ fontSize: item?.symbol_name?.length >= 6 && '1px' }}>{item.symbol_name}</p>
                   <p>
                     <span className="symbol-type-code">
                       {item.product_market}
                     </span>
-                    <span className="symbol-code">{item.product_code}</span>
+                    <span className="symbol-code" style={{ fontSize: item?.product_code?.length >= 6 && '10px' }}>{item.product_code}</span>
                   </p>
                 </div>
                 <div className="trade-content-content-top-item">
@@ -412,12 +412,12 @@ export default class TradeList extends BaseReact {
                   <p
                     className={`transaction-direction 
                 ${
-                  Number(item.action) === 0 ||
-                  Number(item.action) === 2 ||
-                  Number(item.action) === 4
-                    ? "buy"
-                    : "sell"
-                }`}
+                      Number(item.action) === 0 ||
+                        Number(item.action) === 2 ||
+                        Number(item.action) === 4
+                        ? "buy"
+                        : "sell"
+                      }`}
                   >
                     {tradeActionMap[item.action]}
                   </p>
@@ -434,7 +434,7 @@ export default class TradeList extends BaseReact {
               <div
                 className={`trade-content-content-bottom ${
                   tapIndex == item.order_number ? "show" : ""
-                }`}
+                  }`}
               >
                 <div className="trade-content-content-bottom-data">
                   <p>开仓价</p>
@@ -494,8 +494,14 @@ export default class TradeList extends BaseReact {
                   <div className="trade-content-content-bottom-btn-group">
                     <div
                       className="trade-content-content-bottom-btn"
-                      onClick={() => {
-                        this.props.trade.setCurrentTrade(item);
+                      onClick={async () => {
+                        const id = item.symbol;
+                        const symbol = item.product_code;
+                        await this.props.trade.setCurrentTrade(item);
+                        await this.props.common.setSelectedSymbolId(item.product_market, {
+                          id,
+                          symbol
+                        });
                         this.goToPage(`/trade/${item?.symbol}/`, {
                           props: {
                             mode: "update",
@@ -508,8 +514,14 @@ export default class TradeList extends BaseReact {
                     </div>
                     <div
                       className="trade-content-content-bottom-btn"
-                      onClick={() => {
-                        this.props.trade.setCurrentTrade(item);
+                      onClick={async () => {
+                        const id = item.symbol;
+                        const symbol = item.product_code;
+                        await this.props.trade.setCurrentTrade(item);
+                        await this.props.common.setSelectedSymbolId(item.product_market, {
+                          id,
+                          symbol
+                        });
                         this.goToPage(`/trade/${item?.symbol}/`, {
                           props: {
                             mode: "delete",
@@ -553,7 +565,7 @@ export default class TradeList extends BaseReact {
                               Toast.success("关闭递延成功", 2);
                               await that.onRefresh(currentTradeTab);
                             },
-                            onCancel() {},
+                            onCancel() { },
                           });
                         }}
                       >
@@ -605,7 +617,7 @@ export default class TradeList extends BaseReact {
                             Toast.success("删单成功", 2);
                             await that.onRefresh(currentTradeTab);
                           },
-                          onCancel() {},
+                          onCancel() { },
                         });
                       }}
                     >
