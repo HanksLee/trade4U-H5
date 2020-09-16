@@ -57,6 +57,8 @@ class Symbol extends React.Component {
 
     const { setSelectedSymbolInfo, selectedSymbolId } = this.props.common;
     const { next } = selectedSymbolId;
+
+    if (next === null) return;
     if (this.checkIdExist(filterList, next.symbol)) {
       const infoList = filterList.filter((item, i) => {
         return item.symbol === next.symbol;
@@ -66,7 +68,6 @@ class Symbol extends React.Component {
       const info = infoList[infoList.length - 1];
       setSelectedSymbolInfo(info);
     }
-
   };
 
   filterBufferlList(list) {
@@ -108,7 +109,11 @@ class Symbol extends React.Component {
     reaction(
       () => this.props.common.selectedSymbolId,
       (selectedSymbolId) => {
-        const { subscribeSymbol, selectedSymbolTypeInfo, setSelectedSymbolInfo } = this.props.common;
+        const {
+          subscribeSymbol,
+          selectedSymbolTypeInfo,
+          setSelectedSymbolInfo,
+        } = this.props.common;
 
         const { code, next, prev } = selectedSymbolId;
 
@@ -135,7 +140,6 @@ class Symbol extends React.Component {
         if (!this.checkIdExist(list, next.id)) {
           this.trackSymbol([next.id], SUBSCRIBE);
         }
-
       }
     );
   };

@@ -166,11 +166,11 @@ function randomNum(minNum, maxNum) {
   }
 }
 function parseBool(input) {
-  // parse "0", "False" to false
   if (!input) return Boolean(input);
-  const isTrue = /true/i.test(input);
   const isFalse = /false/i.test(input);
-  return isTrue ? true : isFalse ? false : Boolean(input);
+  const isZero = Number(input) === 0;
+  if (isFalse || isZero) return false;
+  return Boolean(input);
 }
 
 // export const coordinate = {

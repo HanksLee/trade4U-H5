@@ -78,6 +78,7 @@ export default class extends React.Component {
     const { initList } = this.state;
     if (initList.length === 0) return;
 
+    this.areaSeris.setData([]);
     this.areaSeris.setData([...initList]);
     this.lastSymbolDate = initList[initList.length - 1].time;
     this.nowProcess = REFRESH;

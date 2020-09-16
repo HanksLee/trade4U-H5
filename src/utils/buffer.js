@@ -41,7 +41,8 @@ export const checkBuffer = (
 export const mergeRegisterData = (reg, msg) => {
   const { type, data } = msg;
   if (Array.isArray(reg)) {
-    return [...reg, ...data];
+    const d = Array.isArray(data) ? data : [data];
+    return [...reg, ...d];
   }
   const regValue = reg[type];
 
@@ -72,6 +73,18 @@ export const getRegisterCount = (reg) => {
 
   return total;
 };
+export const checkRegisterHasValue = (reg)=>{
+  if(Array.isArray(reg)){
+    return reg.length !== 0;
+  }
+
+  let count = 0;
+  for(value of reg){
+    count += value.length;
+  }
+
+  return count !== o;
+}
 
 const createRegister = (typeList) => {
   const reg = {};
@@ -81,3 +94,5 @@ const createRegister = (typeList) => {
 
   return reg;
 };
+
+

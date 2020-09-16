@@ -60,30 +60,48 @@ export class SymbolInfo extends React.Component {
 
   renderDetail = () => {
     const { currentSymbol } = this.props.market;
-    const { symbol_display } = currentSymbol;
-    const field = {
+    const { symbol_display ,product_details } = currentSymbol;
+    const {quoted_price} = this.props;
+    const onePirceField = {
+      open:{text:"开盘" , format: (val) => String(val)},
+      last_close:{text:"昨收" , format: (val) => String(val)},
+      high:{text:"最高" , format: (val) => String(val)},
+      low:{text:"最低" , format: (val) => String(val)},
+      volume:{text:"总量" , format: (val) => String(val)},
+      amount:{text:"总额" , format: (val) => String(val)},
+      change:{text:"涨跌" , format: (val) => String(val)},
+      chg:{text:"涨跌幅" , format: (val) => `${String(val)}%`},
+      amplitude:{text:"振幅" , format: (val) => `${String(val * 100)}%`},
+      contract_size: { text: "每手股数", format: (val) => String(val) },
+      purchase_fee: { text: "买入库存费", format: (val) => `${String(val)}%`},
+      selling_fee: { text: "卖出库存费", format: (val) => `${String(val)}%` },  
+    };
+
+    const twoPriceField = {
       decimals_place: { text: "小数点位", format: (val) => String(val) },
       contract_size: { text: "合约大小", format: (val) => String(val) },
       spread: { text: "点差", format: (val) => String(val) },
-      margin_currency_display: { text: "预付款货币" },
-      profit_currency_display: { text: "获利货币" },
+      margin_currency_display: { text: "预付款货币", format: (val) => String(val) },
+      profit_currency_display: { text: "获利货币" , format: (val) => String(val)},
       min_lots: { text: "最小交易手数", format: (val) => String(val) },
       max_lots: { text: "最大交易手数", format: (val) => String(val) },
       lots_step: { text: "交易数步长", format: (val) => String(val) },
-      purchase_fee: { text: "买入库存费", format: (val) => String(val) },
-      selling_fee: { text: "卖出库存费", format: (val) => String(val) },
+      purchase_fee: { text: "买入库存费", format: (val) => `${String(val)}%`},
+      selling_fee: { text: "卖出库存费", format: (val) => `${String(val)}%` },
     };
+
+    const field = quoted_price === "one_price"? onePirceField : twoPriceField;
     return (
       <div className={cx("tab-body")}>
         <div className={cx("stock-detail")}>
           {Object.entries(field).map(([key, detail]) => {
-            const displayValue = symbol_display[key] ?? "-";
+            const displayValue = symbol_display[key] ?? product_details[key] ?? "-";
             return (
               <div className={cx("item")}>
                 <div className={cx("item-col", "item-title")}>
                   {detail.text}
                 </div>
-                <div className={cx("item-col")}>{displayValue}</div>
+                <div className={cx("item-col")}>{detail.format(displayValue)}</div>
               </div>
             );
           })}
@@ -118,7 +136,7 @@ export class SymbolInfo extends React.Component {
               </thead>
               <tbody>
                 <tr>
-                  <td className={cx("fund-table-cell")}>金额(元)</td>
+                  <td className={cx("fund-table-cell")}>金额(万)</td>
                   <td className={cx("fund-table-cell")}>
                     {Math.round(Number(fund.major_in_amount) / 10000)}
                   </td>
