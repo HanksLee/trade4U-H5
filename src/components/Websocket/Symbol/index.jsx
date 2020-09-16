@@ -133,11 +133,11 @@ class Symbol extends React.Component {
         }
 
         const { list } = subscribeSymbol;
-        if (!this.checkIdExist(list, prev.id)) {
+        if (prev  && !this.checkIdExist(list, prev.id)) {
           this.trackSymbol([prev.id], UNSUBSCRIBE);
         }
 
-        if (!this.checkIdExist(list, next.id)) {
+        if (next && !this.checkIdExist(list, next.id)) {
           this.trackSymbol([next.id], SUBSCRIBE);
         }
       }
