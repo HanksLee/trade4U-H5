@@ -94,7 +94,7 @@ export default class DetailPage extends React.Component {
             style={{ marginBottom: "20px" }}
             // onClick={this.onSubmit}
             onClick={() => {
-              this.$f7router.navigate(`/subscribe/subscribeorder`);
+              this.$f7router.navigate(`/subscribe/order`);
             }}
           >
             申购

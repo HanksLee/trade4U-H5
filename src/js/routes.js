@@ -123,7 +123,7 @@ var routes = [
     },
   },
   {
-    path: "/subscribe/subscribeorder",
+    path: "/subscribe/order",
     async(routeTo, routeFrom, resolve, reject) {
       const reactComponent = () =>
         import(
