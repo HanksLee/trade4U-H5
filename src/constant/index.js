@@ -5,11 +5,9 @@ export const SHARE_DATA = {
   imgUrl: "",
 };
 
-export const FORMAT_TIME = 'YYYY.MM.DD HH:mm';
+export const FORMAT_TIME = "YYYY.MM.DD HH:mm";
 
 export const UPLOAD_URL = "https://upyun.com";
-
-
 
 // export const tradeTypeOptions = [
 //   {
@@ -41,142 +39,142 @@ export const UPLOAD_URL = "https://upyun.com";
 
 export const tradeTypeOptions = [
   {
-    id: 'instance',
-    name: '立即执行',
+    id: "instance",
+    name: "立即执行",
   },
   {
-    id: 'future',
-    name: '挂单',
+    id: "future",
+    name: "挂单",
   },
 ];
 
 export const stockTypeOptions = [
   {
     id: 0,
-    name: '做多',
+    name: "做多",
   },
   {
     id: 1,
-    name: '做空',
+    name: "做空",
   },
 ];
 
 export const executeOptions = [
   {
     id: 0,
-    name: '买入',
+    name: "买入",
   },
   {
     id: 1,
-    name: '卖出',
+    name: "卖出",
   },
 ];
 
 export const pendingOrderOptions = [
   {
     id: 2,
-    name: 'Buy Limit',
+    name: "Buy Limit",
   },
   {
     id: 3,
-    name: 'Sell Limit',
+    name: "Sell Limit",
   },
   {
     id: 4,
-    name: 'Buy Stop',
+    name: "Buy Stop",
   },
   {
     id: 5,
-    name: 'Sell Stop',
-  }
+    name: "Sell Stop",
+  },
 ];
 
 export const tradeTabOptions = [
   {
-    name: '持仓',
+    name: "持仓",
   },
   {
-    name: '挂单',
+    name: "挂单",
   },
   {
-    name: '历史',
-  }
+    name: "历史",
+  },
 ];
 
 export const executeMotionMap = [
   {
-    id: 'delete',
-    name: '平倉',
+    id: "delete",
+    name: "平倉",
   },
   {
-    id: 'update',
-    name: '修改',
+    id: "update",
+    name: "修改",
   },
-]
+];
 
 export const tradeActionMap = {
-  0: 'buy',
-  1: 'sell',
-  2: 'buy limit',
-  3: 'sell limit',
-  4: 'buy stop',
-  5: 'sell stop',
-}
+  0: "buy",
+  1: "sell",
+  2: "buy limit",
+  3: "sell limit",
+  4: "buy stop",
+  5: "sell stop",
+};
 
 export const marketOptions = [
   {
     id: 1,
-    name: '上证',
+    name: "上证",
   },
   {
     id: 2,
-    name: '日经',
+    name: "日经",
   },
   {
     id: 3,
-    name: '纳斯达克',
-  }
+    name: "纳斯达克",
+  },
 ];
 
 export const WeeklyOrder = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday'
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
 ];
 
 export const THREE_DAY_OPTIONS = [
   {
     id: 0,
-    name: '周日',
+    name: "周日",
   },
   {
     id: 1,
-    name: '周一',
+    name: "周一",
   },
   {
     id: 2,
-    name: '周二',
+    name: "周二",
   },
   {
     id: 3,
-    name: '周三',
+    name: "周三",
   },
   {
     id: 4,
-    name: '周四',
+    name: "周四",
   },
   {
     id: 5,
-    name: '周五',
+    name: "周五",
   },
   {
     id: 6,
-    name: '周六',
-  }
+    name: "周六",
+  },
 ];
 
 export const PAGE_ROUTES = [
@@ -189,9 +187,9 @@ export const PAGE_ROUTES = [
         path: "/dashboard/capital/wallet",
       },
       {
-        title: '出金审核记录',
-        path: '/dashboard/capital/audit',
-      }
+        title: "出金审核记录",
+        path: "/dashboard/capital/audit",
+      },
     ],
   },
   {
@@ -199,13 +197,13 @@ export const PAGE_ROUTES = [
     path: "/dashboard/rebate",
     children: [
       {
-        title: '佣金列表',
-        path: '/dashboard/rebate/record',
+        title: "佣金列表",
+        path: "/dashboard/rebate/record",
       },
       {
-        title: '团队返佣',
-        path: '/dashboard/rebate/setting',
-      }
+        title: "团队返佣",
+        path: "/dashboard/rebate/setting",
+      },
     ],
   },
   {
@@ -217,15 +215,30 @@ export const PAGE_ROUTES = [
     path: "/dashboard/promotion",
     children: [
       {
-        title: '客户开户',
-        path: '/dashboard/promotion/account',
+        title: "客户开户",
+        path: "/dashboard/promotion/account",
       },
       {
-        title: '代理开户',
-        path: '/dashboard/promotion/agent',
-      }
+        title: "代理开户",
+        path: "/dashboard/promotion/agent",
+      },
     ],
-  }
+  },
 ];
 
-export const supportedResolution = ['1', '5', '15', '30', '60', '240', '1D', '7D'];
+export const supportedResolution = [
+  "1",
+  "5",
+  "15",
+  "30",
+  "60",
+  "240",
+  "1D",
+  "7D",
+];
+
+export const MARKET_TYPE = {
+  HK: { name: "港股" },
+  SZ: { name: "深圳" },
+  SH: { name: "上证" },
+};

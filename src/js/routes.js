@@ -111,23 +111,11 @@ var routes = [
     },
   },
   {
-    path: "/subscribe/detail",
+    path: "/subscribe/detail/:id",
     async(routeTo, routeFrom, resolve, reject) {
       const reactComponent = () =>
         import(
           /* webpackChunkName: 'trade-page' */ "../pages/Subscribe/Detail.jsx"
-        );
-      reactComponent().then((rc) => {
-        resolve({ component: rc.default });
-      });
-    },
-  },
-  {
-    path: "/subscribe/isSubscribeDetail",
-    async(routeTo, routeFrom, resolve, reject) {
-      const reactComponent = () =>
-        import(
-          /* webpackChunkName: 'trade-page' */ "../pages/Subscribe/isSubscribeDetail.jsx"
         );
       reactComponent().then((rc) => {
         resolve({ component: rc.default });
