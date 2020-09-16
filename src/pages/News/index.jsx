@@ -102,7 +102,7 @@ export default class extends React.Component {
     let tabItemWidth = 100 / symbolTypeList.length;
     let tabActiveLeft = `calc(${
       tabItemWidth * index + tabItemWidth / 2
-      }% - 3px)`;
+    }% - 3px)`;
     if (document.getElementsByClassName("tab-active-dot")[0]) {
       document.getElementsByClassName(
         "tab-active-dot"
@@ -195,9 +195,10 @@ export default class extends React.Component {
         >
           <div className="news-content">
             {!utils.isEmpty(newsList) &&
-              newsList.map((item) => {
+              newsList.map((item, index) => {
                 return (
                   <div
+                    key={index}
                     className="news-content-item"
                     onClick={() => {
                       this.$f7router.navigate("/news/detail", {

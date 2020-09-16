@@ -160,79 +160,15 @@ export default class Subscribe extends React.Component {
         {/*  */}
         <div className="subscribe-container">
           {currentList.map((data) => {
-            return <SubscribeItem data={data} router={this.$f7router} />;
+            return (
+              <SubscribeItem
+                data={data}
+                router={this.$f7router}
+                key={data.id}
+              />
+            );
           })}
-          <div
-            className="subscribe-item"
-            onClick={() => this.$f7router.navigate(`/subscribe/detail/${214}`)}
-          >
-            <div className="subscribe-item-left">
-              <div className="date">
-                <p>截止日</p>
-                <p>06/20</p>
-              </div>
-            </div>
-            <div className="subscribe-item-middle">
-              <p>
-                <span className="subscribe-remark">可申购</span>泰格医药
-              </p>
-              <p>
-                申购价：<span className="subscribe-price">30.30</span>
-              </p>
-            </div>
-            <div className="subscribe-item-right">
-              <i className="icon icon-forward"></i>
-            </div>
-          </div>
-          <div className="subscribe-item noSubscribe">
-            <div className="subscribe-item-left">
-              <div className="date">
-                <p>已截止</p>
-              </div>
-            </div>
-            <div className="subscribe-item-middle">
-              <p>
-                <span className="subscribe-remark">未申购</span>泰格医药
-              </p>
-              <p>
-                申购价：<span className="subscribe-price">30.30</span>
-              </p>
-            </div>
-            <div className="subscribe-item-right">
-              <i className="icon icon-forward"></i>
-            </div>
-          </div>
-
-          <div
-            className="subscribe-item isSubscribe"
-            onClick={() => {
-              this.$f7router.navigate(`/subscribe/isSubscribeDetail`);
-            }}
-          >
-            <div className="subscribe-item-left">
-              <div className="date">
-                <p>已截止</p>
-                <p>06/20</p>
-              </div>
-            </div>
-            <div className="subscribe-item-middle">
-              <p>
-                <span className="subscribe-remark">已申购</span>泰格医药
-              </p>
-              <p>
-                申购价：<span className="subscribe-price">30.30</span>
-              </p>
-              <p>
-                申购手数：<span className="">1</span>
-              </p>
-              <p>
-                申購金額：<span className="">121200</span>
-              </p>
-            </div>
-            <div className="subscribe-item-right">
-              <i className="icon icon-forward"></i>
-            </div>
-          </div>
+          <FakeList />
         </div>
       </Page>
     );
@@ -304,5 +240,75 @@ function SubscribeItem(props) {
         <i className="icon icon-forward"></i>
       </div>
     </div>
+  );
+}
+
+function FakeList(props) {
+  return (
+    <React.Fragment>
+      <div className="subscribe-item">
+        <div className="subscribe-item-left">
+          <div className="date">
+            <p>截止日</p>
+            <p>06/20</p>
+          </div>
+        </div>
+        <div className="subscribe-item-middle">
+          <p>
+            <span className="subscribe-remark">可申购</span>泰格医药
+          </p>
+          <p>
+            申购价：<span className="subscribe-price">30.30</span>
+          </p>
+        </div>
+        <div className="subscribe-item-right">
+          <i className="icon icon-forward"></i>
+        </div>
+      </div>
+      <div className="subscribe-item noSubscribe">
+        <div className="subscribe-item-left">
+          <div className="date">
+            <p>已截止</p>
+          </div>
+        </div>
+        <div className="subscribe-item-middle">
+          <p>
+            <span className="subscribe-remark">未申购</span>泰格医药
+          </p>
+          <p>
+            申购价：<span className="subscribe-price">30.30</span>
+          </p>
+        </div>
+        <div className="subscribe-item-right">
+          <i className="icon icon-forward"></i>
+        </div>
+      </div>
+
+      <div className="subscribe-item isSubscribe">
+        <div className="subscribe-item-left">
+          <div className="date">
+            <p>已截止</p>
+            <p>06/20</p>
+          </div>
+        </div>
+        <div className="subscribe-item-middle">
+          <p>
+            <span className="subscribe-remark">已申购</span>泰格医药
+          </p>
+          <p>
+            申购价：<span className="subscribe-price">30.30</span>
+          </p>
+          <p>
+            申购手数：<span className="">1</span>
+          </p>
+          <p>
+            申購金額：<span className="">121200</span>
+          </p>
+        </div>
+        <div className="subscribe-item-right">
+          <i className="icon icon-forward"></i>
+        </div>
+      </div>
+    </React.Fragment>
   );
 }

@@ -58,7 +58,7 @@ const $$ = Dom7;
 
 @inject("common", "trade", "market")
 @observer
-export default class extends React.Component {
+export default class TradeDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -179,7 +179,7 @@ export default class extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) { }
+  componentDidUpdate(prevProps, prevState) {}
 
   newsHandleScroll = () => {
     const { newsError, newsHasMore, tabDataLoading } = this.state;
@@ -296,7 +296,6 @@ export default class extends React.Component {
     const { id, mode } = this.props;
 
     if (utils.isEmpty(currentSymbol) || currentSymbol.id !== id) {
-
       await getCurrentSymbol(id);
     }
 
@@ -800,7 +799,7 @@ export default class extends React.Component {
             className: "trade-modal success-modal",
             content: res.data.message,
             okText: "确认",
-            onOk() { },
+            onOk() {},
           });
 
           this.setState({
@@ -945,7 +944,6 @@ export default class extends React.Component {
       .toFixed(2);
 
     return (
-     
       <>
         <div className="trade-detail-input-container">
           {(mode === "update" || mode === "delete") && (
@@ -966,15 +964,16 @@ export default class extends React.Component {
             <div className="trade-detail-input-item-btn-group">
               {mode === "add" && (
                 <>
-                  {positionTypeMap.map((item) => {
+                  {positionTypeMap.map((item, index) => {
                     return (
                       <div
+                        key={index}
                         onClick={() => {
                           this.switchHoldDays(item);
                         }}
                         className={`trade-detail-input-item-btn ${
                           stockParams.holdDays === item && "btn-active"
-                          }`}
+                        }`}
                       >
                         {item}
                       </div>
@@ -1004,9 +1003,10 @@ export default class extends React.Component {
             <div className="trade-detail-input-item">
               <div className="trade-detail-input-item-title">方向</div>
               <div className="trade-detail-input-item-btn-group">
-                {stockTypes.map((item) => {
+                {stockTypes.map((item, index) => {
                   return (
                     <div
+                      key={index}
                       onClick={() => {
                         this.switchStockType(item.id);
                       }}
@@ -1014,7 +1014,7 @@ export default class extends React.Component {
                         (stockParams.action === item.id ||
                           stockTypes.length === 1) &&
                         "btn-active"
-                        }`}
+                      }`}
                     >
                       {item.name}
                     </div>
@@ -1102,15 +1102,16 @@ export default class extends React.Component {
             <div className="trade-detail-input-item-btn-group">
               {mode === "add" && (
                 <>
-                  {leverageMap.map((item) => {
+                  {leverageMap.map((item, index) => {
                     return (
                       <div
+                        key={index}
                         onClick={() => {
                           this.switchLever(item);
                         }}
                         className={`trade-detail-input-item-btn-small ${
                           stockParams.leverage === item && "btn-active"
-                          }`}
+                        }`}
                       >
                         {item}
                       </div>
@@ -1178,10 +1179,10 @@ export default class extends React.Component {
                   </div>
                 </>
               ) : (
-                  <div className={`trade-detail-input-item-text`}>
-                    {params.take_profit}
-                  </div>
-                )}
+                <div className={`trade-detail-input-item-text`}>
+                  {params.take_profit}
+                </div>
+              )}
             </div>
           </div>
 
@@ -1224,23 +1225,23 @@ export default class extends React.Component {
                   </div>
                 </>
               ) : (
-                  <div className={`trade-detail-input-item-text`}>
-                    {params.stop_loss}
-                  </div>
-                )}
+                <div className={`trade-detail-input-item-text`}>
+                  {params.stop_loss}
+                </div>
+              )}
             </div>
           </div>
         </div>
         <div
           className={`trade-detail-submit-btn 
                         ${
-            (tradeType !== "instance" &&
-              utils.isEmpty(params.open_price)) ||
-              utils.isEmpty(params.lots) ||
-              isSubmit
-              ? "reject"
-              : ""
-            }
+                          (tradeType !== "instance" &&
+                            utils.isEmpty(params.open_price)) ||
+                          utils.isEmpty(params.lots) ||
+                          isSubmit
+                            ? "reject"
+                            : ""
+                        }
                         ${mode === "add" ? "add" : "modify"}`}
           style={{ marginBottom: "20px" }}
           onClick={() => {
@@ -1298,12 +1299,13 @@ export default class extends React.Component {
             <div className="trade-detail-input-item-title">类型</div>
             <div className="trade-detail-input-item-btn-group">
               {mode === "add" &&
-                tradeTypeOptions.map((item) => {
+                tradeTypeOptions.map((item, index) => {
                   return (
                     <div
+                      key={index}
                       className={`trade-detail-input-item-btn ${
                         tradeType === item.id && "btn-active"
-                        }`}
+                      }`}
                       onClick={() => {
                         this.switchTradeType(item.id);
                       }}
@@ -1315,7 +1317,7 @@ export default class extends React.Component {
               {(mode === "update" || mode === "delete") && (
                 <div className={`trade-detail-input-item-text`}>
                   {Number(currentTrade.action) === 0 ||
-                    Number(currentTrade.action) === 1
+                  Number(currentTrade.action) === 1
                     ? "立即执行"
                     : "挂单"}
                 </div>
@@ -1341,30 +1343,32 @@ export default class extends React.Component {
               <div className="trade-detail-input-item-title">类型</div>
               <div className="trade-detail-input-item-btn-group">
                 {tradeType === "future" &&
-                  pendingOrderOptions.map((item) => {
+                  pendingOrderOptions.map((item, index) => {
                     return (
                       <div
+                        key={index}
                         onClick={() => {
                           this.switchTradeOptions(item.id);
                         }}
                         className={`trade-detail-input-item-btn ${
                           params.action === item.id && "btn-active"
-                          }`}
+                        }`}
                       >
                         {item.name}
                       </div>
                     );
                   })}
                 {tradeType === "instance" &&
-                  executeOptions.map((item) => {
+                  executeOptions.map((item, index) => {
                     return (
                       <div
+                        key={index}
                         onClick={() => {
                           this.switchTradeOptions(item.id);
                         }}
                         className={`trade-detail-input-item-btn ${
                           params.action === item.id && "btn-active"
-                          }`}
+                        }`}
                       >
                         {item.name}
                       </div>
@@ -1460,12 +1464,12 @@ export default class extends React.Component {
                 </div>
               </div>
             ) : (
-                <div className="trade-detail-input-item-btn-group">
-                  <div className={`trade-detail-input-item-text`}>
-                    {params.lots}
-                  </div>
+              <div className="trade-detail-input-item-btn-group">
+                <div className={`trade-detail-input-item-text`}>
+                  {params.lots}
                 </div>
-              )}
+              </div>
+            )}
           </div>
 
           <div className="trade-detail-input-item">
@@ -1507,10 +1511,10 @@ export default class extends React.Component {
                   </div>
                 </>
               ) : (
-                  <div className={`trade-detail-input-item-text`}>
-                    {params.stop_loss}
-                  </div>
-                )}
+                <div className={`trade-detail-input-item-text`}>
+                  {params.stop_loss}
+                </div>
+              )}
             </div>
           </div>
 
@@ -1553,22 +1557,22 @@ export default class extends React.Component {
                   </div>
                 </>
               ) : (
-                  <div className={`trade-detail-input-item-text`}>
-                    {params.stop_loss}
-                  </div>
-                )}
+                <div className={`trade-detail-input-item-text`}>
+                  {params.stop_loss}
+                </div>
+              )}
             </div>
           </div>
         </div>
         <div
           className={`trade-detail-submit-btn 
                         ${
-            (tradeType !== "instance" &&
-              utils.isEmpty(params.open_price)) ||
-              utils.isEmpty(params.lots)
-              ? "reject"
-              : ""
-            }
+                          (tradeType !== "instance" &&
+                            utils.isEmpty(params.open_price)) ||
+                          utils.isEmpty(params.lots)
+                            ? "reject"
+                            : ""
+                        }
                         ${mode === "add" ? "add" : "modify"}`}
           style={{ marginBottom: "30px" }}
           onClick={this.onSubmit}
@@ -1630,8 +1634,8 @@ export default class extends React.Component {
             }}
           />
         ) : (
-            <div />
-          )}
+          <div />
+        )}
         <div>主力、散户资金流向</div>
         {utils.isEmpty(fund) && (
           <div>
@@ -1669,8 +1673,9 @@ export default class extends React.Component {
           <div className="no-news">此产品无新聞显示</div>
         )}
         {!utils.isEmpty(newsList) &&
-          newsList.map((item) => (
+          newsList.map((item, index) => (
             <div
+              key={index}
               className="news-content-item"
               onClick={() => {
                 this.$f7router.navigate("/news/detail", {
@@ -1710,7 +1715,9 @@ export default class extends React.Component {
     const quoted_price = common.getKeyConfig("quoted_price");
     const { currentSymbol } = this.props.market;
     const { moreInfo, tradeType, params, tabDataLoading } = this.state;
-    const isHigh = selectedSymbolInfo.change ? selectedSymbolInfo?.change > 0 : currentSymbol?.product_details?.change > 0;
+    const isHigh = selectedSymbolInfo.change
+      ? selectedSymbolInfo?.change > 0
+      : currentSymbol?.product_details?.change > 0;
     return (
       <Page noToolbar>
         <Navbar>
@@ -1721,7 +1728,9 @@ export default class extends React.Component {
           </NavLeft>
           <NavTitle className="trade-detail-navbar-center">
             <span>{currentSymbol?.symbol_display?.name}</span>
-            <span className="stock-code">{currentSymbol?.product_details?.symbol}</span>
+            <span className="stock-code">
+              {currentSymbol?.product_details?.symbol}
+            </span>
           </NavTitle>
           <NavRight></NavRight>
         </Navbar>
@@ -1729,10 +1738,7 @@ export default class extends React.Component {
           <div
             className={`self-select-buy-sell-block now-stock ${
               isHigh && "p-up stock-up"
-              } ${
-              !isHigh &&
-              "p-down stock-down"
-              }`}
+            } ${!isHigh && "p-down stock-down"}`}
           >
             {selectedSymbolInfo?.sell ?? currentSymbol?.product_details?.sell}
           </div>
@@ -1740,25 +1746,21 @@ export default class extends React.Component {
             <div>
               <p
                 className={`self-select-buy-sell-block ${
-                  isHigh &&
-                  "p-up stock-up"
-                  } ${
-                  !isHigh &&
-                  "p-down stock-down"
-                  }`}
+                  isHigh && "p-up stock-up"
+                } ${!isHigh && "p-down stock-down"}`}
               >
-                {selectedSymbolInfo?.change ?? currentSymbol?.product_details?.change}
+                {selectedSymbolInfo?.change ??
+                  currentSymbol?.product_details?.change}
               </p>
               <p
                 className={`self-select-buy-sell-block ${
-                  isHigh &&
-                  "p-up stock-up"
-                  } ${
-                  !isHigh &&
-                  "p-down stock-down"
-                  }`}
+                  isHigh && "p-up stock-up"
+                } ${!isHigh && "p-down stock-down"}`}
               >
-                {`${selectedSymbolInfo?.chg ?? currentSymbol?.product_details?.change}%`}
+                {`${
+                  selectedSymbolInfo?.chg ??
+                  currentSymbol?.product_details?.change
+                }%`}
               </p>
             </div>
           </div>
@@ -1784,7 +1786,7 @@ export default class extends React.Component {
         <div
           className={`trade-detail-more-info-container ${
             moreInfo ? "show" : ""
-            }`}
+          }`}
         >
           <div className="trade-detail-more-info-contract">
             <div className="trade-detail-more-info-contract-title">
@@ -1796,7 +1798,7 @@ export default class extends React.Component {
                 <span>
                   {currentSymbol?.symbol_display?.decimals_place !==
                     undefined &&
-                    currentSymbol?.symbol_display?.decimals_place !== null
+                  currentSymbol?.symbol_display?.decimals_place !== null
                     ? currentSymbol?.symbol_display?.decimals_place
                     : "-"}
                 </span>
@@ -1805,7 +1807,7 @@ export default class extends React.Component {
                 <span>合约大小</span>
                 <span>
                   {currentSymbol?.symbol_display?.contract_size !== undefined &&
-                    currentSymbol?.symbol_display?.contract_size !== null
+                  currentSymbol?.symbol_display?.contract_size !== null
                     ? currentSymbol?.symbol_display?.contract_size
                     : "-"}
                 </span>
@@ -1814,7 +1816,7 @@ export default class extends React.Component {
                 <span>点差</span>
                 <span>
                   {currentSymbol?.symbol_display?.spread !== undefined &&
-                    currentSymbol?.symbol_display?.spread !== null
+                  currentSymbol?.symbol_display?.spread !== null
                     ? currentSymbol?.symbol_display?.spread
                     : "-"}
                 </span>
@@ -1824,7 +1826,7 @@ export default class extends React.Component {
                 <span>
                   {currentSymbol?.symbol_display?.margin_currency_display !==
                     undefined &&
-                    currentSymbol?.symbol_display?.margin_currency_display !==
+                  currentSymbol?.symbol_display?.margin_currency_display !==
                     null
                     ? currentSymbol?.symbol_display?.margin_currency_display
                     : "-"}
@@ -1835,7 +1837,7 @@ export default class extends React.Component {
                 <span>
                   {currentSymbol?.symbol_display?.profit_currency_display !==
                     undefined &&
-                    currentSymbol?.symbol_display?.profit_currency_display !==
+                  currentSymbol?.symbol_display?.profit_currency_display !==
                     null
                     ? currentSymbol?.symbol_display?.profit_currency_display
                     : "-"}
@@ -1845,7 +1847,7 @@ export default class extends React.Component {
                 <span>最小交易手数</span>
                 <span>
                   {currentSymbol?.symbol_display?.min_lots !== undefined &&
-                    currentSymbol?.symbol_display?.min_lots !== null
+                  currentSymbol?.symbol_display?.min_lots !== null
                     ? currentSymbol?.symbol_display?.min_lots
                     : "-"}
                 </span>
@@ -1854,7 +1856,7 @@ export default class extends React.Component {
                 <span>最大交易手数</span>
                 <span>
                   {currentSymbol?.symbol_display?.max_lots !== undefined &&
-                    currentSymbol?.symbol_display?.max_lots !== null
+                  currentSymbol?.symbol_display?.max_lots !== null
                     ? currentSymbol?.symbol_display?.max_lots
                     : "-"}
                 </span>
@@ -1863,7 +1865,7 @@ export default class extends React.Component {
                 <span>交易数步长</span>
                 <span>
                   {currentSymbol?.symbol_display?.lots_step !== undefined &&
-                    currentSymbol?.symbol_display?.lots_step !== null
+                  currentSymbol?.symbol_display?.lots_step !== null
                     ? currentSymbol?.symbol_display?.lots_step
                     : "-"}
                 </span>
@@ -1872,7 +1874,7 @@ export default class extends React.Component {
                 <span>买入库存费</span>
                 <span>
                   {currentSymbol?.symbol_display?.purchase_fee !== undefined &&
-                    currentSymbol?.symbol_display?.purchase_fee !== null
+                  currentSymbol?.symbol_display?.purchase_fee !== null
                     ? currentSymbol?.symbol_display?.purchase_fee
                     : "-"}
                 </span>
@@ -1881,7 +1883,7 @@ export default class extends React.Component {
                 <span>卖出库存费</span>
                 <span>
                   {currentSymbol?.symbol_display?.selling_fee !== undefined &&
-                    currentSymbol?.symbol_display?.selling_fee !== null
+                  currentSymbol?.symbol_display?.selling_fee !== null
                     ? currentSymbol?.symbol_display?.selling_fee
                     : "-"}
                 </span>
@@ -1915,8 +1917,8 @@ export default class extends React.Component {
         ) : quoted_price !== "one_price" ? (
           this.renderForexInput()
         ) : (
-              this.renderStockInput()
-            )}
+          this.renderStockInput()
+        )}
       </Page>
     );
   }

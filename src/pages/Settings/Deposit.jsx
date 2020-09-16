@@ -128,11 +128,7 @@ export default class extends React.Component {
   render() {
     // const { getFieldProps } = this.props.form;
     const { withdrawableBalance } = this.props.setting;
-    const {
-      paymentMethods,
-      showLoading,
-      currentPayment,
-    } = this.state;
+    const { paymentMethods, showLoading, currentPayment } = this.state;
     // const { Option } = Select;
     return (
       <Page>
@@ -167,7 +163,9 @@ export default class extends React.Component {
               >
                 {paymentMethods.map((item) => {
                   return (
-                    <Select.Option value={item.id}>{item.name}</Select.Option>
+                    <Select.Option key={item.id} value={item.id}>
+                      {item.name}
+                    </Select.Option>
                   );
                 })}
               </Select>

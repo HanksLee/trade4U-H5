@@ -14,12 +14,11 @@ import {
   NavTitle,
   Icon,
 } from "framework7-react";
-import { Select } from 'antd';
+import { Select } from "antd";
 import api from "services";
 // import { inject, observer } from "mobx-react";
-import 'antd/dist/antd.css';
+import "antd/dist/antd.css";
 import "./index.scss";
-
 
 // @inject("message")
 // @observer
@@ -36,7 +35,7 @@ export default class extends React.Component {
       password: "",
       code: "",
       errorMsg: "",
-      token: ""
+      token: "",
     };
   }
 
@@ -148,17 +147,15 @@ export default class extends React.Component {
             </ListItem>
           ))}
         </List> */}
-        <Select className="select-option"
+        <Select
+          className="select-option"
           defaultValue={token}
           onChange={this.chooseBroker}
           placeholder="选择证券商"
         >
-          {this.state.searchResult.map((item) => (
-            <Option value={item.token}>
-              <img
-                className="broker-logo"
-                src={item.broker.logo}
-              />
+          {this.state.searchResult.map((item, index) => (
+            <Option value={item.token} key={index}>
+              <img className="broker-logo" src={item.broker.logo} />
               <span>{item.broker.name}</span>
             </Option>
           ))}
@@ -186,7 +183,7 @@ export default class extends React.Component {
   };
 
   chooseBroker = (value) => {
-    this.setState({ token: value })
+    this.setState({ token: value });
   };
 
   confirmBroker = () => {
@@ -199,7 +196,7 @@ export default class extends React.Component {
         ignoreCache: true,
       });
     }
-  }
+  };
 
   login = async () => {
     const { username, password, code } = this.state;
@@ -207,7 +204,7 @@ export default class extends React.Component {
       // this.$f7.toast.show({
       //   text: "请输入用户名",
       // });
-      this.setState({ errorMsg: "请输入用户名" })
+      this.setState({ errorMsg: "请输入用户名" });
       return;
     }
 
@@ -215,7 +212,7 @@ export default class extends React.Component {
       // this.$f7.toast.show({
       //   text: "请输入密码",
       // });
-      this.setState({ errorMsg: "请输入密码" })
+      this.setState({ errorMsg: "请输入密码" });
       return;
     }
 
@@ -223,7 +220,7 @@ export default class extends React.Component {
       // this.$f7.toast.show({
       //   text: "请输入验证码",
       // });
-      this.setState({ errorMsg: "请输入验证码" })
+      this.setState({ errorMsg: "请输入验证码" });
       return;
     }
 
@@ -240,12 +237,12 @@ export default class extends React.Component {
         isLogin: true,
         brokerList: res.data.results,
         searchResult: res.data.results,
-        token: res.data.results[0].token || ""
+        token: res.data.results[0].token || "",
       });
     } else if (res.status === 400) {
-      this.setState({ errorMsg: "验证码已过期" })
+      this.setState({ errorMsg: "验证码已过期" });
     } else {
-      this.setState({ errorMsg: res.data.message })
+      this.setState({ errorMsg: res.data.message });
     }
   };
 
