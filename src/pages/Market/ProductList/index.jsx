@@ -37,17 +37,17 @@ export default class extends React.Component {
     // this.props.setReceviceMsgLinter(this.receviceMsgLinter);
   }
 
-  componentDidUpdate(prevProps , prevState) {
+  componentDidUpdate(prevProps, prevState) {
     const { nextSymbolIDList, prevSymbolIDList } = this.props.market;
 
-    if (this.state.currentSymbolType !== "自选") {
-      if (!utils.isEmpty(prevSymbolIDList)) {
-        this.props.common.setUnSubscribeSymbol({list:prevSymbolIDList})
-        // this.trackSymbol(prevSymbolIDList, "unsubscribe");
-      }
-      this.props.common.setSubscribeSymbol({list:nextSymbolIDList})
-      // this.trackSymbol(nextSymbolIDList, "subscribe");
-    }
+    // if (this.state.currentSymbolType !== "自选") {
+    //   if (!utils.isEmpty(prevSymbolIDList)) {
+    //     this.props.common.setUnSubscribeSymbol({list:prevSymbolIDList})
+    //     // this.trackSymbol(prevSymbolIDList, "unsubscribe");
+    //   }
+    //   this.props.common.setSubscribeSymbol({list:nextSymbolIDList})
+    //   // this.trackSymbol(nextSymbolIDList, "subscribe");
+    // }
   }
 
   trackSymbol = (currentList, type) => {
@@ -59,7 +59,7 @@ export default class extends React.Component {
     };
 
     // console.log(o);
-   // this.props.sendMsg(o);
+    // this.props.sendMsg(o);
   };
 
   componentWillReceiveProps(nextProps) {
@@ -141,7 +141,7 @@ export default class extends React.Component {
     // console.log(this)
     // console.log(this.props)
     // console.log("this.$f7router :>> ", this.$f7router);
-    const { thisRouter, quoted_price, thisStore ,symbol_type_code} = this.props;
+    const { thisRouter, quoted_price, thisStore, symbol_type_code } = this.props;
     const { selfSelectSymbolList, symbolList } = this.props.market;
     const { currentSymbolType, dataLoading } = this.state;
     const currentList =

@@ -10,6 +10,7 @@ import {
   ActionsGroup,
   ActionsButton,
 } from "framework7-react";
+import cloneDeep from 'lodash/cloneDeep';
 import EditIcon from "assets/img/edit2.svg";
 import AddIcon from "assets/img/add.svg";
 import SearchIcon from "assets/img/search.svg";
@@ -55,7 +56,7 @@ export default class extends React.Component {
     this.getSymbolTypeList();
     this.props.common.getProfitRule();
     window.addEventListener("scroll", this.handleScroll, true);
-    this.props.common.setSelectedSymbolTypeInfo({code:"self"});
+    this.props.common.setSelectedSymbolTypeInfo({ code: "self" });
     // this.setState({ currentSymbolType: this.state.symbolTypeList[0] })
     // $$('.self-select-tr').on('click', (evt) => {
     //   const dom = $$(evt.target).parents('.self-select-tr')[0] || $$(evt.target)[0];
@@ -107,7 +108,7 @@ export default class extends React.Component {
       page,
       page_size,
     } = this.state;
-    const { moveSymbolIDList, nextSymbolIDList } = this.props.market;
+    const { moveSymbolIDList, nextSymbolIDList, prevSymbolIDList } = this.props.market;
     if (currentSymbolType.symbol_type_name === "自选") {
       if (subCurrentSymbolType === "全部") {
         this.setState({ dataLoading: true }, async () => {
@@ -161,9 +162,17 @@ export default class extends React.Component {
           });
         });
 
+
+
         if (!utils.isEmpty(nextSymbolIDList)) {
-          moveSymbolIDList(nextSymbolIDList);
+          moveSymbolIDList(cloneDeep(nextSymbolIDList))
+          this.props.common.setUnSubscribeSymbol({ list: prevSymbolIDList })
+          console.log(prevSymbolIDList)
+          // this.trackSymbol(prevSymbolIDList, "unsubscribe");
         }
+        this.props.common.setSubscribeSymbol({ list: nextSymbolIDList })
+        console.log(nextSymbolIDList)
+        // this.trackSymbol(nextSymbolIDList, "subscribe");
       });
     }
   };
@@ -366,10 +375,10 @@ export default class extends React.Component {
     }
     return strs[0];
   };
-  gotoSelectedTab = (tabBar , id , symbol_type_name , symbol_type_code)=>{
+  gotoSelectedTab = (tabBar, id, symbol_type_name, symbol_type_code) => {
     tabBar.goToTab(id);
-    if(this.state.subCurrentSymbolType !== symbol_type_name){
-      this.props.common.setSelectedSymbolTypeInfo({code:symbol_type_code});
+    if (this.state.subCurrentSymbolType !== symbol_type_name) {
+      this.props.common.setSelectedSymbolTypeInfo({ code: symbol_type_code });
     }
   }
   render() {
@@ -391,7 +400,7 @@ export default class extends React.Component {
     const quoted_price = common.getKeyConfig("quoted_price");
     const price_title = this.getPriceTitle(quoted_price);
     // const currentList = currentSymbolType === "自选" ? selfSelectSymbolList : symbolList;
-    
+
     const renderTabBar = (tabBar) => {
       // console.log("tabBar :>> ", tabBar);
       return (
@@ -403,7 +412,7 @@ export default class extends React.Component {
               return (
                 <div
                   ref={(el) => (this.tabRefs[item.id] = el)}
-                  onClick={() => this.gotoSelectedTab(tabBar ,idx ,item.symbol_type_name , item.symbol_type_code )}
+                  onClick={() => this.gotoSelectedTab(tabBar, idx, item.symbol_type_name, item.symbol_type_code)}
                   className={`market-navbar-item ${
                     currentSymbolType.symbol_type_name ===
                     item.symbol_type_name && "active"

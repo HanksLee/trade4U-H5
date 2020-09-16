@@ -1,5 +1,6 @@
 import { computed, action, observable } from "mobx";
 import BaseStore from "store/base";
+import utils from "utils";
 
 class CommonStore extends BaseStore {
   @observable
@@ -85,12 +86,12 @@ class CommonStore extends BaseStore {
   };
 
   @action
-  setSelectedSymbolId = (code , o) => {
+  setSelectedSymbolId = (code, o) => {
     const { prev, next } = this.selectedSymbolId;
 
     this.selectedSymbolId = {
-      prevId:next,
-      next:o,
+      prevId: next,
+      next: o,
       code
     };
   };
@@ -114,24 +115,22 @@ class CommonStore extends BaseStore {
   };
 
   @observable
-  subscribeSymbol = {list:[]};
+  subscribeSymbol = { list: [] };
 
   @observable
-  unSubscribeSymbol = {list:[]};
+  unSubscribeSymbol = { list: [] };
 
   @action
   setSubscribeSymbol = (d) => {
-    this.subscribeSymbol = {
-      ...d,
-    };
+    this.subscribeSymbol = { ...d };
   };
 
   @action
   setUnSubscribeSymbol = (d) => {
-    this.unSubscribeSymbol = {
-      ...d,
-    };
+    this.unSubscribeSymbol = { ...d };
   };
+
+
   @observable
   symbolWSAction = {
     cmd: "",

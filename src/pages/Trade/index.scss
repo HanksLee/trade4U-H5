@@ -18,6 +18,15 @@
       }
     }
   }
+
+  .trade-detail-navbar-center {
+    font-size: 18px;
+    font-weight: normal;
+
+    .stock-code {
+      margin-left: 10px;
+    }
+  }
 }
 
 .trade-page {

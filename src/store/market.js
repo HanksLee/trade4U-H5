@@ -72,20 +72,26 @@ class MarketStore extends BaseStore {
 
   @action
   setSymbolList = (data, overwrite) => {
+
+
+    while (this.nextSymbolIDList && this.nextSymbolIDList.length) {
+      this.nextSymbolIDList.pop();
+    }
+
     if (overwrite) {
       this.symbolList = data;
-      this.symbolList.map((item) => {
-        this.nextSymbolIDList.push(item.id)
-      })
     } else {
       this.symbolList = [...this.symbolList, ...data]
     }
+
+    this.symbolList.map((item) => {
+      this.nextSymbolIDList.push(item.id)
+    })
   }
 
   @action
   moveSymbolIDList = (array) => {
     this.prevSymbolIDList = array;
-    this.nextSymbolIDList = [];
   }
 
   @action
@@ -263,7 +269,7 @@ class MarketStore extends BaseStore {
 
 
 
-  
+
 
 }
 
