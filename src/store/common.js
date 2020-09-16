@@ -87,6 +87,7 @@ class CommonStore extends BaseStore {
 
   @action
   setSelectedSymbolId = (code, o) => {
+    // console.log(code, o)
     const { prev, next } = this.selectedSymbolId;
 
     this.selectedSymbolId = {

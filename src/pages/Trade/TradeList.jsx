@@ -371,9 +371,9 @@ export default class extends BaseReact {
     const initSymbol = utils.isEmpty(tradeList) ? 0 : tradeList[0]?.symbol;
     const { getKeyConfig } = this.props.common;
     const refCurrency = getKeyConfig("platform_currency");
-    const refCurrencyIcon = refCurrency === 'CNY' 
-                          ? '￥' 
-                          : refCurrency === 'USD' ? '＄' : 'HK';
+    const refCurrencyIcon = refCurrency === 'CNY'
+      ? '￥'
+      : refCurrency === 'USD' ? '＄' : 'HK';
     const currentTradeList =
       currentTradeTab === "持仓"
         ? tradeList
@@ -399,12 +399,12 @@ export default class extends BaseReact {
                 }}
               >
                 <div className="trade-content-content-top-item">
-                  <p className="content-text">{item.symbol_name}</p>
+                  <p className="content-text" style={{ fontSize: item?.symbol_name?.length >= 6 && '1px' }}>{item.symbol_name}</p>
                   <p>
                     <span className="symbol-type-code">
                       {item.product_market}
                     </span>
-                    <span className="symbol-code">{item.product_code}</span>
+                    <span className="symbol-code" style={{ fontSize: item?.product_code?.length >= 6 && '10px' }}>{item.product_code}</span>
                   </p>
                 </div>
                 <div className="trade-content-content-top-item">
@@ -490,8 +490,14 @@ export default class extends BaseReact {
                   <div className="trade-content-content-bottom-btn-group">
                     <div
                       className="trade-content-content-bottom-btn"
-                      onClick={() => {
-                        this.props.trade.setCurrentTrade(item);
+                      onClick={async () => {
+                        const id = item.symbol;
+                        const symbol = item.product_code;
+                        await this.props.trade.setCurrentTrade(item);
+                        await this.props.common.setSelectedSymbolId(item.product_market, {
+                          id,
+                          symbol
+                        });
                         this.goToPage(`/trade/${item?.symbol}/`, {
                           props: {
                             mode: "update",
@@ -504,8 +510,14 @@ export default class extends BaseReact {
                     </div>
                     <div
                       className="trade-content-content-bottom-btn"
-                      onClick={() => {
-                        this.props.trade.setCurrentTrade(item);
+                      onClick={async () => {
+                        const id = item.symbol;
+                        const symbol = item.product_code;
+                        await this.props.trade.setCurrentTrade(item);
+                        await this.props.common.setSelectedSymbolId(item.product_market, {
+                          id,
+                          symbol
+                        });
                         this.goToPage(`/trade/${item?.symbol}/`, {
                           props: {
                             mode: "delete",
