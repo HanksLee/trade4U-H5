@@ -5,7 +5,7 @@ import message from "./message";
 import product from "./product";
 import trend from "./trend";
 import setting from "./setting";
-
+import subscribe from "./subscribe";
 export default {
   common,
   market,
@@ -13,5 +13,6 @@ export default {
   message,
   product,
   trend,
-  setting
+  setting,
+  subscribe,
 };

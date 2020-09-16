@@ -22,7 +22,7 @@ const $$ = Dom7;
 
 @inject("common", "trade")
 @observer
-export default class extends BaseReact {
+export default class TradeList extends BaseReact {
   buffer = null;
   $event = null;
   state = {
@@ -72,7 +72,6 @@ export default class extends BaseReact {
     // this.connectWebsocket();
     setReceviceMsgLinter(this.receviceMsgLinter);
     // setStatusChangListener(this.statusChangListener);
-
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -371,9 +370,8 @@ export default class extends BaseReact {
     const initSymbol = utils.isEmpty(tradeList) ? 0 : tradeList[0]?.symbol;
     const { getKeyConfig } = this.props.common;
     const refCurrency = getKeyConfig("platform_currency");
-    const refCurrencyIcon = refCurrency === 'CNY'
-      ? '￥'
-      : refCurrency === 'USD' ? '＄' : 'HK';
+    const refCurrencyIcon =
+      refCurrency === "CNY" ? "￥" : refCurrency === "USD" ? "＄" : "HK";
     const currentTradeList =
       currentTradeTab === "持仓"
         ? tradeList
@@ -388,7 +386,7 @@ export default class extends BaseReact {
       >
         {!utils.isEmpty(currentTradeList) &&
           currentTradeList.map((item, index) => (
-            <div className="trade-content-item">
+            <div className="trade-content-item" key={index}>
               <div
                 className="trade-content-content-top"
                 onClick={() => {
@@ -454,32 +452,38 @@ export default class extends BaseReact {
                   <p>止損</p>
                   <p>{item.stop_loss || "-"}</p>
                   <p>盈亏</p>
-                  <p>{refCurrencyIcon}{item.profit}</p>
+                  <p>
+                    {refCurrencyIcon}
+                    {item.profit}
+                  </p>
                   <p>库存费</p>
                   <p>{item.swaps || "-"}</p>
                   <p>手续费</p>
-                  <p>{refCurrencyIcon}{item.fee || "-"}</p>
+                  <p>
+                    {refCurrencyIcon}
+                    {item.fee || "-"}
+                  </p>
                   <p>税费</p>
                   <p>{item.taxes || "-"}</p>
                   <p>开仓时间</p>
                   <p>
-                    <div>
+                    <span style={{ display: "block" }}>
                       {moment(item.create_time * 1000).format("YYYY.MM.DD")}
-                    </div>
-                    <div>
+                    </span>
+                    <span style={{ display: "block" }}>
                       {moment(item.create_time * 1000).format("HH:mm:ss")}
-                    </div>
+                    </span>
                   </p>
                   {currentTradeTab === "历史" && (
                     <>
                       <p>平仓时间</p>
                       <p>
-                        <div>
+                        <span style={{ display: "block" }}>
                           {moment(item.close_time * 1000).format("YYYY.MM.DD")}
-                        </div>
-                        <div>
+                        </span>
+                        <span style={{ display: "block" }}>
                           {moment(item.close_time * 1000).format("HH:mm:ss")}
-                        </div>
+                        </span>
                       </p>
                     </>
                   )}
@@ -540,7 +544,13 @@ export default class extends BaseReact {
                           const that = this;
                           confirm({
                             title: "关闭递延提示",
-                            content: (<p>您確定要关闭递延嗎<br />将于下一个交易日16:00自动卖出</p>),
+                            content: (
+                              <p>
+                                您確定要关闭递延嗎
+                                <br />
+                                将于下一个交易日16:00自动卖出
+                              </p>
+                            ),
                             className: "trade-modal",
                             centered: true,
                             cancelText: "取消",

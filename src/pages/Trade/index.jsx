@@ -175,9 +175,10 @@ export default class extends BaseReact {
           </Block>
         )}
         <div className="trade-tabs">
-          {tradeTabOptions.map((item) => {
+          {tradeTabOptions.map((item, index) => {
             return (
               <div
+                key={index}
                 onClick={() => {
                   this.switchTradeTabs(item.name);
                 }}

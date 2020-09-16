@@ -3,7 +3,13 @@ import { BaseReact } from "components/baseComponent";
 import WebSocketControl from "utils/WebSocketControl";
 import { AUTO, NORMAL } from "utils/WebSocketControl/close";
 
-import { initBuffer, checkBuffer , mergeRegisterData , getRegisterCount ,checkRegisterHasValue } from "utils/buffer";
+import {
+  initBuffer,
+  checkBuffer,
+  mergeRegisterData,
+  getRegisterCount,
+  checkRegisterHasValue,
+} from "utils/buffer";
 import moment from "moment";
 
 import {
@@ -132,7 +138,7 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       const { path, pathKey, bufferInfo } = selectedChannel;
 
       const newPath = this.getNewPath(path, pathKey);
-      if(wsControl._path === newPath) return;
+      if (wsControl._path === newPath) return;
       this.buffer = this.createBuffer();
       wsControl.replaceUrl(newPath);
     }
@@ -204,7 +210,6 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
           return;
         }
         if (this.receviceMsgLinter) this.receviceMsgLinter(buffer.register);
-        console.log("setReceviceMsg ");
         this.buffer = this.createBuffer();
       });
 
@@ -214,11 +219,14 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       });
       wsc.setStatusEvent(CONNECTING, (wsc, count) => {
         // console.log("CONNECTING:",count);
-        if (this.receviceMsgLinter && checkRegisterHasValue(this.buffer.register)){
+        if (
+          this.receviceMsgLinter &&
+          checkRegisterHasValue(this.buffer.register)
+        ) {
           this.receviceMsgLinter(this.buffer.register);
-          console.log("CONNECTING:receviceMsgLinter - ",count);
+          // console.log("CONNECTING:receviceMsgLinter - ",count);
         }
-       
+
         if (count === tryConnectMax) {
           tryReconnect();
         }
@@ -254,24 +262,23 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       this.statusChangListener = fn;
     };
 
-    getProgress = ()=>{
+    getProgress = () => {
       return wsControl.nowProgress;
-    }
+    };
     sendMsg = (o) => {
       wsControl.sendMsg(o);
     };
     replaceUrl = (newPath) => {
       wsControl.replaceUrl(newPath);
     };
-    startWS = ()=>{
+    startWS = () => {
       wsControl.startWS();
     };
-    closeWS = ()=>{
+    closeWS = () => {
       wsControl.closeWS();
-    }
-    reconnectWS = ()=>{
+    };
+    reconnectWS = () => {
       wsControl.reconnectWS();
-    }
-
+    };
   };
 }

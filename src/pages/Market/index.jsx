@@ -10,7 +10,7 @@ import {
   ActionsGroup,
   ActionsButton,
 } from "framework7-react";
-import cloneDeep from 'lodash/cloneDeep';
+import cloneDeep from "lodash/cloneDeep";
 import EditIcon from "assets/img/edit2.svg";
 import AddIcon from "assets/img/add.svg";
 import SearchIcon from "assets/img/search.svg";
@@ -108,7 +108,11 @@ export default class extends React.Component {
       page,
       page_size,
     } = this.state;
-    const { moveSymbolIDList, nextSymbolIDList, prevSymbolIDList } = this.props.market;
+    const {
+      moveSymbolIDList,
+      nextSymbolIDList,
+      prevSymbolIDList,
+    } = this.props.market;
     if (currentSymbolType.symbol_type_name === "自选") {
       if (subCurrentSymbolType === "全部") {
         this.setState({ dataLoading: true }, async () => {
@@ -162,16 +166,14 @@ export default class extends React.Component {
           });
         });
 
-
-
         if (!utils.isEmpty(nextSymbolIDList)) {
-          moveSymbolIDList(cloneDeep(nextSymbolIDList))
-          this.props.common.setUnSubscribeSymbol({ list: prevSymbolIDList })
-          console.log(prevSymbolIDList)
+          moveSymbolIDList(cloneDeep(nextSymbolIDList));
+          this.props.common.setUnSubscribeSymbol({ list: prevSymbolIDList });
+          // console.log(prevSymbolIDList);
           // this.trackSymbol(prevSymbolIDList, "unsubscribe");
         }
-        this.props.common.setSubscribeSymbol({ list: nextSymbolIDList })
-        console.log(nextSymbolIDList)
+        this.props.common.setSubscribeSymbol({ list: nextSymbolIDList });
+        // console.log(nextSymbolIDList);
         // this.trackSymbol(nextSymbolIDList, "subscribe");
       });
     }
@@ -203,8 +205,6 @@ export default class extends React.Component {
         this.getList();
       }
     );
-
-
   };
 
   getSymbolTypeList = async () => {
@@ -380,7 +380,7 @@ export default class extends React.Component {
     if (this.state.subCurrentSymbolType !== symbol_type_name) {
       this.props.common.setSelectedSymbolTypeInfo({ code: symbol_type_code });
     }
-  }
+  };
   render() {
     // const { selfSelectSymbolList, symbolList } = this.props.market;
     const {
@@ -412,11 +412,18 @@ export default class extends React.Component {
               return (
                 <div
                   ref={(el) => (this.tabRefs[item.id] = el)}
-                  onClick={() => this.gotoSelectedTab(tabBar, idx, item.symbol_type_name, item.symbol_type_code)}
+                  onClick={() =>
+                    this.gotoSelectedTab(
+                      tabBar,
+                      idx,
+                      item.symbol_type_name,
+                      item.symbol_type_code
+                    )
+                  }
                   className={`market-navbar-item ${
                     currentSymbolType.symbol_type_name ===
-                    item.symbol_type_name && "active"
-                    }`}
+                      item.symbol_type_name && "active"
+                  }`}
                 >
                   {item.symbol_type_name}
                 </div>
@@ -469,9 +476,10 @@ export default class extends React.Component {
                         <ul>
                           {subSymbolTypeList.map((item, index) => (
                             <li
+                              key={index}
                               className={
                                 subCurrentSymbolType ===
-                                item.symbol_type_name && "active"
+                                  item.symbol_type_name && "active"
                               }
                               onClick={() => {
                                 this.switchSubSelfSelctList(
@@ -486,8 +494,8 @@ export default class extends React.Component {
                       )}
                     </div>
                   ) : (
-                      <div></div>
-                    )}
+                    <div></div>
+                  )}
                   {price_title}
                 </div>
                 <div className="self-select-table">
@@ -496,7 +504,9 @@ export default class extends React.Component {
                     symbol_type_code={currentSymbolType.symbol_type_code}
                     dataLoading={dataLoading}
                     channelCode={
-                      currentSymbolType.symbol_type_code === "self" ? "SELF" : "NONE"
+                      currentSymbolType.symbol_type_code === "self"
+                        ? "SELF"
+                        : "NONE"
                     }
                     quoted_price={quoted_price}
                     thisRouter={this.$f7router}

@@ -141,7 +141,12 @@ export default class extends React.Component {
     // console.log(this)
     // console.log(this.props)
     // console.log("this.$f7router :>> ", this.$f7router);
-    const { thisRouter, quoted_price, thisStore, symbol_type_code } = this.props;
+    const {
+      thisRouter,
+      quoted_price,
+      thisStore,
+      symbol_type_code,
+    } = this.props;
     const { selfSelectSymbolList, symbolList } = this.props.market;
     const { currentSymbolType, dataLoading } = this.state;
     const currentList =
@@ -153,23 +158,23 @@ export default class extends React.Component {
     };
     return (
       <>
-        {currentList.map((item) => {
+        {currentList.map((item, index) => {
           return (
-            <>
+            <React.Fragment key={index}>
               <PriceItem
+                key={`item-${index}`}
                 thisRouter={thisRouter}
                 currentSymbolType={currentSymbolType}
                 currentSymbolTypeCode={symbol_type_code}
                 item={item}
                 thisStore={thisStore}
               />
-              <div style={testTimestamp}>
-                {" "}
+              <div style={testTimestamp} key={`time-${index}`}>
                 {moment(item.product_details?.timestamp * 1000).format(
                   "YYYY/MM/DD hh:mm:ss"
                 )}
               </div>
-            </>
+            </React.Fragment>
           );
         })}
 
