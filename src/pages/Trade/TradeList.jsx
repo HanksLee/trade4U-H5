@@ -546,7 +546,7 @@ export default class TradeList extends BaseReact {
                             title: "关闭递延提示",
                             content: (
                               <p>
-                                您確定要关闭递延嗎
+                                您确定要关闭递延吗
                                 <br />
                                 将于下一个交易日16:00自动卖出
                               </p>
