@@ -73,7 +73,8 @@ module.exports = {
     proxy: {
       "/api/moon": {
         // target: "http://api.cangshu360.com",
-        target: "https://api.trading8a.com",
+        target: "http://api.sugargirls.live",
+        // target: "https://api.trading8a.com",
         pathRewrite: { "^/api/moon": "" },
         secure: false,
         changeOrigin: true,

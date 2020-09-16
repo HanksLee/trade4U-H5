@@ -4,6 +4,7 @@ import utils from "utils";
 import moment from "moment";
 import { Modal } from "antd";
 import api from "services";
+import { toJS } from "mobx";
 import { MARKET_TYPE } from "constant";
 import {
   Page,
@@ -21,11 +22,12 @@ import cn from "classnames";
 @inject("common", "message", "subscribe")
 @observer
 export default class Subscribe extends React.Component {
-  state = { currentTab: "港股", currentList: [] };
+  state = { currentTab: "港股" };
 
   componentDidMount() {
     this.initEvents();
-    this.fetchData();
+    this.props.subscribe.getNewStockList();
+    this.props.subscribe.getUserSubscribeList();
   }
 
   initEvents = () => {
@@ -33,14 +35,7 @@ export default class Subscribe extends React.Component {
       this.setSubscribeContentHeight();
     });
   };
-  fetchData = async () => {
-    const newStockList = await api.subscribe.getNewStockList();
-    const newStockParticipateList = await api.subscribe.getNewStockParticipateList();
-    console.log("newStockList :>> ", newStockList);
-    console.log("newStockParticipateList :>> ", newStockParticipateList);
-    this.setState({ currentList: newStockList.data });
-    this.props.subscribe.setNewStockList(newStockList.data);
-  };
+
   setSubscribeContentHeight = () => {
     // page
     const pageHeight = document.getElementById("view-subscribe").clientHeight;
@@ -96,10 +91,30 @@ export default class Subscribe extends React.Component {
       subscribeSelectShow: !subscribeSelectShow,
     });
   };
-
+  renderNewStockList = () => {
+    const newStockList = this.props.subscribe.newStockList;
+    const userSubscribeList = this.props.subscribe.userSubscribeList;
+    console.log("newStockList :>> ", toJS(newStockList));
+    console.log("userSubscribeList :>> ", toJS(userSubscribeList));
+    const userSubscribeMap = this.props.subscribe.userSubscribeMap;
+    return newStockList.map((data) => {
+      const stockId = data.id;
+      const isUserDidSubscribe = userSubscribeMap[stockId] ? true : false; // 使用者是否已申购
+      const orderInfo = userSubscribeMap[stockId]; // 申购资讯
+      return (
+        <SubscribeItem
+          router={this.$f7router}
+          key={stockId}
+          data={data}
+          isUserDidSubscribe={isUserDidSubscribe}
+          orderInfo={orderInfo}
+        />
+      );
+    });
+  };
   render() {
-    const { currentTab, currentList, subscribeSelectShow = false } = this.state;
-    console.log("currentList :>> ", currentList);
+    const { currentTab, subscribeSelectShow = false } = this.state;
+
     return (
       <Page name="subscribe" className="subscribe-page">
         <Navbar className="subscribe-navbar">
@@ -108,33 +123,19 @@ export default class Subscribe extends React.Component {
           <NavRight></NavRight>
         </Navbar>
         <div className="subscribe-tabs">
-          {/* {
-            tradeTabOptions.map((item) => {
-              return (
-                <div
-                  onClick={() => { this.switchTradeTabs(item.name) }}
-                  className={`market-navbar-item ${currentTradeTab === item.name && 'active'}`}>
-                  {item.name}
-                </div>)
-            })
-          } */}
           <div
-            className={`subscirbe-tab-item ${
-              currentTab === "港股" && "active"
-            }`}
-            onClick={() => {
-              this.switchSubscribeTabs("港股");
-            }}
+            className={cn("subscirbe-tab-item", {
+              active: currentTab === "港股",
+            })}
+            onClick={() => this.switchSubscribeTabs("港股")}
           >
             港股
           </div>
           <div
-            className={`subscirbe-tab-item ${
-              currentTab === "沪深" && "active"
-            }`}
-            onClick={() => {
-              this.switchSubscribeTabs("沪深");
-            }}
+            onClick={() => this.switchSubscribeTabs("沪深")}
+            className={cn("subscirbe-tab-item", {
+              active: currentTab === "沪深",
+            })}
           >
             沪深
           </div>
@@ -156,91 +157,80 @@ export default class Subscribe extends React.Component {
             )}
           </div>
         </div>
-
-        {/*  */}
-        <div className="subscribe-container">
-          {currentList.map((data) => {
-            return (
-              <SubscribeItem
-                data={data}
-                router={this.$f7router}
-                key={data.id}
-              />
-            );
-          })}
-          <FakeList />
-        </div>
+        <div className="subscribe-container">{this.renderNewStockList()}</div>
       </Page>
     );
   }
 }
 
-function mapApiDataToDisplayValue(input) {
-  // 转换 api 资料为要展示的格式
-  const payload = { ...input };
-  const {
-    market,
-    subscription_date_start,
-    subscription_date_end,
-    draw_result_date,
-    public_date,
-  } = payload;
-  payload["subscription_date_end"] = moment(subscription_date_end).format(
-    "MM-DD"
-  );
-  payload["market_name"] = MARKET_TYPE[market]["name"];
-  payload["draw_result_date"] = moment(draw_result_date).format("YYYY-MM-DD");
-  payload["public_date"] = moment(public_date).format("YYYY-MM-DD");
-  return payload;
-}
-function SubscribeItem(props) {
-  const { data, router } = props;
-  const {
-    id,
-    stock_name,
-    public_price,
-    subscription_date_end,
-  } = mapApiDataToDisplayValue(data);
-  const isUserDidSubscribe = true;
-  const isExpired = true;
-  return (
-    <div
-      className={cn("subscribe-item", { isSubscribe: isUserDidSubscribe })}
-      onClick={() => router.navigate(`/subscribe/detail/${id}`)}
-    >
-      <div className="subscribe-item-left">
-        <div className="date">
-          <p>{isExpired ? "已截止" : "截止日"}</p>
-          <p>{subscription_date_end}</p>
+class SubscribeItem extends React.Component {
+  state = {};
+  mapApiDataToDisplayValue = (input) => {
+    // 转换 api 资料为要展示的格式
+    const payload = { ...input };
+    const {
+      market,
+      subscription_date_start,
+      subscription_date_end,
+      draw_result_date,
+      public_date,
+    } = payload;
+    payload["subscription_date_end"] = moment(subscription_date_end).format(
+      "MM-DD"
+    );
+    payload["market_name"] = MARKET_TYPE[market]["name"];
+    payload["draw_result_date"] = moment(draw_result_date).format("YYYY-MM-DD");
+    payload["public_date"] = moment(public_date).format("YYYY-MM-DD");
+    return payload;
+  };
+  render() {
+    const { data, router, isUserDidSubscribe, orderInfo } = this.props;
+    const {
+      id,
+      stock_name,
+      public_price,
+      subscription_date_end,
+    } = this.mapApiDataToDisplayValue(data);
+    const isExpired = false;
+    return (
+      <div
+        className={cn("subscribe-item", { isSubscribe: isUserDidSubscribe })}
+        onClick={() => router.navigate(`/subscribe/detail/${id}`)}
+      >
+        <div className="subscribe-item-left">
+          <div className="date">
+            <p>{isExpired ? "已截止" : "截止日"}</p>
+            <p>{subscription_date_end}</p>
+          </div>
+        </div>
+        <div className="subscribe-item-middle">
+          <p>
+            {/* 申购状态: 已申购, 可申购 */}
+            <span className="subscribe-remark">
+              {isUserDidSubscribe ? "已申购" : "可申购"}
+            </span>
+            {stock_name}
+          </p>
+          <p>
+            申购价：<span className="subscribe-price">{public_price}</span>
+          </p>
+          {isUserDidSubscribe && (
+            <React.Fragment>
+              <p>
+                申购手数：<span className="">{"-"}</span>
+              </p>
+              <p>
+                申購金額：<span className="">{"-"}</span>
+              </p>
+            </React.Fragment>
+          )}
+        </div>
+        <div className="subscribe-item-right">
+          <i className="icon icon-forward"></i>
         </div>
       </div>
-      <div className="subscribe-item-middle">
-        <p>
-          {/* 申购状态: 已申购, 可申购 */}
-          <span className="subscribe-remark">
-            {isUserDidSubscribe ? "已申购" : "可申购"}
-          </span>
-          {stock_name}
-        </p>
-        <p>
-          申购价：<span className="subscribe-price">{public_price}</span>
-        </p>
-        {isUserDidSubscribe && (
-          <React.Fragment>
-            <p>
-              申购手数：<span className="">{"-"}</span>
-            </p>
-            <p>
-              申購金額：<span className="">{"-"}</span>
-            </p>
-          </React.Fragment>
-        )}
-      </div>
-      <div className="subscribe-item-right">
-        <i className="icon icon-forward"></i>
-      </div>
-    </div>
-  );
+    );
+  }
 }
 
 function FakeList(props) {

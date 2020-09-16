@@ -19,6 +19,7 @@ import { inject, observer } from "mobx-react";
 import "./index.scss";
 import { MARKET_TYPE } from "constant";
 import moment from "moment";
+
 @inject("subscribe")
 @observer
 export default class DetailPage extends React.Component {
@@ -46,6 +47,52 @@ export default class DetailPage extends React.Component {
   //     "subscribe-detail-content"
   //   )[0].style.height = `${subscribeDetailContentHeight}px`;
   // };
+
+  render() {
+    const { id } = this.$f7route.params;
+    const detail = this.props.subscribe.getNewStockDetail(id);
+    const newStockMap = this.props.subscribe.newStockMap;
+    const userSubscribeMap = this.props.subscribe.userSubscribeMap;
+    console.log("newStockMap :>> ", toJS(newStockMap));
+    console.log("userSubscribeMap :>> ", toJS(userSubscribeMap));
+    const isUserDidSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
+    const orderInfo = userSubscribeMap[id]; // 申购资讯
+    return (
+      <Page noToolbar>
+        <Navbar className="subscribe-detail-navbar">
+          <NavLeft>
+            <Link onClick={() => this.$f7router.back()}>
+              <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
+            </Link>
+            {/* <span onClick={this.handleConfirm}>完成</span> */}
+          </NavLeft>
+          <NavTitle>申购详情</NavTitle>
+          <NavRight>
+            {/* <span onClick={this.showDeleteModal}>删除</span> */}
+          </NavRight>
+        </Navbar>
+        <SubscribeDetail data={detail} />
+        {isUserDidSubscribe && <SubscribeOrderInfo data={orderInfo} />}
+        {!isUserDidSubscribe && (
+          <div
+            className={`subscribe-detail-submit-btn`}
+            style={{ marginBottom: "20px" }}
+            // onClick={this.onSubmit}
+            onClick={() => {
+              this.$f7router.navigate(`/subscribe/order`);
+            }}
+          >
+            申购
+          </div>
+        )}
+      </Page>
+    );
+  }
+}
+
+// 申购股票资讯
+class SubscribeDetail extends React.Component {
+  state = {};
   mapApiDataToDisplayValue = (input) => {
     // 转换 api 资料为要展示的格式
     const payload = { ...input };
@@ -68,154 +115,130 @@ export default class DetailPage extends React.Component {
     return payload;
   };
   render() {
-    const { id } = this.$f7route.params;
-    const detail = this.props.subscribe.getNewStockDetail(id);
-    const subscribeDetail = this.mapApiDataToDisplayValue(detail);
-    const isUserDidSubscribe = true; // 使用者是否已申购
+    const {
+      stock_name,
+      public_price,
+      market_name,
+      stock_code,
+      subscription_date_start,
+      subscription_date_end,
+      draw_result_date,
+      public_date,
+      lots_size,
+      currency,
+    } = this.mapApiDataToDisplayValue(this.props.data);
     return (
-      <Page noToolbar>
-        <Navbar className="subscribe-detail-navbar">
-          <NavLeft>
-            <Link onClick={() => this.$f7router.back()}>
-              <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
-            </Link>
-            {/* <span onClick={this.handleConfirm}>完成</span> */}
-          </NavLeft>
-          <NavTitle>申购详情</NavTitle>
-          <NavRight>
-            {/* <span onClick={this.showDeleteModal}>删除</span> */}
-          </NavRight>
-        </Navbar>
-        <SubscribeDetail data={subscribeDetail} />
-        {isUserDidSubscribe && <SubscribeOrderInfo data={null} />}
-        {!isUserDidSubscribe && (
-          <div
-            className={`subscribe-detail-submit-btn`}
-            style={{ marginBottom: "20px" }}
-            // onClick={this.onSubmit}
-            onClick={() => {
-              this.$f7router.navigate(`/subscribe/order`);
-            }}
-          >
-            申购
+      <React.Fragment>
+        <div className="subscribe-detail-header">
+          <span>{stock_name}</span>
+          <div>
+            <span>申購價 : </span>
+            <span>{public_price}</span>
           </div>
-        )}
-      </Page>
+        </div>
+        <div className="subscribe-detail-content">
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">品種</div>
+            <div className="subscribe-detail-text">
+              {market_name}
+              {/* market */}
+            </div>
+          </div>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">申購代碼</div>
+            <div className="subscribe-detail-text">{stock_code}</div>
+          </div>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">起始日期</div>
+            <div className="subscribe-detail-text">
+              {subscription_date_start}
+            </div>
+          </div>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">截止日期</div>
+            <div className="subscribe-detail-text">{subscription_date_end}</div>
+          </div>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">中籤公布日</div>
+            <div className="subscribe-detail-text">{draw_result_date}</div>
+          </div>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">上市日期</div>
+            <div className="subscribe-detail-text">{public_date}</div>
+          </div>
+          <div className="subscribe-detail-item">
+            {/*  */}
+            <div className="subscribe-detail-title">每手金额</div>
+            <div className="subscribe-detail-text">{"-"}</div>
+          </div>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">每手股数</div>
+            <div className="subscribe-detail-text">{lots_size}</div>
+          </div>
+          <div className="subscribe-detail-item">
+            <div className="subscribe-detail-title">幣種</div>
+            <div className="subscribe-detail-text">{currency}</div>
+          </div>
+        </div>
+      </React.Fragment>
     );
   }
 }
 
-// 申购股票资讯
-function SubscribeDetail(props) {
-  const {
-    stock_name,
-    public_price,
-    market_name,
-    stock_code,
-    subscription_date_start,
-    subscription_date_end,
-    draw_result_date,
-    public_date,
-    lots_size,
-    currency,
-  } = props.data;
-  return (
-    <React.Fragment>
-      <div className="subscribe-detail-header">
-        <span>{stock_name}</span>
-        <div>
-          <span>申購價 : </span>
-          <span>{public_price}</span>
-        </div>
-      </div>
-      <div className="subscribe-detail-content">
-        <div className="subscribe-detail-item">
-          <div className="subscribe-detail-title">品種</div>
-          <div className="subscribe-detail-text">
-            {market_name}
-            {/* market */}
-          </div>
-        </div>
-        <div className="subscribe-detail-item">
-          <div className="subscribe-detail-title">申購代碼</div>
-          <div className="subscribe-detail-text">{stock_code}</div>
-        </div>
-        <div className="subscribe-detail-item">
-          <div className="subscribe-detail-title">起始日期</div>
-          <div className="subscribe-detail-text">{subscription_date_start}</div>
-        </div>
-        <div className="subscribe-detail-item">
-          <div className="subscribe-detail-title">截止日期</div>
-          <div className="subscribe-detail-text">{subscription_date_end}</div>
-        </div>
-        <div className="subscribe-detail-item">
-          <div className="subscribe-detail-title">中籤公布日</div>
-          <div className="subscribe-detail-text">{draw_result_date}</div>
-        </div>
-        <div className="subscribe-detail-item">
-          <div className="subscribe-detail-title">上市日期</div>
-          <div className="subscribe-detail-text">{public_date}</div>
-        </div>
-        <div className="subscribe-detail-item">
-          {/*  */}
-          <div className="subscribe-detail-title">每手金额</div>
-          <div className="subscribe-detail-text">{"-"}</div>
-        </div>
-        <div className="subscribe-detail-item">
-          <div className="subscribe-detail-title">每手股数</div>
-          <div className="subscribe-detail-text">{lots_size}</div>
-        </div>
-        <div className="subscribe-detail-item">
-          <div className="subscribe-detail-title">幣種</div>
-          <div className="subscribe-detail-text">{currency}</div>
-        </div>
-      </div>
-    </React.Fragment>
-  );
-}
 // 使用者已申购的资讯
-function SubscribeOrderInfo(props) {
-  return (
-    <React.Fragment>
-      <div className="subscribe-detail-header">
-        <span>已申购资讯</span>
-      </div>
-      <div className="subscribe-detail-content">
-        <div className="subscribe-detail-container-done">
-          <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">申购手数</div>
-            <div className="subscribe-detail-text">2</div>
-          </div>
-          <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">手续费</div>
-            <div className="subscribe-detail-text">20</div>
-          </div>
-          <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">入场费</div>
-            <div className="subscribe-detail-text">24501.06</div>
-          </div>
-          <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">认购金额</div>
-            <div className="subscribe-detail-text">24521.06</div>
-          </div>
-          <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">融资比例</div>
-            <div className="subscribe-detail-text">60%</div>
-          </div>
-          <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">融资金额</div>
-            <div className="subscribe-detail-text">14712.64</div>
-          </div>
-          <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">融资利息</div>
-            <div className="subscribe-detail-text">14.1</div>
-          </div>
-          <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">利息费</div>
-            <div className="subscribe-detail-text">14.1</div>
+class SubscribeOrderInfo extends React.Component {
+  state = {};
+  mapApiDataToDisplayValue = (raw) => {
+    const payload = { ...raw };
+    return payload;
+  };
+
+  render() {
+    const { wanted_lots, entrance_fee, loan } = this.mapApiDataToDisplayValue(
+      this.props.data
+    );
+    return (
+      <React.Fragment>
+        <div className="subscribe-detail-header">
+          <span>已申购资讯</span>
+        </div>
+        <div className="subscribe-detail-content">
+          <div className="subscribe-detail-container-done">
+            <div className="subscribe-detail-item">
+              <div className="subscribe-detail-title">申购手数</div>
+              <div className="subscribe-detail-text">{wanted_lots}</div>
+            </div>
+            <div className="subscribe-detail-item">
+              <div className="subscribe-detail-title">手续费</div>
+              <div className="subscribe-detail-text">{"-"}</div>
+            </div>
+            <div className="subscribe-detail-item">
+              <div className="subscribe-detail-title">入场费</div>
+              <div className="subscribe-detail-text">{entrance_fee}</div>
+            </div>
+            <div className="subscribe-detail-item">
+              <div className="subscribe-detail-title">认购金额</div>
+              <div className="subscribe-detail-text">{"-"}</div>
+            </div>
+            <div className="subscribe-detail-item">
+              <div className="subscribe-detail-title">融资比例</div>
+              <div className="subscribe-detail-text">{"-%"}</div>
+            </div>
+            <div className="subscribe-detail-item">
+              <div className="subscribe-detail-title">融资金额</div>
+              <div className="subscribe-detail-text">{loan}</div>
+            </div>
+            <div className="subscribe-detail-item">
+              <div className="subscribe-detail-title">融资利息率</div>
+              <div className="subscribe-detail-text">{"-%"}</div>
+            </div>
+            <div className="subscribe-detail-item">
+              <div className="subscribe-detail-title">利息费</div>
+              <div className="subscribe-detail-text">{"-"}</div>
+            </div>
           </div>
         </div>
-      </div>
-    </React.Fragment>
-  );
+      </React.Fragment>
+    );
+  }
 }
