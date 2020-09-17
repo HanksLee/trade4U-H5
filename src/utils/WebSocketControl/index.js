@@ -178,9 +178,12 @@ export default class WebSocketControl {
       else{
         this.closeCode = NORMAL;
       }
-      
+      const msg = {
+        closeCode:this.closeCode,
+        closeProgress:this.nowProgress
+      }
       // console.log(e);
-      this.callStatusEvent(DISCONNECTED, this.closeCode);
+      this.callStatusEvent(DISCONNECTED, msg);
     });
   }
 

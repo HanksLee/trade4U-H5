@@ -238,12 +238,13 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
       wsc.setStatusEvent(RECONNECT, (wsc) => {
         // console.log("RECONNECT");
       });
-      wsc.setStatusEvent(DISCONNECTED, (wsc, closeCode) => {
+      wsc.setStatusEvent(DISCONNECTED, (wsc, closeMsg) => {
+        const {closeCode , closeProgress} = closeMsg;
         this.disconnetCount++;
         if (closeCode === AUTO && this.disconnetCount < disconnectMax) {
           tryReconnect();
         } else if (this.disconnetCount === disconnectMax) {
-          this.$msg.error("已断线，请确认网路状态或联系客服");
+          this.$msg.error(`已断线，请确认网路状态或联系客服[${closeProgress}][${wsc._path}]`);
           this.disconnetCount = 0;
         }
       });
