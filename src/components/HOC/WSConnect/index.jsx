@@ -22,7 +22,10 @@ import {
   ERROR, //
 } from "utils/WebSocketControl/status";
 
-export default function WSConnect(defaultChannl, channelConfig, Comp) {
+const WebsocketConnect = (defaultChannel, channelConfig) => (Component) => {
+  return WSConnect(defaultChannel, channelConfig, Component);
+};
+export default function WSConnect(defaultChannel, channelConfig, Component) {
   const {
     path,
     pathKey,
@@ -30,7 +33,7 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
     connectDistanceTime,
     tryConnectMax,
     disconnectMax,
-  } = defaultChannl;
+  } = defaultChannel;
 
   const wsControl = new WebSocketControl({
     path: path,
@@ -54,8 +57,11 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
   };
 
   return class extends BaseReact {
+    static displayName = `WS-Connected-${
+      Component.name || Component.displayName
+    }`;
     state = {
-      selectedChannel: defaultChannl,
+      selectedChannel: defaultChannel,
       refreshChannel: false,
       initMsg: false,
     };
@@ -103,7 +109,7 @@ export default function WSConnect(defaultChannl, channelConfig, Comp) {
 
     render() {
       return (
-        <Comp
+        <Component
           {...this.props}
           setReceviceMsgLinter={this.setReceviceMsgLinter}
           setStatusChangeListener={this.setStatusChangeListener}

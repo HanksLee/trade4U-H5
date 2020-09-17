@@ -22,7 +22,7 @@ import "./index.scss";
 import cn from "classnames";
 @inject("common", "message", "subscribe")
 @observer
-export default class Subscribe extends React.Component {
+export default class SubscribePage extends React.Component {
   state = { subscribeFilter: false, isFilterMenuOpen: false };
 
   componentDidMount() {
