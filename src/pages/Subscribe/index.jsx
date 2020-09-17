@@ -81,8 +81,9 @@ export default class SubscribePage extends React.Component {
       const { id, market } = data;
       if (!marketFilter[market]) return; // 市场类型筛选
       const didUserSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
-      const orderInfo = userSubscribeMap[id]; // 申购资讯
-      if (subscribeFilter !== didUserSubscribe) return null; // 是否已申购筛选
+      const orderInfo = userSubscribeMap[id] ?? {}; // 申购资讯
+
+      if (subscribeFilter !== didUserSubscribe) return null; // 是否为已申购筛选
       return (
         <SubscribeItem
           router={this.$f7router}
@@ -131,24 +132,24 @@ export default class SubscribePage extends React.Component {
           tabBarUnderlineStyle={{ border: "1px solid #F2E205" }}
         >
           {() => (
-            <React.Fragment>
-              <div className="subscribe-select-header">
+            <div className="subscribe-tab-page">
+              <div className="subscribe-list-header">
                 {this.renderFilterMenu()}
               </div>
-              <div className="subscribe-container">
+              <div className="subscribe-list">
                 {this.renderNewStockList({ HK: true })}
               </div>
-            </React.Fragment>
+            </div>
           )}
           {() => (
-            <React.Fragment>
-              <div className="subscribe-select-header">
+            <div className="subscribe-tab-page">
+              <div className="subscribe-list-header">
                 {this.renderFilterMenu()}
               </div>
-              <div className="subscribe-container">
+              <div className="subscribe-list">
                 {this.renderNewStockList({ SZ: true, SH: true })}
               </div>
-            </React.Fragment>
+            </div>
           )}
         </Tabs>
       </Page>
@@ -177,13 +178,14 @@ class SubscribeItem extends React.Component {
     return payload;
   };
   render() {
-    const { data, router, didUserSubscribe } = this.props;
+    const { data, router, didUserSubscribe, orderInfo } = this.props;
     const {
       id,
       stock_name,
       public_price,
       subscription_date_end,
     } = this.mapApiDataToDisplayValue(data);
+    const { wanted_lots } = orderInfo;
     return (
       <div
         className={cn("subscribe-item", { isSubscribe: didUserSubscribe })}
@@ -207,12 +209,8 @@ class SubscribeItem extends React.Component {
           </p>
           {didUserSubscribe && (
             <React.Fragment>
-              <p>
-                申购手数：<span className="">{"-"}</span>
-              </p>
-              <p>
-                申購金額：<span className="">{"-"}</span>
-              </p>
+              <p>申购手数：{wanted_lots}</p>
+              <p>申購金額：{"-"}</p>
             </React.Fragment>
           )}
         </div>
