@@ -63,7 +63,7 @@ export class SymbolInfo extends React.Component {
     const { selectedSymbolInfo } = this.props.common;
     const { symbol_display, product_details } = currentSymbol;
     const { quoted_price } = this.props;
-    const onePirceField = {
+    const onePriceField = {
       open: { text: "开盘", format: (val) => String(val) },
       last_close: { text: "昨收", format: (val) => String(val) },
       high: { text: "最高", format: (val) => String(val) },
@@ -97,7 +97,7 @@ export class SymbolInfo extends React.Component {
       selling_fee: { text: "卖出库存费", format: (val) => `${String(val)}%` },
     };
 
-    const field = quoted_price === "one_price" ? onePirceField : twoPriceField;
+    const field = quoted_price === "one_price" ? onePriceField : twoPriceField;
     return (
       <div className={cx("tab-body")}>
         <div className={cx("stock-detail")}>
