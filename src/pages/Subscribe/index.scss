@@ -53,8 +53,6 @@
 
   .subscribe-select-header {
     position: relative;
-    top: 0;
-    z-index: 100;
     background-color: #21212b;
     font-size: 14px;
     color: #838d9e;
@@ -75,39 +73,37 @@
       text-align: right;
     }
 
-    .subscribe-type {
+    .subscribe-filter-menu {
       position: relative;
       overflow: visible;
 
       p {
         padding: 1px 10px;
-      }
-
-      p,
-      ul {
         margin-bottom: 0;
         display: inline-block;
         border: 1px solid #838d9e;
         border-radius: 10px;
       }
 
-      ul {
+      .subscribe-filter-menu-list {
         position: absolute;
+        z-index: 10;
+        margin-bottom: 0;
+        display: inline-block;
+        border: 1px solid #838d9e;
+        border-radius: 10px;
         list-style-type: none;
         left: 0;
         top: 120%;
         background-color: #21212b;
         overflow: hidden;
         padding: 0;
-
         li {
           padding: 5px 10px;
-
           &.active {
             background-color: #244968;
           }
         }
-
         li + li {
           border-top: 1px solid #838d9e;
         }

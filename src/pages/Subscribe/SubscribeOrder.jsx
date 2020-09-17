@@ -86,7 +86,7 @@ export default class extends React.Component {
     const { params, isFinancingShow = "none" } = this.state;
     const id = this.props.$f7route.params.id;
     const detail = this.props.subscribe.getNewStockDetail(id);
-    console.log("detail :>> ", toJS(this.mapApiDataToDisplayValue(detail)));
+    // console.log("detail :>> ", toJS(this.mapApiDataToDisplayValue(detail)));
     const {
       stock_name,
       public_price,
