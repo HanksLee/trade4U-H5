@@ -125,8 +125,7 @@ export default class SubscribePage extends React.Component {
           tabs={tabs}
           renderTabBar={(props) => <Tabs.DefaultTabBar {...props} page={2} />}
           initialPage={0}
-          destroyInactiveTab={true}
-          tabBarBackgroundColor="transparent"
+          tabBarBackgroundColor="#21212b"
           tabBarActiveTextColor="#F2E205"
           tabBarInactiveTextColor="#838D9E"
           tabBarUnderlineStyle={{ border: "1px solid #F2E205" }}
