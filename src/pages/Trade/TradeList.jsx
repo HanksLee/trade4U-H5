@@ -398,7 +398,7 @@ export default class TradeList extends BaseReact {
                 }}
               >
                 <div className="trade-content-content-top-item">
-                  <p className="content-text" style={{ fontSize: item?.symbol_name?.length >= 6 && '1px' }}>{item.symbol_name}</p>
+                  <p className="content-text" style={{ fontSize: item?.symbol_name?.length >= 6 && '13px' }}>{item.symbol_name}</p>
                   <p>
                     <span className="symbol-type-code">
                       {item.product_market}
