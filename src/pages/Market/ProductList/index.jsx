@@ -23,7 +23,7 @@ const $$ = Dom7;
 
 @inject("common", "market")
 @observer
-export default class extends React.Component {
+export default class ProductList extends React.Component {
   state = {
     dataLoading: this.props.dataLoading,
     currentSymbolType: this.props.currentSymbolType,

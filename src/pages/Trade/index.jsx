@@ -19,7 +19,7 @@ const WS_TradeList = WSConnect(channelConfig[0], channelConfig, TradeList);
 
 @inject("common", "trade")
 @observer
-export default class extends BaseReact {
+export default class TradePage extends BaseReact {
   wsConnect = null;
   $event = null;
   state = {
@@ -124,7 +124,7 @@ export default class extends BaseReact {
             <Row className={"trade-stats-row"}>
               <Col width="25" className={"trade-stats-col"}>
                 <p>预付款</p>
-                <p>{+tradeInfo?.margin?.toFixed(2)}</p>
+                <p>{tradeInfo?.margin?.toFixed(2)}</p>
               </Col>
               <Col width="50" className={"trade-stats-col"}>
                 <p>可用预付款</p>

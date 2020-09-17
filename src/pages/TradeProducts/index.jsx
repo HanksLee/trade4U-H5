@@ -13,7 +13,7 @@ import { inject, observer } from "mobx-react";
 
 @inject("common", "trade", "market")
 @observer
-export default class extends React.Component {
+export default class TradeProducts extends React.Component {
   state = {};
 
   componentDidMount() {

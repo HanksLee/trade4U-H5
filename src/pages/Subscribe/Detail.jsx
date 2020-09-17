@@ -55,7 +55,7 @@ export default class DetailPage extends React.Component {
     const userSubscribeMap = this.props.subscribe.userSubscribeMap;
     // console.log("newStockMap :>> ", toJS(newStockMap));
     // console.log("userSubscribeMap :>> ", toJS(userSubscribeMap));
-    const isUserDidSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
+    const didUserSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
     const orderInfo = userSubscribeMap[id]; // 申购资讯
     return (
       <Page noToolbar>
@@ -72,15 +72,12 @@ export default class DetailPage extends React.Component {
           </NavRight>
         </Navbar>
         <SubscribeDetail data={detail} />
-        {isUserDidSubscribe && <SubscribeOrderInfo data={orderInfo} />}
-        {!isUserDidSubscribe && (
+        {didUserSubscribe && <SubscribeOrderInfo data={orderInfo} />}
+        {!didUserSubscribe && (
           <div
             className={`subscribe-detail-submit-btn`}
             style={{ marginBottom: "20px" }}
-            // onClick={this.onSubmit}
-            onClick={() => {
-              this.$f7router.navigate(`/subscribe/order`);
-            }}
+            onClick={() => this.$f7router.navigate(`/subscribe/order/${id}`)}
           >
             申购
           </div>
@@ -132,38 +129,38 @@ class SubscribeDetail extends React.Component {
         <div className="subscribe-detail-header">
           <span>{stock_name}</span>
           <div>
-            <span>申購價 : </span>
+            <span>申购价：</span>
             <span>{public_price}</span>
           </div>
         </div>
         <div className="subscribe-detail-content">
           <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">品種</div>
+            <div className="subscribe-detail-title">品种</div>
             <div className="subscribe-detail-text">
               {market_name}
               {/* market */}
             </div>
           </div>
           <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">申購代碼</div>
+            <div className="subscribe-detail-title">申购代码</div>
             <div className="subscribe-detail-text">{stock_code}</div>
           </div>
           <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">起始日期</div>
+            <div className="subscribe-detail-title">起始日</div>
             <div className="subscribe-detail-text">
               {subscription_date_start}
             </div>
           </div>
           <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">截止日期</div>
+            <div className="subscribe-detail-title">截止日</div>
             <div className="subscribe-detail-text">{subscription_date_end}</div>
           </div>
           <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">中籤公布日</div>
+            <div className="subscribe-detail-title">中签公布日</div>
             <div className="subscribe-detail-text">{draw_result_date}</div>
           </div>
           <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">上市日期</div>
+            <div className="subscribe-detail-title">上市日</div>
             <div className="subscribe-detail-text">{public_date}</div>
           </div>
           <div className="subscribe-detail-item">
@@ -176,7 +173,7 @@ class SubscribeDetail extends React.Component {
             <div className="subscribe-detail-text">{lots_size}</div>
           </div>
           <div className="subscribe-detail-item">
-            <div className="subscribe-detail-title">幣種</div>
+            <div className="subscribe-detail-title">币种</div>
             <div className="subscribe-detail-text">{currency}</div>
           </div>
         </div>
