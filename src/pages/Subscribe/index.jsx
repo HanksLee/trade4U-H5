@@ -22,7 +22,7 @@ import cn from "classnames";
 @inject("common", "message", "subscribe")
 @observer
 export default class Subscribe extends React.Component {
-  state = { currentTab: "港股" };
+  state = { subscribeFilter: false, isFilterMenuOpen: false };
 
   componentDidMount() {
     this.initEvents();
@@ -68,30 +68,21 @@ export default class Subscribe extends React.Component {
     this.setState({ currentTab: name });
   };
 
-  showLogoutModal = () => {
-    const { confirm } = Modal;
-    const that = this;
-    confirm({
-      title: "提示",
-      content: "您確定要登出嗎",
-      className: "trade-modal",
-      centered: true,
-      cancelText: "取消",
-      okText: "确认",
-      onOk() {
-        that.logout();
-      },
-      onCancel() {},
-    });
-  };
-
   showSubscribeSelect = () => {
     const { subscribeSelectShow } = this.state;
     this.setState({
       subscribeSelectShow: !subscribeSelectShow,
     });
   };
+  toggleFilterMenu = () => {
+    this.setState({ isFilterMenuOpen: !this.state.isFilterMenuOpen });
+  };
+  setSubscribeFilter = (type) => {
+    this.setState({ subscribeFilter: type });
+    this.toggleFilterMenu();
+  };
   renderNewStockList = () => {
+    const { subscribeFilter } = this.state;
     const newStockList = this.props.subscribe.newStockList;
     const userSubscribeList = this.props.subscribe.userSubscribeList;
     // console.log("newStockList :>> ", toJS(newStockList));
@@ -99,21 +90,22 @@ export default class Subscribe extends React.Component {
     const userSubscribeMap = this.props.subscribe.userSubscribeMap;
     return newStockList.map((data) => {
       const stockId = data.id;
-      const isUserDidSubscribe = userSubscribeMap[stockId] ? true : false; // 使用者是否已申购
+      const didUserSubscribe = userSubscribeMap[stockId] ? true : false; // 使用者是否已申购
       const orderInfo = userSubscribeMap[stockId]; // 申购资讯
+      if (subscribeFilter !== didUserSubscribe) return null; // 与筛选状态不同时不渲染
       return (
         <SubscribeItem
           router={this.$f7router}
           key={stockId}
           data={data}
-          isUserDidSubscribe={isUserDidSubscribe}
+          didUserSubscribe={didUserSubscribe}
           orderInfo={orderInfo}
         />
       );
     });
   };
   render() {
-    const { currentTab, subscribeSelectShow = false } = this.state;
+    const { subscribeFilter, isFilterMenuOpen } = this.state;
 
     return (
       <Page name="subscribe" className="subscribe-page">
@@ -123,36 +115,18 @@ export default class Subscribe extends React.Component {
           <NavRight></NavRight>
         </Navbar>
         <div className="subscribe-tabs">
-          <div
-            className={cn("subscirbe-tab-item", {
-              active: currentTab === "港股",
-            })}
-            onClick={() => this.switchSubscribeTabs("港股")}
-          >
-            港股
-          </div>
-          <div
-            onClick={() => this.switchSubscribeTabs("沪深")}
-            className={cn("subscirbe-tab-item", {
-              active: currentTab === "沪深",
-            })}
-          >
-            沪深
-          </div>
+          <div>港股</div>
+          <div>沪深</div>
         </div>
         <div className="subscribe-select-header">
           <div className="subscribe-type">
-            <p
-              onClick={() => {
-                this.showSubscribeSelect();
-              }}
-            >
-              可申购
+            <p onClick={() => this.toggleFilterMenu()}>
+              {subscribeFilter ? "已申购" : "可申购"}
             </p>
-            {subscribeSelectShow && (
+            {isFilterMenuOpen && (
               <ul>
-                <li className="active">可申购</li>
-                <li>已申购</li>
+                <li onClick={() => this.setSubscribeFilter(false)}>可申购</li>
+                <li onClick={() => this.setSubscribeFilter(true)}>已申购</li>
               </ul>
             )}
           </div>
@@ -184,37 +158,35 @@ class SubscribeItem extends React.Component {
     return payload;
   };
   render() {
-    const { data, router, isUserDidSubscribe, orderInfo } = this.props;
+    const { data, router, didUserSubscribe } = this.props;
     const {
       id,
       stock_name,
       public_price,
       subscription_date_end,
     } = this.mapApiDataToDisplayValue(data);
-    const isExpired = false;
     return (
       <div
-        className={cn("subscribe-item", { isSubscribe: isUserDidSubscribe })}
+        className={cn("subscribe-item", { isSubscribe: didUserSubscribe })}
         onClick={() => router.navigate(`/subscribe/detail/${id}`)}
       >
         <div className="subscribe-item-left">
           <div className="date">
-            <p>{isExpired ? "已截止" : "截止日"}</p>
+            <p>截止日</p>
             <p>{subscription_date_end}</p>
           </div>
         </div>
         <div className="subscribe-item-middle">
           <p>
-            {/* 申购状态: 已申购, 可申购 */}
             <span className="subscribe-remark">
-              {isUserDidSubscribe ? "已申购" : "可申购"}
+              {didUserSubscribe ? "已申购" : "可申购"}
             </span>
             {stock_name}
           </p>
           <p>
             申购价：<span className="subscribe-price">{public_price}</span>
           </p>
-          {isUserDidSubscribe && (
+          {didUserSubscribe && (
             <React.Fragment>
               <p>
                 申购手数：<span className="">{"-"}</span>

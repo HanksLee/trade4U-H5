@@ -55,7 +55,7 @@ export default class DetailPage extends React.Component {
     const userSubscribeMap = this.props.subscribe.userSubscribeMap;
     // console.log("newStockMap :>> ", toJS(newStockMap));
     // console.log("userSubscribeMap :>> ", toJS(userSubscribeMap));
-    const isUserDidSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
+    const didUserSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
     const orderInfo = userSubscribeMap[id]; // 申购资讯
     return (
       <Page noToolbar>
@@ -72,8 +72,8 @@ export default class DetailPage extends React.Component {
           </NavRight>
         </Navbar>
         <SubscribeDetail data={detail} />
-        {isUserDidSubscribe && <SubscribeOrderInfo data={orderInfo} />}
-        {!isUserDidSubscribe && (
+        {didUserSubscribe && <SubscribeOrderInfo data={orderInfo} />}
+        {!didUserSubscribe && (
           <div
             className={`subscribe-detail-submit-btn`}
             style={{ marginBottom: "20px" }}
