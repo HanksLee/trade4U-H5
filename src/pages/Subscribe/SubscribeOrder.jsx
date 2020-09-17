@@ -24,29 +24,27 @@ import "./index.scss";
 
 @inject("market", "subscribe")
 export default class extends React.Component {
-  state = {};
+  state = {
+    lots: 1, // 申购手数
+    marginRatio: 0, // 融资比率 0 or 0.6
+  };
   constructor(props) {
     super(props);
   }
-
-  onLotsChanged = (val) => {
-    const { params } = this.state;
-    val = Number(val);
-    val = Number(this.state.params || 1) + val;
-    val = Number(val.toFixed(2));
-
-    this.setState({
-      params: val,
-    });
+  handleLotsChange = (e) => {
+    const val = Number(e.target.value);
+    this.setState({ lots: val });
   };
-
-  onFinancingChange = (value) => {
-    const { isFinancingShow } = this.state;
-    this.setState({
-      isFinancingShow: value == "0" ? "none" : "",
-    });
+  incrementLots = () => {
+    this.setState({ lots: this.state.lots + 1 });
   };
-
+  decrementLots = () => {
+    if (this.state.lots <= 0) return;
+    this.setState({ lots: this.state.lots - 1 });
+  };
+  handleMarginRatioChange = (val) => {
+    // console.log("marginRatio :>> ", val);
+  };
   orderSubmitConfirm = () => {
     const { confirm } = Modal;
     const that = this;
@@ -83,7 +81,7 @@ export default class extends React.Component {
     return payload;
   };
   render() {
-    const { params, isFinancingShow = "none" } = this.state;
+    const { lots } = this.state;
     const id = this.props.$f7route.params.id;
     const detail = this.props.subscribe.getNewStockDetail(id);
     // console.log("detail :>> ", toJS(this.mapApiDataToDisplayValue(detail)));
@@ -122,21 +120,21 @@ export default class extends React.Component {
               <div className="order-input-item-btn-group">
                 <div
                   className="order-input-item-less-btn"
-                  onClick={() => this.onLotsChanged(-1)}
+                  onClick={this.decrementLots}
                 >
                   -
                 </div>
                 <div className="order-input-item-input">
                   <Input
                     type="number"
-                    min={1}
-                    placeholder={"未设置"}
-                    value={params || 1}
+                    min={0}
+                    value={lots}
+                    onChange={this.handleLotsChange}
                   />
                 </div>
                 <div
                   className="order-input-item-add-btn"
-                  onClick={() => this.onLotsChanged(1)}
+                  onClick={this.incrementLots}
                 >
                   +
                 </div>
@@ -160,28 +158,22 @@ export default class extends React.Component {
               <div className="order-input-item-title">融资比例</div>
               <Select
                 className="select-option"
-                defaultValue={"0"}
-                onChange={this.onFinancingChange}
+                defaultValue={0}
+                onChange={this.handleMarginRatioChange}
               >
-                <Select.Option value="0">
+                <Select.Option value={0}>
                   <span>不融资</span>
                 </Select.Option>
-                <Select.Option value="1">
+                <Select.Option value={0.6}>
                   <span>60%</span>
                 </Select.Option>
               </Select>
             </div>
-            <div
-              style={{ display: isFinancingShow }}
-              className="order-input-item"
-            >
+            <div className="order-input-item">
               <div className="order-input-item-title">融资金额</div>
               <div className="order-input-item-text">{"-"}</div>
             </div>
-            <div
-              style={{ display: isFinancingShow }}
-              className="order-input-item"
-            >
+            <div className="order-input-item">
               <div className="order-input-item-title">融资利息</div>
               <div className="order-input-item-text">{"-"}</div>
             </div>
