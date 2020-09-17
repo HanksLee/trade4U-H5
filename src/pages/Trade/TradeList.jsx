@@ -20,7 +20,7 @@ import {
 
 const $$ = Dom7;
 
-@inject("common", "trade")
+@inject("common", "trade", "market")
 @observer
 export default class TradeList extends BaseReact {
   buffer = null;
@@ -369,6 +369,7 @@ export default class TradeList extends BaseReact {
     const { tradeList, futureTradeList, finishTradeList } = this.props.trade;
     const initSymbol = utils.isEmpty(tradeList) ? 0 : tradeList[0]?.symbol;
     const { getKeyConfig } = this.props.common;
+    const quoted_price = this.props.common.getKeyConfig("quoted_price");
     const refCurrency = getKeyConfig("platform_currency");
     const refCurrencyIcon =
       refCurrency === "CNY" ? "￥" : refCurrency === "USD" ? "＄" : "HK";
@@ -498,6 +499,7 @@ export default class TradeList extends BaseReact {
                         const id = item.symbol;
                         const symbol = item.product_code;
                         await this.props.trade.setCurrentTrade(item);
+                        await this.props.market.getCurrentSymbol(id);
                         await this.props.common.setSelectedSymbolId(item.product_market, {
                           id,
                           symbol
@@ -506,6 +508,8 @@ export default class TradeList extends BaseReact {
                           props: {
                             mode: "update",
                             currentTradeTab,
+                            quoted_price: quoted_price,
+                            id
                           },
                         });
                       }}
@@ -518,6 +522,7 @@ export default class TradeList extends BaseReact {
                         const id = item.symbol;
                         const symbol = item.product_code;
                         await this.props.trade.setCurrentTrade(item);
+                        await this.props.market.getCurrentSymbol(id);
                         await this.props.common.setSelectedSymbolId(item.product_market, {
                           id,
                           symbol
@@ -526,6 +531,8 @@ export default class TradeList extends BaseReact {
                           props: {
                             mode: "delete",
                             currentTradeTab,
+                            quoted_price: quoted_price,
+                            id
                           },
                         });
                       }}

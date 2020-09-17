@@ -11,7 +11,7 @@ import styles from "./SymbolInfo.module.scss";
 import classnames from "classnames/bind";
 const cx = classnames.bind(styles);
 
-@inject("market", "trend", "trade")
+@inject("common", "market", "trend", "trade")
 @observer
 export class SymbolInfo extends React.Component {
   static displayName = "SymbolInfo";
@@ -60,6 +60,7 @@ export class SymbolInfo extends React.Component {
 
   renderDetail = () => {
     const { currentSymbol } = this.props.market;
+    const { selectedSymbolInfo } = this.props.common;
     const { symbol_display, product_details } = currentSymbol;
     const { quoted_price } = this.props;
     const onePirceField = {
@@ -103,13 +104,15 @@ export class SymbolInfo extends React.Component {
           {Object.entries(field).map(([key, detail]) => {
             const displayValue =
               symbol_display[key] ?? product_details[key] ?? "-";
+            const newValue = selectedSymbolInfo?.key;
+            const currentValue = newValue ?? displayValue;
             return (
               <div className={cx("item")} key={key}>
                 <div className={cx("item-col", "item-title")}>
                   {detail.text}
                 </div>
                 <div className={cx("item-col")}>
-                  {detail.format(displayValue)}
+                  {detail.format(currentValue)}
                 </div>
               </div>
             );

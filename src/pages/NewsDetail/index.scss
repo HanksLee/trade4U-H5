@@ -32,7 +32,8 @@
       line-height: 2;
 
       img {
-        width: 100%;
+        width: 100% !important;
+        height: unset !important;
         // margin: 20px 0 !important;
       }
     }
