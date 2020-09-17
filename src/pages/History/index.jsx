@@ -321,20 +321,22 @@ export default class extends React.Component {
         )
         .then((res) => {
           if (res.status === 200) {
-            this.setState({
-              dataLoading: false,
-              historyList: [...historyList, ...res.data.results],
-              page: page + 1,
-            }, () => {
-              this.setState({ hasMore: this.state.historyList.length < res.data.count, })
-            });
+            this.setState(
+              {
+                dataLoading: false,
+                historyList: [...historyList, ...res.data.results],
+                page: page + 1,
+              },
+              () => {
+                this.setState({
+                  hasMore: this.state.historyList.length < res.data.count,
+                });
+              }
+            );
             if (page == 1) {
               this.setState({ totalData: res.data.total_data });
             }
           }
-        })
-        .catch((error) => {
-          console.log(error);
         });
     });
   };
@@ -365,8 +367,8 @@ export default class extends React.Component {
                   </span>
                 </div>
               ) : (
-                  <div className={"history-data-top"}></div>
-                )}
+                <div className={"history-data-top"}></div>
+              )}
               {!utils.isEmpty(item.order) ? (
                 <div className={"history-data-middle"}>
                   <Row className={"align-items-center"}>
@@ -376,9 +378,9 @@ export default class extends React.Component {
                         item.order.profit > 0
                           ? "p-up"
                           : item.order.profit < 0
-                            ? "p-down"
-                            : "p-grey"
-                        } history-data-middle-current`}
+                          ? "p-down"
+                          : "p-grey"
+                      } history-data-middle-current`}
                     >
                       <p>
                         {item.order.profit > 0
@@ -397,42 +399,52 @@ export default class extends React.Component {
                   </Row>
                 </div>
               ) : (
-                  <div className={"history-data-middle"}>
-                    <Row className={"align-items-center"}>
-                      <Col width={"60"}>
-                        <Row>
-                          <Col width={"50"} className="data-cause">
-                            <strong>{item.cause_name}</strong>
-                          </Col>
-                          <Col width={"50"} className="data-amount">
-                            <strong
-                              className={item.in_or_out === 0 ? `p-down` : `p-up`}
+                <div className={"history-data-middle"}>
+                  <Row className={"align-items-center"}>
+                    <Col width={"60"}>
+                      <Row>
+                        <Col width={"50"} className="data-cause">
+                          <strong>{item.cause_name}</strong>
+                        </Col>
+                        <Col width={"50"} className="data-amount">
+                          <strong
+                            className={item.in_or_out === 0 ? `p-down` : `p-up`}
+                          >
+                            {item.in_or_out === 0 ? "-" : "+"}
+                            {item.amount}
+                          </strong>
+                        </Col>
+                        {item.remarks && (
+                          <Col width={"100"}>
+                            <p
+                              className="p-down"
+                              style={{ "margin-top": "5px" }}
                             >
-                              {item.in_or_out === 0 ? "-" : "+"}
-                              {item.amount}
-                            </strong>
+                              {" "}
+                              备注：{item.remarks}{" "}
+                            </p>
                           </Col>
-                          {item.remarks && <Col width={"100"}><p className="p-down" style={{ 'margin-top': '5px' }}> 备注：{item.remarks} </p></Col>}
-                        </Row>
-                      </Col>
+                        )}
+                      </Row>
+                    </Col>
 
-                      <Col width={"40"} className="data-time">
-                        <p>
-                          {moment(item.create_time * 1000).format("YYYY/MM/DD")}
-                        </p>
-                        <p>
-                          {moment(item.create_time * 1000).format("HH:mm:ss")}
-                        </p>
-                        <p>{item.create_time}</p>
-                      </Col>
-                    </Row>
-                  </div>
-                )}
+                    <Col width={"40"} className="data-time">
+                      <p>
+                        {moment(item.create_time * 1000).format("YYYY/MM/DD")}
+                      </p>
+                      <p>
+                        {moment(item.create_time * 1000).format("HH:mm:ss")}
+                      </p>
+                      <p>{item.create_time}</p>
+                    </Col>
+                  </Row>
+                </div>
+              )}
               {!utils.isEmpty(item.order) && (
                 <div
                   className={`history-data-bottom ${
                     tapIndex == index ? "active" : ""
-                    }`}
+                  }`}
                 >
                   <Row>
                     <Col width={"50"}>
@@ -630,7 +642,7 @@ export default class extends React.Component {
           value={
             (currentDatePicker == "select_time_start" &&
               select_time_start != "") ||
-              (currentDatePicker == "select_time_end" && select_time_end != "")
+            (currentDatePicker == "select_time_end" && select_time_end != "")
               ? currentDatePicker == "select_time_start"
                 ? new Date(select_time_start)
                 : new Date(select_time_end)

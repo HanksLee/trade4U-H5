@@ -3,6 +3,7 @@ import React from "react";
 import utils from "utils";
 import moment from "moment";
 import { Modal } from "antd";
+import { Tabs } from "antd-mobile";
 import api from "services";
 import { toJS } from "mobx";
 import { MARKET_TYPE } from "constant";
@@ -22,19 +23,18 @@ import cn from "classnames";
 @inject("common", "message", "subscribe")
 @observer
 export default class Subscribe extends React.Component {
-  state = { currentTab: "港股" };
+  state = { subscribeFilter: false, isFilterMenuOpen: false };
 
   componentDidMount() {
-    this.initEvents();
+    // this.initEvents();
     this.props.subscribe.getNewStockList();
     this.props.subscribe.getUserSubscribeList();
   }
-
-  initEvents = () => {
-    this.props.common.globalEvent.on("refresh-subscribe-page", () => {
-      this.setSubscribeContentHeight();
-    });
-  };
+  // initEvents = () => {
+  //   this.props.common.globalEvent.on("refresh-subscribe-page", () => {
+  //     this.setSubscribeContentHeight();
+  //   });
+  // };
 
   setSubscribeContentHeight = () => {
     // page
@@ -63,58 +63,56 @@ export default class Subscribe extends React.Component {
     )[0].style.height = `${subscribeContentHeight}px`;
   };
 
-  switchSubscribeTabs = (name) => {
-    this.setSubscribeContentHeight();
-    this.setState({ currentTab: name });
+  toggleFilterMenu = () => {
+    this.setState({ isFilterMenuOpen: !this.state.isFilterMenuOpen });
   };
-
-  showLogoutModal = () => {
-    const { confirm } = Modal;
-    const that = this;
-    confirm({
-      title: "提示",
-      content: "您確定要登出嗎",
-      className: "trade-modal",
-      centered: true,
-      cancelText: "取消",
-      okText: "确认",
-      onOk() {
-        that.logout();
-      },
-      onCancel() {},
-    });
+  setSubscribeFilter = (type) => {
+    this.setState({ subscribeFilter: type });
+    this.toggleFilterMenu();
   };
-
-  showSubscribeSelect = () => {
-    const { subscribeSelectShow } = this.state;
-    this.setState({
-      subscribeSelectShow: !subscribeSelectShow,
-    });
-  };
-  renderNewStockList = () => {
+  renderNewStockList = (marketFilter = {}) => {
+    // marketFilter 指定要显示的 market 分类，例如 HK,SZ...
+    // console.log("marketFilter :>> ", marketFilter);
+    const { subscribeFilter } = this.state;
     const newStockList = this.props.subscribe.newStockList;
-    const userSubscribeList = this.props.subscribe.userSubscribeList;
     // console.log("newStockList :>> ", toJS(newStockList));
-    // console.log("userSubscribeList :>> ", toJS(userSubscribeList));
     const userSubscribeMap = this.props.subscribe.userSubscribeMap;
     return newStockList.map((data) => {
-      const stockId = data.id;
-      const isUserDidSubscribe = userSubscribeMap[stockId] ? true : false; // 使用者是否已申购
-      const orderInfo = userSubscribeMap[stockId]; // 申购资讯
+      const { id, market } = data;
+      if (!marketFilter[market]) return; // 市场类型筛选
+      const didUserSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
+      const orderInfo = userSubscribeMap[id]; // 申购资讯
+      if (subscribeFilter !== didUserSubscribe) return null; // 是否已申购筛选
       return (
         <SubscribeItem
           router={this.$f7router}
-          key={stockId}
+          key={id}
           data={data}
-          isUserDidSubscribe={isUserDidSubscribe}
+          didUserSubscribe={didUserSubscribe}
           orderInfo={orderInfo}
         />
       );
     });
   };
+  renderFilterMenu = () => {
+    const { subscribeFilter, isFilterMenuOpen } = this.state;
+    return (
+      <div className="subscribe-filter-menu">
+        <p onClick={() => this.toggleFilterMenu()}>
+          {subscribeFilter ? "已申购" : "可申购"}
+        </p>
+        {isFilterMenuOpen && (
+          <ul className="subscribe-filter-menu-list">
+            <li onClick={() => this.setSubscribeFilter(false)}>可申购</li>
+            <li onClick={() => this.setSubscribeFilter(true)}>已申购</li>
+          </ul>
+        )}
+      </div>
+    );
+  };
   render() {
-    const { currentTab, subscribeSelectShow = false } = this.state;
-
+    const tabs = [{ title: "港股" }, { title: "沪深" }];
+    const newStockList = this.props.subscribe.newStockList; // 要读取 newStockList，@observer 才能响应
     return (
       <Page name="subscribe" className="subscribe-page">
         <Navbar className="subscribe-navbar">
@@ -122,42 +120,37 @@ export default class Subscribe extends React.Component {
           <NavTitle>申购</NavTitle>
           <NavRight></NavRight>
         </Navbar>
-        <div className="subscribe-tabs">
-          <div
-            className={cn("subscirbe-tab-item", {
-              active: currentTab === "港股",
-            })}
-            onClick={() => this.switchSubscribeTabs("港股")}
-          >
-            港股
-          </div>
-          <div
-            onClick={() => this.switchSubscribeTabs("沪深")}
-            className={cn("subscirbe-tab-item", {
-              active: currentTab === "沪深",
-            })}
-          >
-            沪深
-          </div>
-        </div>
-        <div className="subscribe-select-header">
-          <div className="subscribe-type">
-            <p
-              onClick={() => {
-                this.showSubscribeSelect();
-              }}
-            >
-              可申购
-            </p>
-            {subscribeSelectShow && (
-              <ul>
-                <li className="active">可申购</li>
-                <li>已申购</li>
-              </ul>
-            )}
-          </div>
-        </div>
-        <div className="subscribe-container">{this.renderNewStockList()}</div>
+        <Tabs
+          tabs={tabs}
+          renderTabBar={(props) => <Tabs.DefaultTabBar {...props} page={2} />}
+          initialPage={0}
+          destroyInactiveTab={true}
+          tabBarBackgroundColor="transparent"
+          tabBarActiveTextColor="#F2E205"
+          tabBarInactiveTextColor="#838D9E"
+          tabBarUnderlineStyle={{ border: "1px solid #F2E205" }}
+        >
+          {() => (
+            <React.Fragment>
+              <div className="subscribe-select-header">
+                {this.renderFilterMenu()}
+              </div>
+              <div className="subscribe-container">
+                {this.renderNewStockList({ HK: true })}
+              </div>
+            </React.Fragment>
+          )}
+          {() => (
+            <React.Fragment>
+              <div className="subscribe-select-header">
+                {this.renderFilterMenu()}
+              </div>
+              <div className="subscribe-container">
+                {this.renderNewStockList({ SZ: true, SH: true })}
+              </div>
+            </React.Fragment>
+          )}
+        </Tabs>
       </Page>
     );
   }
@@ -184,37 +177,35 @@ class SubscribeItem extends React.Component {
     return payload;
   };
   render() {
-    const { data, router, isUserDidSubscribe, orderInfo } = this.props;
+    const { data, router, didUserSubscribe } = this.props;
     const {
       id,
       stock_name,
       public_price,
       subscription_date_end,
     } = this.mapApiDataToDisplayValue(data);
-    const isExpired = false;
     return (
       <div
-        className={cn("subscribe-item", { isSubscribe: isUserDidSubscribe })}
+        className={cn("subscribe-item", { isSubscribe: didUserSubscribe })}
         onClick={() => router.navigate(`/subscribe/detail/${id}`)}
       >
         <div className="subscribe-item-left">
           <div className="date">
-            <p>{isExpired ? "已截止" : "截止日"}</p>
+            <p>截止日</p>
             <p>{subscription_date_end}</p>
           </div>
         </div>
         <div className="subscribe-item-middle">
           <p>
-            {/* 申购状态: 已申购, 可申购 */}
             <span className="subscribe-remark">
-              {isUserDidSubscribe ? "已申购" : "可申购"}
+              {didUserSubscribe ? "已申购" : "可申购"}
             </span>
             {stock_name}
           </p>
           <p>
             申购价：<span className="subscribe-price">{public_price}</span>
           </p>
-          {isUserDidSubscribe && (
+          {didUserSubscribe && (
             <React.Fragment>
               <p>
                 申购手数：<span className="">{"-"}</span>
