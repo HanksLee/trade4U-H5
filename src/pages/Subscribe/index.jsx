@@ -50,7 +50,6 @@ export default class SubscribePage extends React.Component {
       if (!marketFilter[market]) return; // 市场类型筛选
       const didUserSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
       const orderInfo = userSubscribeMap[id] ?? {}; // 申购资讯
-
       if (subscribeFilter !== didUserSubscribe) return null; // 是否为已申购筛选
       return (
         <SubscribeItem
@@ -152,13 +151,14 @@ class SubscribeItem extends React.Component {
       public_price,
       subscription_date_end,
       isExpired,
+      isNotStarted,
     } = this.mapApiDataToDisplayValue(data);
     const { wanted_lots } = orderInfo;
     return (
       <div
         className={cn("subscribe-item", {
           "is-subscribed": didUserSubscribe,
-          "is-expired": isExpired,
+          "is-disabled": isExpired || isNotStarted,
         })}
         onClick={() => router.navigate(`/subscribe/detail/${id}`)}
       >
@@ -171,7 +171,13 @@ class SubscribeItem extends React.Component {
         <div className="subscribe-item-middle">
           <p>
             <span className="subscribe-remark">
-              {isExpired ? "已截止" : didUserSubscribe ? "已申购" : "可申购"}
+              {isExpired
+                ? "已截止"
+                : isNotStarted
+                ? "未开始"
+                : didUserSubscribe
+                ? "已申购"
+                : "可申购"}
             </span>
             {stock_name}
           </p>

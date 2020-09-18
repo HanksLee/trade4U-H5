@@ -22,8 +22,12 @@ class SubscribeStore extends BaseStore {
     // console.log("NewStock res :>> ", res);
     const newStockList = res.data
       .map((each) => {
-        const { subscription_date_end } = each;
+        // TODO: 日期比对基准需再确认
+        const { subscription_date_end, subscription_date_start } = each;
         each["isExpired"] = moment().isAfter(moment(subscription_date_end));
+        each["isNotStarted"] = moment().isBefore(
+          moment(subscription_date_start)
+        );
         return each;
       })
       .reverse(); // 改为日期由新到旧排序

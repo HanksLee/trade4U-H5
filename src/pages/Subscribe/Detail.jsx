@@ -37,7 +37,7 @@ export default class DetailPage extends React.Component {
     // console.log("newStockMap :>> ", toJS(newStockMap));
     // console.log("userSubscribeMap :>> ", toJS(userSubscribeMap));
     const didUserSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
-    const { isExpired } = detail;
+    const { isExpired, isNotStarted } = detail;
     const orderInfo = userSubscribeMap[id]; // 申购资讯
     return (
       <Page noToolbar>
@@ -52,7 +52,7 @@ export default class DetailPage extends React.Component {
         </Navbar>
         <SubscribeDetail data={detail} />
         {didUserSubscribe && <SubscribeOrderInfo data={orderInfo} />}
-        {!didUserSubscribe && !isExpired && (
+        {!didUserSubscribe && !isExpired && !isNotStarted && (
           <div
             className={`subscribe-detail-submit-btn`}
             style={{ marginBottom: "20px" }}
