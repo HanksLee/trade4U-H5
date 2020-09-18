@@ -19,6 +19,8 @@ import { inject, observer } from "mobx-react";
 import "./index.scss";
 import { MARKET_TYPE } from "constant";
 import moment from "moment";
+import utils from "utils";
+import * as math from "mathjs";
 
 @inject("subscribe")
 @observer
@@ -27,26 +29,6 @@ export default class DetailPage extends React.Component {
   constructor(props) {
     super(props);
   }
-  // componentDidMount() {
-  //   this.setSubscribeDetailContentHeight();
-  // }
-
-  // setSubscribeDetailContentHeight = () => {
-  //   // page
-  //   const pageHeight = document.getElementById("view-subscribe").clientHeight;
-  //   const subscribeDetailNavbarHeight = document.getElementsByClassName(
-  //     "subscribe-detail-navbar"
-  //   )[0].clientHeight;
-  //   const subscribeDetailHeaderHeight = document.getElementsByClassName(
-  //     "subscribe-detail-header"
-  //   )[0].clientHeight;
-  //   const subscribeDetailContentHeight =
-  //     pageHeight - subscribeDetailNavbarHeight - subscribeDetailHeaderHeight;
-
-  //   document.getElementsByClassName(
-  //     "subscribe-detail-content"
-  //   )[0].style.height = `${subscribeDetailContentHeight}px`;
-  // };
 
   render() {
     const { id } = this.$f7route.params;
@@ -64,12 +46,9 @@ export default class DetailPage extends React.Component {
             <Link onClick={() => this.$f7router.back()}>
               <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
             </Link>
-            {/* <span onClick={this.handleConfirm}>完成</span> */}
           </NavLeft>
           <NavTitle>申购详情</NavTitle>
-          <NavRight>
-            {/* <span onClick={this.showDeleteModal}>删除</span> */}
-          </NavRight>
+          <NavRight></NavRight>
         </Navbar>
         <SubscribeDetail data={detail} />
         {didUserSubscribe && <SubscribeOrderInfo data={orderInfo} />}
@@ -99,7 +78,10 @@ class SubscribeDetail extends React.Component {
       subscription_date_end,
       draw_result_date,
       public_date,
+      public_price,
+      lots_size,
     } = payload;
+    const [minPublicPrice, maxPublicPrice] = utils.parseRange(public_price);
     payload["subscription_date_start"] = moment(subscription_date_start).format(
       "YYYY-MM-DD"
     );
@@ -109,6 +91,10 @@ class SubscribeDetail extends React.Component {
     payload["market_name"] = MARKET_TYPE[market]["name"];
     payload["draw_result_date"] = moment(draw_result_date).format("YYYY-MM-DD");
     payload["public_date"] = moment(public_date).format("YYYY-MM-DD");
+
+    payload["amount_per_lot"] = (
+      Number(lots_size) * Number(maxPublicPrice)
+    ).toFixed(2);
     return payload;
   };
   render() {
@@ -123,7 +109,9 @@ class SubscribeDetail extends React.Component {
       public_date,
       lots_size,
       currency,
+      amount_per_lot,
     } = this.mapApiDataToDisplayValue(this.props.data);
+
     return (
       <React.Fragment>
         <div className="subscribe-detail-header">
@@ -136,10 +124,7 @@ class SubscribeDetail extends React.Component {
         <div className="subscribe-detail-content">
           <div className="subscribe-detail-item">
             <div className="subscribe-detail-title">品种</div>
-            <div className="subscribe-detail-text">
-              {market_name}
-              {/* market */}
-            </div>
+            <div className="subscribe-detail-text">{market_name}</div>
           </div>
           <div className="subscribe-detail-item">
             <div className="subscribe-detail-title">申购代码</div>
@@ -164,9 +149,8 @@ class SubscribeDetail extends React.Component {
             <div className="subscribe-detail-text">{public_date}</div>
           </div>
           <div className="subscribe-detail-item">
-            {/*  */}
             <div className="subscribe-detail-title">每手金额</div>
-            <div className="subscribe-detail-text">{"-"}</div>
+            <div className="subscribe-detail-text">{amount_per_lot}</div>
           </div>
           <div className="subscribe-detail-item">
             <div className="subscribe-detail-title">每手股数</div>

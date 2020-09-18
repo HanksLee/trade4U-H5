@@ -209,7 +209,7 @@ class SubscribeItem extends React.Component {
           {didUserSubscribe && (
             <React.Fragment>
               <p>申购手数：{wanted_lots}</p>
-              <p>申購金額：{"-"}</p>
+              <p>申购金额：{"-"}</p>
             </React.Fragment>
           )}
         </div>
@@ -280,7 +280,7 @@ function FakeList(props) {
             申购手数：<span className="">1</span>
           </p>
           <p>
-            申購金額：<span className="">121200</span>
+            申购金额：<span className="">121200</span>
           </p>
         </div>
         <div className="subscribe-item-right">
