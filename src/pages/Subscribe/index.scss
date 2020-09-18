@@ -216,7 +216,7 @@
         opacity: 0.5;
       }
 
-      &.isSubscribe {
+      &.is-subscribed {
         .date {
           border: 1px solid #32d74b;
         }
@@ -224,7 +224,7 @@
           background-color: #32d74b;
         }
       }
-      &.noSubscribe {
+      &.is-expired {
         .date {
           border: 1px solid #838d9e;
           p {

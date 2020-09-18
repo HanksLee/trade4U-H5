@@ -20,15 +20,20 @@ class SubscribeStore extends BaseStore {
   async getNewStockList(data) {
     const res = await api.subscribe.getNewStockList();
     // console.log("NewStock res :>> ", res);
-    this.setNewStockList(res.data);
+    const newStockList = res.data
+      .map((each) => {
+        const { subscription_date_end } = each;
+        each["isExpired"] = moment().isAfter(moment(subscription_date_end));
+        return each;
+      })
+      .reverse(); // 改为日期由新到旧排序
+
+    this.setNewStockList(newStockList);
   }
 
   @action.bound
   setNewStockList(data) {
     this.newStockList = data;
-  }
-  getNewStockDetail(id) {
-    return this.newStockMap[Number(id)];
   }
 
   //

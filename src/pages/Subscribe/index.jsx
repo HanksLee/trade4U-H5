@@ -30,38 +30,6 @@ export default class SubscribePage extends React.Component {
     this.props.subscribe.getNewStockList();
     this.props.subscribe.getUserSubscribeList();
   }
-  // initEvents = () => {
-  //   this.props.common.globalEvent.on("refresh-subscribe-page", () => {
-  //     this.setSubscribeContentHeight();
-  //   });
-  // };
-
-  setSubscribeContentHeight = () => {
-    // page
-    const pageHeight = document.getElementById("view-subscribe").clientHeight;
-    const subscribeNavbarHeight = document.getElementsByClassName(
-      "subscribe-navbar"
-    )[0].clientHeight;
-    const tabbarHeight = document.getElementsByClassName("app-tabbar")[0]
-      .clientHeight;
-    const subscribeTabsHeight = document.getElementsByClassName(
-      "subscribe-tabs"
-    )[0].clientHeight;
-    const subscribeSelectHeight = document.getElementsByClassName(
-      "subscribe-select-header"
-    )[0].clientHeight;
-
-    const subscribeContentHeight =
-      pageHeight -
-      subscribeNavbarHeight -
-      tabbarHeight -
-      subscribeTabsHeight -
-      subscribeSelectHeight;
-
-    document.getElementsByClassName(
-      "subscribe-container"
-    )[0].style.height = `${subscribeContentHeight}px`;
-  };
 
   toggleFilterMenu = () => {
     this.setState({ isFilterMenuOpen: !this.state.isFilterMenuOpen });
@@ -100,11 +68,11 @@ export default class SubscribePage extends React.Component {
     return (
       <div className="subscribe-filter-menu">
         <p onClick={() => this.toggleFilterMenu()}>
-          {subscribeFilter ? "已申购" : "可申购"}
+          {subscribeFilter ? "已申购" : "未申购"}
         </p>
         {isFilterMenuOpen && (
           <ul className="subscribe-filter-menu-list">
-            <li onClick={() => this.setSubscribeFilter(false)}>可申购</li>
+            <li onClick={() => this.setSubscribeFilter(false)}>未申购</li>
             <li onClick={() => this.setSubscribeFilter(true)}>已申购</li>
           </ul>
         )}
@@ -183,11 +151,15 @@ class SubscribeItem extends React.Component {
       stock_name,
       public_price,
       subscription_date_end,
+      isExpired,
     } = this.mapApiDataToDisplayValue(data);
     const { wanted_lots } = orderInfo;
     return (
       <div
-        className={cn("subscribe-item", { isSubscribe: didUserSubscribe })}
+        className={cn("subscribe-item", {
+          "is-subscribed": didUserSubscribe,
+          "is-expired": isExpired,
+        })}
         onClick={() => router.navigate(`/subscribe/detail/${id}`)}
       >
         <div className="subscribe-item-left">
@@ -199,7 +171,7 @@ class SubscribeItem extends React.Component {
         <div className="subscribe-item-middle">
           <p>
             <span className="subscribe-remark">
-              {didUserSubscribe ? "已申购" : "可申购"}
+              {isExpired ? "已截止" : didUserSubscribe ? "已申购" : "可申购"}
             </span>
             {stock_name}
           </p>
@@ -233,7 +205,7 @@ function FakeList(props) {
         </div>
         <div className="subscribe-item-middle">
           <p>
-            <span className="subscribe-remark">可申购</span>泰格医药
+            <span className="subscribe-remark">未申购</span>泰格医药
           </p>
           <p>
             申购价：<span className="subscribe-price">30.30</span>

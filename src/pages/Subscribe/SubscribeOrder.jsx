@@ -24,43 +24,23 @@ import { inject, observer } from "mobx-react";
 import "./index.scss";
 //import 'antd/dist/antd.css';
 
-@inject("market", "subscribe")
+@inject("subscribe", "setting", "common")
+@observer
 export default class extends React.Component {
   state = {
     lots: 1, // 申购手数
     marginRatio: 0, // 融资比率 0 or 0.6
+    data: {},
   };
-  constructor(props) {
-    super(props);
+  componentDidMount() {
+    const profitRule = this.props.common.profitRule;
+    // console.log("profitRule :>> ", toJS(profitRule));
+    const id = this.props.$f7route.params.id;
+    const detail = this.props.subscribe.newStockMap[Number(id)];
+    const data = this.mapApiDataToDisplayValue(detail);
+    // console.log("data :>> ", data);
+    this.setState({ data });
   }
-  handleLotsChange = (e) => {
-    const val = Number(e.target.value);
-    this.setState({ lots: val });
-  };
-  incrementLots = () => {
-    this.setState({ lots: this.state.lots + 1 });
-  };
-  decrementLots = () => {
-    if (this.state.lots <= 0) return;
-    this.setState({ lots: this.state.lots - 1 });
-  };
-  handleMarginRatioChange = (val) => {
-    this.setState({ marginRatio: Number(val) });
-  };
-  orderSubmitConfirm = () => {
-    const { confirm } = Modal;
-    const that = this;
-    confirm({
-      title: "提示",
-      content: "确定送出吗",
-      className: "trade-modal",
-      centered: true,
-      cancelText: "取消",
-      okText: "确认",
-      onOk() {},
-      onCancel() {},
-    });
-  };
   mapApiDataToDisplayValue = (input) => {
     // 转换 api 资料为要展示的格式
     const payload = { ...input };
@@ -88,36 +68,121 @@ export default class extends React.Component {
     ).toFixed(2);
     return payload;
   };
-  handleSubmit = () => {
+  handleLotsChange = (e) => {
+    const val = Number(e.target.value);
+    this.setState({ lots: val });
+  };
+  incrementLots = () => {
+    this.setState({ lots: this.state.lots + 1 });
+  };
+  decrementLots = () => {
+    if (this.state.lots <= 0) return;
+    this.setState({ lots: this.state.lots - 1 });
+  };
+  handleMarginRatioChange = (val) => {
+    this.setState({ marginRatio: Number(val) });
+  };
+  handleSubmit = async () => {
+    const {
+      loan,
+      entranceFee,
+      withdrawableBalance,
+      requiredBalance,
+    } = this.calculateOrder();
+    // console.log("order :>> ", this.calculateOrder());
+    if (Number(withdrawableBalance) < Number(requiredBalance)) {
+      Modal.confirm({
+        title: "提示",
+        content: "可用资金不足",
+        className: "trade-modal",
+        centered: true,
+        cancelText: "取消",
+        okText: "确认",
+      });
+      return;
+    }
+
+    const { lots } = this.state;
+    const { id } = this.state.data;
     // TODO: 判断可用资金 > 认购金额 + 手续费 + 融资利息费
+    const payload = {
+      new_stock: id,
+      entrance_fee: entranceFee,
+      wanted_lots: lots,
+      loan,
+    };
+    // console.log("payload :>> ", payload);
+    Modal.confirm({
+      title: "提示",
+      content: "确认送出申请 ?",
+      className: "trade-modal",
+      centered: true,
+      cancelText: "取消",
+      okText: "确认",
+      async onOk() {
+        const res = await api.subscribe.createSubscribeOrder(payload);
+        // console.log("res :>> ", res);
+      },
+    });
+  };
+  calculateOrder = () => {
+    // 回传值皆为 2位小数字串
+    const profitRule = this.props.common.profitRule;
+    const {
+      amount_per_lot,
+      interest_mul_days,
+      new_stock_hand_fee,
+    } = this.state.data;
+    const { lots, marginRatio } = this.state;
+    // amount 认购金额 = lots 认购手数 * 每手金额
+    // loan 融资金额 = amount 认购金额 * 融资比例
+    // entranceFee 入场费 = amount 认购金额 - loan 融资金额
+    const amount = (Number(lots) * Number(amount_per_lot)).toFixed(2);
+    const loan = (Number(amount) * Number(marginRatio)).toFixed(2);
+    const entranceFee = (Number(amount) - Number(loan)).toFixed(2);
+    const handFeeFormula = profitRule["new_stock_hands_fee"];
+    const loanInterestFormula = profitRule["new_stock_interest"];
+    const loanInterest = math
+      .evaluate(loanInterestFormula, {
+        loan: Number(loan),
+        interest_mul_days: Number(interest_mul_days),
+      })
+      .toFixed(2); // 融资利息费
+    const handFee = math
+      .evaluate(handFeeFormula, {
+        hand_fee_base: Number(new_stock_hand_fee),
+        wanted_lots: Number(lots),
+      })
+      .toFixed(2); // 手续费
+    const requiredBalance = (
+      Number(entranceFee) +
+      Number(loanInterest) +
+      Number(handFee)
+    ).toFixed(2);
+    const withdrawableBalance = this.props.setting.withdrawableBalance;
+    return {
+      amount,
+      loan,
+      entranceFee,
+      loanInterest,
+      handFee,
+      requiredBalance,
+      withdrawableBalance,
+    };
   };
   render() {
-    const { lots, marginRatio } = this.state;
-    const id = this.props.$f7route.params.id;
-    const detail = this.props.subscribe.getNewStockDetail(id);
-    // console.log("detail :>> ", toJS(this.mapApiDataToDisplayValue(detail)));
+    const { stock_name, public_price, lots_size } = this.state.data;
+    const { lots } = this.state;
     const {
-      stock_name,
-      public_price,
-      lots_size,
-      amount_per_lot,
-    } = this.mapApiDataToDisplayValue(detail);
+      amount,
+      loan,
+      entranceFee,
+      loanInterest,
+      handFee,
+      requiredBalance,
+      withdrawableBalance,
+    } = this.calculateOrder();
 
-    // amount 认购金额 = lots 认购手数 * 每手金额
-    // marginFee 融资金额 = amount 认购金额 * 融资比例
-    // entranceFee 入场费 = amount 认购金额 - marginFee 融资金额
-    const amount = (Number(lots) * Number(amount_per_lot)).toFixed(2);
-    const marginFee = (Number(amount) * Number(marginRatio)).toFixed(2);
-    const entranceFee = (amount - marginFee).toFixed(2);
-
-    const marginInterest = (Number(marginFee) * Number(0.0)).toFixed(2); // 融资利息费
-    const handlingFee = Number(0.0).toFixed(2); // 手续费
-    const requiredFund = (
-      Number(entranceFee) +
-      Number(marginInterest) +
-      Number(handlingFee)
-    ).toFixed(2);
-    const availableFund = 888888888;
     return (
       <Page noToolbar>
         <Navbar>
@@ -170,7 +235,7 @@ export default class extends React.Component {
             </div>
             <div className="order-input-item">
               <div className="order-input-item-title">手续费</div>
-              <div className="order-input-item-text">{handlingFee}</div>
+              <div className="order-input-item-text">{handFee}</div>
             </div>
             <div className="order-input-item">
               <div className="order-input-item-title">入场费</div>
@@ -199,19 +264,19 @@ export default class extends React.Component {
             </div>
             <div className="order-input-item">
               <div className="order-input-item-title">融资金额</div>
-              <div className="order-input-item-text">{marginFee}</div>
+              <div className="order-input-item-text">{loan}</div>
             </div>
             <div className="order-input-item">
               <div className="order-input-item-title">融资利息</div>
-              <div className="order-input-item-text">{marginInterest}</div>
+              <div className="order-input-item-text">{loanInterest}</div>
             </div>
             <div className="order-input-item">
               <div className="order-input-item-title">需本金</div>
-              <div className="order-input-item-text">{requiredFund}</div>
+              <div className="order-input-item-text">{requiredBalance}</div>
             </div>
             <div className="order-input-item">
               <div className="order-input-item-title">可用资金</div>
-              <div className="order-input-item-text">{availableFund}</div>
+              <div className="order-input-item-text">{withdrawableBalance}</div>
             </div>
           </div>
         </div>
@@ -219,7 +284,7 @@ export default class extends React.Component {
         <div
           className={`subscribe-order-submit-btn`}
           style={{ marginBottom: "20px" }}
-          onClick={this.orderSubmitConfirm}
+          onClick={this.handleSubmit}
         >
           {"申购"}
         </div>
