@@ -50,19 +50,47 @@ export default class extends React.Component {
       obj[key] = value;
       return obj;
     }, {});
-    const isIpoVisible = utils.parseBool(config["function_ipo"]); // 申购页
-    const isNewsVisible = utils.parseBool(config["function_news"]); // 新闻页
+    const isSubscribePageVisible = utils.parseBool(config["function_ipo"]); // 申购页
+    const isNewsPageVisible = utils.parseBool(config["function_news"]); // 新闻页
     return (
       <Page name="home">
         <WS_Symbol />
         <Views tabs className="safe-areas">
-          <View id="view-market" name="行情" tabActive tab url="/market/" />
-          {/* <View id="view-chart" name="图表" tab url="/chart/" /> */}
-          <View id="view-subscribe" name="申购" tab url="/subscribe/" />
-          <View id="view-trade" name="交易" tab url="/trade/" />
-          <View id="view-news" name="新闻" tab url="/news/" />
-          {/* <View id="view-history" name="历史" tab url="/history/" /> */}
-          <View id="view-settings" name="设置" tab url="/settings/" />
+          <View
+            key="view-market"
+            id="view-market"
+            name="行情"
+            tabActive
+            tab
+            url="/market/"
+          />
+          {isSubscribePageVisible && (
+            <View
+              key="view-subscribe"
+              id="view-subscribe"
+              name="申购"
+              tab
+              url="/subscribe/"
+            />
+          )}
+
+          <View
+            key="view-trade"
+            id="view-trade"
+            name="交易"
+            tab
+            url="/trade/"
+          />
+          {isNewsPageVisible && (
+            <View key="view-news" id="view-news" name="新闻" tab url="/news/" />
+          )}
+          <View
+            key="view-settings"
+            id="view-settings"
+            name="设置"
+            tab
+            url="/settings/"
+          />
           <Toolbar tabbar labels bottom className="app-tabbar">
             <Link
               tabLink="#view-market"
@@ -70,22 +98,14 @@ export default class extends React.Component {
               icon="market-icon"
               text="行情"
             />
-            {/* <Link
-              tabLink="#view-chart"
-              icon="chart-icon"
-              text="图表"
-              onClick={this.updateLastestSymbol}
-            /> */}
-            {isIpoVisible && (
+            {isSubscribePageVisible && (
               <Link
                 tabLink="#view-subscribe"
                 icon="subscribe-icon"
                 text="申购"
                 force={true}
                 reloadCurrent={true}
-                onClick={() => {
-                  this.$event.emit("refresh-subscribe-page");
-                }}
+                onClick={() => this.$event.emit("refresh-subscribe-page")}
               />
             )}
             <Link
@@ -94,20 +114,16 @@ export default class extends React.Component {
               text="交易"
               force={true}
               reloadCurrent={true}
-              onClick={() => {
-                this.$event.emit("refresh-trade-page");
-              }}
+              onClick={() => this.$event.emit("refresh-trade-page")}
             />
-            {isNewsVisible && (
+            {isNewsPageVisible && (
               <Link
                 tabLink="#view-news"
                 icon="news-icon"
                 text="新闻"
                 force={true}
                 reloadCurrent={true}
-                onClick={() => {
-                  this.$event.emit("refresh-news-page");
-                }}
+                onClick={() => this.$event.emit("refresh-news-page")}
               />
             )}
             <Link

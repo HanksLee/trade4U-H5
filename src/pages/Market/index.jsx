@@ -32,7 +32,7 @@ const $$ = Dom7;
 const WS_ProductList = WSConnect(channelConfig[0], channelConfig, ProductList);
 @inject("common", "market")
 @observer
-export default class extends React.Component {
+export default class MarketPage extends React.Component {
   buyTimers = [];
   sellTimers = [];
   state = {
@@ -411,6 +411,7 @@ export default class extends React.Component {
             {symbolTypeList.map((item, idx) => {
               return (
                 <div
+                  key={item.id}
                   ref={(el) => (this.tabRefs[item.id] = el)}
                   onClick={() =>
                     this.gotoSelectedTab(
@@ -465,7 +466,7 @@ export default class extends React.Component {
         >
           {symbolTypeList.map((symbolType, idx) => {
             return (
-              <>
+              <React.Fragment key={idx}>
                 <div className="self-select-header">
                   {symbolType.symbol_type_name === "自选" ? (
                     <div className="market-type">
@@ -513,7 +514,7 @@ export default class extends React.Component {
                     thisStore={this.props.market}
                   ></ProductList>
                 </div>
-              </>
+              </React.Fragment>
             );
           })}
         </Tabs>

@@ -173,11 +173,23 @@ function parseBool(input) {
   return Boolean(input);
 }
 
+/**
+ * @param {*} str min~max, min-max
+ * @return array [min, max]
+ */
+function parseRange(str) {
+  const [upperBound] = str.match(/(?<=[~\-])\d+.\d+/) ?? [null];
+  const [lowerBound] = str.match(/\d+.\d+(?=[~\-])/) ?? [null];
+  if (!upperBound && !lowerBound) return [str, str];
+  return [lowerBound, upperBound];
+}
+
 // export const coordinate = {
 
 // };
 
 export default {
+  parseRange,
   parseBool,
   setRootFontSizeFromClient,
   isEmpty: _isEmpty,

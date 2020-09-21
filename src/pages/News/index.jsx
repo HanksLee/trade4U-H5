@@ -15,7 +15,7 @@ const $$ = Dom7;
 
 @inject("common", "market")
 @observer
-export default class extends React.Component {
+export default class NewsPage extends React.Component {
   state = {
     symbolTypeList: [],
     currentSymbolCode: "mixed",
