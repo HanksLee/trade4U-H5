@@ -1667,7 +1667,11 @@ export default class TradeDetail extends React.Component {
   renderDetail = () => {
     const { currentSymbol } = this.props.market;
     const { selectedSymbolInfo } = this.props.common;
+<<<<<<< HEAD
     console.log(toJS(selectedSymbolInfo));
+=======
+    console.log(selectedSymbolInfo)
+>>>>>>> origin/develop
     const { symbol_display, product_details } = currentSymbol;
     const { quoted_price } = this.props;
     const onePirceField = {
@@ -1676,7 +1680,7 @@ export default class TradeDetail extends React.Component {
       high: { text: "最高", format: (val) => String(val) },
       low: { text: "最低", format: (val) => String(val) },
       volume: { text: "总量", format: (val) => String(val) },
-      amount: { text: "总额", format: (val) => String(val) },
+      amount: { text: "总额", format: (val) => `${String(Math.round(Number(val) / 10000))}万` },
       change: { text: "涨跌", format: (val) => String(val) },
       chg: { text: "涨跌幅", format: (val) => `${String(val)}%` },
       amplitude: { text: "振幅", format: (val) => `${String(val * 100)}%` },
@@ -1714,7 +1718,8 @@ export default class TradeDetail extends React.Component {
           {Object.entries(field).map(([key, detail]) => {
             const displayValue =
               symbol_display[key] ?? product_details[key] ?? "-";
-            const newValue = selectedSymbolInfo?.key;
+            const newValue = selectedSymbolInfo[key];
+            console.log(newValue)
             const currentValue = newValue ?? displayValue;
             return (
               <div>
@@ -1779,6 +1784,7 @@ export default class TradeDetail extends React.Component {
   render() {
     const { mode, common } = this.props;
     const { selectedSymbolInfo } = this.props.common;
+    console.log(selectedSymbolInfo)
     const quoted_price = common.getKeyConfig("quoted_price");
     const { currentSymbol } = this.props.market;
     const { moreInfo, tradeType, params, tabDataLoading } = this.state;

@@ -8,7 +8,7 @@ const getUserSubscribeList = async (config) =>
   API.get("/trader/newstock-participate", config);
 
 const createSubscribeOrder = async (config) =>
-  API.post("broker/newstock-participate", config);
+  API.post("/trader/newstock-participate", config);
 export default {
   getNewStockList,
   getUserSubscribeList,

@@ -241,5 +241,10 @@ $primary: #21212b;
   transform: translateX(-50%);
 }
 
+.no-content {
+  padding: 0 16px;
+  color: #ffffff;
+}
+
 /* Your app custom styles here */
 @import "./reset", "./font", "./base", "./common", "./news";

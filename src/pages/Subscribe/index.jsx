@@ -30,38 +30,6 @@ export default class SubscribePage extends React.Component {
     this.props.subscribe.getNewStockList();
     this.props.subscribe.getUserSubscribeList();
   }
-  // initEvents = () => {
-  //   this.props.common.globalEvent.on("refresh-subscribe-page", () => {
-  //     this.setSubscribeContentHeight();
-  //   });
-  // };
-
-  setSubscribeContentHeight = () => {
-    // page
-    const pageHeight = document.getElementById("view-subscribe").clientHeight;
-    const subscribeNavbarHeight = document.getElementsByClassName(
-      "subscribe-navbar"
-    )[0].clientHeight;
-    const tabbarHeight = document.getElementsByClassName("app-tabbar")[0]
-      .clientHeight;
-    const subscribeTabsHeight = document.getElementsByClassName(
-      "subscribe-tabs"
-    )[0].clientHeight;
-    const subscribeSelectHeight = document.getElementsByClassName(
-      "subscribe-select-header"
-    )[0].clientHeight;
-
-    const subscribeContentHeight =
-      pageHeight -
-      subscribeNavbarHeight -
-      tabbarHeight -
-      subscribeTabsHeight -
-      subscribeSelectHeight;
-
-    document.getElementsByClassName(
-      "subscribe-container"
-    )[0].style.height = `${subscribeContentHeight}px`;
-  };
 
   toggleFilterMenu = () => {
     this.setState({ isFilterMenuOpen: !this.state.isFilterMenuOpen });
@@ -81,8 +49,8 @@ export default class SubscribePage extends React.Component {
       const { id, market } = data;
       if (!marketFilter[market]) return; // 市场类型筛选
       const didUserSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
-      const orderInfo = userSubscribeMap[id]; // 申购资讯
-      if (subscribeFilter !== didUserSubscribe) return null; // 是否已申购筛选
+      const orderInfo = userSubscribeMap[id] ?? {}; // 申购资讯
+      if (subscribeFilter !== didUserSubscribe) return null; // 是否为已申购筛选
       return (
         <SubscribeItem
           router={this.$f7router}
@@ -99,11 +67,11 @@ export default class SubscribePage extends React.Component {
     return (
       <div className="subscribe-filter-menu">
         <p onClick={() => this.toggleFilterMenu()}>
-          {subscribeFilter ? "已申购" : "可申购"}
+          {subscribeFilter ? "已申购" : "未申购"}
         </p>
         {isFilterMenuOpen && (
           <ul className="subscribe-filter-menu-list">
-            <li onClick={() => this.setSubscribeFilter(false)}>可申购</li>
+            <li onClick={() => this.setSubscribeFilter(false)}>未申购</li>
             <li onClick={() => this.setSubscribeFilter(true)}>已申购</li>
           </ul>
         )}
@@ -124,31 +92,30 @@ export default class SubscribePage extends React.Component {
           tabs={tabs}
           renderTabBar={(props) => <Tabs.DefaultTabBar {...props} page={2} />}
           initialPage={0}
-          destroyInactiveTab={true}
-          tabBarBackgroundColor="transparent"
+          tabBarBackgroundColor="#21212b"
           tabBarActiveTextColor="#F2E205"
           tabBarInactiveTextColor="#838D9E"
           tabBarUnderlineStyle={{ border: "1px solid #F2E205" }}
         >
           {() => (
-            <React.Fragment>
-              <div className="subscribe-select-header">
+            <div className="subscribe-tab-page">
+              <div className="subscribe-list-header">
                 {this.renderFilterMenu()}
               </div>
-              <div className="subscribe-container">
+              <div className="subscribe-list">
                 {this.renderNewStockList({ HK: true })}
               </div>
-            </React.Fragment>
+            </div>
           )}
           {() => (
-            <React.Fragment>
-              <div className="subscribe-select-header">
+            <div className="subscribe-tab-page">
+              <div className="subscribe-list-header">
                 {this.renderFilterMenu()}
               </div>
-              <div className="subscribe-container">
+              <div className="subscribe-list">
                 {this.renderNewStockList({ SZ: true, SH: true })}
               </div>
-            </React.Fragment>
+            </div>
           )}
         </Tabs>
       </Page>
@@ -177,16 +144,22 @@ class SubscribeItem extends React.Component {
     return payload;
   };
   render() {
-    const { data, router, didUserSubscribe } = this.props;
+    const { data, router, didUserSubscribe, orderInfo } = this.props;
     const {
       id,
       stock_name,
       public_price,
       subscription_date_end,
+      isExpired,
+      isNotStarted,
     } = this.mapApiDataToDisplayValue(data);
+    const { wanted_lots } = orderInfo;
     return (
       <div
-        className={cn("subscribe-item", { isSubscribe: didUserSubscribe })}
+        className={cn("subscribe-item", {
+          "is-subscribed": didUserSubscribe,
+          "is-disabled": isExpired || isNotStarted,
+        })}
         onClick={() => router.navigate(`/subscribe/detail/${id}`)}
       >
         <div className="subscribe-item-left">
@@ -198,7 +171,13 @@ class SubscribeItem extends React.Component {
         <div className="subscribe-item-middle">
           <p>
             <span className="subscribe-remark">
-              {didUserSubscribe ? "已申购" : "可申购"}
+              {isExpired
+                ? "已截止"
+                : isNotStarted
+                ? "未开始"
+                : didUserSubscribe
+                ? "已申购"
+                : "可申购"}
             </span>
             {stock_name}
           </p>
@@ -207,12 +186,8 @@ class SubscribeItem extends React.Component {
           </p>
           {didUserSubscribe && (
             <React.Fragment>
-              <p>
-                申购手数：<span className="">{"-"}</span>
-              </p>
-              <p>
-                申購金額：<span className="">{"-"}</span>
-              </p>
+              <p>申购手数：{wanted_lots}</p>
+              <p>申购金额：{"-"}</p>
             </React.Fragment>
           )}
         </div>
@@ -236,7 +211,7 @@ function FakeList(props) {
         </div>
         <div className="subscribe-item-middle">
           <p>
-            <span className="subscribe-remark">可申购</span>泰格医药
+            <span className="subscribe-remark">未申购</span>泰格医药
           </p>
           <p>
             申购价：<span className="subscribe-price">30.30</span>
@@ -283,7 +258,7 @@ function FakeList(props) {
             申购手数：<span className="">1</span>
           </p>
           <p>
-            申購金額：<span className="">121200</span>
+            申购金额：<span className="">121200</span>
           </p>
         </div>
         <div className="subscribe-item-right">

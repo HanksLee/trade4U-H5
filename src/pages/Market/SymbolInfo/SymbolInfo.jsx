@@ -69,7 +69,7 @@ export class SymbolInfo extends React.Component {
       high: { text: "最高", format: (val) => String(val) },
       low: { text: "最低", format: (val) => String(val) },
       volume: { text: "总量", format: (val) => String(val) },
-      amount: { text: "总额", format: (val) => String(val) },
+      amount: { text: "总额", format: (val) => `${String(Math.round(Number(val) / 10000))}万` },
       change: { text: "涨跌", format: (val) => String(val) },
       chg: { text: "涨跌幅", format: (val) => `${String(val)}%` },
       amplitude: { text: "振幅", format: (val) => `${String(val * 100)}%` },
@@ -111,7 +111,7 @@ export class SymbolInfo extends React.Component {
                 <div className={cx("item-col", "item-title")}>
                   {detail.text}
                 </div>
-                <div className={cx("item-col")}>
+                <div className={cx("item-col", "item-info")}>
                   {detail.format(currentValue)}
                 </div>
               </div>

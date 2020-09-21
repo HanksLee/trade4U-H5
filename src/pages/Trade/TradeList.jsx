@@ -447,7 +447,7 @@ export default class TradeList extends BaseReact {
                     </>
                   )}
                   <p>买入股数</p>
-                  <p>{item.lots}</p>
+                  <p>{item.trading_volume}</p>
                   <p>止盈</p>
                   <p>{item.take_profit || "-"}</p>
                   <p>止損</p>

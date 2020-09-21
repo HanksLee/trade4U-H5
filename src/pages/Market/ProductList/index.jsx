@@ -176,8 +176,10 @@ export default class ProductList extends React.Component {
               </div>
             </React.Fragment>
           );
-        })}
+        })
 
+        }
+        {!dataLoading && utils.isEmpty(currentList) && <div className="no-content">目前无此类别自选</div>}
         {/* {
       currentSymbolType !== "自选" && currentSymbolType !== "外汇" &&
       <>
