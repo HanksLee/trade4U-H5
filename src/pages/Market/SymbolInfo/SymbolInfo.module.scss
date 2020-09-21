@@ -1,48 +1,79 @@
 .symbol-info {
   min-height: 50vh;
   color: #fff;
+
+  :global(.am-tabs-default-bar-tab) {
+    &::after {
+      content: unset !important;
+    }
+  }
 }
+
 .tab-body {
-  padding: 10px;
+  padding: 16px 14px;
   padding-bottom: 100px;
+  border-top: 1px solid #2e3b55;
 }
-.no-content {
-  display: flex;
-  justify-content: center;
-}
+
 // 详细资讯
 .stock-detail {
-  display: grid;
-  grid-template-columns: 50% 50%;
+  // display: grid;
+  // grid-template-columns: 50% 50%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
   color: #fff;
+
   .item {
-    padding: 5px;
+    flex-basis: 40%;
+    padding: 5px 0;
     display: flex;
     align-items: center;
+
     .item-title {
       color: #838d9e;
+      text-align: left;
     }
+
     .item-col {
       width: 50%;
-      text-align: center;
+      // text-align: center;
+    }
+
+    .item-info {
+      text-align: right;
     }
   }
 }
 // 盘口
 .fund-content {
   color: #fff;
+
   .fund-content-title {
     text-align: center;
     background-color: #2e3b55;
+    line-height: 28px;
+    border-radius: 4px 4px 0 0;
   }
+
   .fund-table {
     border: 1px solid #2e3b55;
     border-collapse: collapse;
     table-layout: fixed;
     width: 100%;
   }
+
   .fund-table-cell {
     border: 1px solid #2e3b55;
     text-align: center;
+  }
+
+  .no-content {
+    display: flex;
+    justify-content: center;
+    border: 1px solid #2e3b55;
+    border-radius: 0 0 4px 4px;
+    font-size: 14px;
+    line-height: 28px;
   }
 }

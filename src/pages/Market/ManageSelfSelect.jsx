@@ -12,6 +12,7 @@ import {
 } from 'framework7-react';
 import { inject, observer } from "mobx-react";
 import './index.scss';
+import utils from '../../utils';
 
 @inject("market")
 export default class extends React.Component {
@@ -111,7 +112,7 @@ export default class extends React.Component {
             {/* <span onClick={this.handleConfirm}>完成</span> */}
           </NavLeft>
           <NavRight>
-            <span onClick={this.showDeleteModal}>删除</span>
+            {!utils.isEmpty(checkedItems) && <span onClick={this.showDeleteModal}>删除</span>}
           </NavRight>
         </Navbar>
         <List sortable className="sortable-self-select-list sortable-enabled" onSortableSort={this.sortSelfSelectList}>
