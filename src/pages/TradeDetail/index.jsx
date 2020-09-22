@@ -1667,7 +1667,7 @@ export default class TradeDetail extends React.Component {
   renderDetail = () => {
     const { currentSymbol } = this.props.market;
     const { selectedSymbolInfo } = this.props.common;
-    console.log(selectedSymbolInfo)
+    console.log(toJS(selectedSymbolInfo));
     const { symbol_display, product_details } = currentSymbol;
     const { quoted_price } = this.props;
     const onePirceField = {

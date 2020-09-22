@@ -135,6 +135,9 @@ class SubscribeItem extends React.Component {
       draw_result_date,
       public_date,
     } = payload;
+    payload["subscription_date_start"] = moment(subscription_date_start).format(
+      "MM-DD"
+    );
     payload["subscription_date_end"] = moment(subscription_date_end).format(
       "MM-DD"
     );
@@ -149,11 +152,13 @@ class SubscribeItem extends React.Component {
       id,
       stock_name,
       public_price,
+      subscription_date_start,
       subscription_date_end,
       isExpired,
       isNotStarted,
     } = this.mapApiDataToDisplayValue(data);
-    const { wanted_lots } = orderInfo;
+    const { wanted_lots, loan, entrance_fee } = orderInfo;
+    const amount = Number(loan) + Number(entrance_fee);
     return (
       <div
         className={cn("subscribe-item", {
@@ -164,8 +169,9 @@ class SubscribeItem extends React.Component {
       >
         <div className="subscribe-item-left">
           <div className="date">
-            <p>截止日</p>
-            <p>{subscription_date_end}</p>
+            <div>{subscription_date_start}</div>
+            <div>&#8942;</div>
+            <div>{subscription_date_end}</div>
           </div>
         </div>
         <div className="subscribe-item-middle">
@@ -187,7 +193,7 @@ class SubscribeItem extends React.Component {
           {didUserSubscribe && (
             <React.Fragment>
               <p>申购手数：{wanted_lots}</p>
-              <p>申购金额：{"-"}</p>
+              <p>申购金额：{amount}</p>
             </React.Fragment>
           )}
         </div>

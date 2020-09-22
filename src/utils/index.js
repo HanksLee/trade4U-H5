@@ -3,7 +3,7 @@ import { PAGE_ROUTES } from "constant";
 import PromiseFileReader from "promise-file-reader";
 import commonAPI from "services/common";
 import NProgress from "nprogress";
-
+import momentTimezone from "moment-timezone";
 function setRootFontSizeFromClient() {
   let dpr, rem;
   const htmlEl = document.getElementsByTagName("html")[0],
@@ -174,20 +174,22 @@ function parseBool(input) {
 }
 
 /**
- * @param {*} str min~max, min-max
- * @return array [min, max]
+ * @param {*} str min~max 最小与最大区间字串
+ * @return array [min, max] 回传最小值与最大值阵列
  */
 function parseRange(str) {
-  const [upperBound] = str.match(/(?<=[~\-])\d+.\d+/) ?? [null];
-  const [lowerBound] = str.match(/\d+.\d+(?=[~\-])/) ?? [null];
-  if (!upperBound && !lowerBound) return [str, str];
-  return [lowerBound, upperBound];
+  const res = str.split("~");
+  if (res.length === 1) {
+    return [res[0], res[0]];
+  } else {
+    return res;
+  }
 }
 
-// export const coordinate = {
-
-// };
-
+// 取得目前该时区的时间，预设为上海时间
+function getNow() {
+  return momentTimezone(Date.now()).tz(timeZone);
+}
 export default {
   parseRange,
   parseBool,
