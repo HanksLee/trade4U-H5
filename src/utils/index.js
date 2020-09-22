@@ -15,7 +15,7 @@ function setRootFontSizeFromClient() {
   metaEl.setAttribute(
     "content",
     `width=${
-      docEl.clientWidth
+    docEl.clientWidth
     },initial-scale=${1},maximum-scale=${1}, minimum-scale=${1},use-scalable=no`
   );
 

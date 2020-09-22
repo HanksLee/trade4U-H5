@@ -126,7 +126,7 @@ class TradeStore extends BaseStore {
     const profit = list.reduce((acc, cur) => acc + cur.profit, 0);
     const equity = list.reduce((acc, cur) => acc + cur.profit, 0) + balance;
     const free_margin = equity - margin;
-    const margin_level = equity / margin;
+    const margin_level = equity / margin * 100;
 
     return {
       ...meta,

@@ -3,6 +3,7 @@ import React from "react";
 import utils from "utils";
 import { List, InputItem, Toast } from "antd-mobile";
 import { createForm } from "rc-form";
+import { inject, observer } from "mobx-react";
 import {
   Page,
   Navbar,
@@ -15,48 +16,59 @@ import {
 import api from "services";
 import "./index.scss";
 
+
 @createForm()
+@inject("setting")
+@observer
 export default class extends React.Component {
   state = {
     smsConfirm: false,
-    smskey: undefined,
-    errMsg: "",
-    waitTime: 60,
-    canSendSMS: true,
+    // smskey: undefined,
+    // errMsg: "",
+    // waitTime: 60,
+    // canSendSMS: true,
   };
 
-  sendSMS = () => {
-    const { waitTime, canSendSMS } = this.state;
-    if (canSendSMS !== true) {
-      return false;
-    } else {
-      this.setState({ canSendSMS: false }, async () => {
-        let payload = {
-          type: "reset_pwd_sms",
-        };
-        const res = await api.setting.sendSMS(payload);
+  // sendSMS = () => {
+  //   const { waitTime, canSendSMS } = this.state;
+  //   if (canSendSMS !== true) {
+  //     return false;
+  //   } else {
+  //     this.setState({ canSendSMS: false }, async () => {
+  //       let payload = {
+  //         type: "reset_pwd_sms",
+  //       };
+  //       const res = await api.setting.sendSMS(payload);
 
-        if (res.status === 201) {
-          this.setState({ smsKey: res.data.key });
-        } else {
-          this.setState({ errMsg: res.data.message });
-        }
-        let time = waitTime;
-        let timeID = setInterval(async () => {
-          time--;
-          if (time === 0) {
-            clearInterval(timeID);
-            this.setState({ waitTime: 60, canSendSMS: true });
-          } else {
-            this.setState({ waitTime: time });
-          }
-        }, 1000);
-      });
-    }
-  };
+  //       if (res.status === 201) {
+  //         this.setState({ smsKey: res.data.key });
+  //       } else {
+  //         this.setState({ errMsg: res.data.message });
+  //       }
+  //       let time = waitTime;
+  //       let timeID = setInterval(async () => {
+  //         time--;
+  //         if (time === 0) {
+  //           clearInterval(timeID);
+  //           this.setState({ waitTime: 60, canSendSMS: true });
+  //         } else {
+  //           this.setState({ waitTime: time });
+  //         }
+  //       }, 1000);
+  //     });
+  //   }
+  // };
+
+  goBack = () => {
+    const { setErrMsg } = this.props.setting;
+    setErrMsg("");
+    this.$f7router.back({ force: false });
+  }
 
   handleVerifySubmit = async (evt) => {
-    const { smsKey } = this.state;
+    // const { smsKey } = this.state;
+    const { smsKey, setErrMsg } = this.props.setting;
+    console.log(smsKey);
 
     this.props.form.validateFields(async (err, values) => {
       if (!err) {
@@ -72,13 +84,16 @@ export default class extends React.Component {
         } else {
           if (res.data.error_code === 400) {
             if (utils.isEmpty(smsKey)) {
-              this.setState({ errMsg: "请先按发送简讯验证码按钮" });
+              // this.setState({ errMsg: "请先按发送简讯验证码按钮" });
+              setErrMsg("请先按发送简讯验证码按钮")
             } else {
-              this.setState({ errMsg: "验证码不得为空" });
+              // this.setState({ errMsg: "验证码不得为空" });
+              setErrMsg("验证码不得为空")
             }
 
           } else if (res.data.error_code === 403) {
-            this.setState({ errMsg: "验证码有误" });
+            setErrMsg("验证码有误")
+            // this.setState({ errMsg: "验证码有误" });
           }
 
         }
@@ -140,7 +155,8 @@ export default class extends React.Component {
 
   sendSmsComponent = () => {
     const { getFieldProps } = this.props.form;
-    const { waitTime, errMsg, canSendSMS } = this.state;
+    // const { waitTime, errMsg, canSendSMS } = this.state;
+    const { waitTime, errMsg, canSendSMS, sendSMS } = this.props.setting;
     return (
       <List>
         {/* <InputItem
@@ -163,7 +179,7 @@ export default class extends React.Component {
           {"简讯验证码"}
           <div
             className={`sms-btn ${!canSendSMS && "reject"}`}
-            onClick={this.sendSMS}
+            onClick={sendSMS}
           >
             {waitTime !== 60 ? `${waitTime}秒后可重新发送` : "发送简讯验证码"}
           </div>
@@ -183,7 +199,7 @@ export default class extends React.Component {
       <Page>
         <Navbar className="text-color-white">
           <NavLeft>
-            <Link onClick={() => this.$f7router.back({ force: false })}>
+            <Link onClick={this.goBack}>
               <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
             </Link>
           </NavLeft>
