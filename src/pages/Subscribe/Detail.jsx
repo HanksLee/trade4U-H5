@@ -111,7 +111,6 @@ class SubscribeDetail extends React.Component {
       currency,
       amount_per_lot,
     } = this.mapApiDataToDisplayValue(this.props.data);
-
     return (
       <React.Fragment>
         <div className="subscribe-detail-header">

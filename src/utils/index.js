@@ -3,7 +3,7 @@ import { PAGE_ROUTES } from "constant";
 import PromiseFileReader from "promise-file-reader";
 import commonAPI from "services/common";
 import NProgress from "nprogress";
-
+import momentTimezone from "moment-timezone";
 function setRootFontSizeFromClient() {
   let dpr, rem;
   const htmlEl = document.getElementsByTagName("html")[0],
@@ -186,10 +186,10 @@ function parseRange(str) {
   }
 }
 
-// export const coordinate = {
-
-// };
-
+// 取得目前该时区的时间，预设为上海时间
+function getNow() {
+  return momentTimezone(Date.now()).tz(timeZone);
+}
 export default {
   parseRange,
   parseBool,
