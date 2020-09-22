@@ -242,3 +242,4 @@ export const MARKET_TYPE = {
   SZ: { name: "深圳" },
   SH: { name: "上证" },
 };
+export const TIME_ZONE = "Asia/Shanghai";

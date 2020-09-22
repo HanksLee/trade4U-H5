@@ -4,7 +4,7 @@ import BaseStore from "store/base";
 import utils from "utils";
 import cloneDeep from "lodash/cloneDeep";
 import moment from "moment";
-
+import momentTimezone from "moment-timezone";
 class SubscribeStore extends BaseStore {
   @observable
   newStockList = [];
@@ -20,12 +20,14 @@ class SubscribeStore extends BaseStore {
   async getNewStockList(data) {
     const res = await api.subscribe.getNewStockList();
     // console.log("NewStock res :>> ", res);
+    const nowMoment = momentTimezone(Date.now()).tz("Asia/Shanghai");
+    // console.log("nowMoment :>> ", nowMoment);
     const newStockList = res.data
       .map((each) => {
-        // TODO: 日期比对基准需再确认
         const { subscription_date_end, subscription_date_start } = each;
-        each["isExpired"] = moment().isAfter(moment(subscription_date_end));
-        each["isNotStarted"] = moment().isBefore(
+
+        each["isExpired"] = nowMoment.isAfter(moment(subscription_date_end));
+        each["isNotStarted"] = nowMoment.isBefore(
           moment(subscription_date_start)
         );
         return each;
