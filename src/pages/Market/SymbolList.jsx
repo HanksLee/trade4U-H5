@@ -62,11 +62,12 @@ export default class SymbolList extends React.Component {
 
     if (init) {
       this.setState((preState) => ({
-        symbolList: [
-          ...res.data.results.filter((item) => {
-            return ids.indexOf(item.symbol_display.id) === -1;
-          }),
-        ],
+        // symbolList: [
+        //   ...res.data.results.filter((item) => {
+        //     return ids.indexOf(item.symbol_display.id) === -1;
+        //   }),
+        // ],
+        symbolList: [...res.data.results],
         next: !!res.data.next,
         page: 1,
       }));
@@ -242,14 +243,14 @@ export default class SymbolList extends React.Component {
                       }}
                     />
                   ) : (
-                    <img
-                      src={activeSelectSVG}
-                      alt="active-select"
-                      onClick={(e) => {
-                        this.handleItemUnselected(item.id);
-                      }}
-                    />
-                  )}
+                      <img
+                        src={activeSelectSVG}
+                        alt="active-select"
+                        onClick={(e) => {
+                          this.handleItemUnselected(item.id);
+                        }}
+                      />
+                    )}
                 </div>
               </ListItem>
             );
