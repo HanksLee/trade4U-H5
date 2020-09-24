@@ -9,12 +9,17 @@ class SubscribeStore extends BaseStore {
   @observable
   newStockList = [];
   @computed get newStockMap() {
-    return this.newStockList.reduce((obj, curr) => {
-      const { id } = curr;
-      obj[id] = curr;
-      return obj;
-    }, observable({}));
-    // 初始物件要使用 observable, toJS 才能还原 proxy 成物件
+    if (this.newStockList.length === 0) return {};
+    try {
+      return this.newStockList.reduce((obj, curr) => {
+        const { id } = curr;
+        obj[id] = curr;
+        return obj;
+      }, observable({}));
+      // 初始物件要使用 observable, toJS 才能还原 proxy 成物件
+    } catch (err) {
+      return {};
+    }
   }
   @action.bound
   async getNewStockList(data) {
@@ -48,12 +53,17 @@ class SubscribeStore extends BaseStore {
   @computed get userSubscribeMap() {
     // userSubscribeList 列表为使用者所有申购的订单
     // * 转为物件 userSubscribeMap， key 为申购的股票 id
-    return this.userSubscribeList.reduce((obj, curr) => {
-      const { new_stock } = curr;
-      obj[new_stock] = curr;
-      return obj;
-    }, observable({}));
-    // 初始物件要使用 observable, toJS 才能还原 proxy 成物件
+    if (this.userSubscribeList.length === 0) return {};
+    try {
+      return this.userSubscribeList.reduce((obj, curr) => {
+        const { new_stock } = curr;
+        obj[new_stock] = curr;
+        return obj;
+      }, observable({}));
+      // 初始物件要使用 observable, toJS 才能还原 proxy 成物件
+    } catch (error) {
+      return {};
+    }
   }
   @action.bound
   async getUserSubscribeList(data) {
