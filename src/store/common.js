@@ -20,23 +20,35 @@ class CommonStore extends BaseStore {
   };
 
   @observable
-  systemConfig = [];
+  configList = [];
+  @computed get configMap() {
+    try {
+      return this.configList.reduce((obj, curr) => {
+        const { key, value } = curr;
+        obj[key] = value;
+        return obj;
+      }, {});
+    } catch (err) {
+      return {};
+    }
+  }
 
   @action
-  getSystemConfig = async (params) => {
+  getConfigList = async (params) => {
     const res = await this.$api.common.getConfig({ params });
-    this.setSystemConfig(res.data);
+    this.setConfigList(res.data);
+    return res.data;
   };
   @action
-  setSystemConfig = (systemConfig) => {
-    this.systemConfig = systemConfig;
+  setConfigList = (payload) => {
+    this.configList = payload;
   };
 
   @action
   getKeyConfig = (key) => {
-    if (this.systemConfig.length === 0) return null;
+    if (this.configList.length === 0) return null;
 
-    return this.systemConfig.filter((item, i) => {
+    return this.configList.filter((item, i) => {
       return item.key === key;
     })[0].value;
   };
@@ -93,7 +105,7 @@ class CommonStore extends BaseStore {
     this.selectedSymbolId = {
       prevId: next,
       next: o,
-      code
+      code,
     };
   };
 
@@ -130,7 +142,6 @@ class CommonStore extends BaseStore {
   setUnSubscribeSymbol = (d) => {
     this.unSubscribeSymbol = { ...d };
   };
-
 
   @observable
   symbolWSAction = {

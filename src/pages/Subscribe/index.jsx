@@ -135,6 +135,9 @@ class SubscribeItem extends React.Component {
       draw_result_date,
       public_date,
     } = payload;
+    payload["public_date"] = public_date
+      ? moment(public_date).format("MM-DD")
+      : "尚未公布";
     payload["subscription_date_start"] = moment(subscription_date_start).format(
       "MM-DD"
     );
@@ -143,7 +146,6 @@ class SubscribeItem extends React.Component {
     );
     payload["market_name"] = MARKET_TYPE[market]["name"];
     payload["draw_result_date"] = moment(draw_result_date).format("YYYY-MM-DD");
-    payload["public_date"] = moment(public_date).format("YYYY-MM-DD");
     return payload;
   };
   render() {

@@ -9,34 +9,6 @@ export const FORMAT_TIME = "YYYY.MM.DD HH:mm";
 
 export const UPLOAD_URL = "https://upyun.com";
 
-// export const tradeTypeOptions = [
-//   {
-//     id: '1',
-//     name: '立即执行',
-//     color: '',
-//   },
-//   {
-//     id: '2',
-//     name: 'Buy Limit',
-//     color: 'p-up',
-//   },
-//   {
-//     id: '3',
-//     name: 'Sell Limit',
-//     color: 'p-down',
-//   },
-//   {
-//     id: '4',
-//     name: 'Buy Stop',
-//     color: 'p-up',
-//   },
-//   {
-//     id: '5',
-//     name: 'Sell Stop',
-//     color: 'p-down',
-//   }
-// ];
-
 export const tradeTypeOptions = [
   {
     id: "instance",
@@ -120,31 +92,6 @@ export const tradeActionMap = {
   4: "buy stop",
   5: "sell stop",
 };
-
-export const marketOptions = [
-  {
-    id: 1,
-    name: "上证",
-  },
-  {
-    id: 2,
-    name: "日经",
-  },
-  {
-    id: 3,
-    name: "纳斯达克",
-  },
-];
-
-export const WeeklyOrder = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
 
 export const THREE_DAY_OPTIONS = [
   {
@@ -243,3 +190,5 @@ export const MARKET_TYPE = {
   SH: { name: "上证" },
 };
 export const TIME_ZONE = "Asia/Shanghai";
+
+// 融资比例选项

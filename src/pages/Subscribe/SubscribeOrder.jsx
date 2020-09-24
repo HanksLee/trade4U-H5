@@ -24,12 +24,24 @@ import { inject, observer } from "mobx-react";
 import "./index.scss";
 //import 'antd/dist/antd.css';
 
+const loan_options_display = {
+  0: "不融资",
+  10: "10%",
+  20: "20%",
+  30: "30%",
+  40: "40%",
+  50: "50%",
+  60: "60%",
+  70: "70%",
+  80: "80%",
+  90: "90%",
+};
 @inject("subscribe", "setting", "common")
 @observer
 export default class extends React.Component {
   state = {
     lots: 1, // 申购手数
-    marginRatio: 0, // 融资比率 0 or 0.6
+    loanRatio: 0, // 融资比例
     data: {},
   };
   componentDidMount() {
@@ -54,15 +66,18 @@ export default class extends React.Component {
       lots_size,
     } = payload;
     const [minPublicPrice, maxPublicPrice] = utils.parseRange(public_price);
-    payload["subscription_date_start"] = moment(subscription_date_start).format(
-      "YYYY-MM-DD"
-    );
-    payload["subscription_date_end"] = moment(subscription_date_end).format(
-      "YYYY-MM-DD"
-    );
+    payload["public_date"] = public_date
+      ? moment(public_date).format("YYYY-MM-DD")
+      : "尚未公布";
+    payload["subscription_date_start"] =
+      subscription_date_start &&
+      moment(subscription_date_start).format("YYYY-MM-DD");
+    payload["subscription_date_end"] =
+      subscription_date_end &&
+      moment(subscription_date_end).format("YYYY-MM-DD");
     payload["market_name"] = MARKET_TYPE[market]["name"];
     payload["draw_result_date"] = moment(draw_result_date).format("YYYY-MM-DD");
-    payload["public_date"] = moment(public_date).format("YYYY-MM-DD");
+
     payload["amount_per_lot"] = (
       Number(lots_size) * Number(maxPublicPrice)
     ).toFixed(2);
@@ -79,8 +94,8 @@ export default class extends React.Component {
     if (this.state.lots <= 0) return;
     this.setState({ lots: this.state.lots - 1 });
   };
-  handleMarginRatioChange = (val) => {
-    this.setState({ marginRatio: Number(val) });
+  handleLoanRatioChange = (val) => {
+    this.setState({ loanRatio: Number(val) });
   };
   handleSubmit = async () => {
     const {
@@ -133,12 +148,12 @@ export default class extends React.Component {
       interest_mul_days,
       new_stock_hand_fee,
     } = this.state.data;
-    const { lots, marginRatio } = this.state;
+    const { lots, loanRatio } = this.state;
     // amount 认购金额 = lots 认购手数 * 每手金额
     // loan 融资金额 = amount 认购金额 * 融资比例
     // entranceFee 入场费 = amount 认购金额 - loan 融资金额
     const amount = (Number(lots) * Number(amount_per_lot)).toFixed(2);
-    const loan = (Number(amount) * Number(marginRatio)).toFixed(2);
+    const loan = (Number(amount) * Number(loanRatio)).toFixed(2);
     const entranceFee = (Number(amount) - Number(loan)).toFixed(2);
     const handFeeFormula = profitRule["new_stock_hands_fee"];
     const loanInterestFormula = profitRule["new_stock_interest"];
@@ -171,8 +186,10 @@ export default class extends React.Component {
     };
   };
   render() {
+    const loan_options = this.props.common.configMap["loan_options"];
+    const loanOptions = loan_options?.split(",") ?? [0];
     const { stock_name, public_price, lots_size } = this.state.data;
-    const { lots } = this.state;
+    const { lots, loanRatio } = this.state;
     const {
       amount,
       loan,
@@ -251,15 +268,22 @@ export default class extends React.Component {
               <div className="order-input-item-title">融资比例</div>
               <Select
                 className="select-option"
-                defaultValue={0}
-                onChange={this.handleMarginRatioChange}
+                optionLabelProp={"label"}
+                onChange={this.handleLoanRatioChange}
+                value={loanRatio}
               >
-                <Select.Option value={0}>
-                  <span>不融资</span>
-                </Select.Option>
-                <Select.Option value={0.6}>
-                  <span>60%</span>
-                </Select.Option>
+                {loanOptions.map((each) => {
+                  const displayValue = loan_options_display[each];
+                  return (
+                    <Select.Option
+                      key={each}
+                      value={Number(each) / 100}
+                      label={displayValue}
+                    >
+                      {displayValue}
+                    </Select.Option>
+                  );
+                })}
               </Select>
             </div>
             <div className="order-input-item">

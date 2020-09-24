@@ -19,16 +19,11 @@ import WS_Symbol from "components/Websocket/Symbol";
 export default class extends React.Component {
   $event = null;
   componentDidMount() {
-    // this.getConfig();
-
-    this.$f7ready(async (f7) => {
+    this.$f7ready((f7) => {
       const token = utils.getLStorage("MOON_H5_TOKEN");
       this.$event = new Framework7.Events();
-      await this.props.common.setGlobalEvent(this.$event);
-      await this.props.common.getSystemConfig();
-      // if (token) {
-      //   this.props.message.connectNotifyWebsocket();
-      // }
+      this.props.common.setGlobalEvent(this.$event);
+      this.props.common.getConfigList();
     });
   }
   componentWillUnmount = () => {
@@ -44,14 +39,10 @@ export default class extends React.Component {
   render() {
     const { hasAnnouncement, hasNotify } = this.props.message;
     // 取得系统配置参数，转换为物件，并动态渲染可见页面
-    const { systemConfig } = this.props.common;
-    const config = systemConfig.reduce((obj, curr) => {
-      const { key, value } = curr;
-      obj[key] = value;
-      return obj;
-    }, {});
-    const isSubscribePageVisible = utils.parseBool(config["function_ipo"]); // 申购页
-    const isNewsPageVisible = utils.parseBool(config["function_news"]); // 新闻页
+    const { configMap } = this.props.common;
+    console.log("configMap :>> ", configMap);
+    const isSubscribePageVisible = utils.parseBool(configMap["function_ipo"]); // 申购页
+    const isNewsPageVisible = utils.parseBool(configMap["function_news"]); // 新闻页
     return (
       <Page name="home">
         <WS_Symbol />
