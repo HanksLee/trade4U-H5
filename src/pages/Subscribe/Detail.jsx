@@ -82,8 +82,9 @@ class SubscribeDetail extends React.Component {
       lots_size,
     } = payload;
     const [minPublicPrice, maxPublicPrice] = utils.parseRange(public_price);
-    payload["public_date"] =
-      public_date && moment(public_date).format("YYYY-MM-DD");
+    payload["public_date"] = public_date
+      ? moment(public_date).format("YYYY-MM-DD")
+      : "尚未公布";
     payload["subscription_date_start"] =
       subscription_date_start &&
       moment(subscription_date_start).format("YYYY-MM-DD");
