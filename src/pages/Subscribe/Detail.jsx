@@ -82,16 +82,18 @@ class SubscribeDetail extends React.Component {
       lots_size,
     } = payload;
     const [minPublicPrice, maxPublicPrice] = utils.parseRange(public_price);
-    payload["subscription_date_start"] = moment(subscription_date_start).format(
-      "YYYY-MM-DD"
-    );
-    payload["subscription_date_end"] = moment(subscription_date_end).format(
-      "YYYY-MM-DD"
-    );
-    payload["market_name"] = MARKET_TYPE[market]["name"];
-    payload["draw_result_date"] = moment(draw_result_date).format("YYYY-MM-DD");
-    payload["public_date"] = moment(public_date).format("YYYY-MM-DD");
+    payload["public_date"] =
+      public_date && moment(public_date).format("YYYY-MM-DD");
+    payload["subscription_date_start"] =
+      subscription_date_start &&
+      moment(subscription_date_start).format("YYYY-MM-DD");
+    payload["subscription_date_end"] =
+      subscription_date_end &&
+      moment(subscription_date_end).format("YYYY-MM-DD");
 
+    payload["draw_result_date"] =
+      draw_result_date && moment(draw_result_date).format("YYYY-MM-DD");
+    payload["market_name"] = MARKET_TYPE[market]["name"];
     payload["amount_per_lot"] = (
       Number(lots_size) * Number(maxPublicPrice)
     ).toFixed(2);
