@@ -49,14 +49,14 @@ export default class extends React.Component {
     confirm({
       title: "提示",
       content: "您確定要登出嗎",
-      className: "trade-modal",
+      className: "app-modal",
       centered: true,
       cancelText: "取消",
       okText: "确认",
       onOk() {
         that.logout();
       },
-      onCancel() { },
+      onCancel() {},
     });
   };
 
@@ -81,7 +81,10 @@ export default class extends React.Component {
             </List>
           </NavRight>
         </Navbar>
-        <div className="user-name">{userInfo["first_name"]}{userInfo["last_name"]}</div>
+        <div className="user-name">
+          {userInfo["first_name"]}
+          {userInfo["last_name"]}
+        </div>
         <div className="withdraw-item-title">可提馀额(元)</div>
         <div className="remain-fund">{withdrawableBalance}</div>
         <div className="fund-btn-container">
@@ -160,16 +163,9 @@ export default class extends React.Component {
           </ListItem>
         </List> */}
         <List>
-          <ListItem
-            title={"涨跌偏好"}
-            link={`/settings/color-prefer`}
-          >
-            <div
-              slot="media"
-              style={{ backgroundColor: "#0091FF" }}>
-              <img
-                src="../../../assets/img/up-down-icon.svg"
-              />
+          <ListItem title={"涨跌偏好"} link={`/settings/color-prefer`}>
+            <div slot="media" style={{ backgroundColor: "#0091FF" }}>
+              <img src="../../../assets/img/up-down-icon.svg" />
             </div>
           </ListItem>
         </List>

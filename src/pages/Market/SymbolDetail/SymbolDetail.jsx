@@ -93,7 +93,7 @@ export default class SymbolDetail extends React.Component {
       confirm({
         title: "提示",
         content: "确认刪除自选嗎?",
-        className: "trade-modal",
+        className: "app-modal",
         centered: true,
         cancelText: "取消",
         okText: "确认",

@@ -179,7 +179,7 @@ export default class TradeDetail extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) { }
+  componentDidUpdate(prevProps, prevState) {}
 
   newsHandleScroll = () => {
     const { newsError, newsHasMore, tabDataLoading } = this.state;
@@ -738,7 +738,7 @@ export default class TradeDetail extends React.Component {
         if (tradeInfo.free_margin - totalPlatformCurrency < 0) {
           error({
             title: "提示",
-            className: "trade-modal success-modal",
+            className: "app-modal success-modal",
             content: "可用预付款不足",
           });
           this.setState({
@@ -781,7 +781,7 @@ export default class TradeDetail extends React.Component {
           success({
             title: "提示",
             content: "下单成功",
-            className: "trade-modal success-modal",
+            className: "app-modal success-modal",
             centered: true,
             // cancelText: "取消",
             okText: "确认",
@@ -796,10 +796,10 @@ export default class TradeDetail extends React.Component {
         } else {
           error({
             title: "提示",
-            className: "trade-modal success-modal",
+            className: "app-modal success-modal",
             content: res.data.message,
             okText: "确认",
-            onOk() { },
+            onOk() {},
           });
 
           this.setState({
@@ -819,7 +819,7 @@ export default class TradeDetail extends React.Component {
           success({
             title: "提示",
             content: "修改成功",
-            className: "trade-modal success-modal",
+            className: "app-modal success-modal",
             centered: true,
             // cancelText: "取消",
             okText: "确认",
@@ -844,7 +844,7 @@ export default class TradeDetail extends React.Component {
           success({
             title: "提示",
             content: "平倉成功",
-            className: "trade-modal success-modal",
+            className: "app-modal success-modal",
             centered: true,
             // cancelText: "取消",
             okText: "确认",
@@ -973,7 +973,7 @@ export default class TradeDetail extends React.Component {
                         }}
                         className={`trade-detail-input-item-btn ${
                           stockParams.holdDays === item && "btn-active"
-                          }`}
+                        }`}
                       >
                         {item}
                       </div>
@@ -1014,7 +1014,7 @@ export default class TradeDetail extends React.Component {
                         (stockParams.action === item.id ||
                           stockTypes.length === 1) &&
                         "btn-active"
-                        }`}
+                      }`}
                     >
                       {item.name}
                     </div>
@@ -1111,7 +1111,7 @@ export default class TradeDetail extends React.Component {
                         }}
                         className={`trade-detail-input-item-btn-small ${
                           stockParams.leverage === item && "btn-active"
-                          }`}
+                        }`}
                       >
                         {item}
                       </div>
@@ -1179,10 +1179,10 @@ export default class TradeDetail extends React.Component {
                   </div>
                 </>
               ) : (
-                  <div className={`trade-detail-input-item-text`}>
-                    {params.take_profit}
-                  </div>
-                )}
+                <div className={`trade-detail-input-item-text`}>
+                  {params.take_profit}
+                </div>
+              )}
             </div>
           </div>
 
@@ -1225,23 +1225,23 @@ export default class TradeDetail extends React.Component {
                   </div>
                 </>
               ) : (
-                  <div className={`trade-detail-input-item-text`}>
-                    {params.stop_loss}
-                  </div>
-                )}
+                <div className={`trade-detail-input-item-text`}>
+                  {params.stop_loss}
+                </div>
+              )}
             </div>
           </div>
         </div>
         <div
           className={`trade-detail-submit-btn 
                         ${
-            (tradeType !== "instance" &&
-              utils.isEmpty(params.open_price)) ||
-              utils.isEmpty(params.lots) ||
-              isSubmit
-              ? "reject"
-              : ""
-            }
+                          (tradeType !== "instance" &&
+                            utils.isEmpty(params.open_price)) ||
+                          utils.isEmpty(params.lots) ||
+                          isSubmit
+                            ? "reject"
+                            : ""
+                        }
                         ${mode === "add" ? "add" : "modify"}`}
           style={{ marginBottom: "20px" }}
           onClick={() => {
@@ -1305,7 +1305,7 @@ export default class TradeDetail extends React.Component {
                       key={index}
                       className={`trade-detail-input-item-btn ${
                         tradeType === item.id && "btn-active"
-                        }`}
+                      }`}
                       onClick={() => {
                         this.switchTradeType(item.id);
                       }}
@@ -1317,7 +1317,7 @@ export default class TradeDetail extends React.Component {
               {(mode === "update" || mode === "delete") && (
                 <div className={`trade-detail-input-item-text`}>
                   {Number(currentTrade.action) === 0 ||
-                    Number(currentTrade.action) === 1
+                  Number(currentTrade.action) === 1
                     ? "立即执行"
                     : "挂单"}
                 </div>
@@ -1352,7 +1352,7 @@ export default class TradeDetail extends React.Component {
                         }}
                         className={`trade-detail-input-item-btn ${
                           params.action === item.id && "btn-active"
-                          }`}
+                        }`}
                       >
                         {item.name}
                       </div>
@@ -1368,7 +1368,7 @@ export default class TradeDetail extends React.Component {
                         }}
                         className={`trade-detail-input-item-btn ${
                           params.action === item.id && "btn-active"
-                          }`}
+                        }`}
                       >
                         {item.name}
                       </div>
@@ -1464,12 +1464,12 @@ export default class TradeDetail extends React.Component {
                 </div>
               </div>
             ) : (
-                <div className="trade-detail-input-item-btn-group">
-                  <div className={`trade-detail-input-item-text`}>
-                    {params.lots}
-                  </div>
+              <div className="trade-detail-input-item-btn-group">
+                <div className={`trade-detail-input-item-text`}>
+                  {params.lots}
                 </div>
-              )}
+              </div>
+            )}
           </div>
 
           <div className="trade-detail-input-item">
@@ -1511,10 +1511,10 @@ export default class TradeDetail extends React.Component {
                   </div>
                 </>
               ) : (
-                  <div className={`trade-detail-input-item-text`}>
-                    {params.stop_loss}
-                  </div>
-                )}
+                <div className={`trade-detail-input-item-text`}>
+                  {params.stop_loss}
+                </div>
+              )}
             </div>
           </div>
 
@@ -1557,22 +1557,22 @@ export default class TradeDetail extends React.Component {
                   </div>
                 </>
               ) : (
-                  <div className={`trade-detail-input-item-text`}>
-                    {params.stop_loss}
-                  </div>
-                )}
+                <div className={`trade-detail-input-item-text`}>
+                  {params.stop_loss}
+                </div>
+              )}
             </div>
           </div>
         </div>
         <div
           className={`trade-detail-submit-btn 
                         ${
-            (tradeType !== "instance" &&
-              utils.isEmpty(params.open_price)) ||
-              utils.isEmpty(params.lots)
-              ? "reject"
-              : ""
-            }
+                          (tradeType !== "instance" &&
+                            utils.isEmpty(params.open_price)) ||
+                          utils.isEmpty(params.lots)
+                            ? "reject"
+                            : ""
+                        }
                         ${mode === "add" ? "add" : "modify"}`}
           style={{ marginBottom: "30px" }}
           onClick={this.onSubmit}
@@ -1634,8 +1634,8 @@ export default class TradeDetail extends React.Component {
             }}
           />
         ) : (
-            <div />
-          )}
+          <div />
+        )}
         <div>主力、散户资金流向</div>
         {utils.isEmpty(fund) && (
           <div>
@@ -1676,7 +1676,10 @@ export default class TradeDetail extends React.Component {
       high: { text: "最高", format: (val) => String(val) },
       low: { text: "最低", format: (val) => String(val) },
       volume: { text: "总量", format: (val) => String(val) },
-      amount: { text: "总额", format: (val) => `${String(Math.round(Number(val) / 10000))}万` },
+      amount: {
+        text: "总额",
+        format: (val) => `${String(Math.round(Number(val) / 10000))}万`,
+      },
       change: { text: "涨跌", format: (val) => String(val) },
       chg: { text: "涨跌幅", format: (val) => `${String(val)}%` },
       amplitude: { text: "振幅", format: (val) => `${String(val * 100)}%` },
@@ -1707,24 +1710,18 @@ export default class TradeDetail extends React.Component {
     const field = quoted_price === "one_price" ? onePirceField : twoPriceField;
     return (
       <div className="trade-detail-more-info-contract">
-        <div className="trade-detail-more-info-contract-title">
-          合约资讯
-        </div>
+        <div className="trade-detail-more-info-contract-title">合约资讯</div>
         <div className={"trade-detail-more-info-contract-content"}>
           {Object.entries(field).map(([key, detail]) => {
             const displayValue =
               symbol_display[key] ?? product_details[key] ?? "-";
             const newValue = selectedSymbolInfo[key];
-            console.log(newValue)
+            console.log(newValue);
             const currentValue = newValue ?? displayValue;
             return (
               <div>
-                <span>
-                  {detail.text}
-                </span>
-                <span>
-                  {detail.format(currentValue)}
-                </span>
+                <span>{detail.text}</span>
+                <span>{detail.format(currentValue)}</span>
               </div>
             );
           })}
@@ -1780,7 +1777,7 @@ export default class TradeDetail extends React.Component {
   render() {
     const { mode, common } = this.props;
     const { selectedSymbolInfo } = this.props.common;
-    console.log(selectedSymbolInfo)
+    console.log(selectedSymbolInfo);
     const quoted_price = common.getKeyConfig("quoted_price");
     const { currentSymbol } = this.props.market;
     const { moreInfo, tradeType, params, tabDataLoading } = this.state;
@@ -1807,7 +1804,7 @@ export default class TradeDetail extends React.Component {
           <div
             className={`self-select-buy-sell-block now-stock ${
               isHigh && "p-up stock-up"
-              } ${!isHigh && "p-down stock-down"}`}
+            } ${!isHigh && "p-down stock-down"}`}
           >
             {selectedSymbolInfo?.sell ?? currentSymbol?.product_details?.sell}
           </div>
@@ -1816,7 +1813,7 @@ export default class TradeDetail extends React.Component {
               <p
                 className={`self-select-buy-sell-block ${
                   isHigh && "p-up stock-up"
-                  } ${!isHigh && "p-down stock-down"}`}
+                } ${!isHigh && "p-down stock-down"}`}
               >
                 {selectedSymbolInfo?.change ??
                   currentSymbol?.product_details?.change}
@@ -1824,12 +1821,12 @@ export default class TradeDetail extends React.Component {
               <p
                 className={`self-select-buy-sell-block ${
                   isHigh && "p-up stock-up"
-                  } ${!isHigh && "p-down stock-down"}`}
+                } ${!isHigh && "p-down stock-down"}`}
               >
                 {`${
                   selectedSymbolInfo?.chg ??
                   currentSymbol?.product_details?.change
-                  }%`}
+                }%`}
               </p>
             </div>
           </div>
@@ -1855,7 +1852,7 @@ export default class TradeDetail extends React.Component {
         <div
           className={`trade-detail-more-info-container ${
             moreInfo ? "show" : ""
-            }`}
+          }`}
         >
           {this.renderDetail()}
           {/* <div className="trade-detail-more-info-contract">
@@ -1987,8 +1984,8 @@ export default class TradeDetail extends React.Component {
         ) : quoted_price !== "one_price" ? (
           this.renderForexInput()
         ) : (
-              this.renderStockInput()
-            )}
+          this.renderStockInput()
+        )}
       </Page>
     );
   }

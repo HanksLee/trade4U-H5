@@ -48,6 +48,11 @@ export default class extends React.Component {
     const profitRule = this.props.common.profitRule;
     // console.log("profitRule :>> ", toJS(profitRule));
     const id = this.props.$f7route.params.id;
+    const didUserSubscribe = this.props.subscribe.userSubscribeMap[Number(id)]
+      ? true
+      : false;
+    if (didUserSubscribe) this.$f7router.back(); // 如果已申购直接挡掉
+
     const detail = this.props.subscribe.newStockMap[Number(id)];
     const data = this.mapApiDataToDisplayValue(detail);
     // console.log("data :>> ", data);
@@ -105,11 +110,12 @@ export default class extends React.Component {
       requiredBalance,
     } = this.calculateOrder();
     // console.log("order :>> ", this.calculateOrder());
+    // * 判断可用资金 > 认购金额 + 手续费 + 融资利息费
     if (Number(withdrawableBalance) < Number(requiredBalance)) {
       Modal.confirm({
         title: "提示",
         content: "可用资金不足",
-        className: "trade-modal",
+        className: "app-modal",
         centered: true,
         cancelText: "取消",
         okText: "确认",
@@ -119,7 +125,6 @@ export default class extends React.Component {
 
     const { lots } = this.state;
     const { id } = this.state.data;
-    // TODO: 判断可用资金 > 认购金额 + 手续费 + 融资利息费
     const payload = {
       new_stock: id,
       entrance_fee: entranceFee,
@@ -130,13 +135,25 @@ export default class extends React.Component {
     Modal.confirm({
       title: "提示",
       content: "确认送出申请 ?",
-      className: "trade-modal",
+      className: "app-modal",
       centered: true,
       cancelText: "取消",
       okText: "确认",
-      async onOk() {
+      onOk: async () => {
         const res = await api.subscribe.createSubscribeOrder(payload);
         // console.log("res :>> ", res);
+        if (res.status >= 200 && res.status <= 299) {
+          this.$f7router.navigate("/subscribe/");
+        } else {
+          Modal.confirm({
+            title: "提示",
+            className: "app-modal",
+            content: "下单失败",
+            centered: true,
+            okText: "确认",
+            cancelText: "取消",
+          });
+        }
       },
     });
   };

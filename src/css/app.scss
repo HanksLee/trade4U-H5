@@ -72,15 +72,13 @@ $primary: #21212b;
   color: #ff3b30;
 }
 
-.trade-modal.ant-modal-confirm {
+.app-modal.ant-modal-confirm {
   max-width: calc(100vw - 76px);
-
   &.success-modal {
     .ant-modal-confirm-body {
       .anticon {
         display: none;
       }
-
       .ant-modal-confirm-content {
         margin-left: unset;
       }
@@ -117,34 +115,24 @@ $primary: #21212b;
   .ant-modal-confirm-btns {
     float: none;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     margin-top: 20px;
-
-    > button {
+    > .ant-btn {
       width: 100px;
-      line-height: 28px;
-      padding: 0;
+      margin: 0 20px;
       font-size: 16px;
       border-radius: 4px;
+      background-color: transparent;
+      border: 1px solid #838d9e;
+      color: #838d9e;
 
-      &:nth-child(1) {
+      &.ant-btn-primary {
         background-color: rgba(242, 226, 5, 1);
         border: 1px solid rgba(242, 226, 5, 1);
         color: #21212b;
-
         &:active {
           background: #807816;
           border: 1px solid #807816;
-        }
-      }
-
-      &:nth-child(2) {
-        background-color: transparent;
-        border: 1px solid #838d9e;
-        color: #838d9e;
-
-        &:active {
-          opacity: 0.5;
         }
       }
     }
