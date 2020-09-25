@@ -21,6 +21,7 @@ import { MARKET_TYPE } from "constant";
 import moment from "moment";
 import utils from "utils";
 import * as math from "mathjs";
+import { symbol } from "prop-types";
 
 @inject("subscribe")
 @observer
@@ -73,7 +74,6 @@ class SubscribeDetail extends React.Component {
     // 转换 api 资料为要展示的格式
     const payload = { ...input };
     const {
-      market,
       subscription_date_start,
       subscription_date_end,
       draw_result_date,
@@ -94,7 +94,7 @@ class SubscribeDetail extends React.Component {
 
     payload["draw_result_date"] =
       draw_result_date && moment(draw_result_date).format("YYYY-MM-DD");
-    payload["market_name"] = MARKET_TYPE[market]["name"];
+
     payload["amount_per_lot"] = (
       Number(lots_size) * Number(maxPublicPrice)
     ).toFixed(2);
@@ -104,7 +104,6 @@ class SubscribeDetail extends React.Component {
     const {
       stock_name,
       public_price,
-      market_name,
       stock_code,
       subscription_date_start,
       subscription_date_end,
@@ -126,7 +125,7 @@ class SubscribeDetail extends React.Component {
         <div className="subscribe-detail-content">
           <div className="subscribe-detail-item">
             <div className="subscribe-detail-title">品种</div>
-            <div className="subscribe-detail-text">{market_name}</div>
+            <div className="subscribe-detail-text"> 🤪 </div>
           </div>
           <div className="subscribe-detail-item">
             <div className="subscribe-detail-title">申购代码</div>
@@ -177,9 +176,16 @@ class SubscribeOrderInfo extends React.Component {
   };
 
   render() {
-    const { wanted_lots, entrance_fee, loan } = this.mapApiDataToDisplayValue(
-      this.props.data
-    );
+    const {
+      wanted_lots,
+      entrance_fee,
+      loan,
+      hand_fee,
+      interest_rate,
+      interest,
+    } = this.mapApiDataToDisplayValue(this.props.data);
+    const amount = Number(entrance_fee) + Number(loan);
+    const loanRatio = (Number(loan) * 100) / amount;
     return (
       <React.Fragment>
         <div className="subscribe-detail-header">
@@ -193,7 +199,7 @@ class SubscribeOrderInfo extends React.Component {
             </div>
             <div className="subscribe-detail-item">
               <div className="subscribe-detail-title">手续费</div>
-              <div className="subscribe-detail-text">{"-"}</div>
+              <div className="subscribe-detail-text">{hand_fee}</div>
             </div>
             <div className="subscribe-detail-item">
               <div className="subscribe-detail-title">入场费</div>
@@ -201,11 +207,11 @@ class SubscribeOrderInfo extends React.Component {
             </div>
             <div className="subscribe-detail-item">
               <div className="subscribe-detail-title">认购金额</div>
-              <div className="subscribe-detail-text">{"-"}</div>
+              <div className="subscribe-detail-text">{amount}</div>
             </div>
             <div className="subscribe-detail-item">
               <div className="subscribe-detail-title">融资比例</div>
-              <div className="subscribe-detail-text">{"-%"}</div>
+              <div className="subscribe-detail-text">{`${loanRatio}%`}</div>
             </div>
             <div className="subscribe-detail-item">
               <div className="subscribe-detail-title">融资金额</div>
@@ -213,11 +219,11 @@ class SubscribeOrderInfo extends React.Component {
             </div>
             <div className="subscribe-detail-item">
               <div className="subscribe-detail-title">融资利息率</div>
-              <div className="subscribe-detail-text">{"-%"}</div>
+              <div className="subscribe-detail-text">{interest_rate}</div>
             </div>
             <div className="subscribe-detail-item">
-              <div className="subscribe-detail-title">利息费</div>
-              <div className="subscribe-detail-text">{"-"}</div>
+              <div className="subscribe-detail-title">融资利息费</div>
+              <div className="subscribe-detail-text">{interest}</div>
             </div>
           </div>
         </div>

@@ -20,6 +20,7 @@ import { inject, observer } from "mobx-react";
 import "antd/dist/antd.css";
 import "./index.scss";
 import cn from "classnames";
+import { SYMBOL_TYPE } from "../../constant";
 @inject("common", "message", "subscribe")
 @observer
 export default class SubscribePage extends React.Component {
@@ -34,20 +35,20 @@ export default class SubscribePage extends React.Component {
   toggleFilterMenu = () => {
     this.setState({ isFilterMenuOpen: !this.state.isFilterMenuOpen });
   };
-  setSubscribeFilter = (type) => {
-    this.setState({ subscribeFilter: type });
+  setSubscribeFilter = (isSubscribed) => {
+    this.setState({ subscribeFilter: isSubscribed });
     this.toggleFilterMenu();
   };
-  renderNewStockList = (marketFilter = {}) => {
-    // marketFilter 指定要显示的 market 分类，例如 HK,SZ...
-    // console.log("marketFilter :>> ", marketFilter);
+  renderNewStockList = (symbolTypeFilter = {}) => {
+    // symbolTypeFilter 指定要显示的 symbol_type 分类，例如 HK, ASHARES...
+    // console.log("symbolTypeFilter :>> ", symbolTypeFilter);
     const { subscribeFilter } = this.state;
     const { sortedNewStockList, newStockList } = this.props.subscribe;
     // console.log("newStockList :>> ", toJS(newStockList));
     const userSubscribeMap = this.props.subscribe.userSubscribeMap;
     return sortedNewStockList.map((data) => {
-      const { id, market } = data;
-      if (!marketFilter[market]) return; // 市场类型筛选
+      const { id, symbol_type } = data;
+      // if (!symbolTypeFilter[symbol_type]) return; // 品种类型筛选
       const didUserSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
       const orderInfo = userSubscribeMap[id] ?? {}; // 申购资讯
       if (subscribeFilter !== didUserSubscribe) return null; // 是否为已申购筛选
@@ -103,7 +104,8 @@ export default class SubscribePage extends React.Component {
                 {this.renderFilterMenu()}
               </div>
               <div className="subscribe-list">
-                {this.renderNewStockList({ HK: true })}
+                {/* TODO: 等后端改 hk 为 HK */}
+                {this.renderNewStockList({ hk: true })}
               </div>
             </div>
           )}
@@ -113,7 +115,8 @@ export default class SubscribePage extends React.Component {
                 {this.renderFilterMenu()}
               </div>
               <div className="subscribe-list">
-                {this.renderNewStockList({ SZ: true, SH: true })}
+                {/* TODO: 等后端改 a_shares 为 ASHARES */}
+                {this.renderNewStockList({ a_shares: true })}
               </div>
             </div>
           )}
@@ -129,7 +132,7 @@ class SubscribeItem extends React.Component {
     // 转换 api 资料为要展示的格式
     const payload = { ...input };
     const {
-      market,
+      symbol_type,
       subscription_date_start,
       subscription_date_end,
       draw_result_date,
@@ -144,7 +147,7 @@ class SubscribeItem extends React.Component {
     payload["subscription_date_end"] = moment(subscription_date_end).format(
       "MM-DD"
     );
-    payload["market_name"] = MARKET_TYPE[market]["name"];
+    payload["symbol_type_name"] = SYMBOL_TYPE[symbol_type];
     payload["draw_result_date"] = moment(draw_result_date).format("YYYY-MM-DD");
     return payload;
   };

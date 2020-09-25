@@ -183,7 +183,13 @@ export const supportedResolution = [
   "1D",
   "7D",
 ];
-
+export const SYMBOL_TYPE = {
+  HK: "港股",
+  ASHARES: "A股",
+  MT: "外汇",
+  hk: "港股",
+  a_shares: "A股",
+};
 export const MARKET_TYPE = {
   HK: { name: "港股" },
   SZ: { name: "深圳" },
