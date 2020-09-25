@@ -164,6 +164,12 @@ $primary: #21212b;
   .ant-picker.ant-picker-borderless {
     background-color: #17283e !important;
 
+    &.date-picker-right {
+      input {
+        text-align: right;
+      }
+    }
+
     input {
       color: #ffffff;
     }
@@ -177,6 +183,65 @@ $primary: #21212b;
     background: rgba(23, 40, 62, 1);
     flex-basis: 33.333%;
     text-align: center;
+  }
+}
+
+.ant-picker-dropdown {
+  .ant-picker-panel-container {
+    background-color: #2b3542;
+
+    .ant-picker-panel {
+      border: unset;
+    }
+
+    .ant-picker-header {
+      border-bottom: unset;
+
+      button {
+        width: unset;
+        color: #ffffff;
+      }
+    }
+
+    .ant-picker-body {
+      .ant-picker-content {
+        th,
+        .ant-picker-cell-in-view {
+          color: #ffffff;
+          font-size: 16px;
+        }
+
+        .ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end):not(.ant-picker-cell-range-hover-start):not(.ant-picker-cell-range-hover-end) .ant-picker-cell-inner {
+          background-color: transparent;
+        }
+
+        .ant-picker-cell-disabled {
+          &::before {
+            background: unset;
+          }
+
+          .ant-picker-cell-inner {
+            color: rgba(0, 0, 0, 0.5);
+          }
+        }
+
+        .ant-picker-cell-selected {
+          .ant-picker-cell-inner {
+            background: unset;
+            color: unset;
+            border: 1px solid #f2e205;
+            border-radius: 50%;
+          }
+        }
+
+        .ant-picker-cell-today {
+          .ant-picker-cell-inner::before,
+          .ant-picker-cell-inner::after {
+            content: unset;
+          }
+        }
+      }
+    }
   }
 }
 

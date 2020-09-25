@@ -21,7 +21,7 @@ export default class extends React.Component {
     totalData: {},
     page_size: 20,
     page: 1,
-    create_time_start: moment(),
+    create_time_start: moment(moment().startOf('day').valueOf()),
     create_time_end: moment(),
     total_count: 0,
   };
@@ -30,8 +30,9 @@ export default class extends React.Component {
     this.getList();
   }
 
-  onCreateTimeStartChange = (moment) => {
-    this.setState({ create_time_start: moment }, () => this.getList());
+  onCreateTimeStartChange = (changeMoment) => {
+    let time_start = moment(changeMoment.startOf('day').valueOf());
+    this.setState({ create_time_start: time_start }, () => this.getList());
   };
 
   onCreateTimeEndChange = (moment) => {
@@ -116,6 +117,7 @@ export default class extends React.Component {
           ></DatePicker>
           <div>至</div>
           <DatePicker
+            className="date-picker-right"
             onChange={this.onCreateTimeEndChange}
             value={this.create_time_end}
             locale={locale}
