@@ -42,10 +42,10 @@ export default class SubscribePage extends React.Component {
     // marketFilter 指定要显示的 market 分类，例如 HK,SZ...
     // console.log("marketFilter :>> ", marketFilter);
     const { subscribeFilter } = this.state;
-    const newStockList = this.props.subscribe.newStockList;
+    const { sortedNewStockList, newStockList } = this.props.subscribe;
     // console.log("newStockList :>> ", toJS(newStockList));
     const userSubscribeMap = this.props.subscribe.userSubscribeMap;
-    return newStockList.map((data) => {
+    return sortedNewStockList.map((data) => {
       const { id, market } = data;
       if (!marketFilter[market]) return; // 市场类型筛选
       const didUserSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购

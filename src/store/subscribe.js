@@ -8,6 +8,21 @@ import momentTimezone from "moment-timezone";
 class SubscribeStore extends BaseStore {
   @observable
   newStockList = [];
+  @computed get sortedNewStockList() {
+    const expiredList = [];
+    const runningList = [];
+    const notStartedList = [];
+    for (let item of this.newStockList) {
+      if (item.isExpired) {
+        expiredList.push(item);
+      } else if (item.isNotStarted) {
+        notStartedList.push(item);
+      } else {
+        runningList.push(item);
+      }
+    }
+    return [...runningList, ...notStartedList, ...expiredList];
+  }
   @computed get newStockMap() {
     if (this.newStockList.length === 0) return {};
     try {
