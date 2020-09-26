@@ -34,6 +34,7 @@ import "antd/dist/antd.css";
 import "./index.scss";
 import ReactEcharts from "echarts-for-react";
 import { create, all } from "mathjs";
+import produce from "immer";
 import ContactsListComponent from "framework7/components/contacts-list/contacts-list";
 const config = {
   number: "BigNumber",
@@ -77,7 +78,7 @@ export default class TradeDetail extends React.Component {
       stockParams: {
         holdDays: "",
         action: 0,
-        margin_value: 10000,
+        margin_value: 0,
         unitFunds: 100,
         leverage: 1,
         rules: {
@@ -100,9 +101,20 @@ export default class TradeDetail extends React.Component {
     };
   }
   profitRule = this.props.common.nowProfitRule;
+  init = async () => {
+    // 初始表单参数
+    const { currentSymbol } = this.props.market;
+    const { min_margin_value } = currentSymbol.symbol_display;
+    this.setState(
+      produce((draft) => {
+        draft.stockParams.margin_value = min_margin_value;
+      })
+    );
+  };
 
   async componentDidMount() {
-    await this.initSymbolList();
+    await this.fetchCurrentSymbol();
+    await this.init();
 
     const { stockParams } = this.state;
     const { mode, currentTradeTab } = this.props;
@@ -117,10 +129,16 @@ export default class TradeDetail extends React.Component {
       calculate_for_sell_stock_fee,
       calculate_for_sell_tax,
       contract_size,
+      min_margin_value,
     } = currentSymbol.symbol_display;
 
     const { margin_value, leverage } =
       mode === "add" ? stockParams : currentTrade;
+    /**
+     * add 是从产品页进入下单页
+     * 另一个模式是从 交易持仓页进入下单页
+     * 想分开但我怕豹不敢改
+     */
     const { sell } = currentSymbol.product_details ?? { sell: 0 };
     const leverageMap = currentSymbol?.symbol_display?.leverage.split(",");
     const defaultLeverage = mode === "add" ? leverageMap[0] : leverage;
@@ -285,25 +303,12 @@ export default class TradeDetail extends React.Component {
     });
   };
 
-  initSymbolList = async () => {
-    const {
-      currentSymbol,
-      getSymbolList,
-      setCurrentSymbol,
-      getCurrentSymbol,
-    } = this.props.market;
-
+  fetchCurrentSymbol = async () => {
+    const { currentSymbol, getCurrentSymbol } = this.props.market;
     const { id, mode } = this.props;
-
     if (utils.isEmpty(currentSymbol) || currentSymbol.id !== id) {
       await getCurrentSymbol(id);
     }
-
-    // await getCurrentSymbol(
-    //   mode == "add" && (id == null || id == 0)
-    //     ? this.props.market.symbolList[0]?.id
-    //     : id
-    // );
   };
 
   getStockBuyCount = (totalFunds, sell, contract_size) => {
@@ -559,23 +564,22 @@ export default class TradeDetail extends React.Component {
       },
     });
   };
-
   onFundsChanged = (value, change, field) => {
     const { stockParams, params } = this.state;
     const { leverage } = stockParams;
     const { currentSymbol } = this.props.market;
     const { product_details, symbol_display } = currentSymbol;
-    const { contract_size } = symbol_display;
+    const { contract_size, min_margin_value } = symbol_display;
     const { sell } = product_details ?? { sell: 0 };
     let fieldValue = value || stockParams[field];
-
-    if (change !== null) {
-      if (!utils.isEmpty(fieldValue)) {
-        fieldValue += change;
-      } else {
-        fieldValue = 10000;
+    if (fieldValue)
+      if (change !== null) {
+        if (!utils.isEmpty(fieldValue)) {
+          fieldValue += change;
+        } else {
+          fieldValue = min_margin_value;
+        }
       }
-    }
 
     const { lots, trading_volume, totalFunds } = this.getTradingVolumeInfo(
       fieldValue,
@@ -712,6 +716,8 @@ export default class TradeDetail extends React.Component {
     } = this.props;
     const { success, error } = Modal;
     const lots = params.lots;
+    const { min_margin_value, max_margin_value } = currentSymbol.symbol_display;
+    const { margin_value } = stockParams;
 
     if (!isSubmit) {
       this.setState({
