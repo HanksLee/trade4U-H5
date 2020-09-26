@@ -2,20 +2,9 @@ import intl from "react-intl-universal";
 import React from "react";
 import utils from "utils";
 import moment from "moment";
-import { Modal } from "antd";
-import { Tabs } from "antd-mobile";
-import api from "services";
 import { toJS } from "mobx";
-import { MARKET_TYPE } from "constant";
-import {
-  Page,
-  Navbar,
-  NavTitle,
-  NavRight,
-  NavLeft,
-  Icon,
-  Link,
-} from "framework7-react";
+import { Page, Navbar, NavTitle, NavRight, NavLeft } from "framework7-react";
+import { Tabs } from "antd-mobile";
 import { inject, observer } from "mobx-react";
 import "antd/dist/antd.css";
 import "./index.scss";
@@ -43,9 +32,9 @@ export default class SubscribePage extends React.Component {
     // symbolTypeFilter 指定要显示的 symbol_type 分类，例如 HK, ASHARES...
     // console.log("symbolTypeFilter :>> ", symbolTypeFilter);
     const { subscribeFilter } = this.state;
-    const { sortedNewStockList, newStockList } = this.props.subscribe;
-    // console.log("newStockList :>> ", toJS(newStockList));
+    const { sortedNewStockList } = this.props.subscribe;
     const userSubscribeMap = this.props.subscribe.userSubscribeMap;
+    // console.log("sortedNewStockList :>> ", toJS(sortedNewStockList));
     return sortedNewStockList.map((data) => {
       const { id, symbol_type } = data;
       // if (!symbolTypeFilter[symbol_type]) return; // 品种类型筛选
@@ -80,8 +69,45 @@ export default class SubscribePage extends React.Component {
     );
   };
   render() {
-    const tabs = [{ title: "港股" }, { title: "沪深" }];
     const newStockList = this.props.subscribe.newStockList; // 要读取 newStockList，@observer 才能响应
+    const configMap = this.props.common.configMap;
+    const isHkPageVisible = utils.parseBool(configMap["hk_new_stock_switch"]);
+    const isAsharesVisible = utils.parseBool(
+      configMap["ashares_new_stock_switch"]
+    );
+    const pageMap = {
+      HK: isHkPageVisible && {
+        title: "港股",
+        render: () => (
+          <div className="subscribe-tab-page">
+            <div className="subscribe-list-header">
+              {this.renderFilterMenu()}
+            </div>
+            <div className="subscribe-list">
+              {/* TODO: 等后端改 hk 为 HK */}
+              {this.renderNewStockList({ hk: true })}
+            </div>
+          </div>
+        ),
+      },
+      ASHARES: isAsharesVisible && {
+        title: "A股",
+        render: () => (
+          <div className="subscribe-tab-page">
+            <div className="subscribe-list-header">
+              {this.renderFilterMenu()}
+            </div>
+            <div className="subscribe-list">
+              {/* TODO: 等后端改 a_shares 为 ASHARES */}
+              {this.renderNewStockList({ a_shares: true })}
+            </div>
+          </div>
+        ),
+      },
+    };
+    const pageList = Object.values(pageMap).filter((v) => v);
+    const tabs = pageList;
+
     return (
       <Page name="subscribe" className="subscribe-page">
         <Navbar className="subscribe-navbar">
@@ -91,35 +117,16 @@ export default class SubscribePage extends React.Component {
         </Navbar>
         <Tabs
           tabs={tabs}
-          renderTabBar={(props) => <Tabs.DefaultTabBar {...props} page={2} />}
+          renderTabBar={(props) => (
+            <Tabs.DefaultTabBar {...props} page={tabs.length} />
+          )}
           initialPage={0}
           tabBarBackgroundColor="#21212b"
           tabBarActiveTextColor="#F2E205"
           tabBarInactiveTextColor="#838D9E"
           tabBarUnderlineStyle={{ border: "1px solid #F2E205" }}
         >
-          {() => (
-            <div className="subscribe-tab-page">
-              <div className="subscribe-list-header">
-                {this.renderFilterMenu()}
-              </div>
-              <div className="subscribe-list">
-                {/* TODO: 等后端改 hk 为 HK */}
-                {this.renderNewStockList({ hk: true })}
-              </div>
-            </div>
-          )}
-          {() => (
-            <div className="subscribe-tab-page">
-              <div className="subscribe-list-header">
-                {this.renderFilterMenu()}
-              </div>
-              <div className="subscribe-list">
-                {/* TODO: 等后端改 a_shares 为 ASHARES */}
-                {this.renderNewStockList({ a_shares: true })}
-              </div>
-            </div>
-          )}
+          {pageList.map((each) => each.render)}
         </Tabs>
       </Page>
     );

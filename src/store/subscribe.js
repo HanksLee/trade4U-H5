@@ -21,7 +21,7 @@ class SubscribeStore extends BaseStore {
         runningList.push(item);
       }
     }
-    return [...runningList, ...notStartedList, ...expiredList];
+    return observable([...runningList, ...notStartedList, ...expiredList]);
   }
   @computed get newStockMap() {
     if (this.newStockList.length === 0) return {};
