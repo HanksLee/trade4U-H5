@@ -17,7 +17,7 @@ import {
 } from "framework7-react";
 import { inject, observer } from "mobx-react";
 import "./index.scss";
-import { MARKET_TYPE } from "constant";
+import { SYMBOL_TYPE } from "constant";
 import moment from "moment";
 import utils from "utils";
 import * as math from "mathjs";
@@ -80,6 +80,7 @@ class SubscribeDetail extends React.Component {
       public_date,
       public_price,
       lots_size,
+      symbol_type,
     } = payload;
     const [minPublicPrice, maxPublicPrice] = utils.parseRange(public_price);
     payload["public_date"] = public_date
@@ -94,7 +95,7 @@ class SubscribeDetail extends React.Component {
 
     payload["draw_result_date"] =
       draw_result_date && moment(draw_result_date).format("YYYY-MM-DD");
-
+    payload["symbol_type_name"] = SYMBOL_TYPE[symbol_type];
     payload["amount_per_lot"] = (
       Number(lots_size) * Number(maxPublicPrice)
     ).toFixed(2);
@@ -112,6 +113,7 @@ class SubscribeDetail extends React.Component {
       lots_size,
       currency,
       amount_per_lot,
+      symbol_type_name,
     } = this.mapApiDataToDisplayValue(this.props.data);
     return (
       <React.Fragment>
@@ -125,7 +127,7 @@ class SubscribeDetail extends React.Component {
         <div className="subscribe-detail-content">
           <div className="subscribe-detail-item">
             <div className="subscribe-detail-title">品种</div>
-            <div className="subscribe-detail-text"> 🤪 </div>
+            <div className="subscribe-detail-text">{symbol_type_name}</div>
           </div>
           <div className="subscribe-detail-item">
             <div className="subscribe-detail-title">申购代码</div>
