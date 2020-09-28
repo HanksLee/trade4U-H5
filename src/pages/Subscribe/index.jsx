@@ -37,7 +37,7 @@ export default class SubscribePage extends React.Component {
     // console.log("sortedNewStockList :>> ", toJS(sortedNewStockList));
     return sortedNewStockList.map((data) => {
       const { id, symbol_type } = data;
-      // if (!symbolTypeFilter[symbol_type]) return; // 品种类型筛选
+      if (!symbolTypeFilter[symbol_type]) return; // 品种类型筛选
       const didUserSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
       const orderInfo = userSubscribeMap[id] ?? {}; // 申购资讯
       if (subscribeFilter !== didUserSubscribe) return null; // 是否为已申购筛选
@@ -84,8 +84,7 @@ export default class SubscribePage extends React.Component {
               {this.renderFilterMenu()}
             </div>
             <div className="subscribe-list">
-              {/* TODO: 等后端改 hk 为 HK */}
-              {this.renderNewStockList({ hk: true })}
+              {this.renderNewStockList({ HK: true })}
             </div>
           </div>
         ),
@@ -98,8 +97,7 @@ export default class SubscribePage extends React.Component {
               {this.renderFilterMenu()}
             </div>
             <div className="subscribe-list">
-              {/* TODO: 等后端改 a_shares 为 ASHARES */}
-              {this.renderNewStockList({ a_shares: true })}
+              {this.renderNewStockList({ ASHARES: true })}
             </div>
           </div>
         ),
