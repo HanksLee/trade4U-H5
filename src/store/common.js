@@ -43,6 +43,26 @@ class CommonStore extends BaseStore {
   setConfigList = (payload) => {
     this.configList = payload;
   };
+  @action
+  setQuoteColor = () => {
+    const colorMode = localStorage.getItem("color_mode");
+    const root = document.documentElement;
+    if (colorMode === "hk_style") {
+      root.style.setProperty('--up-color', `#e94a39`)
+      root.style.setProperty('--down-color', `#44d7b6`)
+      root.style.setProperty('--up-color-rgb', `233, 74, 57`)
+      root.style.setProperty('--down-color-rgb', `68, 215, 182`)
+      // this.colorUp = 'p-red';
+      // this.colorDown = 'p-green';
+    } else {
+      root.style.setProperty('--up-color', `#44d7b6`)
+      root.style.setProperty('--down-color', `#e94a39`)
+      root.style.setProperty('--up-color-rgb', `68, 215, 182`)
+      root.style.setProperty('--down-color-rgb', `233, 74, 57`)
+      // this.colorUp = 'p-green';
+      // this.colorDown = 'p-red';
+    }
+  }
 
   @action
   getKeyConfig = (key) => {
