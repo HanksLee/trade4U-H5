@@ -718,7 +718,14 @@ export default class TradeDetail extends React.Component {
     const lots = params.lots;
     const { min_margin_value, max_margin_value } = currentSymbol.symbol_display;
     const { margin_value } = stockParams;
-
+    if (margin_value < min_margin_value || margin_value > max_margin_value) {
+      error({
+        title: "提示",
+        className: "app-modal success-modal",
+        content: `可用资金超出限制范围: ${min_margin_value} ~ ${max_margin_value}`,
+      });
+      return;
+    }
     if (!isSubmit) {
       this.setState({
         isSubmit: true,
