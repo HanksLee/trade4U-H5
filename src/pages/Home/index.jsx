@@ -19,11 +19,12 @@ import WS_Symbol from "components/Websocket/Symbol";
 export default class extends React.Component {
   $event = null;
   componentDidMount() {
-    this.$f7ready((f7) => {
+    this.$f7ready(async (f7) => {
       const token = utils.getLStorage("MOON_H5_TOKEN");
       this.$event = new Framework7.Events();
       this.props.common.setGlobalEvent(this.$event);
-      this.props.common.getConfigList();
+      await this.props.common.getConfigList();
+      this.getQuoteColor();
     });
   }
   componentWillUnmount = () => {
@@ -32,6 +33,15 @@ export default class extends React.Component {
     //   this.props.message.wsConnect.close();
     // }
   };
+
+  getQuoteColor = () => {
+    const { configMap } = this.props.common;
+    if (!localStorage.getItem("color_mode")) {
+      const colorMode = configMap["color_mode"];
+      localStorage.setItem("color_mode", colorMode)
+    }
+    this.props.common.setQuoteColor();
+  }
 
   updateLastestSymbol = () => {
     this.$event.emit("update-latest-symbol");
