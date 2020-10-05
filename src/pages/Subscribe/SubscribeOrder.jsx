@@ -160,18 +160,24 @@ export default class extends React.Component {
   calculateOrder = () => {
     // 回传值皆为 2位小数字串
     const profitRule = this.props.common.profitRule;
+
     const {
       amount_per_lot,
       interest_mul_days,
       new_stock_hand_fee,
+      tax_rate = "0.010077",
     } = this.state.data;
     const { lots, loanRatio } = this.state;
-    // amount 认购金额 = lots 认购手数 * 每手金额
-    // loan 融资金额 = amount 认购金额 * 融资比例
-    // entranceFee 入场费 = amount 认购金额 - loan 融资金额
-    const amount = (Number(lots) * Number(amount_per_lot)).toFixed(2);
-    const loan = (Number(amount) * Number(loanRatio)).toFixed(2);
-    const entranceFee = (Number(amount) - Number(loan)).toFixed(2);
+    // totalAmount 认购金额 = lots 认购手数 * 每手金额 * (1 + tax_rate) 税率
+    // loan 融资金额 = totalAmount 认购金额 * 融资比例
+    // entranceFee 入场费 = totalAmount 认购金额 - loan 融资金额
+    const totalAmount = (
+      Number(lots) *
+      Number(amount_per_lot) *
+      (1 + Number(tax_rate))
+    ).toFixed(2);
+    const loan = (Number(totalAmount) * Number(loanRatio)).toFixed(2);
+    const entranceFee = (Number(totalAmount) - Number(loan)).toFixed(2);
     const handFeeFormula = profitRule["new_stock_hands_fee"];
     const loanInterestFormula = profitRule["new_stock_interest"];
     const loanInterest = math
@@ -193,7 +199,7 @@ export default class extends React.Component {
     ).toFixed(2);
     const withdrawableBalance = this.props.setting.withdrawableBalance;
     return {
-      amount,
+      totalAmount,
       loan,
       entranceFee,
       loanInterest,
@@ -208,7 +214,7 @@ export default class extends React.Component {
     const { stock_name, public_price, lots_size } = this.state.data;
     const { lots, loanRatio } = this.state;
     const {
-      amount,
+      totalAmount,
       loan,
       entranceFee,
       loanInterest,
@@ -271,13 +277,10 @@ export default class extends React.Component {
               <div className="order-input-item-title">手续费</div>
               <div className="order-input-item-text">{handFee}</div>
             </div>
-            <div className="order-input-item">
-              <div className="order-input-item-title">入场费</div>
-              <div className="order-input-item-text">{entranceFee}</div>
-            </div>
+
             <div className="order-input-item">
               <div className="order-input-item-title">认购金额</div>
-              <div className="order-input-item-text">{amount}</div>
+              <div className="order-input-item-text">{totalAmount}</div>
             </div>
           </div>
           <div className="order-container-bottom">
@@ -312,7 +315,13 @@ export default class extends React.Component {
               <div className="order-input-item-text">{loanInterest}</div>
             </div>
             <div className="order-input-item">
-              <div className="order-input-item-title">需本金</div>
+              <div className="order-input-item-title">入场费</div>
+              <div className="order-input-item-text">{entranceFee}</div>
+            </div>
+          </div>
+          <div className="order-container-bottom">
+            <div className="order-input-item">
+              <div className="order-input-item-title">所需本金</div>
               <div className="order-input-item-text">{requiredBalance}</div>
             </div>
             <div className="order-input-item">
@@ -321,7 +330,7 @@ export default class extends React.Component {
             </div>
           </div>
         </div>
-
+        <SubscribeRule />
         <div
           className={`subscribe-order-submit-btn`}
           style={{ marginBottom: "20px" }}
@@ -338,15 +347,9 @@ function SubscribeRule(props) {
   return (
     <div className="subscribe-order-remarks-container">
       <div className="order-remarks-item">
-        <div className="order-remarks-item-title">备注说明</div>
+        <div className="order-remarks-item-title">认购金额</div>
         <div className="order-remarks-item-content">
-          <li> 1. 中签者将收取： 入场费 + 程序费 + 孖仔费 </li>
-          <li> 2. 未中签者将收取： 程序费 + 孖仔费</li>
-        </div>
-      </div>
-      <div className="order-remarks-item">
-        <div className="order-remarks-item-title">入场费</div>
-        <div className="order-remarks-item-content">
+          <p>认购金额为： 申购手数 * 每手股数 * 申购价格 * (1 + 1.0077%)</p>
           <p>
             1.0077% 为 「 1% 的经纪佣金 + 0.0027% 証监会征费 + 0.005%
             联交所交易费 」
@@ -354,7 +357,7 @@ function SubscribeRule(props) {
         </div>
       </div>
       <div className="order-remarks-item">
-        <div className="order-remarks-item-title">孖仔费</div>
+        <div className="order-remarks-item-title">融资利息</div>
         <div className="order-remarks-item-content">
           <p> 融资额 * 年利率 / 365 * 佔用资金天数</p>
         </div>

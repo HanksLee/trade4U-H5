@@ -198,8 +198,7 @@ class SubscribeItem extends React.Component {
       subscription_date_start,
       subscription_date_end,
     } = this.mapApiDataToDisplayValue(data);
-    const { wanted_lots, loan, entrance_fee } = orderInfo;
-    const amount = Number(loan) + Number(entrance_fee);
+    const { wanted_lots, total_subscription_amount } = orderInfo;
     const tag = this.getTag();
     return (
       <div
@@ -228,7 +227,7 @@ class SubscribeItem extends React.Component {
           {didUserSubscribe && (
             <React.Fragment>
               <p>申购手数：{wanted_lots}</p>
-              <p>申购金额：{amount}</p>
+              <p>申购金额：{total_subscription_amount}</p>
             </React.Fragment>
           )}
         </div>
