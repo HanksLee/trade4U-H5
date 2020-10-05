@@ -30,7 +30,6 @@ const backBtnComponent = (self) => {
       返回
 </Button>
   ])
-
 }
 
 const getDomMap = (self) => {
@@ -292,28 +291,30 @@ export default class GuideModal extends BaseReact {
     const { userAuthentication } = this.props.setting;
     const {
       onCancel,
-      common: { computedUserInfo },
+      common: { computedUserInfo, guideModalVisible },
     } = this.props;
     const domMap = getDomMap(this);
     const domInfo = domMap[userAuthentication] || {};
     // const domInfo = domMap[STATUS] || {};
     return (
-      <Modal
-        visible={true}
-        title={domInfo?.title || modelTitle}
-        className={"guide-modal"}
-        width="100%"
-        // closeIcon={<img src={closeModalIcon} alt="close-modal-icon" />}
-        footer={null}
-        centered
-        onCancel={onCancel}
-        closable={false}
-      >
-        <div>
-          {this.renderSteps()}
-          {this.renderTip()}
-        </div>
-      </Modal>
+      <>
+        {guideModalVisible && <Modal
+          visible={true}
+          title={domInfo?.title || modelTitle}
+          className={"guide-modal"}
+          width="100%"
+          // closeIcon={<img src={closeModalIcon} alt="close-modal-icon" />}
+          footer={null}
+          centered
+          onCancel={onCancel}
+          closable={false}
+        >
+          <div>
+            {this.renderSteps()}
+            {this.renderTip()}
+          </div>
+        </Modal>}
+      </>
     );
   }
 }

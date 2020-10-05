@@ -27,6 +27,11 @@ export default class extends React.Component {
       this.getQuoteColor();
     });
   }
+
+  // shouldComponentUpdate() {
+  //   return false;
+  // }
+
   componentWillUnmount = () => {
     // const token = utils.getLStorage("MOON_H5_TOKEN");
     // if (token && this.props.message.wsConnect) {
@@ -49,15 +54,15 @@ export default class extends React.Component {
   render() {
     const { hasAnnouncement, hasNotify } = this.props.message;
     // 取得系统配置参数，转换为物件，并动态渲染可见页面
-    const { configMap, guideModalVisible } = this.props.common;
+    const { configMap } = this.props.common;
     // console.log("configMap :>> ", configMap);
     const isSubscribePageVisible = utils.parseBool(configMap["function_ipo"]); // 申购页
     const isNewsPageVisible = utils.parseBool(configMap["function_news"]); // 新闻页
     return (
       <Page name="home">
         <WS_Symbol />
+        <GuideModal />
         <Views tabs className="safe-areas">
-          {guideModalVisible && <GuideModal></GuideModal>}
           <View
             key="view-market"
             id="view-market"

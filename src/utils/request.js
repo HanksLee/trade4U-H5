@@ -60,13 +60,16 @@ export default class API {
             //   position: "center",
             //   closeTimeout: 2000,
             // });
-            localStorage.removeItem("MOON_H5_TOKEN");
-            // f7.router.app.views.main.router.navigate("/login");
-            // f7.router.app.views.main.router.navigate("/login", {
-            //   reloadCurrent: true,
-            //   ignoreCache: true,
-            // });
-            window.location.reload();
+            const token = localStorage.getItem("MOON_H5_TOKEN")
+            if (token) {
+              localStorage.removeItem("MOON_H5_TOKEN");
+              // f7.router.app.views.main.router.navigate("/login");
+              // f7.router.app.views.main.router.navigate("/login", {
+              //   reloadCurrent: true,
+              //   ignoreCache: true,
+              // });
+              window.location.reload();
+            }
           }
         }
 

@@ -109,6 +109,18 @@ export default class extends React.Component {
       withdrawableBalance,
       requiredBalance,
     } = this.calculateOrder();
+    const { userAuthentication } = this.props.setting;
+    const { toggleGuideModalVisible, setThisRouter, configMap } = this.props.common;
+    const userAuth = configMap["user_authentication"];
+
+    //如果沒有認證或沒入金會出現提示框
+    if ((userAuth === 'withdraw_authentication' && userAuthentication === 0) ||
+      (userAuth !== 'withdraw_authentication' && userAuthentication !== 3)) {
+      await setThisRouter(this.$f7router)
+      toggleGuideModalVisible()
+      return;
+    }
+
     // console.log("order :>> ", this.calculateOrder());
     // * 判断可用资金 > 认购金额 + 手续费 + 融资利息费
     if (Number(withdrawableBalance) < Number(requiredBalance)) {

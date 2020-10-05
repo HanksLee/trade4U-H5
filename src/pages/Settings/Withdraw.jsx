@@ -47,11 +47,14 @@ export default class extends React.Component {
   withdraw = async (values) => {
     const { userAuthentication } = this.props.setting;
     const { toggleGuideModalVisible, setThisRouter } = this.props.common;
+
+    //如果沒有認證或沒入金會出現提示框
     if (userAuthentication !== 3) {
       await setThisRouter(this.$f7router)
       toggleGuideModalVisible()
       return;
     }
+
     const res = await api.setting.withdraw(values);
     if (res.status == 201) {
       this.getWithdrawableBalance();

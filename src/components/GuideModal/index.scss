@@ -56,6 +56,10 @@
       }
     }
 
+    .ant-steps-item-wait .ant-steps-item-icon > .ant-steps-icon {
+      color: #ffffff;
+    }
+
     .ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after {
       background-color: #f2e205;
     }
