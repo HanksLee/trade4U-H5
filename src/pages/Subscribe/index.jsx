@@ -10,6 +10,7 @@ import "antd/dist/antd.css";
 import "./index.scss";
 import cn from "classnames";
 import { SYMBOL_TYPE } from "../../constant";
+
 @inject("common", "message", "subscribe")
 @observer
 export default class SubscribePage extends React.Component {
@@ -52,6 +53,7 @@ export default class SubscribePage extends React.Component {
       );
     });
   };
+
   renderFilterMenu = () => {
     const { subscribeFilter, isFilterMenuOpen } = this.state;
     return (
@@ -130,7 +132,15 @@ export default class SubscribePage extends React.Component {
     );
   }
 }
-
+const tags = {
+  1: { id: "1", name: "未开始" },
+  2: { id: "2", name: "进行中" },
+  3: { id: "3", name: "已截止" },
+  11: { id: "11", name: "已申购" },
+  12: { id: "12", name: "可申购" },
+  21: { id: "21", name: "已中签" },
+  22: { id: "22", name: "未中签" },
+};
 class SubscribeItem extends React.Component {
   state = {};
   mapApiDataToDisplayValue = (input) => {
@@ -156,6 +166,29 @@ class SubscribeItem extends React.Component {
     payload["draw_result_date"] = moment(draw_result_date).format("YYYY-MM-DD");
     return payload;
   };
+  getTag = () => {
+    const { data, didUserSubscribe, orderInfo } = this.props;
+    const { isNotStarted, isExpired, isDrawn } = data;
+    const { drawing_of_lots_status } = orderInfo ?? {};
+    const isWinning = drawing_of_lots_status === "1";
+    if (didUserSubscribe) {
+      if (isDrawn) {
+        if (isWinning) return tags[21];
+        if (!isWinning) return tags[22];
+      } else {
+        return tags[11];
+      }
+    } else {
+      if (isExpired) {
+        return tags[3];
+      } else if (isNotStarted) {
+        return tags[1];
+      } else {
+        return tags[12];
+      }
+    }
+    return { id: "-1", name: "" };
+  };
   render() {
     const { data, router, didUserSubscribe, orderInfo } = this.props;
     const {
@@ -164,16 +197,16 @@ class SubscribeItem extends React.Component {
       public_price,
       subscription_date_start,
       subscription_date_end,
-      isExpired,
-      isNotStarted,
     } = this.mapApiDataToDisplayValue(data);
     const { wanted_lots, loan, entrance_fee } = orderInfo;
     const amount = Number(loan) + Number(entrance_fee);
+    const tag = this.getTag();
     return (
       <div
         className={cn("subscribe-item", {
-          "is-subscribed": didUserSubscribe,
-          "is-disabled": isExpired || isNotStarted,
+          "green-tag": tag.id === "11",
+          "yellow-tag": tag.id === "12",
+          "orange-tag": tag.id === "21",
         })}
         onClick={() => router.navigate(`/subscribe/detail/${id}`)}
       >
@@ -186,15 +219,7 @@ class SubscribeItem extends React.Component {
         </div>
         <div className="subscribe-item-middle">
           <p>
-            <span className="subscribe-remark">
-              {isExpired
-                ? "已截止"
-                : isNotStarted
-                ? "未开始"
-                : didUserSubscribe
-                ? "已申购"
-                : "可申购"}
-            </span>
+            <span className="subscribe-remark">{tag.name}</span>
             {stock_name}
           </p>
           <p>

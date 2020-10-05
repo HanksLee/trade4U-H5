@@ -44,12 +44,17 @@ class SubscribeStore extends BaseStore {
     // console.log("nowMoment :>> ", nowMoment);
     const newStockList = res.data
       .map((each) => {
-        const { subscription_date_end, subscription_date_start } = each;
+        const {
+          subscription_date_end,
+          subscription_date_start,
+          draw_result_date,
+        } = each;
 
-        each["isExpired"] = nowMoment.isAfter(moment(subscription_date_end));
         each["isNotStarted"] = nowMoment.isBefore(
           moment(subscription_date_start)
         );
+        each["isExpired"] = nowMoment.isAfter(moment(subscription_date_end));
+        each["isDrawn"] = nowMoment.isAfter(moment(draw_result_date));
         return each;
       })
       .reverse(); // 改为日期由新到旧排序
