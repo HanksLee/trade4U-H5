@@ -6,25 +6,16 @@ import { createForm } from "rc-form";
 import { Select, Form, InputNumber, Button, Spin } from "antd";
 import { Page, Navbar, NavTitle, NavLeft, Link, Icon } from "framework7-react";
 import { inject, observer } from "mobx-react";
+import GuideModal from "components/GuideModal";
 import api from "services";
 import moment from "moment";
 import { LoadingOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import "./index.scss";
 
-const country = [
-  {
-    label: "HongKong",
-    value: "hk",
-  },
-  {
-    label: "China",
-    value: "china",
-  },
-];
 
 @createForm()
-@inject("setting")
+@inject("setting", "common")
 @observer
 export default class extends React.Component {
   paymentWindow = null;
@@ -65,6 +56,13 @@ export default class extends React.Component {
   };
 
   deposit = async (values) => {
+    const { userAuthentication } = this.props.setting;
+    const { toggleGuideModalVisible, setThisRouter } = this.props.common;
+    if (userAuthentication !== 3) {
+      await setThisRouter(this.$f7router)
+      toggleGuideModalVisible()
+      return;
+    }
     if (!this.state.isPaying) {
       try {
         const res = await api.setting.deposit({
@@ -129,12 +127,13 @@ export default class extends React.Component {
     // const { getFieldProps } = this.props.form;
     const { withdrawableBalance } = this.props.setting;
     const { paymentMethods, showLoading, currentPayment } = this.state;
+    const { guideModalVisible } = this.props.common;
     // const { Option } = Select;
     return (
       <Page>
         <Navbar className="text-color-white">
           <NavLeft>
-            <Link onClick={() => this.$f7router.back({ force: false })}>
+            <Link onClick={() => this.$f7router.back("/settings/", { force: true })}>
               <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
             </Link>
           </NavLeft>
@@ -204,6 +203,7 @@ export default class extends React.Component {
             </div>
           </List>
         </Form>
+        {/* {guideModalVisible && <GuideModal thisRouter={this.$f7router}></GuideModal>} */}
       </Page>
     );
   }

@@ -18,14 +18,17 @@ import { inject, observer } from "mobx-react";
 import "antd/dist/antd.css";
 import "./index.scss";
 
-@inject("message", "setting")
+@inject("message", "setting", "common")
 @observer
 export default class extends React.Component {
   // state = { withdrawableBalance: 0 };
 
   async componentDidMount() {
-    await this.props.setting.getWithdrawableBalance();
-    await this.props.setting.getUserInfo();
+    const { getUserInfo, getWithdrawableBalance, checkUserStatus } = this.props.setting;
+    const { configMap } = this.props.common;
+    await getWithdrawableBalance();
+    await getUserInfo();
+    checkUserStatus(configMap["user_authentication"]);
   }
 
   // getWithdrawableBalance = async () => {
@@ -56,7 +59,7 @@ export default class extends React.Component {
       onOk() {
         that.logout();
       },
-      onCancel() {},
+      onCancel() { },
     });
   };
 

@@ -213,7 +213,7 @@ export default class extends React.Component {
       <Page>
         <Navbar className="text-color-white">
           <NavLeft>
-            <Link onClick={() => this.$f7router.back({ force: false })}>
+            <Link onClick={() => this.$f7router.back("/settings/", { force: true })}>
               <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
             </Link>
           </NavLeft>

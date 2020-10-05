@@ -11,7 +11,7 @@ import utils from "utils";
 import Framework7 from "framework7/framework7-lite.esm.bundle.js";
 import { inject, observer } from "mobx-react";
 import "./index.scss";
-
+import GuideModal from "components/GuideModal";
 import WS_Symbol from "components/Websocket/Symbol";
 
 @inject("common", "message")
@@ -49,7 +49,7 @@ export default class extends React.Component {
   render() {
     const { hasAnnouncement, hasNotify } = this.props.message;
     // 取得系统配置参数，转换为物件，并动态渲染可见页面
-    const { configMap } = this.props.common;
+    const { configMap, guideModalVisible } = this.props.common;
     // console.log("configMap :>> ", configMap);
     const isSubscribePageVisible = utils.parseBool(configMap["function_ipo"]); // 申购页
     const isNewsPageVisible = utils.parseBool(configMap["function_news"]); // 新闻页
@@ -57,6 +57,7 @@ export default class extends React.Component {
       <Page name="home">
         <WS_Symbol />
         <Views tabs className="safe-areas">
+          {guideModalVisible && <GuideModal></GuideModal>}
           <View
             key="view-market"
             id="view-market"
@@ -98,6 +99,7 @@ export default class extends React.Component {
               tabLinkActive
               icon="market-icon"
               text="行情"
+              id="view-market-btn"
             />
             {isSubscribePageVisible && (
               <Link
@@ -106,6 +108,7 @@ export default class extends React.Component {
                 text="申购"
                 force={true}
                 reloadCurrent={true}
+                id="view-subscribe-btn"
                 onClick={() => this.$event.emit("refresh-subscribe-page")}
               />
             )}
@@ -115,6 +118,7 @@ export default class extends React.Component {
               text="交易"
               force={true}
               reloadCurrent={true}
+              id="view-trade-btn"
               onClick={() => this.$event.emit("refresh-trade-page")}
             />
             {isNewsPageVisible && (
@@ -124,6 +128,7 @@ export default class extends React.Component {
                 text="新闻"
                 force={true}
                 reloadCurrent={true}
+                id="view-news-btn"
                 onClick={() => this.$event.emit("refresh-news-page")}
               />
             )}
@@ -131,6 +136,7 @@ export default class extends React.Component {
               tabLink="#view-settings"
               icon="settings-icon"
               text="设置"
+              id="view-settings-btn"
               className="settings-icon-container"
             >
               {(hasAnnouncement || hasNotify) && (

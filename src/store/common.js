@@ -174,6 +174,22 @@ class CommonStore extends BaseStore {
       ...d,
     };
   };
+
+
+  @observable
+  guideModalVisible = false;
+  @action
+  toggleGuideModalVisible = () => {
+    this.guideModalVisible = !this.guideModalVisible;
+  }
+
+  @observable
+  thisRouter = {}
+  @action
+  setThisRouter = (router) => {
+    this.thisRouter = router
+  }
+
 }
 
 export default new CommonStore();

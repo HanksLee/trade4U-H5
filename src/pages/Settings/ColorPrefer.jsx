@@ -41,7 +41,7 @@ export default class extends React.Component {
               <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
             </Link>
           </NavLeft>
-          <NavTitle>{intl.get("settings.lang")}</NavTitle>
+          <NavTitle>涨跌偏好</NavTitle>
         </Navbar>
         <div className="select-title">涨跌偏好</div>
         <Select

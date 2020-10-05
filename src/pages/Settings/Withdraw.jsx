@@ -11,6 +11,7 @@ import {
 } from "antd-mobile";
 import { Select, Form, Input, message, Button } from "antd";
 import { createForm } from "rc-form";
+import GuideModal from "components/GuideModal";
 // import { RcFile } from "antd/lib/upload";
 import { Page, Navbar, NavTitle, NavLeft, Link, Icon } from "framework7-react";
 import { inject, observer } from "mobx-react";
@@ -29,7 +30,7 @@ const country = [
   },
 ];
 
-@inject("setting")
+@inject("setting", "common")
 @observer
 export default class extends React.Component {
   formRef = React.createRef();
@@ -40,10 +41,17 @@ export default class extends React.Component {
 
 
   goBack = () => {
-    this.props.history.goBack();
+    this.props.history.goBack("/settings/", { force: true });
   };
 
   withdraw = async (values) => {
+    const { userAuthentication } = this.props.setting;
+    const { toggleGuideModalVisible, setThisRouter } = this.props.common;
+    if (userAuthentication !== 3) {
+      await setThisRouter(this.$f7router)
+      toggleGuideModalVisible()
+      return;
+    }
     const res = await api.setting.withdraw(values);
     if (res.status == 201) {
       this.getWithdrawableBalance();
@@ -59,11 +67,12 @@ export default class extends React.Component {
   render() {
     // const { getFieldProps } = this.props.form;
     const { withdrawableBalance } = this.props.setting;
+    const { guideModalVisible } = this.props.common;
     return (
       <Page>
         <Navbar className="text-color-white">
           <NavLeft>
-            <Link onClick={() => this.$f7router.back({ force: false })}>
+            <Link onClick={() => this.$f7router.back("/settings/", { force: true })}>
               <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
             </Link>
           </NavLeft>
@@ -183,6 +192,7 @@ export default class extends React.Component {
             </Button>
           </div>
         </Form>
+        {/* {guideModalVisible && <GuideModal thisRouter={this.$f7router}></GuideModal>} */}
       </Page>
     );
   }
