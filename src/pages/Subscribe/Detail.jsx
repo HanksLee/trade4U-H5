@@ -185,10 +185,11 @@ class SubscribeOrderInfo extends React.Component {
       hand_fee,
       interest_rate,
       interest,
+      loan_proportion,
+      total_subscription_amount,
     } = this.mapApiDataToDisplayValue(this.props.data);
-    const amount = Number(entrance_fee) + Number(loan);
-    const loanRatio = (Number(loan) * 100) / amount;
-    const interestRate = Number(interest_rate); // TODO: 转为百分比数字
+    const interestRate = Number(interest_rate);
+    const loanProportion = Number(loan_proportion) * 100;
     return (
       <React.Fragment>
         <div className="subscribe-detail-header">
@@ -210,11 +211,13 @@ class SubscribeOrderInfo extends React.Component {
             </div>
             <div className="subscribe-detail-item">
               <div className="subscribe-detail-title">认购金额</div>
-              <div className="subscribe-detail-text">{amount}</div>
+              <div className="subscribe-detail-text">
+                {total_subscription_amount}
+              </div>
             </div>
             <div className="subscribe-detail-item">
               <div className="subscribe-detail-title">融资比例</div>
-              <div className="subscribe-detail-text">{`${loanRatio}%`}</div>
+              <div className="subscribe-detail-text">{`${loanProportion}%`}</div>
             </div>
             <div className="subscribe-detail-item">
               <div className="subscribe-detail-title">融资金额</div>

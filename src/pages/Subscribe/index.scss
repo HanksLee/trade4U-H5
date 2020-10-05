@@ -155,7 +155,7 @@
         .date {
           height: 76px;
           width: 76px;
-          border: 1px solid rgba(242, 226, 5, 1);
+          border: 1px solid rgba(131, 141, 158, 1);
           border-radius: 50%;
           display: flex;
           flex-direction: column;
@@ -187,7 +187,7 @@
           display: inline-block;
           color: #21212b;
           padding: 1px 7px;
-          background-color: #f2e205;
+          background-color: #838d9e;
           border-radius: 4px;
           margin-right: 10px;
         }
@@ -210,7 +210,7 @@
         opacity: 0.5;
       }
 
-      &.is-subscribed {
+      &.green-tag {
         .date {
           border: 1px solid #32d74b;
         }
@@ -218,15 +218,20 @@
           background-color: #32d74b;
         }
       }
-      &.is-disabled {
+      &.yellow-tag {
         .date {
-          border: 1px solid #838d9e;
-          p {
-            color: #838d9e;
-          }
+          border: 1px solid #f2e205;
         }
         .subscribe-remark {
-          background-color: #838d9e;
+          background-color: #f2e205;
+        }
+      }
+      &.orange-tag {
+        .date {
+          border: 1px solid #f7b500;
+        }
+        .subscribe-remark {
+          background-color: #f7b500;
         }
       }
     }

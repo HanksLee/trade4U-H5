@@ -143,7 +143,7 @@ export default class extends React.Component {
         const res = await api.subscribe.createSubscribeOrder(payload);
         // console.log("res :>> ", res);
         if (res.status >= 200 && res.status <= 299) {
-          this.$f7router.navigate("/subscribe/");
+          this.$f7router.back();
         } else {
           Modal.confirm({
             title: "提示",
