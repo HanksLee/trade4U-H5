@@ -33,13 +33,14 @@ export default class DetailPage extends React.Component {
 
   render() {
     const { id } = this.$f7route.params;
-    const detail = this.props.subscribe.newStockMap[Number(id)];
-    const userSubscribeMap = this.props.subscribe.userSubscribeMap;
-    // console.log("newStockMap :>> ", toJS(newStockMap));
-    // console.log("userSubscribeMap :>> ", toJS(userSubscribeMap));
-    const didUserSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
+    const detail = this.props.subscribe.newStockMap[Number(id)] ?? {};
     const { isExpired, isNotStarted } = detail;
-    const orderInfo = userSubscribeMap[id]; // 申购资讯
+
+    const userSubscribeMap = this.props.subscribe.userSubscribeMap;
+    const didUserSubscribe = userSubscribeMap[id] ? true : false; // 使用者是否已申购
+    const orderInfo = userSubscribeMap[id] ?? {}; // 申购资讯
+    const { drawing_of_lots_status } = orderInfo; // 中签状态
+    const isUserWinning = drawing_of_lots_status === "1" ? true : false;
     return (
       <Page noToolbar>
         <Navbar className="subscribe-detail-navbar">
@@ -62,6 +63,7 @@ export default class DetailPage extends React.Component {
             申购
           </div>
         )}
+        {isUserWinning && <SubscribeDrawInfo data={orderInfo} />}
       </Page>
     );
   }
@@ -230,6 +232,27 @@ class SubscribeOrderInfo extends React.Component {
             <div className="subscribe-detail-item">
               <div className="subscribe-detail-title">融资利息</div>
               <div className="subscribe-detail-text">{interest}</div>
+            </div>
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+// 使用者中签资讯
+class SubscribeDrawInfo extends React.Component {
+  render() {
+    const { real_lots } = this.props.data;
+    return (
+      <React.Fragment>
+        <div className="subscribe-detail-header">
+          <span>中签明细</span>
+        </div>
+        <div className="subscribe-detail-content">
+          <div className="subscribe-detail-container-done">
+            <div className="subscribe-detail-item">
+              <div className="subscribe-detail-title">中签数量</div>
+              <div className="subscribe-detail-text">{real_lots}</div>
             </div>
           </div>
         </div>
