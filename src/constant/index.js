@@ -197,4 +197,8 @@ export const MARKET_TYPE = {
 };
 export const TIME_ZONE = "Asia/Shanghai";
 
-// 融资比例选项
+export const CURRENCY_TYPE = {
+  HKD: { "zh-cn": "港元" },
+  CNY: { "zh-cn": "人民币" },
+  USD: { "zh-cn": "美金" },
+};

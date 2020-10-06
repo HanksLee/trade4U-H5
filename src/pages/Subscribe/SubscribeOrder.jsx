@@ -3,7 +3,7 @@ import React from "react";
 import { toJS } from "mobx";
 import { Modal, Select } from "antd";
 import { Toast } from "antd-mobile";
-import { MARKET_TYPE } from "constant";
+import { CURRENCY_TYPE } from "constant";
 import moment from "moment";
 import utils from "utils";
 import * as math from "mathjs";
@@ -80,7 +80,7 @@ export default class extends React.Component {
     payload["subscription_date_end"] =
       subscription_date_end &&
       moment(subscription_date_end).format("YYYY-MM-DD");
-    payload["market_name"] = MARKET_TYPE[market]["name"];
+
     payload["draw_result_date"] = moment(draw_result_date).format("YYYY-MM-DD");
 
     payload["amount_per_lot"] = (
@@ -208,10 +208,16 @@ export default class extends React.Component {
       withdrawableBalance,
     };
   };
+  renderCurrencyType = (currency) => {
+    return <div className="order-input-item-text">（ {currency} ）</div>;
+  };
   render() {
-    const loan_options = this.props.common.configMap["loan_options"];
+    const { loan_options, platform_currency } = this.props.common.configMap;
     const loanOptions = loan_options?.split(",") ?? [0];
-    const { stock_name, public_price, lots_size } = this.state.data;
+    const platformCurrency =
+      CURRENCY_TYPE[platform_currency] &&
+      CURRENCY_TYPE[platform_currency]["zh-cn"];
+    const { stock_name, public_price, lots_size, currency } = this.state.data;
     const { lots, loanRatio } = this.state;
     const {
       totalAmount,
@@ -276,11 +282,13 @@ export default class extends React.Component {
             <div className="order-input-item">
               <div className="order-input-item-title">手续费</div>
               <div className="order-input-item-text">{handFee}</div>
+              {this.renderCurrencyType(currency)}
             </div>
 
             <div className="order-input-item">
               <div className="order-input-item-title">认购金额</div>
               <div className="order-input-item-text">{totalAmount}</div>
+              {this.renderCurrencyType(currency)}
             </div>
           </div>
           <div className="order-container-bottom">
@@ -309,24 +317,29 @@ export default class extends React.Component {
             <div className="order-input-item">
               <div className="order-input-item-title">融资金额</div>
               <div className="order-input-item-text">{loan}</div>
+              {this.renderCurrencyType(currency)}
             </div>
             <div className="order-input-item">
               <div className="order-input-item-title">融资利息</div>
               <div className="order-input-item-text">{loanInterest}</div>
+              {this.renderCurrencyType(currency)}
             </div>
             <div className="order-input-item">
               <div className="order-input-item-title">入场费</div>
               <div className="order-input-item-text">{entranceFee}</div>
+              {this.renderCurrencyType(currency)}
             </div>
           </div>
           <div className="order-container-bottom">
             <div className="order-input-item">
               <div className="order-input-item-title">所需本金</div>
               <div className="order-input-item-text">{requiredBalance}</div>
+              {this.renderCurrencyType(currency)}
             </div>
             <div className="order-input-item">
               <div className="order-input-item-title">可用资金</div>
               <div className="order-input-item-text">{withdrawableBalance}</div>
+              {this.renderCurrencyType(platformCurrency)}
             </div>
           </div>
         </div>
