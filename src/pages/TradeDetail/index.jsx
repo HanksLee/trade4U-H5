@@ -77,7 +77,6 @@ export default class TradeDetail extends React.Component {
       },
       stockParams: {
         holdDays: "",
-        action: 0,
         margin_value: 0,
         unitFunds: 100,
         leverage: 1,
@@ -520,7 +519,7 @@ export default class TradeDetail extends React.Component {
   onFieldChanged = (change, field) => {
     const { currentSymbol } = this.props.market;
     const { params, stockParams } = this.state;
-    const { action } = stockParams;
+    const { action } = params;
     const limit = currentSymbol?.symbol_display?.decimals_place ?? 1;
     const {
       take_profit_point,
@@ -639,12 +638,13 @@ export default class TradeDetail extends React.Component {
   };
 
   switchStockType = (id) => {
-    const { stockParams } = this.state;
+    const { stockParams ,params } = this.state;
+    const newParams = {
+      ...params,
+      action: id,
+    }
     this.setState({
-      stockParams: {
-        ...stockParams,
-        action: id,
-      },
+      params:newParams
     });
   };
 
@@ -709,6 +709,7 @@ export default class TradeDetail extends React.Component {
 
   onSubmit = async (totalPlatformCurrency) => {
     const { params, stockParams, isSubmit } = this.state;
+    console.log(params);
     const {
       mode,
       market: { currentSymbol },
@@ -1036,7 +1037,7 @@ export default class TradeDetail extends React.Component {
                         this.switchStockType(item.id);
                       }}
                       className={`trade-detail-input-item-btn ${
-                        (stockParams.action === item.id ||
+                        (params.action === item.id ||
                           stockTypes.length === 1) &&
                         "btn-active"
                         }`}
