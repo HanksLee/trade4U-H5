@@ -45,7 +45,7 @@ class CommonStore extends BaseStore {
   };
   @action
   setQuoteColor = () => {
-    const colorMode = localStorage.getItem("color_mode");
+    const colorMode = localStorage.getItem("trade4U_h5_color_mode");
     const root = document.documentElement;
     if (colorMode === "hk_style") {
       root.style.setProperty('--up-color', `#e94a39`)

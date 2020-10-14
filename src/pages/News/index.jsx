@@ -102,7 +102,7 @@ export default class NewsPage extends React.Component {
     let tabItemWidth = 100 / symbolTypeList.length;
     let tabActiveLeft = `calc(${
       tabItemWidth * index + tabItemWidth / 2
-    }% - 3px)`;
+      }% - 3px)`;
     if (document.getElementsByClassName("tab-active-dot")[0]) {
       document.getElementsByClassName(
         "tab-active-dot"
@@ -216,11 +216,11 @@ export default class NewsPage extends React.Component {
                         )}
                       </p>
                     </div>
-                    {!utils.isEmpty(item.thumbnail) && (
+                    {/* {!utils.isEmpty(item.thumbnail) && (
                       <div className="news-content-item-img">
                         <img src={item.thumbnail} alt="thumbmail" />
                       </div>
-                    )}
+                    )} */}
                   </div>
                 );
               })}

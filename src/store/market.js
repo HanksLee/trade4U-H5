@@ -87,6 +87,7 @@ class MarketStore extends BaseStore {
     this.symbolList.map((item) => {
       this.nextSymbolIDList.push(item.id)
     })
+
   }
 
   @action

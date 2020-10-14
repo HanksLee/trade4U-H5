@@ -27,7 +27,7 @@ export default class extends React.Component {
     // this.setState({
     //   currentLang: value,
     // });
-    localStorage.setItem("color_mode", value);
+    localStorage.setItem("trade4U_h5_color_mode", value);
     this.props.common.setQuoteColor();
   };
 
@@ -46,7 +46,7 @@ export default class extends React.Component {
         <div className="select-title">涨跌偏好</div>
         <Select
           className="select-option"
-          defaultValue={localStorage.getItem("color_mode")}
+          defaultValue={localStorage.getItem("trade4U_h5_color_mode")}
           onChange={this.handleColorChange}
           placeholder="选择偏好"
         >

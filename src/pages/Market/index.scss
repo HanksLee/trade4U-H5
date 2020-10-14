@@ -243,6 +243,7 @@
   margin-right: 6px;
   border-radius: 1px;
 }
+
 .symbol-code {
   font-size: 16px;
   color: #838d9e;
@@ -252,6 +253,7 @@
   margin-top: r(44);
   margin-bottom: 80px;
   position: relative;
+  overflow: scroll;
 
   * {
     user-select: none;
@@ -308,6 +310,7 @@
       div {
         margin-bottom: 11px;
       }
+
       p {
         margin-bottom: 0px;
       }
@@ -366,6 +369,7 @@
 .nav-icon {
   padding: 10px 5px;
   width: 30px;
+
   &:active {
     opacity: 0.5;
   }

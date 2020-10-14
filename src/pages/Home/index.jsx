@@ -41,9 +41,9 @@ export default class extends React.Component {
 
   getQuoteColor = () => {
     const { configMap } = this.props.common;
-    if (!localStorage.getItem("color_mode")) {
+    if (!localStorage.getItem("trade4U_h5_color_mode")) {
       const colorMode = configMap["color_mode"];
-      localStorage.setItem("color_mode", colorMode)
+      localStorage.setItem("trade4U_h5_color_mode", colorMode)
     }
     this.props.common.setQuoteColor();
   }

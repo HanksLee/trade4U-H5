@@ -110,7 +110,7 @@ export default class SymbolDetail extends React.Component {
             await that.props.market.getSelfSelectSymbolList(queryString, true);
           }
         },
-        onCancel() {},
+        onCancel() { },
       });
     }
   };
@@ -154,6 +154,9 @@ export default class SymbolDetail extends React.Component {
     const { currentSymbol } = this.props.market;
     const { trader_status } = currentSymbol;
     const { isAddSelfSelect } = this.state;
+    const colorMode = localStorage.getItem("trade4U_h5_color_mode");
+    const upIcon = colorMode === "standard" ? GreenArrowIcon : RedArrowIcon;
+    const downIcon = colorMode === "standard" ? RedArrowIcon : GreenArrowIcon;
     const isHigh = selectedSymbolInfo.change
       ? selectedSymbolInfo?.change > 0
       : currentSymbol?.product_details?.change > 0;
@@ -183,23 +186,23 @@ export default class SymbolDetail extends React.Component {
           <div
             className={`self-select-buy-sell-block now-stock ${
               isHigh && "p-up stock-up"
-            } ${!isHigh && "p-down stock-down"}`}
+              } ${!isHigh && "p-down stock-down"}`}
           >
             {selectedSymbolInfo?.sell ?? currentSymbol?.product_details?.sell}
           </div>
           <div className="arrow">
             {isHigh ? (
-              <img src={GreenArrowIcon} alt="GreenArrowIcon" />
+              <img src={upIcon} alt="upIcon" />
             ) : (
-              <img className="deg180" src={RedArrowIcon} alt="RedArrowIcon" />
-            )}
+                <img className="deg180" src={downIcon} alt="downIcon" />
+              )}
           </div>
           <div className="spread-stock">
             <div>
               <p
                 className={`self-select-buy-sell-block ${
                   isHigh && "p-up stock-up"
-                } ${!isHigh && "p-down stock-down"}`}
+                  } ${!isHigh && "p-down stock-down"}`}
               >
                 {selectedSymbolInfo?.change ??
                   currentSymbol?.product_details?.change}
@@ -207,12 +210,12 @@ export default class SymbolDetail extends React.Component {
               <p
                 className={`self-select-buy-sell-block ${
                   isHigh && "p-up stock-up"
-                } ${!isHigh && "p-down stock-down"}`}
+                  } ${!isHigh && "p-down stock-down"}`}
               >
                 {`${
                   selectedSymbolInfo?.chg ??
                   currentSymbol?.product_details?.change
-                }%`}
+                  }%`}
               </p>
             </div>
           </div>
@@ -240,7 +243,7 @@ export default class SymbolDetail extends React.Component {
               isAddSelfSelect === 0
                 ? "self-select-icon"
                 : "self-select-icon-active"
-            }`}
+              }`}
             text="自选"
             className="tabbar-label"
             onClick={this.showSelfSelectModal}
@@ -249,8 +252,8 @@ export default class SymbolDetail extends React.Component {
             {trader_status === "in_transaction" ? (
               <img src={OrderIcon} alt="OrderIcon" />
             ) : (
-              <img src={OrderIconDisabled} alt="OrderIconDisabled" />
-            )}
+                <img src={OrderIconDisabled} alt="OrderIconDisabled" />
+              )}
           </div>
         </Toolbar>
       </Page>

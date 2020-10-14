@@ -204,7 +204,7 @@ export default class TradeDetail extends React.Component {
     let newsOuterHeight = $$(
       "#view-market .trade-detail-more-info-news .am-tabs-pane-wrap "
     )[1].clientHeight;
-    if (newsOuterHeight === 0) return;
+    if (!newsOuterHeight || newsOuterHeight === 0) return;
 
     // Bails early if:
     // * there's an error
@@ -638,13 +638,13 @@ export default class TradeDetail extends React.Component {
   };
 
   switchStockType = (id) => {
-    const { stockParams ,params } = this.state;
+    const { stockParams, params } = this.state;
     const newParams = {
       ...params,
       action: id,
     }
     this.setState({
-      params:newParams
+      params: newParams
     });
   };
 

@@ -27,9 +27,15 @@ import WSConnect from "components/HOC/WSConnect";
 import ProductList from "./ProductList";
 import utils from "utils";
 import Item from "antd-mobile/lib/popover/Item";
+import { toJS } from "mobx";
 
 const $$ = Dom7;
 const WS_ProductList = WSConnect(channelConfig[0], channelConfig, ProductList);
+let topHeight = 0;
+let bottomHeight = 0;
+let itemHeight = 0;
+let wsSubscribeAry = [];
+
 @inject("common", "market")
 @observer
 export default class MarketPage extends React.Component {
@@ -48,15 +54,17 @@ export default class MarketPage extends React.Component {
     page_size: 20,
     page: 1,
     hasData: true,
+    tabIndex: 0
   };
   tabRefs = {}; // 储存 tab项目 dom 元素，key 为 SymbolType 的 id
 
   async componentDidMount() {
     // this.connectWebsocket();
-    this.getSymbolTypeList();
+    await this.getSymbolTypeList();
     this.props.common.getProfitRule();
     window.addEventListener("scroll", this.handleScroll, true);
     this.props.common.setSelectedSymbolTypeInfo({ code: "self" });
+    this.setTableHeight();
     // this.setState({ currentSymbolType: this.state.symbolTypeList[0] })
     // $$('.self-select-tr').on('click', (evt) => {
     //   const dom = $$(evt.target).parents('.self-select-tr')[0] || $$(evt.target)[0];
@@ -85,21 +93,79 @@ export default class MarketPage extends React.Component {
   };
 
   handleScroll = () => {
-    const { error, hasMore, dataLoading } = this.state;
+    const { error, hasMore, dataLoading, tabIndex } = this.state;
+    const { nextSymbolIDList } = this.props.market;
 
     // Bails early if:
     // * there's an error
     // * it's already loading
     // * there's nothing left to load
     if (error || dataLoading || !hasMore) return;
-    let scrollTop = $$("#view-market .page-content")[0].scrollTop;
-    let scrollHeight = $$("#view-market .page-content")[0].scrollHeight;
+    let scrollTop = $$("#view-market .self-select-table")[tabIndex].scrollTop;
+    let scrollHeight = $$("#view-market .self-select-table")[tabIndex].scrollHeight;
+    // console.log(scrollTop, scrollHeight, bottomHeight)
+
+
+    //偵測高度來決定訂閱項目
+    if (scrollTop - itemHeight > 0) {
+      if (scrollTop < (topHeight + itemHeight) || scrollTop > (bottomHeight - itemHeight)) {
+        const currentAryIndex = parseInt(scrollTop / itemHeight);
+        const subscribeStart = currentAryIndex - 20 > 0 ? currentAryIndex - 20 : 0;
+        const subscribeEnd = subscribeStart === 0 ? currentAryIndex + 40 : currentAryIndex + 20;
+        wsSubscribeAry = nextSymbolIDList.slice(subscribeStart, subscribeEnd)
+        topHeight = scrollTop - (itemHeight * 20) < 0 ? 0 : scrollTop - (itemHeight * 20);
+        bottomHeight = scrollTop + (itemHeight * (subscribeStart === 0 ? 40 : 20));
+        this.subscribeWS();
+      }
+    }
 
     // Checks that the page has scrolled to the bottom
     if (window.innerHeight + scrollTop >= scrollHeight) {
       this.getList();
     }
+
+
   };
+
+  setTableHeight = () => {
+    const { tabIndex } = this.state;
+    // page
+    const pageHeight = document.getElementById("view-market").clientHeight;
+    const marketNavbarHeight = document.getElementsByClassName("market-navbar")[0]
+      .clientHeight;
+    const tabbarHeight = document.getElementsByClassName("app-tabbar")[0]
+      .clientHeight;
+    const tableHeaderHeight = document.querySelectorAll("#view-market .self-select-header")[tabIndex]
+      .clientHeight;
+
+    const marketTableHeight =
+      pageHeight -
+      marketNavbarHeight -
+      tableHeaderHeight -
+      tabbarHeight;
+
+    document.querySelectorAll(
+      "#view-market .self-select-table"
+    )[tabIndex].style.height = `${marketTableHeight}px`;
+  }
+
+  //訂閱ws
+  subscribeWS = () => {
+    const {
+      moveSymbolIDList,
+      nextSymbolIDList,
+      prevSymbolIDList,
+    } = this.props.market;
+    if (!utils.isEmpty(wsSubscribeAry)) {
+      moveSymbolIDList(cloneDeep(nextSymbolIDList));
+      this.props.common.setUnSubscribeSymbol({ list: prevSymbolIDList });
+      // console.log(prevSymbolIDList);
+      // this.trackSymbol(prevSymbolIDList, "unsubscribe");
+    }
+    this.props.common.setSubscribeSymbol({ list: wsSubscribeAry });
+    // console.log(nextSymbolIDList);
+    // this.trackSymbol(nextSymbolIDList, "subscribe");
+  }
 
   getList = async () => {
     const {
@@ -107,6 +173,7 @@ export default class MarketPage extends React.Component {
       subCurrentSymbolType,
       page,
       page_size,
+      tabIndex
     } = this.state;
     const {
       moveSymbolIDList,
@@ -166,24 +233,22 @@ export default class MarketPage extends React.Component {
           });
         });
 
-        if (!utils.isEmpty(nextSymbolIDList)) {
-          moveSymbolIDList(cloneDeep(nextSymbolIDList));
-          this.props.common.setUnSubscribeSymbol({ list: prevSymbolIDList });
-          // console.log(prevSymbolIDList);
-          // this.trackSymbol(prevSymbolIDList, "unsubscribe");
-        }
-        this.props.common.setSubscribeSymbol({ list: nextSymbolIDList });
-        // console.log(nextSymbolIDList);
-        // this.trackSymbol(nextSymbolIDList, "subscribe");
+        //訂閱ws的動作，包含偵測最低高度、最高高度、訂閱數
+        nextSymbolIDList.length > 40 ? wsSubscribeAry = nextSymbolIDList.slice(-40) : wsSubscribeAry = nextSymbolIDList;
+        itemHeight = $$("#view-market .self-select-table")[tabIndex].scrollHeight / nextSymbolIDList.length;
+        bottomHeight = nextSymbolIDList.length * itemHeight;
+        topHeight = nextSymbolIDList.length > 40 ? bottomHeight - itemHeight * 40 : 0;
+        this.subscribeWS()
       });
     }
   };
 
-  switchSymbolType = async (item) => {
+  switchSymbolType = async (item, index) => {
     // console.log("item :>> ", item);
     this.tabRefs[item.id].scrollIntoView(); // 将目前选中的 tab 卷动至可见
-    this.setState({ currentSymbolType: item, page: 1, page_size: 20 }, () => {
+    this.setState({ currentSymbolType: item, page: 1, page_size: 20, tabIndex: index }, () => {
       this.getList();
+      this.setTableHeight()
     });
   };
 
@@ -423,8 +488,8 @@ export default class MarketPage extends React.Component {
                   }
                   className={`market-navbar-item ${
                     currentSymbolType.symbol_type_name ===
-                      item.symbol_type_name && "active"
-                  }`}
+                    item.symbol_type_name && "active"
+                    }`}
                 >
                   {item.symbol_type_name}
                 </div>
@@ -480,7 +545,7 @@ export default class MarketPage extends React.Component {
                               key={index}
                               className={
                                 subCurrentSymbolType ===
-                                  item.symbol_type_name && "active"
+                                item.symbol_type_name && "active"
                               }
                               onClick={() => {
                                 this.switchSubSelfSelctList(
@@ -495,8 +560,8 @@ export default class MarketPage extends React.Component {
                       )}
                     </div>
                   ) : (
-                    <div></div>
-                  )}
+                      <div></div>
+                    )}
                   {price_title}
                 </div>
                 <div className="self-select-table">
