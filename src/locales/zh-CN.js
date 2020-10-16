@@ -12,7 +12,7 @@ module.exports = {
   "settings.password.empty-password": "密码不得为空",
   "settings.password.different-password": "两次密码不一样",
   "settings.password.reset-success": "重设密码成功",
-  "settings.account": "帐号",
+  "settings.account": "实名认证",
   "settings.account.fill-out-a-form": "待填写信息",
   "settings.account.verifying-form": "信息审核中",
   "settings.account.wait": "信息待审核",

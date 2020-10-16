@@ -90,12 +90,16 @@ export default class extends React.Component {
     const formData = new FormData();
     formData.append("file", file);
     const res = await api.common.uploadFile(formData);
+    if (res.status === 413) {
+      Toast.info("图片档案太大", 1);
+    }
     this.setState({
       [name]: res.data.file_path,
     });
   };
 
   onErrorClick = () => {
+
     if (this.state.emailError) {
       Toast.info("信箱格式有误");
     }
@@ -165,8 +169,37 @@ export default class extends React.Component {
     }
   };
 
-  handleSubmit = async (evt) => {
+  validateFieldsConfirm = () => {
+
     const { id_card_back, id_card_front } = this.state;
+    let payload = '';
+    this.props.form.validateFields(async (err, values) => {
+
+      payload = [
+        { name: values.first_name, text: '请输入名字' },
+        { name: values.last_name, text: '请输入姓氏' },
+        { name: values.id_card, text: '请输入身分证号' },
+        { name: id_card_front || '', text: '请上传身分证正面' },
+        { name: id_card_back || '', text: '请上传身分证反面' },
+        { name: values.email, text: '请输入邮件' },
+      ]
+
+    });
+
+    let requireText = payload.filter((item, key) => item.name === '');
+    if (requireText.length > 0) {
+      Toast.info(requireText[0].text, 1);
+      return false
+    } else {
+      return true
+    }
+  }
+
+  handleSubmit = async (evt) => {
+    const isValid = this.validateFieldsConfirm()
+    if (!isValid) return
+    const { id_card_back, id_card_front } = this.state;
+    const { getUserInfo } = this.props.setting;
     this.props.form.validateFields(async (err, values) => {
       if (!err) {
         let payload = {
@@ -192,12 +225,12 @@ export default class extends React.Component {
           id_card_front,
           inspect_status: 1,
         };
-
         const res = await api.setting.updateAccountInfo(payload);
 
         if (res.status === 200) {
           Toast.success("帐号资料更新成功", 1);
-          this.getList();
+          // this.getList();
+          getUserInfo();
         }
       } else {
         Toast.fail("格式有误，请再做检查", 2);
@@ -208,6 +241,7 @@ export default class extends React.Component {
   render() {
     const { userInfo, isInputDisable } = this.props.setting;
     // const { userInfo, id_card_back, id_card_front, isDiasble } = this.state;
+    const { id_card_front, id_card_back } = this.state;
     const { getFieldProps } = this.props.form;
     return (
       <Page>
@@ -373,12 +407,11 @@ export default class extends React.Component {
             showUploadList={false}
             beforeUpload={this.beforeIdCardFrontUpload}
           >
-            {userInfo["id_card_front"] ? (
+            {userInfo["id_card_front"] || id_card_front ? (
               <div className="upload-image-preview">
                 <img
-                  src={userInfo["id_card_front"]}
+                  src={userInfo["id_card_front"] || id_card_front}
                   alt="id-card-front"
-                // style={{ height: "100%" }}
                 />
               </div>
             ) : (
@@ -399,10 +432,10 @@ export default class extends React.Component {
             showUploadList={false}
             beforeUpload={this.beforeIdCardBackUpload}
           >
-            {userInfo["id_card_back"] ? (
+            {userInfo["id_card_back"] || id_card_back ? (
               <div className="upload-image-preview">
                 <img
-                  src={userInfo["id_card_back"]}
+                  src={userInfo["id_card_back"] || id_card_back}
                   alt="id-card-back"
                 // style={{ height: "100%" }}
                 />
@@ -424,7 +457,7 @@ export default class extends React.Component {
 
         <List>
           <InputItem
-            disabled={isInputDisable}
+            disabled
             {...getFieldProps("mobile", {
               initialValue: userInfo["mobile"] || "",
               validateTrigger: "onBlur",
