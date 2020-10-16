@@ -63,7 +63,7 @@ export default class MarketPage extends React.Component {
     await this.getSymbolTypeList();
     this.props.common.getProfitRule();
     window.addEventListener("scroll", this.handleScroll, true);
-    this.props.common.setSelectedSymbolTypeInfo({ code: "self" });
+    this.props.common.setSelectedSymbolTypeInfo({ code: "HK" });
     this.setTableHeight();
     // this.setState({ currentSymbolType: this.state.symbolTypeList[0] })
     // $$('.self-select-tr').on('click', (evt) => {
@@ -295,7 +295,7 @@ export default class MarketPage extends React.Component {
         },
         () => {
           this.setState(
-            { currentSymbolType: this.state.symbolTypeList[0] },
+            { currentSymbolType: this.state.symbolTypeList[1] },
             () => {
               this.getList();
             }
@@ -519,7 +519,7 @@ export default class MarketPage extends React.Component {
     return (
       <Page noNavbar>
         <Tabs
-          initialPage={0}
+          initialPage={1}
           tabs={symbolTypeList}
           renderTabBar={renderTabBar}
           // renderTab={(tab) => <span>{tab.symbol_type_name}</span>}

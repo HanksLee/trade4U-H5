@@ -126,7 +126,7 @@ export default class extends React.Component {
                 )
               })}
             </Select> */}
-            <Form.Item
+            {/* <Form.Item
               name="province"
               label="省份"
               rules={[{ required: true, message: "请输入省份" }]}
@@ -139,7 +139,7 @@ export default class extends React.Component {
               rules={[{ required: true, message: "请输入城市" }]}
             >
               <Input placeholder="输入城市" />
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item
               name="bank"
               label="开户行"
