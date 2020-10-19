@@ -77,27 +77,34 @@ export default class extends React.Component {
   };
 
   beforeIdCardFrontUpload = (file) => {
+
     this.uploadFile(file, "id_card_front");
     return false;
   };
+
 
   beforeIdCardBackUpload = (file) => {
     this.uploadFile(file, "id_card_back");
     return false;
   };
 
-  uploadFile = async (file, name) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    const res = await api.common.uploadFile(formData);
-    if (res.status === 413) {
-      Toast.info("图片档案太大", 1);
-    }
-    this.setState({
-      [name]: res.data.file_path,
-    });
-  };
 
+  uploadFile = async (file, name) => {
+
+    const formData = new FormData();
+
+    if (file.size / 1024 > 1025) { //大于1M，进行压缩上传
+      Toast.info("图片档案太大", 1);
+     
+    } else {
+      formData.append("file", file);
+      const res = await api.common.uploadFile(formData);
+      this.setState({
+        [name]: res.data.file_path,
+      });
+    };
+  };
+  
   onErrorClick = () => {
 
     if (this.state.emailError) {
