@@ -40,14 +40,14 @@ export default function TwoPriceItem({
             item?.product_details?.change > 0 && "p-up stock-up"
           } ${item?.product_details?.change < 0 && "p-down stock-down"}`}
         >
-          {item?.product_details?.buy}
+          {item?.product_details?.buy?.toFixed(3)}
         </div>
         <div
           className={`self-select-buy-sell-block ${
             item?.product_details?.change > 0 && "p-up stock-up"
           } ${item?.product_details?.change < 0 && "p-down stock-down"}`}
         >
-          {item?.product_details?.sell}
+          {item?.product_details?.sell?.toFixed(3)}
         </div>
       </div>
       <div className="item-sub-info">

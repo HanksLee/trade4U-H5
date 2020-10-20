@@ -545,7 +545,7 @@ export default class TradeDetail extends BaseReact {
 
     val = Number(val);
     val = Number(this.state.lotsValue || 0) + val;
-    val = Number(val.toFixed(2));
+    val = Number(val.toFixed(3));
 
     if (val < currentShowSymbol?.symbol_display?.min_lots) {
       return;

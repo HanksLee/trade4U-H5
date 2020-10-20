@@ -100,7 +100,7 @@ class SubscribeDetail extends React.Component {
     payload["symbol_type_name"] = SYMBOL_TYPE[symbol_type];
     payload["amount_per_lot"] = (
       Number(lots_size) * Number(maxPublicPrice)
-    ).toFixed(2);
+    ).toFixed(3);
     return payload;
   };
   render() {

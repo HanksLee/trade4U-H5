@@ -34,7 +34,7 @@ export const PriceTick = React.memo(({ buy, sell, change, chg, className }) => {
           [lightClass]: isLightOn,
         })}
       >
-        {sell}
+        {sell?.toFixed(3)}
       </div>
       <div
         className={cn({

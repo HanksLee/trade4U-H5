@@ -105,37 +105,37 @@ export default class TradePage extends BaseReact {
             <Row className={"trade-stats-row"}>
               <Col width="25" className={"trade-stats-col"}>
                 <p>结余</p>
-                <p>{tradeInfo?.balance?.toFixed(2)}</p>
+                <p>{tradeInfo?.balance?.toFixed(3)}</p>
               </Col>
               <Col width="50" className={"trade-stats-col"}>
                 <p
                   className={`trade-total-number ${
-                    tradeInfo?.profit?.toFixed(2) > 0 ? "p-up" : "p-down"
+                    tradeInfo?.profit?.toFixed(3) > 0 ? "p-up" : "p-down"
                   }`}
                 >
-                  {tradeInfo?.profit?.toFixed(2)}
+                  {tradeInfo?.profit?.toFixed(3)}
                 </p>
               </Col>
               <Col width="25" className={"trade-stats-col"}>
                 <p>净值</p>
-                <p>{tradeInfo?.equity?.toFixed(2)}</p>
+                <p>{tradeInfo?.equity?.toFixed(3)}</p>
               </Col>
             </Row>
             <Row className={"trade-stats-row"}>
               <Col width="25" className={"trade-stats-col"}>
                 <p>预付款</p>
-                <p>{tradeInfo?.margin?.toFixed(2)}</p>
+                <p>{tradeInfo?.margin?.toFixed(3)}</p>
               </Col>
               <Col width="50" className={"trade-stats-col"}>
                 <p>可用预付款</p>
-                <p>{tradeInfo?.free_margin?.toFixed(2)}</p>
+                <p>{tradeInfo?.free_margin?.toFixed(3)}</p>
               </Col>
               <Col width="25" className={"trade-stats-col"}>
                 <p>预付款比率</p>
                 <p>
                   {tradeInfo.margin == 0
                     ? "-"
-                    : `${tradeInfo?.margin_level?.toFixed(2)}%`}
+                    : `${tradeInfo?.margin_level?.toFixed(3)}%`}
                 </p>
               </Col>
             </Row>
@@ -156,20 +156,20 @@ export default class TradePage extends BaseReact {
             <Row className={"trade-stats-row"}>
               <Col width="25" className={"trade-stats-col"}>
                 <p>盈利</p>
-                <p>{finishTradeInfo?.profit?.toFixed(2)}</p>
+                <p>{finishTradeInfo?.profit?.toFixed(3)}</p>
               </Col>
               <Col width="50" className={"trade-stats-col"}>
                 <p
                   className={`trade-total-number ${
-                    finishTradeInfo?.balance?.toFixed(2) > 0 ? "p-up" : "p-down"
+                    finishTradeInfo?.balance?.toFixed(3) > 0 ? "p-up" : "p-down"
                   }`}
                 >
-                  {finishTradeInfo?.balance?.toFixed(2)}
+                  {finishTradeInfo?.balance?.toFixed(3)}
                 </p>
               </Col>
               <Col width="25" className={"trade-stats-col"}>
                 <p>亏损</p>
-                <p>{finishTradeInfo?.loss?.toFixed(2)}</p>
+                <p>{finishTradeInfo?.loss?.toFixed(3)}</p>
               </Col>
             </Row>
           </Block>

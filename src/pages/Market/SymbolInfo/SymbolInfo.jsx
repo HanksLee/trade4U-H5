@@ -64,12 +64,15 @@ export class SymbolInfo extends React.Component {
     const { symbol_display, product_details } = currentSymbol;
     const { quoted_price } = this.props;
     const onePriceField = {
-      open: { text: "开盘", format: (val) => String(val) },
-      last_close: { text: "昨收", format: (val) => String(val) },
-      high: { text: "最高", format: (val) => String(val) },
-      low: { text: "最低", format: (val) => String(val) },
+      open: { text: "开盘", format: (val) => val.toFixed(3) },
+      last_close: { text: "昨收", format: (val) => val.toFixed(3) },
+      high: { text: "最高", format: (val) => val.toFixed(3) },
+      low: { text: "最低", format: (val) => val.toFixed(3) },
       volume: { text: "总量", format: (val) => String(val) },
-      amount: { text: "总额", format: (val) => `${String(Math.round(Number(val) / 10000))}万` },
+      amount: {
+        text: "总额",
+        format: (val) => `${String(Math.round(Number(val) / 10000))}万`,
+      },
       change: { text: "涨跌", format: (val) => String(val) },
       chg: { text: "涨跌幅", format: (val) => `${String(val)}%` },
       amplitude: { text: "振幅", format: (val) => `${String(val * 100)}%` },
