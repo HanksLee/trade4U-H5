@@ -188,7 +188,8 @@ export default class SymbolDetail extends React.Component {
               isHigh && "p-up stock-up"
               } ${!isHigh && "p-down stock-down"}`}
           >
-            {selectedSymbolInfo?.sell ?? currentSymbol?.product_details?.sell}
+            {selectedSymbolInfo?.sell?.toFixed(3) ??
+              currentSymbol?.product_details?.sell?.toFixed(3)}
           </div>
           <div className="arrow">
             {isHigh ? (
