@@ -36,9 +36,7 @@ export default class extends React.Component {
   formRef = React.createRef();
   state = {};
 
-  componentDidMount() {
-  }
-
+  componentDidMount() {}
 
   goBack = () => {
     this.props.history.goBack("/settings/", { force: true });
@@ -50,8 +48,8 @@ export default class extends React.Component {
 
     //如果沒有認證或沒入金會出現提示框
     if (userAuthentication !== 3) {
-      await setThisRouter(this.$f7router)
-      toggleGuideModalVisible()
+      await setThisRouter(this.$f7router);
+      toggleGuideModalVisible();
       return;
     }
 
@@ -75,7 +73,9 @@ export default class extends React.Component {
       <Page>
         <Navbar className="text-color-white">
           <NavLeft>
-            <Link onClick={() => this.$f7router.back("/settings/", { force: true })}>
+            <Link
+              onClick={() => this.$f7router.back("/settings/", { force: true })}
+            >
               <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
             </Link>
           </NavLeft>
@@ -142,14 +142,14 @@ export default class extends React.Component {
             </Form.Item> */}
             <Form.Item
               name="bank"
-              label="开户行"
-              rules={[{ required: true, message: "请输入开户行" }]}
+              label="开户銀行"
+              rules={[{ required: true, message: "请输入开户銀行" }]}
             >
-              <Input placeholder="输入开户行" />
+              <Input placeholder="输入开户銀行" />
             </Form.Item>
             <Form.Item
               name="sub_branch"
-              label="支行"
+              label="支行 （xx省 xx市 xx支行）"
               rules={[{ required: true, message: "请输入支行" }]}
             >
               <Input placeholder="输入支行" />
