@@ -133,30 +133,16 @@ export default class NewsPage extends React.Component {
   };
 
   getSymbolTypeList = async () => {
-    // const res = await this.props.common.$api.market.getSymbolTypeList();
+    let newsType = [{
+      symbol_type_name: "推荐",
+      symbol_type_code: "mixed",
+    }];
+    const res = await api.market.getSymbolTypeList();
+    if (res.status == 200) {
+      newsType = [...newsType, ...res.data.results];
+    }
 
-    // if (res.status == 200) {
-    this.setState({
-      symbolTypeList: [
-        {
-          symbol_type_name: "推荐",
-          symbol_type_code: "mixed",
-        },
-        {
-          symbol_type_name: "港股",
-          symbol_type_code: "hk",
-        },
-        {
-          symbol_type_name: "Ａ股",
-          symbol_type_code: "cn",
-        },
-        {
-          symbol_type_name: "美股",
-          symbol_type_code: "us",
-        },
-      ],
-    });
-    // }
+    this.setState({ symbolTypeList: newsType });
   };
 
   navigateToSymbolDetail = () => {
