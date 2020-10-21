@@ -14,7 +14,7 @@ import {
   Toolbar,
   Input,
 } from "framework7-react";
-import { Tabs } from "antd-mobile";
+import { Tabs, Toast } from "antd-mobile";
 import { Modal, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import {
@@ -133,11 +133,6 @@ export default class TradeDetail extends React.Component {
 
     const { margin_value, leverage } =
       mode === "add" ? stockParams : currentTrade;
-    /**
-     * add 是从产品页进入下单页
-     * 另一个模式是从 交易持仓页进入下单页
-     * 想分开但我怕豹不敢改
-     */
     const { sell } = currentSymbol.product_details ?? { sell: 0 };
     const leverageMap = currentSymbol?.symbol_display?.leverage.split(",");
     const defaultLeverage = mode === "add" ? leverageMap[0] : leverage;
@@ -403,31 +398,6 @@ export default class TradeDetail extends React.Component {
     const retV = isOver ? origin : changeValue < 0 ? origin : changeValue;
     return retV;
   };
-  // initTrade = async () => {
-  //   const {
-  //     id, mode, trade: {
-  //       currentTrade
-  //     }
-  //   } = this.props;
-
-  //   if (mode != 'add') {
-  //     // let action = currentTrade?.action;
-  //     // let ret;
-
-  //     // if (action == 0 || action == 1) {
-  //     //   ret = tradeTypeOptions[0];
-  //     // } else {
-  //     //   ret = tradeTypeOptions.find(item => item.id == action);
-  //     // }
-
-  //     this.setState({
-  //       // currentTradeType: ret,
-  //       lossValue: currentTrade.stop_loss,
-  //       profitValue: currentTrade.take_profit,
-  //       priceValue: currentTrade.open_price,
-  //     });
-  //   }
-  // }
 
   onLotsChanged = (val) => {
     const { params } = this.state;
@@ -554,7 +524,7 @@ export default class TradeDetail extends React.Component {
 
     fieldValue = +this.checkPointLimit(type, originValue, fieldValue).toFixed(
       limit
-    ); //  +fieldValue;
+    );
 
     this.setState({
       params: {
@@ -642,9 +612,9 @@ export default class TradeDetail extends React.Component {
     const newParams = {
       ...params,
       action: id,
-    }
+    };
     this.setState({
-      params: newParams
+      params: newParams,
     });
   };
 
@@ -682,21 +652,9 @@ export default class TradeDetail extends React.Component {
   switchTradeType = (name) => {
     const { params } = this.state;
     if (name === "instance") {
-      // this.setState({
-      //   params: {
-      //     ...params,
-      //     action: executeOptions[0].id
-      //   }
-      // })
       this.switchTradeOptions(executeOptions[0].id);
     }
     if (name === "future") {
-      // this.setState({
-      //   params: {
-      //     ...params,
-      //     action: pendingOrderOptions[0].id
-      //   }
-      // })
       this.switchTradeOptions(pendingOrderOptions[0].id);
     }
     this.setState({ tradeType: name });
@@ -709,12 +667,19 @@ export default class TradeDetail extends React.Component {
 
   onSubmit = async (totalPlatformCurrency) => {
     const { params, stockParams, isSubmit } = this.state;
-    console.log(params);
     const {
       mode,
       market: { currentSymbol },
       trade: { currentTrade, tradeInfo },
     } = this.props;
+
+    const { trader_status } = currentSymbol;
+    if (mode === "delete" || mode === "add") {
+      if (trader_status !== "in_transaction") {
+        Toast.fail("目前非交易時段", 2);
+        return;
+      }
+    }
     const { success, error } = Modal;
     const lots = params.lots;
     const { min_margin_value, max_margin_value } = currentSymbol.symbol_display;
@@ -899,7 +864,8 @@ export default class TradeDetail extends React.Component {
     }
   };
 
-  renderStockInput = () => {
+  renderOnePriceForm = () => {
+    // 單報價表單
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
     const { swaps, taxes, fee } = currentTrade;
@@ -1011,16 +977,6 @@ export default class TradeDetail extends React.Component {
                       </div>
                     );
                   })}
-                  {/* {<div
-                    onClick={() => { this.switchHoldDays("T+0") }}
-                    className={`trade-detail-input-item-btn ${stockParams.holdDays === "T+0" && 'btn-active'}`}>
-                    {"T+0"}
-                  </div>}
-                  <div
-                    onClick={() => { this.switchHoldDays("T+1") }}
-                    className={`trade-detail-input-item-btn ${stockParams.holdDays === "T+1" && 'btn-active'}`}>
-                    {"T+1"}
-                  </div> */}
                 </>
               )}
               {(mode === "update" || mode === "delete") && (
@@ -1066,23 +1022,6 @@ export default class TradeDetail extends React.Component {
               </div>
             </div>
           )}
-
-          {/* {mode !== 'add' && <div className="trade-detail-input-item">
-            <div className="trade-detail-input-item-title">类型</div>
-            <div className="trade-detail-input-item-btn-group">
-              {currentTradeTab === '持仓' && <div
-                onClick={() => { this.switchExecuteMotion("delete") }}
-                className={`trade-detail-input-item-btn ${executeMotion === "delete" && 'btn-active'}`}>
-                {"平仓"}
-              </div>}
-              <div
-                onClick={() => { this.switchExecuteMotion("update") }}
-                className={`trade-detail-input-item-btn ${executeMotion === "update" && 'btn-active'}`}>
-                {"修改"}
-              </div>
-            </div>
-          </div>} */}
-
           {mode === "add" && (
             <div className="trade-detail-input-item">
               <div className="trade-detail-input-item-title">操作资金</div>
@@ -1265,20 +1204,11 @@ export default class TradeDetail extends React.Component {
           </div>
         </div>
         <div
-          className={`trade-detail-submit-btn 
-                        ${
-                          (tradeType !== "instance" &&
-                            utils.isEmpty(params.open_price)) ||
-                          utils.isEmpty(params.lots) ||
-                          isSubmit
-                            ? "reject"
-                            : ""
-                        }
-                        ${mode === "add" ? "add" : "modify"}`}
+          className={`trade-detail-submit-btn ${
+            mode === "add" ? "add" : "modify"
+          }`}
           style={{ marginBottom: "20px" }}
-          onClick={() => {
-            this.onSubmit(totalPlatformCurrency);
-          }}
+          onClick={() => this.onSubmit(totalPlatformCurrency)}
         >
           {mode === "add" ? "下单" : mode === "update" ? "修改" : "平仓"}
         </div>
@@ -1316,7 +1246,8 @@ export default class TradeDetail extends React.Component {
     );
   };
 
-  renderForexInput = () => {
+  renderTwoPriceForm = () => {
+    // 雙報價表單
     const { mode, currentTradeTab } = this.props;
     const { currentTrade } = this.props.trade;
     const { currentSymbol, currentShowSymbol } = this.props.market;
@@ -1699,7 +1630,6 @@ export default class TradeDetail extends React.Component {
   renderDetail = () => {
     const { currentSymbol } = this.props.market;
     const { selectedSymbolInfo } = this.props.common;
-    console.log(toJS(selectedSymbolInfo));
     const { symbol_display, product_details } = currentSymbol;
     const { quoted_price } = this.props;
     const onePirceField = {
@@ -1809,7 +1739,6 @@ export default class TradeDetail extends React.Component {
   render() {
     const { mode, common } = this.props;
     const { selectedSymbolInfo } = this.props.common;
-    console.log(selectedSymbolInfo);
     const quoted_price = common.getKeyConfig("quoted_price");
     const { currentSymbol } = this.props.market;
     const { moreInfo, tradeType, params, tabDataLoading } = this.state;
@@ -1890,115 +1819,13 @@ export default class TradeDetail extends React.Component {
           }`}
         >
           {this.renderDetail()}
-          {/* <div className="trade-detail-more-info-contract">
-            <div className="trade-detail-more-info-contract-title">
-              合约资讯
-            </div>
-            <div className="trade-detail-more-info-contract-content">
-              <div>
-                <span>小数点位</span>
-                <span>
-                  {currentSymbol?.symbol_display?.decimals_place !==
-                    undefined &&
-                    currentSymbol?.symbol_display?.decimals_place !== null
-                    ? currentSymbol?.symbol_display?.decimals_place
-                    : "-"}
-                </span>
-              </div>
-              <div>
-                <span>合约大小</span>
-                <span>
-                  {currentSymbol?.symbol_display?.contract_size !== undefined &&
-                    currentSymbol?.symbol_display?.contract_size !== null
-                    ? currentSymbol?.symbol_display?.contract_size
-                    : "-"}
-                </span>
-              </div>
-              <div>
-                <span>点差</span>
-                <span>
-                  {currentSymbol?.symbol_display?.spread !== undefined &&
-                    currentSymbol?.symbol_display?.spread !== null
-                    ? currentSymbol?.symbol_display?.spread
-                    : "-"}
-                </span>
-              </div>
-              <div>
-                <span>预付款货币</span>
-                <span>
-                  {currentSymbol?.symbol_display?.margin_currency_display !==
-                    undefined &&
-                    currentSymbol?.symbol_display?.margin_currency_display !==
-                    null
-                    ? currentSymbol?.symbol_display?.margin_currency_display
-                    : "-"}
-                </span>
-              </div>
-              <div>
-                <span>获利货币</span>
-                <span>
-                  {currentSymbol?.symbol_display?.profit_currency_display !==
-                    undefined &&
-                    currentSymbol?.symbol_display?.profit_currency_display !==
-                    null
-                    ? currentSymbol?.symbol_display?.profit_currency_display
-                    : "-"}
-                </span>
-              </div>
-              <div>
-                <span>最小交易手数</span>
-                <span>
-                  {currentSymbol?.symbol_display?.min_lots !== undefined &&
-                    currentSymbol?.symbol_display?.min_lots !== null
-                    ? currentSymbol?.symbol_display?.min_lots
-                    : "-"}
-                </span>
-              </div>
-              <div>
-                <span>最大交易手数</span>
-                <span>
-                  {currentSymbol?.symbol_display?.max_lots !== undefined &&
-                    currentSymbol?.symbol_display?.max_lots !== null
-                    ? currentSymbol?.symbol_display?.max_lots
-                    : "-"}
-                </span>
-              </div>
-              <div>
-                <span>交易数步长</span>
-                <span>
-                  {currentSymbol?.symbol_display?.lots_step !== undefined &&
-                    currentSymbol?.symbol_display?.lots_step !== null
-                    ? currentSymbol?.symbol_display?.lots_step
-                    : "-"}
-                </span>
-              </div>
-              <div>
-                <span>买入库存费</span>
-                <span>
-                  {currentSymbol?.symbol_display?.purchase_fee !== undefined &&
-                    currentSymbol?.symbol_display?.purchase_fee !== null
-                    ? currentSymbol?.symbol_display?.purchase_fee
-                    : "-"}
-                </span>
-              </div>
-              <div>
-                <span>卖出库存费</span>
-                <span>
-                  {currentSymbol?.symbol_display?.selling_fee !== undefined &&
-                    currentSymbol?.symbol_display?.selling_fee !== null
-                    ? currentSymbol?.symbol_display?.selling_fee
-                    : "-"}
-                </span>
-              </div>
-            </div>
-          </div> */}
+
           <div className="trade-detail-more-info-news">
             <Tabs
               tabs={moreInfoTabs}
               initialPage={0}
               renderTab={(tab) => <span>{tab.title}</span>}
               onChange={this.onChangeTabs}
-              // onTabClick={this.onClickTabs}
               tabBarBackgroundColor="transparent"
               tabBarActiveTextColor="#F2E205"
               tabBarInactiveTextColor="#838D9E"
@@ -2017,9 +1844,9 @@ export default class TradeDetail extends React.Component {
             indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
           />
         ) : quoted_price !== "one_price" ? (
-          this.renderForexInput()
+          this.renderTwoPriceForm()
         ) : (
-          this.renderStockInput()
+          this.renderOnePriceForm()
         )}
       </Page>
     );
