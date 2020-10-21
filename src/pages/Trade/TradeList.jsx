@@ -6,6 +6,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { Toast } from "antd-mobile";
 import moment from "moment";
 import { inject, observer } from "mobx-react";
+import { toJS } from "mobx";
 import "./index.scss";
 import { tradeActionMap } from "constant";
 import utils from "utils";
@@ -17,6 +18,7 @@ import {
   ORDER_PROFIT,
   PENDING_ORDER_CLOSE,
 } from "./config/wsType";
+import message from "../../store/message";
 
 const $$ = Dom7;
 
@@ -363,7 +365,33 @@ export default class TradeList extends BaseReact {
       [PENDING_ORDER_CLOSE]: [],
     };
   }
+  handleOrderOperationClick = async (item, mode) => {
+    // mode: delete 平倉、update 編輯
+    const { symbol, product_code, product_market } = item;
+    const { currentTradeTab } = this.state;
+    const quoted_price = this.props.common.getKeyConfig("quoted_price");
+    await this.props.trade.setCurrentTrade(item);
+    await this.props.market.getCurrentSymbol(symbol);
+    await this.props.common.setSelectedSymbolId(product_market, {
+      id: symbol,
+      symbol: product_code,
+    });
 
+    const { currentSymbol } = this.props.market;
+    const { trader_status } = currentSymbol;
+    if (mode === "delete" && trader_status !== "in_transaction") {
+      Toast.fail("目前非交易時段", 2);
+      return;
+    }
+    this.goToPage(`/trade/${symbol}/`, {
+      props: {
+        mode,
+        currentTradeTab,
+        quoted_price,
+        id: symbol,
+      },
+    });
+  };
   render() {
     const { tapIndex, currentTradeTab, dataLoading } = this.state;
     const { tradeList, futureTradeList, finishTradeList } = this.props.trade;
@@ -509,53 +537,17 @@ export default class TradeList extends BaseReact {
                   <div className="trade-content-content-bottom-btn-group">
                     <div
                       className="trade-content-content-bottom-btn"
-                      onClick={async () => {
-                        const id = item.symbol;
-                        const symbol = item.product_code;
-                        await this.props.trade.setCurrentTrade(item);
-                        await this.props.market.getCurrentSymbol(id);
-                        await this.props.common.setSelectedSymbolId(
-                          item.product_market,
-                          {
-                            id,
-                            symbol,
-                          }
-                        );
-                        this.goToPage(`/trade/${item?.symbol}/`, {
-                          props: {
-                            mode: "update",
-                            currentTradeTab,
-                            quoted_price: quoted_price,
-                            id,
-                          },
-                        });
-                      }}
+                      onClick={() =>
+                        this.handleOrderOperationClick(item, "update")
+                      }
                     >
                       修改
                     </div>
                     <div
                       className="trade-content-content-bottom-btn"
-                      onClick={async () => {
-                        const id = item.symbol;
-                        const symbol = item.product_code;
-                        await this.props.trade.setCurrentTrade(item);
-                        await this.props.market.getCurrentSymbol(id);
-                        await this.props.common.setSelectedSymbolId(
-                          item.product_market,
-                          {
-                            id,
-                            symbol,
-                          }
-                        );
-                        this.goToPage(`/trade/${item?.symbol}/`, {
-                          props: {
-                            mode: "delete",
-                            currentTradeTab,
-                            quoted_price: quoted_price,
-                            id,
-                          },
-                        });
-                      }}
+                      onClick={() =>
+                        this.handleOrderOperationClick(item, "delete")
+                      }
                     >
                       平仓
                     </div>
