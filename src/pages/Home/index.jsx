@@ -41,8 +41,9 @@ export default class extends React.Component {
 
   getQuoteColor = () => {
     const { configMap } = this.props.common;
-    if (localStorage.getItem("trade4U_h5_color_mode") !== "hk_style" ||
-      localStorage.getItem("trade4U_h5_color_mode") !== "standars") {
+    if (localStorage.getItem("trade4U_h5_color_mode") &&
+      localStorage.getItem("trade4U_h5_color_mode") !== "hk_style" &&
+      localStorage.getItem("trade4U_h5_color_mode") !== "standard") {
       localStorage.removeItem("trade4U_h5_color_mode")
     }
     if (!localStorage.getItem("trade4U_h5_color_mode")) {
