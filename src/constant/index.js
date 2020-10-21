@@ -65,9 +65,9 @@ export const tradeTabOptions = [
   {
     name: "持仓",
   },
-  {
-    name: "挂单",
-  },
+  // {
+  //   name: "挂单",
+  // },
   {
     name: "历史",
   },
