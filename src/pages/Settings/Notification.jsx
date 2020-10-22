@@ -59,13 +59,14 @@ export default class extends React.Component {
               <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
             </Link>
           </NavLeft>
-          <NavTitle>{intl.get("settings.message.announcement")}</NavTitle>
+          <NavTitle>{intl.get("settings.message.notification")}</NavTitle>
         </Navbar>
         <div className="card-wrap">
-          {!utils.isEmpty(notification)
-            ? this.renderNotificationCard()
-            : <div className="no-message">暂无服务消息</div>
-          }
+          {!utils.isEmpty(notification) ? (
+            this.renderNotificationCard()
+          ) : (
+            <div className="no-message">暂无服务消息</div>
+          )}
         </div>
       </Page>
     );
