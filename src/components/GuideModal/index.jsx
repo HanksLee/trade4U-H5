@@ -224,7 +224,6 @@ export default class GuideModal extends BaseReact {
 
   clickTabBtn = btn => {
     document.getElementById(btn).click();
-    console.log(`${btn} click`)
   }
 
   goToPage = path => {

@@ -103,8 +103,9 @@ export default class MarketPage extends React.Component {
     if (error || dataLoading || !hasMore) return;
     let scrollTop = $$("#view-market .self-select-table")[tabIndex].scrollTop;
     let scrollHeight = $$("#view-market .self-select-table")[tabIndex].scrollHeight;
-    // console.log(scrollTop, scrollHeight, bottomHeight)
+    console.log(scrollTop, scrollHeight, bottomHeight)
 
+    if (scrollTop === 0 && scrollHeight === 0) return;
 
     //偵測高度來決定訂閱項目
     if (scrollTop - itemHeight > 0) {
@@ -279,12 +280,12 @@ export default class MarketPage extends React.Component {
       this.setState(
         {
           symbolTypeList: [
+            ...res.data.results,
             {
               id: 0,
               symbol_type_name: "自选",
               symbol_type_code: "self",
             },
-            ...res.data.results,
           ],
           subSymbolTypeList: [
             {
@@ -295,7 +296,7 @@ export default class MarketPage extends React.Component {
         },
         () => {
           this.setState(
-            { currentSymbolType: this.state.symbolTypeList[1] },
+            { currentSymbolType: this.state.symbolTypeList[0] },
             () => {
               this.getList();
             }
@@ -519,7 +520,7 @@ export default class MarketPage extends React.Component {
     return (
       <Page noNavbar>
         <Tabs
-          initialPage={1}
+          initialPage={0}
           tabs={symbolTypeList}
           renderTabBar={renderTabBar}
           // renderTab={(tab) => <span>{tab.symbol_type_name}</span>}

@@ -22,9 +22,9 @@ export default class extends React.Component {
   formRef = React.createRef();
   state = {
     paymentMethods: [],
-    isPaying: false,
-    orderNumber: "",
-    showLoading: false,
+    // isPaying: false,
+    // orderNumber: "",
+    // showLoading: false,
     currentPayment: undefined,
   };
 
@@ -61,77 +61,80 @@ export default class extends React.Component {
     const userAuth = configMap["user_authentication"];
 
     //如果沒有認證或沒入金會出現提示框
-    if (userAuth !== 'withdraw_authentication' && userAuthentication !== 3) {
+    if (userAuth !== 'withdraw_authentication' && userAuthentication < 2) {
       await setThisRouter(this.$f7router)
       toggleGuideModalVisible()
       return;
     }
 
-    if (!this.state.isPaying) {
-      try {
-        const res = await api.setting.deposit({
-          payment: values.payment,
-          expect_amount: Number(values.expect_amount),
-        });
-        if (res.status === 201 && res.data.gopayurl) {
-          this.setState(
-            {
-              isPaying: true,
-              orderNumber: res.data.order_number,
-              showLoading: true,
-            },
-            () => {
-              this.paymentWindow = window.open(res.data.gopayurl);
-              this.checkDepositStatus();
-            }
-          );
-        } else {
-          throw new Error();
-        }
-      } catch (error) {
-        Toast.fail("支付失败", 2);
-      }
+    // if (!this.state.isPaying) {
+    // try {
+    const res = await api.setting.deposit({
+      payment: values.payment,
+      expect_amount: Number(values.expect_amount),
+    });
+    if (res.status === 201 && res.data.gopayurl) {
+      // this.setState(
+      //   {
+      //     isPaying: true,
+      //     orderNumber: res.data.order_number,
+      //     showLoading: true,
+      //   },
+      //   () => {
+      this.paymentWindow = window.open(res.data.gopayurl);
+      this.resetForm();
+      // this.checkDepositStatus();
+      //   }
+      // );
     } else {
-      Toast.fail("请完成支付", 2);
+      // throw new Error();
+      Toast.fail("跳转支付失败，请联繫客服", 2);
     }
+    // } catch (error) {
+    //   Toast.fail("支付失败", 2);
+    // }
+    // } else {
+    //   Toast.fail("请完成支付", 2);
+    // }
   };
 
-  checkDepositStatus = async () => {
-    if (!this.state.showLoading) return;
-    const res = await api.setting.checkDepositStatus({
-      params: { order_number: this.state.orderNumber },
-    });
-    if (res.data.status === 1) {
-      this.getWithdrawableBalance();
-      clearInterval(this.timer);
-      this.paymentWindow.close();
-      Toast.success("充值成功", 2);
-      this.setState({
-        isPaying: false,
-        orderNumber: "",
-        showLoading: false,
-      });
-      this.resetForm();
-    } else {
-      this.checkDepositStatus();
-    }
-  };
+  // checkDepositStatus = async () => {
+  //   if (!this.state.showLoading) return;
+  //   const res = await api.setting.checkDepositStatus({
+  //     params: { order_number: this.state.orderNumber },
+  //   });
+  //   if (res.data.status === 200) {
+  //     this.getWithdrawableBalance();
+  //     this.paymentWindow.close();
+  //     Toast.success("充值成功", 2);
+  //     this.setState({
+  //       isPaying: false,
+  //       orderNumber: "",
+  //       showLoading: false,
+  //     });
+  //     this.resetForm();
+  //   } else {
+  //     // this.checkDepositStatus();
+  //     Toast.fail("充值失败", 2);
+  //   }
+  // };
 
   resetForm = () => {
     this.formRef.current.resetFields();
+    this.setState({ currentPayment: undefined })
   };
 
-  hideLoading = () => {
-    this.setState({
-      showLoading: false,
-    });
-  };
+  // hideLoading = () => {
+  //   this.setState({
+  //     showLoading: false,
+  //   });
+  // };
 
   render() {
     // const { getFieldProps } = this.props.form;
     const { withdrawableBalance } = this.props.setting;
-    const { paymentMethods, showLoading, currentPayment } = this.state;
-    const { guideModalVisible } = this.props.common;
+    const { paymentMethods, currentPayment } = this.state;
+    // const { guideModalVisible } = this.props.common;
     // const { Option } = Select;
     return (
       <Page>

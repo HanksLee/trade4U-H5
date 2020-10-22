@@ -29,7 +29,7 @@ class SettingStore extends BaseStore {
 
   @action
   checkUserStatus = (auth) => {
-    // 计算用户审核状态
+    // 计算用户审核状态(出金前認證)
     // 0-未完善资料，或审核资料失败
     // 1-资料审核中
     // 2-资料审核通过，但未入金
@@ -48,6 +48,11 @@ class SettingStore extends BaseStore {
         this.userAuthentication = -1;
       }
     } else {
+      // 计算用户审核状态(入金前認證)
+      // 0-未入金
+      // 1-未完善资料，或审核资料失败
+      // 2-资料审核中
+      // 3-已入金，可进行交易
       if (inspect_status == 0 || inspect_status == 3) {
         this.userAuthentication = 0;
       } else if (inspect_status == 1) {

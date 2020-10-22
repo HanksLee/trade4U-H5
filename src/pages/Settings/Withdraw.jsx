@@ -36,7 +36,7 @@ export default class extends React.Component {
   formRef = React.createRef();
   state = {};
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   goBack = () => {
     this.props.history.goBack("/settings/", { force: true });
@@ -56,8 +56,10 @@ export default class extends React.Component {
     const res = await api.setting.withdraw(values);
     if (res.status == 201) {
       this.getWithdrawableBalance();
-      Toast.success("申请成功", 2);
+      Toast.success("申请出金成功", 2);
       this.resetForm();
+    } else {
+      Toast.fail("申请出金失败", 2);
     }
   };
 
