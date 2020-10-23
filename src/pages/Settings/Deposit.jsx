@@ -18,7 +18,7 @@ import "./index.scss";
 @inject("setting", "common")
 @observer
 export default class extends React.Component {
-  paymentWindow = null;
+  // paymentWindow = null;
   formRef = React.createRef();
   state = {
     paymentMethods: [],
@@ -81,8 +81,9 @@ export default class extends React.Component {
       //     showLoading: true,
       //   },
       //   () => {
-      this.paymentWindow = window.open(res.data.gopayurl);
-      this.resetForm();
+      // this.paymentWindow = window.open(res.data.gopayurl);
+      window.location.href = res.data.gopayurl;
+      // this.resetForm();
       // this.checkDepositStatus();
       //   }
       // );
