@@ -43,7 +43,7 @@ export default class extends React.Component {
   };
 
   withdraw = async (values) => {
-    const { userAuthentication } = this.props.setting;
+    const { userAuthentication, getWithdrawableBalance } = this.props.setting;
     const { toggleGuideModalVisible, setThisRouter } = this.props.common;
 
     //如果沒有認證或沒入金會出現提示框
@@ -55,11 +55,11 @@ export default class extends React.Component {
 
     const res = await api.setting.withdraw(values);
     if (res.status == 201) {
-      this.getWithdrawableBalance();
+      await getWithdrawableBalance();
       Toast.success("申请出金成功", 2);
       this.resetForm();
     } else {
-      Toast.fail("申请出金失败", 2);
+      Toast.fail(`申请出金失败\n${res.data.message}`, 3);
     }
   };
 

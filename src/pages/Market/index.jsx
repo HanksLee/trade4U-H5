@@ -103,7 +103,7 @@ export default class MarketPage extends React.Component {
     if (error || dataLoading || !hasMore) return;
     let scrollTop = $$("#view-market .self-select-table")[tabIndex].scrollTop;
     let scrollHeight = $$("#view-market .self-select-table")[tabIndex].scrollHeight;
-    console.log(scrollTop, scrollHeight, bottomHeight)
+    // console.log(scrollTop, scrollHeight, bottomHeight)
 
     if (scrollTop === 0 && scrollHeight === 0) return;
 
