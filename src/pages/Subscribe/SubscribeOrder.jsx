@@ -309,7 +309,7 @@ export default class extends React.Component {
                 {loanOptions.map((each) => {
                   const percent = Number(each);
                   const leverage = utils.calculateLeverage(percent);
-                  const display = `${percent} % 【 ${leverage} 倍槓桿 】`;
+                  const display = `${percent} % 【 ${leverage} 倍杠杆 】`;
                   return (
                     <Select.Option
                       key={each}
