@@ -68,7 +68,7 @@ export default class extends React.Component {
         <Navbar>
           <NavTitle style={{ margin: "auto" }}>登录</NavTitle>
         </Navbar>
-        <img alt="logo" className="logo" src={logo} />
+        {/* <img alt="logo" className="logo" src={logo} /> */}
         <List form className="login-list">
           <ListInput
             type="text"
@@ -131,7 +131,7 @@ export default class extends React.Component {
           onChange={this.searchBroker}
           disableButton={false}
         /> */}
-        <img alt="logo" className="logo" src={logo} />
+        {/* <img alt="logo" className="logo" src={logo} /> */}
         <div className="select-title">选择证券商</div>
         {/* <List className="select-option">
           {this.state.searchResult.map((item) => (
