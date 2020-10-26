@@ -15,7 +15,7 @@ function setRootFontSizeFromClient() {
   metaEl.setAttribute(
     "content",
     `width=${
-    docEl.clientWidth
+      docEl.clientWidth
     },initial-scale=${1},maximum-scale=${1}, minimum-scale=${1},use-scalable=no`
   );
 
@@ -190,7 +190,13 @@ function parseRange(str) {
 function getNow() {
   return momentTimezone(Date.now()).tz(timeZone);
 }
+
+//
+function calculateLeverage(percent) {
+  return Math.floor(100 / (100 - Number(percent)));
+}
 export default {
+  calculateLeverage,
   parseRange,
   parseBool,
   setRootFontSizeFromClient,
