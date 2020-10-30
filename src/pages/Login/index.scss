@@ -45,11 +45,11 @@ form.login-list {
       input {
         //color: #6d7278;
         font-size: 16px;
-        color:#ffffff;
+        color: #ffffff;
 
         &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
           //color: inherit;
-          color:#6d7278;
+          color: #6d7278;
         }
       }
 
@@ -72,7 +72,6 @@ form.login-list {
 
     .item-inner {
       width: calc(100% - 92px);
-     
     }
 
     .code-info {
@@ -93,7 +92,18 @@ form.login-list {
   margin-right: 10px;
 }
 
-a.login-btn {
+.login-btn-container {
+  margin: auto;
+  display: flex;
+  justify-content: space-around;
+
+  a {
+    display: inline-block;
+  }
+}
+
+a.login-btn,
+a.register-btn {
   margin: 20px auto;
   // width: 85px;
   // border: 1px solid #f2e205;
@@ -102,10 +112,11 @@ a.login-btn {
   width: 100px;
   height: 30px;
   border-radius: 4px;
-  border: 1px solid #F2E205;
+  border: 1px solid #f2e205;
   font-size: 16px;
   font-weight: 400;
-  color: #F2E205;
+  color: #f2e205;
+
   &:active {
     opacity: 0.5;
   }
@@ -138,7 +149,7 @@ a.login-btn {
     padding: 0;
     box-shadow: unset !important;
     font-size: 16px;
-    
+
     &:hover {
       border-color: unset;
     }

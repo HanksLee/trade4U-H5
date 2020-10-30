@@ -1,4 +1,5 @@
-import logo from "../../assets/img/Trade4U Logo.svg";
+// import logo from "../../assets/img/Trade4U Logo.svg";
+import logo from "../../assets/img/logo.png";
 import refreshSVG from "../../assets/img/refresh-icon.svg";
 import React from "react";
 import { f7 } from "framework7-react";
@@ -68,7 +69,7 @@ export default class extends React.Component {
         <Navbar>
           <NavTitle style={{ margin: "auto" }}>登录</NavTitle>
         </Navbar>
-        {/* <img alt="logo" className="logo" src={logo} /> */}
+        <img alt="logo" className="logo" src={logo} />
         <List form className="login-list">
           <ListInput
             type="text"
@@ -111,9 +112,15 @@ export default class extends React.Component {
           </ListInput>
         </List>
         <div className="error-msg">{errorMsg}</div>
-        <Button fill className="login-btn" onClick={this.login}>
-          登录
+        <div className="login-btn-container">
+          <Button fill className="login-btn" onClick={this.login}>
+            登录
         </Button>
+          <Button fill className="register-btn" onClick={this.gotoRegister}>
+            注册
+        </Button>
+        </div>
+
       </>
     );
   };
@@ -198,6 +205,10 @@ export default class extends React.Component {
     }
   };
 
+  gotoRegister = () => {
+    window.location.href = `${window.location.protocol}//register.sugargirls.live/`
+  }
+
   login = async () => {
     const { username, password, code } = this.state;
     if (username === "") {
@@ -238,7 +249,7 @@ export default class extends React.Component {
         brokerList: res.data.results,
         searchResult: res.data.results,
         token: res.data.results[0].token || "",
-      });
+      }, () => { this.confirmBroker() });
     } else if (res.status === 400) {
       this.setState({ errorMsg: "验证码已过期" });
     } else {
@@ -250,7 +261,8 @@ export default class extends React.Component {
     const { isLogin } = this.state;
     return (
       <Page name="login">
-        {isLogin ? this.renderBrokerChoosePanel() : this.renderLoginPanel()}
+        {/* {isLogin ? this.renderBrokerChoosePanel() : this.renderLoginPanel()} */}
+        {this.renderLoginPanel()}
       </Page>
     );
   }
