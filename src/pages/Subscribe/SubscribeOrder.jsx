@@ -24,18 +24,6 @@ import { inject, observer } from "mobx-react";
 import "./index.scss";
 //import 'antd/dist/antd.css';
 
-const loan_options_display = {
-  0: "不融资",
-  10: "10%",
-  20: "20%",
-  30: "30%",
-  40: "40%",
-  50: "50%",
-  60: "60%",
-  70: "70%",
-  80: "80%",
-  90: "90%",
-};
 @inject("subscribe", "setting", "common")
 @observer
 export default class extends React.Component {
@@ -110,14 +98,20 @@ export default class extends React.Component {
       requiredBalance,
     } = this.calculateOrder();
     const { userAuthentication } = this.props.setting;
-    const { toggleGuideModalVisible, setThisRouter, configMap } = this.props.common;
+    const {
+      toggleGuideModalVisible,
+      setThisRouter,
+      configMap,
+    } = this.props.common;
     const userAuth = configMap["user_authentication"];
 
     //如果沒有認證或沒入金會出現提示框
-    if ((userAuth === 'withdraw_authentication' && userAuthentication === 0) ||
-      (userAuth !== 'withdraw_authentication' && userAuthentication !== 3)) {
-      await setThisRouter(this.$f7router)
-      toggleGuideModalVisible()
+    if (
+      (userAuth === "withdraw_authentication" && userAuthentication === 0) ||
+      (userAuth !== "withdraw_authentication" && userAuthentication !== 3)
+    ) {
+      await setThisRouter(this.$f7router);
+      toggleGuideModalVisible();
       return;
     }
 
@@ -313,14 +307,16 @@ export default class extends React.Component {
                 value={loanRatio}
               >
                 {loanOptions.map((each) => {
-                  const displayValue = loan_options_display[each];
+                  const percent = Number(each);
+                  const leverage = utils.calculateLeverage(percent);
+                  const display = `${percent} % 【 ${leverage} 倍杠杆 】`;
                   return (
                     <Select.Option
                       key={each}
-                      value={Number(each) / 100}
-                      label={displayValue}
+                      value={percent / 100}
+                      label={display}
                     >
-                      {displayValue}
+                      {display}
                     </Select.Option>
                   );
                 })}
