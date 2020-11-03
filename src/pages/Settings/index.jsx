@@ -72,7 +72,7 @@ export default class extends React.Component {
           <NavLeft></NavLeft>
           <NavTitle>{intl.get("settings.setting")} </NavTitle>
           <NavRight>
-            <List className="message-entry">
+            {/* <List className="message-entry">
               <ListItem link={`/settings/message`}>
                 <div>
                   {(hasAnnouncement || hasNotify) && (
@@ -81,7 +81,7 @@ export default class extends React.Component {
                   <img src="../../../assets/img/message-center-icon.svg" />
                 </div>
               </ListItem>
-            </List>
+            </List> */}
           </NavRight>
         </Navbar>
         <div className="user-name">
@@ -169,6 +169,20 @@ export default class extends React.Component {
           <ListItem title={"涨跌偏好"} link={`/settings/color-prefer`}>
             <div slot="media" style={{ backgroundColor: "#0091FF" }}>
               <img src="../../../assets/img/up-down-icon.svg" />
+            </div>
+          </ListItem>
+        </List>
+        <List>
+          <ListItem title={"服务消息"} link={`/settings/message/notification`}>
+            <div slot="media" style={{ backgroundColor: "#6236ff" }}>
+              <img src="../../../assets/img/notice-icon.svg" />
+            </div>
+          </ListItem>
+        </List>
+        <List>
+          <ListItem title={"站內公告"} link={`/settings/message/announcement`}>
+            <div slot="media" style={{ backgroundColor: "#0091FF" }}>
+              <img src="../../../assets/img/announcement-icon.svg" />
             </div>
           </ListItem>
         </List>
