@@ -1,11 +1,11 @@
 import api from "services";
 import { action, observable, computed, autorun, toJS, runInAction } from "mobx";
 import BaseStore from "store/base";
-import axios from "axios";
+// import axios from "axios";
 import moment from "moment";
 
-let CancelToken = axios.CancelToken;
-let cancel;
+// let CancelToken = axios.CancelToken;
+// let cancel;
 
 class TrendStore extends BaseStore {
   @observable
@@ -17,17 +17,17 @@ class TrendStore extends BaseStore {
 
   @action
   fetchTrendList = async (id, unit) => {
-    if (cancel != undefined) {
-      cancel();
-    }
+    // if (cancel != undefined) {
+    //   cancel();
+    // }
     const res = await api.trend.getSymbolTrend(id, {
       params: {
         unit: unit
       },
-      cancelToken: new CancelToken(function executor(c) {
-        // An executor function receives a cancel function as a parameter
-        cancel = c;
-      }),
+      // cancelToken: new CancelToken(function executor(c) {
+      //   // An executor function receives a cancel function as a parameter
+      //   cancel = c;
+      // }),
     });
     if (res.status === 200) {
       if (unit === "1m") {
