@@ -1678,7 +1678,6 @@ export default class TradeDetail extends React.Component {
             const displayValue =
               symbol_display[key] ?? product_details[key] ?? "-";
             const newValue = selectedSymbolInfo[key];
-            console.log(newValue);
             const currentValue = newValue ?? displayValue;
             return (
               <div>

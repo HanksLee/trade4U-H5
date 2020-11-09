@@ -33,7 +33,7 @@ export default class extends BaseReact {
 
     this.trend = props.trend;
     this.chartRef = React.createRef();
-    this.initDate =  this.getDateString();
+    this.initDate = this.getDateString();
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -94,21 +94,21 @@ export default class extends BaseReact {
   receviceMsgLinter = list => {
     // console.log(d)
     const { unit } = this.props;
-    const {nowRealID} = this.state;
+    const { nowRealID } = this.state;
 
     const newList = this.sortList(list);
 
     const lastDate = this.getDateString();
 
-    if(this.initDate === lastDate){
+    if (this.initDate === lastDate) {
       this.trend.setTrendUpdateList(newList);
     }
-    else{
+    else {
       this.props.trend.fetchTrendList(nowRealID, unit);
       this.initDate = this.getDateString();
     }
 
- 
+
   };
 
   statusChangListener = (before, next) => {
@@ -138,7 +138,7 @@ export default class extends BaseReact {
   };
 
 
-  getDateString = ()=>{
+  getDateString = () => {
     return moment().format("YYYY/MM/d");
   }
 }

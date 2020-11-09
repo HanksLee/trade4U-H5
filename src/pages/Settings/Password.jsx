@@ -68,7 +68,6 @@ export default class extends React.Component {
   handleVerifySubmit = async (evt) => {
     // const { smsKey } = this.state;
     const { smsKey, setErrMsg } = this.props.setting;
-    console.log(smsKey);
 
     this.props.form.validateFields(async (err, values) => {
       if (!err) {

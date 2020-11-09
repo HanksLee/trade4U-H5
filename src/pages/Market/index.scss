@@ -426,6 +426,12 @@
   }
 }
 
+.chart-container{
+  .am-tabs{
+    height: unset;
+  }
+}
+
 .switch-chart {
   line-height: 38px;
   color: #838d9e;
