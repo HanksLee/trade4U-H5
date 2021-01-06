@@ -937,7 +937,7 @@ export default class TradeDetail extends React.Component {
     const totalPlatformCurrency = math
       .chain(margin_value)
       .multiply(open_currency_rate)
-      .add(handFee)
+      .subtract(handFee)
       .done()
       .toFixed(3);
 
