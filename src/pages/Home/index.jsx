@@ -25,25 +25,13 @@ export default class extends React.Component {
       this.props.common.setGlobalEvent(this.$event);
       await this.props.common.getConfigList();
       await this.props.setting.getUserInfo();
-      // await this.props.common.setThisRouter(this.$f7router)
+      await this.props.setting.checkUserStatus(this.props.common.configMap["user_authentication"]);
       this.checkUserAuth();
       this.getQuoteColor();
     });
   }
 
-  // shouldComponentUpdate() {
-  //   return false;
-  // }
-
-  componentWillUnmount = () => {
-    // const token = utils.getLStorage("MOON_H5_TOKEN");
-    // if (token && this.props.message.wsConnect) {
-    //   this.props.message.wsConnect.close();
-    // }
-  };
-
-
-  checkUserAuth = () => {
+  checkUserAuth = async() => {
     const { userAuthentication } = this.props.setting;
     const { toggleGuideModalVisible } = this.props.common;
     if(userAuthentication < 2) toggleGuideModalVisible();

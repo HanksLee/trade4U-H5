@@ -24,11 +24,10 @@ export default class extends React.Component {
   // state = { withdrawableBalance: 0 };
 
   async componentDidMount() {
-    const { getWithdrawableBalance, checkUserStatus } = this.props.setting;
+    const { getWithdrawableBalance } = this.props.setting;
     const { configMap } = this.props.common;
     await this.props.common.setThisRouter(this.$f7router)
     await getWithdrawableBalance();
-    checkUserStatus(configMap["user_authentication"]);
   }
 
   // getWithdrawableBalance = async () => {
