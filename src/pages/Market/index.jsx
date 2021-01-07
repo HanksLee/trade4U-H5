@@ -51,7 +51,7 @@ export default class MarketPage extends React.Component {
     error: false,
     hasMore: true,
     dataLoading: false,
-    page_size: 20,
+    page_size: 100,
     page: 1,
     hasData: true,
     tabIndex: 0
@@ -101,6 +101,7 @@ export default class MarketPage extends React.Component {
     // * it's already loading
     // * there's nothing left to load
     if (error || dataLoading || !hasMore) return;
+    if(!$$("#view-market .self-select-table")[tabIndex]) return;
     let scrollTop = $$("#view-market .self-select-table")[tabIndex].scrollTop;
     let scrollHeight = $$("#view-market .self-select-table")[tabIndex].scrollHeight;
     // console.log(scrollTop, scrollHeight, bottomHeight)
@@ -221,7 +222,7 @@ export default class MarketPage extends React.Component {
       }
     } else {
       this.setState({ dataLoading: true }, async () => {
-        let queryString = `type__name=${currentSymbolType.symbol_type_name}&page=${page}&page_size=${page_size}`;
+        let queryString = `type__name=${currentSymbolType.symbol_type_name}&page=${page}&page_size=${20}`;
         await this.props.market.getSymbolList(
           queryString,
           page === 1 ? true : false
@@ -247,7 +248,7 @@ export default class MarketPage extends React.Component {
   switchSymbolType = async (item, index) => {
     // console.log("item :>> ", item);
     this.tabRefs[item.id].scrollIntoView(); // 将目前选中的 tab 卷动至可见
-    this.setState({ currentSymbolType: item, page: 1, page_size: 20, tabIndex: index }, () => {
+    this.setState({ currentSymbolType: item, page: 1, page_size: 100, tabIndex: index }, () => {
       this.getList();
       this.setTableHeight()
     });
@@ -265,7 +266,7 @@ export default class MarketPage extends React.Component {
         showSubSymbolType: false,
         name,
         page: 1,
-        page_size: 20,
+        page_size: 100,
       },
       () => {
         this.getList();

@@ -24,10 +24,10 @@ export default class extends React.Component {
   // state = { withdrawableBalance: 0 };
 
   async componentDidMount() {
-    const { getUserInfo, getWithdrawableBalance, checkUserStatus } = this.props.setting;
+    const { getWithdrawableBalance, checkUserStatus } = this.props.setting;
     const { configMap } = this.props.common;
+    await this.props.common.setThisRouter(this.$f7router)
     await getWithdrawableBalance();
-    await getUserInfo();
     checkUserStatus(configMap["user_authentication"]);
   }
 
@@ -180,12 +180,19 @@ export default class extends React.Component {
           </ListItem>
         </List>
         <List>
-          <ListItem title={"站內公告"} link={`/settings/message/announcement`}>
+          <ListItem title={"联繫我们"} link={`/settings/contact`}>
             <div slot="media" style={{ backgroundColor: "#0091FF" }}>
               <img src="../../../assets/img/announcement-icon.svg" />
             </div>
           </ListItem>
         </List>
+        {/* <List>
+          <ListItem title={"站內公告"} link={`/settings/message/announcement`}>
+            <div slot="media" style={{ backgroundColor: "#0091FF" }}>
+              <img src="../../../assets/img/announcement-icon.svg" />
+            </div>
+          </ListItem>
+        </List> */}
         {/* <List>
           <ListItem
             title={"客服"}

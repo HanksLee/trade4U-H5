@@ -11,8 +11,10 @@ import {
   Icon,
   Link,
 } from "framework7-react";
+import { inject, observer } from "mobx-react";
 import "./index.scss";
 
+@inject("market")
 export default class extends React.Component {
   constructor(props) {
     super(props);
@@ -29,13 +31,18 @@ export default class extends React.Component {
     });
   }
 
+  goBack = async() =>{
+    await this.props.market.updateSelfSelectSymbolList(`page=1&page_size=100`);
+    this.$f7router.back();
+  }
+
   render() {
     const { symbolTypeList } = this.state;
     return (
       <Page noToolbar>
         <Navbar>
           <NavLeft>
-            <Link onClick={() => this.$f7router.back()}>
+            <Link onClick={() => {this.goBack()} }>
               <Icon color={"white"} f7={"chevron_left"} size={r(18)}></Icon>
             </Link>
           </NavLeft>

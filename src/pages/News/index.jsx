@@ -9,6 +9,7 @@ import moment from "moment";
 import Dom7 from "dom7";
 import "./index.scss";
 import utils from "utils";
+import Announcement from "./Announcement";
 import { util } from "echarts/lib/export";
 
 const $$ = Dom7;
@@ -127,7 +128,9 @@ export default class NewsPage extends React.Component {
     this.setState(
       { currentSymbolCode: code, page: 1, newsList: [], newsListCount: 0 },
       () => {
-        this.getList();
+        if(code !== "announcement"){
+          this.getList();
+        }
       }
     );
   };
@@ -137,23 +140,30 @@ export default class NewsPage extends React.Component {
       symbol_type_name: "推荐",
       symbol_type_code: "mixed",
     }];
+
     const res = await api.market.getSymbolTypeList();
     if (res.status == 200) {
       newsType = [...newsType, ...res.data.results];
     }
 
+    let announcementType = [{
+      symbol_type_name: "公告",
+      symbol_type_code: "announcement",
+    }]
+
+    newsType = [...newsType, ...announcementType];
     this.setState({ symbolTypeList: newsType });
   };
 
-  navigateToSymbolDetail = () => {
-    const { currentSymbol } = this.state;
-    this.$f7router.navigate(`/market/symbol/${currentSymbol.id}`, {
-      context: currentSymbol,
-    });
-  };
+  // navigateToSymbolDetail = () => {
+  //   const { currentSymbol } = this.state;
+  //   this.$f7router.navigate(`/market/symbol/${currentSymbol.id}`, {
+  //     context: currentSymbol,
+  //   });
+  // };
 
   render() {
-    const { symbolTypeList, newsList, dataLoading } = this.state;
+    const { symbolTypeList, newsList, dataLoading, currentSymbolCode } = this.state;
     return (
       <Page name="news">
         <Navbar className="news-navbar">
@@ -180,7 +190,9 @@ export default class NewsPage extends React.Component {
           }}
         >
           <div className="news-content">
-            {!utils.isEmpty(newsList) &&
+            {currentSymbolCode === "announcement"
+            ? <Announcement />
+            : !utils.isEmpty(newsList) &&
               newsList.map((item, index) => {
                 return (
                   <div

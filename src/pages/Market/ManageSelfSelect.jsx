@@ -15,6 +15,8 @@ import {
   Link,
 } from "framework7-react";
 import { inject, observer } from "mobx-react";
+import SearchIcon from "assets/img/search.svg";
+import { toJS } from "mobx";
 import "./index.scss";
 import utils from "../../utils";
 
@@ -28,6 +30,19 @@ export default class extends React.Component {
       checkedItems: [],
     };
   }
+
+  static getDerivedStateFromProps(props, state) {
+    if(props.market.selfSelectSymbolList.length !== state.selfSelectSymbolList.length){
+      return{
+        selfSelectSymbolList: props.market.selfSelectSymbolList
+      }
+    }
+    return null;
+  }
+
+  navigateToSymbolTypePage = () => {
+    this.$f7router.navigate("/market/symbol_type");
+  };
 
   showDeleteModal = () => {
     const { confirm } = Modal;
@@ -104,7 +119,6 @@ export default class extends React.Component {
 
   render() {
     const { selfSelectSymbolList, checkedItems } = this.state;
-
     return (
       <Page noToolbar>
         <Navbar>
@@ -115,6 +129,12 @@ export default class extends React.Component {
             {/* <span onClick={this.handleConfirm}>完成</span> */}
           </NavLeft>
           <NavRight>
+            <img
+              className="nav-icon"
+              alt="search"
+              src={SearchIcon}
+              onClick={this.navigateToSymbolTypePage}
+            />
             {!utils.isEmpty(checkedItems) && (
               <span onClick={this.showDeleteModal}>删除</span>
             )}

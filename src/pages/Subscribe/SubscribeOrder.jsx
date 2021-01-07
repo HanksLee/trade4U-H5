@@ -100,7 +100,6 @@ export default class extends React.Component {
     const { userAuthentication } = this.props.setting;
     const {
       toggleGuideModalVisible,
-      setThisRouter,
       configMap,
     } = this.props.common;
     const userAuth = configMap["user_authentication"];
@@ -110,7 +109,6 @@ export default class extends React.Component {
       (userAuth === "withdraw_authentication" && userAuthentication === 0) ||
       (userAuth !== "withdraw_authentication" && userAuthentication !== 3)
     ) {
-      await setThisRouter(this.$f7router);
       toggleGuideModalVisible();
       return;
     }

@@ -15,6 +15,7 @@ import {
 } from "framework7-react";
 import "./index.scss";
 import { inject, observer } from "mobx-react";
+import { toJS } from "mobx";
 import selectSVG from "../../static/icons/self-select-icon.svg";
 import activeSelectSVG from "../../static/icons/self-select-icon-active.svg";
 
@@ -39,9 +40,30 @@ export default class SymbolList extends React.Component {
   }
 
   componentDidMount() {
+    this.getSelfSymbolList();
     this.getSymbolList(
       `type__name=${this.symbolTypeName}&page=1&page_size=${pageSize}`
     );
+  }
+
+  static getDerivedStateFromProps(props, state){
+    if(state.selectedSymbols.length === 0 && props.market.selfSelectSymbolList.length !== 0){
+      const { selfSelectSymbolList } = props.market;
+      const selectedSymbolList = selfSelectSymbolList.map(symbol=>{
+        return( symbol.symbol )
+      })
+      return{
+        selectedSymbols: selectedSymbolList
+      }
+    }
+    return null;
+  }
+
+  getSelfSymbolList = async() => {
+    const { selfSelectSymbolList, getSelfSelectSymbolList } = this.props.market;
+    if(selfSelectSymbolList.length === 0){
+      await getSelfSelectSymbolList(`page=1&page_size=100`);
+    }
   }
 
   getSymbolList = async (query, init = true) => {
@@ -86,7 +108,7 @@ export default class SymbolList extends React.Component {
     });
   };
 
-  loadMoreSymbol = async () => {
+  loadMoreSymbol = async (e) => {
     if (this.state.next && !this.state.isLoading) {
       // this.getSymbolList({
       //   type__name: this.symbolTypeName,
@@ -94,7 +116,7 @@ export default class SymbolList extends React.Component {
       //   page_size: pageSize,
       // }, false)
       this.getSymbolList(
-        `type__name=${this.symbolTypeName}&page=${this.state.page}&page_size=${pageSize}&search=${e.target.value}`,
+        `type__name=${this.symbolTypeName}&page=${this.state.page + 1}&page_size=${pageSize}`,
         false
       );
     }
@@ -168,7 +190,6 @@ export default class SymbolList extends React.Component {
 
   render() {
     const { symbolList, selectedSymbols, isLoading } = this.state;
-
     return (
       <Page
         noToolbar

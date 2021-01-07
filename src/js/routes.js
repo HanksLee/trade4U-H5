@@ -349,6 +349,18 @@ var routes = [
     },
   },
   {
+    path: "/settings/contact",
+    async(routeTo, routeFrom, resolve, reject) {
+      const reactComponent = () =>
+        import(
+          /* webpackChunkName: 'settings-page' */ "../pages/Settings/Contact.jsx"
+        );
+      reactComponent().then((rc) => {
+        resolve({ component: rc.default });
+      });
+    },
+  },
+  {
     path: "/form/",
     component: FormPage,
   },

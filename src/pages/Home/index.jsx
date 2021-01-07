@@ -14,7 +14,7 @@ import "./index.scss";
 import GuideModal from "components/GuideModal";
 import WS_Symbol from "components/Websocket/Symbol";
 
-@inject("common", "message")
+@inject("common", "message", "setting")
 @observer
 export default class extends React.Component {
   $event = null;
@@ -24,6 +24,9 @@ export default class extends React.Component {
       this.$event = new Framework7.Events();
       this.props.common.setGlobalEvent(this.$event);
       await this.props.common.getConfigList();
+      await this.props.setting.getUserInfo();
+      // await this.props.common.setThisRouter(this.$f7router)
+      this.checkUserAuth();
       this.getQuoteColor();
     });
   }
@@ -38,6 +41,13 @@ export default class extends React.Component {
     //   this.props.message.wsConnect.close();
     // }
   };
+
+
+  checkUserAuth = () => {
+    const { userAuthentication } = this.props.setting;
+    const { toggleGuideModalVisible } = this.props.common;
+    if(userAuthentication < 2) toggleGuideModalVisible();
+  }
 
   getQuoteColor = () => {
     const { configMap } = this.props.common;

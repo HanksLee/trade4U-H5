@@ -687,7 +687,6 @@ export default class TradeDetail extends React.Component {
     const { userAuthentication } = this.props.setting;
     const {
       toggleGuideModalVisible,
-      setThisRouter,
       configMap,
     } = this.props.common;
     const userAuth = configMap["user_authentication"];
@@ -697,7 +696,6 @@ export default class TradeDetail extends React.Component {
       (userAuth === "withdraw_authentication" && userAuthentication === 0) ||
       (userAuth !== "withdraw_authentication" && userAuthentication !== 3)
     ) {
-      await setThisRouter(this.$f7router);
       toggleGuideModalVisible();
       return;
     }
@@ -1215,31 +1213,31 @@ export default class TradeDetail extends React.Component {
 
         <div className="trade-detail-remarks-container">
           <div className="trade-detail-remarks-item">
-            <div className="trade-detail-remarks-item-title">服務費</div>
+            <div className="trade-detail-remarks-item-title">服务费</div>
             <div className="trade-detail-remarks-item-content">
-              {refCurrency}${handFee}(手續費)
+              {refCurrency}${handFee}(手续费)
             </div>
           </div>
           <div className="trade-detail-remarks-item">
-            <div className="trade-detail-remarks-item-title">遞延費</div>
+            <div className="trade-detail-remarks-item-title">递延费</div>
             <div className="trade-detail-remarks-item-content">
               ${stockFee}({refCurrency}/交易日)
             </div>
           </div>
           <div className="trade-detail-remarks-item">
-            <div className="trade-detail-remarks-item-title">參考匯率</div>
+            <div className="trade-detail-remarks-item-title">参考汇率</div>
             <div className="trade-detail-remarks-item-content">
               ${open_currency_rate}
             </div>
           </div>
           <div className="trade-detail-remarks-item">
-            <div className="trade-detail-remarks-item-title">總計</div>
+            <div className="trade-detail-remarks-item-title">总计</div>
             <div className="trade-detail-remarks-item-content">
               {refCurrency}${`${totalPlatformCurrency}`}元
             </div>
           </div>
           <div className="trade-detail-remarks-placeholder">
-            *總計=操作資金+服務費
+            *总计=操作资金+服务费
           </div>
         </div>
       </>

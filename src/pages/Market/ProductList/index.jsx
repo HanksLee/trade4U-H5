@@ -169,11 +169,11 @@ export default class ProductList extends React.Component {
                 item={item}
                 thisStore={thisStore}
               />
-              <div style={testTimestamp} key={`time-${index}`}>
+              {/* <div style={testTimestamp} key={`time-${index}`}>
                 {moment(item.product_details?.timestamp * 1000).format(
                   "YYYY/MM/DD hh:mm:ss"
                 )}
-              </div>
+              </div> */}
             </React.Fragment>
           );
         })

@@ -57,12 +57,11 @@ export default class extends React.Component {
 
   deposit = async (values) => {
     const { userAuthentication } = this.props.setting;
-    const { toggleGuideModalVisible, setThisRouter, configMap } = this.props.common;
+    const { toggleGuideModalVisible, configMap } = this.props.common;
     const userAuth = configMap["user_authentication"];
 
     //如果沒有認證或沒入金會出現提示框
     if (userAuth !== 'withdraw_authentication' && userAuthentication < 2) {
-      await setThisRouter(this.$f7router)
       toggleGuideModalVisible()
       return;
     }

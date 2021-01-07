@@ -81,12 +81,6 @@ export default class SymbolDetail extends React.Component {
     }, 60000);
   }
 
-  static getDerivedStateFromProps(props, state) {
-    // console.log(props)
-    // console.log(this)
-    // this.setState({ currentSymbol: props.market.currentSymbol })
-  }
-
   showSelfSelectModal = async () => {
     const { confirm } = Modal;
     const { isAddSelfSelect } = this.state;
